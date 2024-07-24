@@ -1,0 +1,57 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.9.25",
+	"FriendlyName": "Shiden Visual Novel Editor",
+	"Description": "A simple visual novel editor",
+	"Category": "Other",
+	"CreatedBy": "HANON",
+	"CreatedByURL": "https://twitter.com/HanonHeartKnows",
+	"DocsURL": "https://github.com/HANON-games/Shiden/wiki",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ShidenCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Mac",
+				"Win64",
+				"Android"
+			]
+		},
+		{
+			"Name": "ShidenEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Mac",
+				"Win64"
+			]
+		},
+		{
+			"Name": "ShidenEditorStartup",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"PlatformAllowList": [
+				"Mac",
+				"Win64"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "JsonBlueprintUtilities",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		}
+	]
+}
