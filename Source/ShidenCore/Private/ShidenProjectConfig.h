@@ -33,7 +33,7 @@ public:
 	TArray<FSoftObjectPath> CommandDefinitions;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
-	static void AddScenarioPath(const FGuid scenarioId, const FString scenarioPath);
+	static void AddScenarioPath(const FGuid& scenarioId, const FString& scenarioPath);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void SetScenarioPaths(const TMap<FGuid, FString>& paths);

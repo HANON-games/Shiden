@@ -47,7 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FString Arg10;
 
-	bool operator==(const FShidenPreset& that) const
+	bool operator==(const FShidenPreset& that) const noexcept
 	{
 		return CommandName == that.CommandName && PresetName == that.PresetName;
 	}
