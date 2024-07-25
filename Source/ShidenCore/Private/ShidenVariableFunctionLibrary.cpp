@@ -963,7 +963,7 @@ FString GetLowerPropertyName(FString FullPropertyName)
 	return Result;
 }
 
-FORCEINLINE bool PredefinedVariableKeyEquals(const FString Key, const FString PropertyName)
+FORCEINLINE bool PredefinedVariableKeyEquals(const FString& Key, const FString& PropertyName)
 {
 	return Key.Compare(PropertyName, ESearchCase::IgnoreCase) == 0;
 }
@@ -1135,7 +1135,7 @@ SHIDENCORE_API TArray<FString> UShidenVariableFunctionLibrary::GetVariableNamesF
 	return result;
 }
 
-FString ReplaceTextWithVariable(const FString ProcessName, const FString text)
+FString ReplaceTextWithVariable(const FString& ProcessName, const FString& text)
 {
 	if (!text.Contains(TEXT("{")) || !text.Contains(TEXT("}")))
 	{

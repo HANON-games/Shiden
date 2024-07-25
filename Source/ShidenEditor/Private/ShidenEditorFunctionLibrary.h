@@ -15,10 +15,10 @@ class SHIDENEDITOR_API UShidenEditorFunctionLibrary : public UBlueprintFunctionL
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void CreateModalForSave(UClass* AssetClass, const FString& DefaultPath, const FString& DefaultAssetName, FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|EditorUtility")
+	static void CreateModalForSave(UClass* AssetClass, const FString DefaultPath, const FString DefaultAssetName, FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess);
 
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|EditorUtility")
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Internal|EditorUtility")
 	static bool CanCreateFolder(FName InPath);
 };

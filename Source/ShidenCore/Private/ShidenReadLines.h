@@ -10,7 +10,6 @@ struct FShidenReadLines
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Subsystem|Internal")
 	TSet<FGuid> Ids;
 };

@@ -10,7 +10,6 @@ struct FShidenCommand
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FString CommandName;
 

@@ -5,15 +5,11 @@
 #include "CoreMinimal.h"
 #include "ShidenBacklogItem.generated.h"
 
-/**
- * 
- */
 USTRUCT(BlueprintType)
 struct FShidenBacklogItem
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Subsystem|Internal")
 	FString SlotName;
 

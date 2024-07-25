@@ -33,16 +33,16 @@ public:
 	TArray<FSoftObjectPath> CommandDefinitions;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
-	static void AddScenarioPath(const FGuid& scenarioId, const FString& scenarioPath);
+	static void AddScenarioPath(const FGuid& scenarioId, const FString scenarioPath);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void SetScenarioPaths(const TMap<FGuid, FString>& paths);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
-	static void SetScenarioDirectoryPath(const FString& path);
+	static void SetScenarioDirectoryPath(const FString path);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
-	static void SetMacroDirectoryPath(const FString& path);
+	static void SetMacroDirectoryPath(const FString path);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void AddPreset(const FShidenPreset& preset);

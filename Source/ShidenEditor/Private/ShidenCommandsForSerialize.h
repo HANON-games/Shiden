@@ -11,7 +11,6 @@ struct FShidenCommandsForSerialize
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor")
 	TArray <FShidenCommand> Commands;
 };

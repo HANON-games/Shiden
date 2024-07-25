@@ -10,7 +10,6 @@ struct FShidenLoadingAssetInfo
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
 	int ScenarioIndex = -1;
 

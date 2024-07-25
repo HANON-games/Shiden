@@ -17,7 +17,7 @@
 #include "Widgets/SWindow.h"
 #include "ShidenCommand.h"
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString& Str)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString Str)
 {
 	FPlatformApplicationMisc::ClipboardCopy(*Str);
 }
@@ -27,7 +27,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetFromClipboard(FString& Dest)
 	FPlatformApplicationMisc::ClipboardPaste(Dest);
 }
 
-SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString& text)
+SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString text)
 {
 	FString resultText = text;
 
@@ -68,7 +68,7 @@ struct TextPosition
 	int32 ContentEnd;
 };
 
-SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString& text, const int32& len)
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString text, const int32 len)
 {
 	FString resultText = text;
 	int32 length = len;
@@ -166,7 +166,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* targ
 	targetObject->CallFunctionByNameWithArguments(*cmd, _Null, nullptr, true);
 }
 
-SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString& DefaultFileName, const FString& SaveText)
+SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString DefaultFileName, const FString SaveText)
 {
 	// get window handle
 	void* windowHandle = nullptr;
@@ -319,10 +319,10 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::TakeScreenshot(const FString InF
 	request.RequestScreenshot(InFilePath, bInShowUI, bAddFilenameSuffix);
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FString ObjectPath, UShidenScenario*& Scenario, bool& bSucceeded)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FString ObjectPath, UShidenScenario*& Scenario, bool& bSuccess)
 {
 	Scenario = nullptr;
-	bSucceeded = false;
+	bSuccess = false;
 
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
 	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
@@ -351,7 +351,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FStri
 	}
 
 	Scenario = ShidenScenario;
-	bSucceeded = true;
+	bSuccess = true;
 	return;
 }
 
@@ -389,6 +389,28 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::UnloadAssets(const bool ForceGC)
 	{
 		GEngine->ForceGarbageCollection(true);
 	}
+}
+
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeErrorMessage(const FGuid ScenarioId, const int32 Index, const FString CommandName, const FString ErrorMessage)
+{
+	const UShidenProjectConfig* ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (!ProjectConfig)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ShidenProjectConfig is null"));
+		return TEXT("");
+	}
+
+	const FString ScenarioPath = ProjectConfig->ScenarioPaths.FindRef(ScenarioId);
+
+	FString LeftS, RightS;
+	ScenarioPath.Split(TEXT("/"), nullptr, &RightS, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+	RightS.Split(TEXT("."), &LeftS, nullptr, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+
+	FString LineNumber = Index == -1 ? TEXT("") : TEXT(" L") + FString::FromInt(Index + 1);
+
+	FString Command = CommandName.IsEmpty() ? TEXT("") : CommandName + TEXT(": ");
+
+	return FString::Printf(TEXT("[%s%s] %s%s"), *LeftS, *LineNumber, *Command, *ErrorMessage);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotName, bool bSaveSystemData)
@@ -549,15 +571,6 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetObjectPathFromClass(const 
 	return Path.ToString().LeftChop(2);
 }
 
-SHIDENCORE_API void MakeObjectPathFromPackagePath(const FString PackagePath, FName& ObjectPath)
-{
-	FString ObjectPathString;
-	FString Right;
-	PackagePath.Split(TEXT("."), nullptr, &Right);
-	ObjectPathString = PackagePath + TEXT(".") + Right;
-	ObjectPath = FName(*ObjectPathString);
-}
-
 SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 {
 	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -596,57 +609,6 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 	}
 }
 
-/*
-SHIDENCORE_API void GetCommand(UObject* Outer, const FSoftObjectPath CommandSoftObjectPath, UShidenCommandObject*& CommandObject, bool& Success)
-{
-	UClass* CommandClass = UShidenCommandObject::StaticClass();
-	CommandObject = NewObject<UShidenCommandObject>(Outer, CommandClass);
-	if (!CommandObject)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to create UShidenCommandObject from ObjectPath: %s"), *CommandSoftObjectPath.GetAssetPathString());
-		Success = false;
-		return;
-	}
-}
-
-SHIDENCORE_API void UShidenCoreFunctionLibrary::GetCommandFromCache(const UObject* Outer, const FString ProcessName, const FSoftObjectPath CommandSoftObjectPath, UObject*& Command, bool& bSuccess)
-{
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		bSuccess = false;
-		return;
-	}
-
-	FString CommandCacheKey = ProcessName + TEXT("::") + CommandSoftObjectPath.GetAssetPathString();
-	TObjectPtr <UShidenCommandObject>* CommandPtr = ShidenSubsystem->CommandCache.Find(CommandCacheKey);
-	if (CommandPtr)
-	{
-		Command = *CommandPtr;
-		bSuccess = true;
-		return;
-	}
-
-	UClass* CommandClass = UShidenCommand::StaticClass();
-	Command = NewObject<UShidenCommand>(Outer, CommandClass);
-	if (!Command)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to create UShidenCommand from ObjectPath: %s"), *ObjectPath);
-		bSuccess = false;
-		return;
-	}
-
-	Command->SetFlags(RF_Standalone);
-	Command->AddToRoot();
-	Command->SetPathName(*ObjectPath);
-	Command->SetOuter(Outer);
-
-	ShidenSubsystem->CommandCache.Add(ObjectPath, Command);
-	bSuccess = true;
-	return;
-}
-*/
-
 SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearAllTempValues()
 {
 	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -678,7 +640,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearAllTempValues()
 	ShidenSubsystem->ScenarioProgressStack.Empty();
 }
 
-SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(const UShidenSubsystem* ShidenSubsystem, const FString ProcessName, bool& bSuccess)
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(const UShidenSubsystem* ShidenSubsystem, const FString& ProcessName, bool& bSuccess)
 {
 	const FShidenScenarioProgressStack* Stack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (Stack)

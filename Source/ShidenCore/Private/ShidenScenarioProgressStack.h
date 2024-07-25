@@ -32,20 +32,13 @@ struct FShidenCancelInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
-	bool bIsRequested;
+	bool bIsRequested = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
 	FString Reason;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
-	EShidenCancelType Type;
-
-	FShidenCancelInfo()
-	{
-		bIsRequested = false;
-		Reason = "";
-		Type = EShidenCancelType::None;
-	}
+	EShidenCancelType Type = EShidenCancelType::Immediately;
 };
 
 USTRUCT(BlueprintType)
@@ -58,10 +51,4 @@ struct FShidenScenarioProgressStack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
 	FShidenCancelInfo CancelInfo;
-
-	FShidenScenarioProgressStack()
-	{
-		Stack = TArray<FShidenScenarioProgress>();
-		CancelInfo = FShidenCancelInfo();
-	}
 };

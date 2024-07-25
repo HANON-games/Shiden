@@ -59,4 +59,19 @@ public:
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
 	static void GetScenarioFromCache(const FGuid ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	static void GetScenarioByIdOrObjectPath(const FString ScenarioIdOrObjectPath, FGuid& ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	static void ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, FShidenCommand& Command);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	static void GetCommandFromCache(UObject* Outer, const FString ProcessName, const FSoftObjectPath CommandSoftObjectPath, UShidenCommandObject*& Command, bool& bSuccess);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	static void LoadScenarioAssets(UObject* Outer, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	static void GetScenarioByPackagePath(const FString& PackagePath, UShidenScenario*& OutScenario, bool& bSuccess);
 };

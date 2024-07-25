@@ -6,7 +6,7 @@
 
 #define LOCTEXT_NAMESPACE "AssetTools"
 
-SHIDENEDITOR_API void UShidenEditorFunctionLibrary::CreateModalForSave(UClass* AssetClass, const FString& DefaultPath, const FString& DefaultAssetName ,FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess)
+SHIDENEDITOR_API void UShidenEditorFunctionLibrary::CreateModalForSave(UClass* AssetClass, const FString DefaultPath, const FString DefaultAssetName ,FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess)
 {
 	FSaveAssetDialogConfig SaveAssetDialogConfig;
 	SaveAssetDialogConfig.DialogTitleOverride = LOCTEXT("SaveAssetDialogTitle", "Save Asset As");
