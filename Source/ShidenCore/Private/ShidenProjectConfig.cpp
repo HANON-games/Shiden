@@ -14,7 +14,7 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	};
 }
 
-SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid scenarioId, const FString scenarioPath) {
+SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid& scenarioId, const FString& scenarioPath) {
 	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
 	ShidenProjectConfig->ScenarioPaths.Add(scenarioId, scenarioPath);
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());

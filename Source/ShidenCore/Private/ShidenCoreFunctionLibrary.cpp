@@ -17,7 +17,7 @@
 #include "Widgets/SWindow.h"
 #include "ShidenCommand.h"
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString Str)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString& Str)
 {
 	FPlatformApplicationMisc::ClipboardCopy(*Str);
 }
@@ -27,7 +27,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetFromClipboard(FString& Dest)
 	FPlatformApplicationMisc::ClipboardPaste(Dest);
 }
 
-SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString text)
+SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString& text)
 {
 	FString resultText = text;
 
@@ -68,7 +68,7 @@ struct TextPosition
 	int32 ContentEnd;
 };
 
-SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString text, const int32& len)
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString& text, const int32& len)
 {
 	FString resultText = text;
 	int32 length = len;
@@ -166,7 +166,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* targ
 	targetObject->CallFunctionByNameWithArguments(*cmd, _Null, nullptr, true);
 }
 
-SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString DefaultFileName, const FString SaveText)
+SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString& DefaultFileName, const FString& SaveText)
 {
 	// get window handle
 	void* windowHandle = nullptr;

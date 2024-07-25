@@ -28,13 +28,13 @@ class SHIDENCORE_API UShidenCoreFunctionLibrary : public UBlueprintFunctionLibra
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static void CopyToClipboard(const FString Str);
+	static void CopyToClipboard(const FString& Str);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void GetFromClipboard(FString& Dest);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static int32 GetParsedLength(const FString text);
+	static int32 GetParsedLength(const FString& text);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void CallFunctionByName(UObject* targetObject, const FString functionName, const FString parameters);
@@ -43,13 +43,13 @@ public:
 	static void LoadTextFile(FString& FileName, FString& FileData, bool& bSuccess);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static bool SaveFileAsCsv(const FString DefaultFileName, const FString SaveText);
+	static bool SaveFileAsCsv(const FString& DefaultFileName, const FString& SaveText);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void ParseCsv(FString CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static FString GetCharactersWithParsedLength(const FString text, const int32& len);
+	static FString GetCharactersWithParsedLength(const FString& text, const int32& len);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))
 	static void MultiThreadDelay(UObject* WorldContextObject, float Duration, struct FLatentActionInfo LatentInfo);

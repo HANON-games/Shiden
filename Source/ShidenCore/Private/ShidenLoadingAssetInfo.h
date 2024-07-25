@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
 	FString ObjectPath;
 
-	bool operator==(const FShidenLoadingAssetInfo& that) const
+	bool operator==(const FShidenLoadingAssetInfo& that) const noexcept
 	{
 		return ObjectPath == that.ObjectPath;
 	}
