@@ -37,40 +37,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Subsystem")
 	void SetAutoTextMode(bool bMode);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenPredefinedSystemVariable PredefinedSystemVariable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenVariable SystemVariable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenVariable UserVariable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, FShidenVariable> LocalVariables;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, FShidenScenarioProperties> CurrentScenarioProperties;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, FShidenScenarioProgressStack> ScenarioProgressStack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TArray<FShidenBacklogItem> BacklogItems;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TSubclassOf<class UShidenWidget> CurrentWidgetClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, FShidenCommandDefinition> CommandDefinitionCache;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FGuid, TObjectPtr<UShidenScenario>> ScenarioCache;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, TObjectPtr<UObject>> AssetCache;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, TObjectPtr<UShidenCommandObject>> CommandCache;
 
 	UFUNCTION()

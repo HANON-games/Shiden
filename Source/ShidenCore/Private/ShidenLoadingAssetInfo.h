@@ -10,10 +10,10 @@ struct FShidenLoadingAssetInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	int ScenarioIndex = -1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FString ObjectPath;
 
 	bool operator==(const FShidenLoadingAssetInfo& that) const noexcept

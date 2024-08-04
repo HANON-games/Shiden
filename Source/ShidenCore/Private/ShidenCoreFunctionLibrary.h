@@ -73,46 +73,46 @@ public:
 	static void ClearBacklog();
 
 	// internal functions
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void CopyToClipboard(const FString Str);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void GetFromClipboard(FString& Dest);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static int32 GetParsedLength(const FString text);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void CallFunctionByName(UObject* targetObject, const FString functionName, const FString parameters);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void LoadTextFile(FString& FileName, FString& FileData, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static bool SaveFileAsCsv(const FString DefaultFileName, const FString SaveText);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void ParseCsv(FString CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static FString GetCharactersWithParsedLength(const FString text, const int32 len);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))
 	static void MultiThreadDelay(UObject* WorldContextObject, float Duration, struct FLatentActionInfo LatentInfo);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static UClass* ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath softObjectPath);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void GetScenarioDataAsset(const FString ObjectPath, UShidenScenario*& Scenario, bool& bSuccess);
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Utility")
 	static FString GetObjectPathFromClass(const UClass* InClass);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void InitCommandDefinitions();
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void ClearAllTempValues();
 
 	UFUNCTION()

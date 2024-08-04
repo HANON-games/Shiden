@@ -19,10 +19,10 @@ struct FShidenScenarioProgress
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FGuid ScenarioId;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	int CurrentIndex = 0;
 };
 
@@ -31,13 +31,13 @@ struct FShidenCancelInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	bool bIsRequested = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FString Reason;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	EShidenCancelType Type = EShidenCancelType::Immediately;
 };
 
@@ -46,9 +46,9 @@ struct FShidenScenarioProgressStack
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TArray<FShidenScenarioProgress> Stack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenCancelInfo CancelInfo;
 };

@@ -32,7 +32,7 @@ public:
 	void StopSound2d(const int32 TrackId, const EShidenSoundType Type);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void StopVoiceAuto();
+	void StopVoices(const bool ForceStopAll = false);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void PlayForceFeedback(const FString& ForceFeedbackEffectPath, bool& bSuccess);

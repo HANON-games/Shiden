@@ -13,9 +13,9 @@ class SHIDENCORE_API UShidenEditorInputDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal", Meta = (AllowedClasses = "/Script/Blutility.EditorUtilityWidgetBlueprint", ExactClass = false))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", Meta = (AllowedClasses = "/Script/Blutility.EditorUtilityWidgetBlueprint", ExactClass = false))
 	FSoftObjectPath TemplateWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Internal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap< FString, FString > Parameters = TMap< FString, FString >();
 };

@@ -2,7 +2,7 @@
 
 #include "ShidenCommandFunctionLibrary.h"
 
-SHIDENCORE_API void UShidenCommandFunctionLibrary::RegisterCurrentScenarioProperty(const FString CommandName, const FString Key, const FString Value)
+SHIDENCORE_API void UShidenCommandFunctionLibrary::RegisterScenarioProperty(const FString CommandName, const FString Key, const FString Value)
 {
 	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -23,7 +23,7 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::RegisterCurrentScenarioProper
 	}
 }
 
-SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveCurrentScenarioProperty(const FString CommandName, const FString Key)
+SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveScenarioProperty(const FString CommandName, const FString Key)
 {
 	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	
@@ -42,7 +42,7 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveCurrentScenarioProperty
 	}
 }
 
-SHIDENCORE_API void UShidenCommandFunctionLibrary::ClearCurrentScenarioProperties(const FString CommandName)
+SHIDENCORE_API void UShidenCommandFunctionLibrary::ClearScenarioProperties(const FString CommandName)
 {
 	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 

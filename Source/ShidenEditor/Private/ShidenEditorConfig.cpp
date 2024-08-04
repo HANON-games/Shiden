@@ -6,7 +6,7 @@ SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializ
 	: Super(ObjectInitializer)
 	, EditScenarioPath("")
 	, bPreviewSound(false)
-	, VariableDebuggerRefreshInterval(0.1f)
+	, ShidenDebuggerRefreshInterval(0.1f)
 	, bAutoSaveScenario(false)
 {
 	PreviewWidget.SetPath(TEXT("/Shiden/Samples/WBP_ShidenScenarioWidgetSample.WBP_ShidenScenarioWidgetSample"));

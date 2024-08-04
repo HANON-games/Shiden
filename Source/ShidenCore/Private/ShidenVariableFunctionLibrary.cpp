@@ -161,16 +161,6 @@ SHIDENCORE_API bool UShidenVariableFunctionLibrary::IsEmptyUserVariable()
 	return true;
 }
 
-SHIDENCORE_API bool UShidenVariableFunctionLibrary::IsNotEmptyUserVariable()
-{
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (ShidenSubsystem)
-	{
-		return !ShidenSubsystem->UserVariable.InternalKeys.IsEmpty();
-	}
-	return false;
-}
-
 SHIDENCORE_API void UShidenVariableFunctionLibrary::UserVariableKeys(TArray<FString>& Keys)
 {
 	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -442,16 +432,6 @@ SHIDENCORE_API bool UShidenVariableFunctionLibrary::IsEmptySystemVariable()
 	return true;
 }
 
-SHIDENCORE_API bool UShidenVariableFunctionLibrary::IsNotEmptySystemVariable()
-{
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (ShidenSubsystem)
-	{
-		return !ShidenSubsystem->SystemVariable.InternalKeys.IsEmpty();
-	}
-	return false;
-}
-
 SHIDENCORE_API void UShidenVariableFunctionLibrary::SystemVariableKeys(TArray<FString>& Keys)
 {
 	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -597,19 +577,6 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindSystemVariableAsString(c
 			bReturnValue = false;
 		}
 	}
-}
-
-SHIDENCORE_API void UShidenVariableFunctionLibrary::MakeLocalVariableKey(const FString ProcessName, FString& LocalKey, bool& bSuccess)
-{
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		LocalKey = FString();
-		bSuccess = false;
-		return;
-	}
-	LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
-	return;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveLocalVariable(const FString ProcessName, const FString Key)

@@ -15,11 +15,11 @@ class SHIDENCORE_API UShidenCommandFunctionLibrary : public UBlueprintFunctionLi
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	static void RegisterCurrentScenarioProperty(const FString CommandName, const FString Key, const FString Value);
+	static void RegisterScenarioProperty(const FString CommandName, const FString Key, const FString Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	static void RemoveCurrentScenarioProperty(const FString CommandName, const FString Key);
+	static void RemoveScenarioProperty(const FString CommandName, const FString Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	static void ClearCurrentScenarioProperties(const FString CommandName);
+	static void ClearScenarioProperties(const FString CommandName);
 };

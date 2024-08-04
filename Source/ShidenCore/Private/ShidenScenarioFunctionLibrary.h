@@ -39,42 +39,42 @@ public:
 	static void CanSkipCommand(bool& bReturnValue);
 
 	// internal functions
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static void PopScenario(const FString ProcessName, FShidenScenarioProgress& ScenarioProgress, bool& bIsLastElement);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static void PushScenario(const FString ProcessName, const UShidenScenario* Scenario);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static void RemoveScenario(const FString ProcessName);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static void PeekScenario(const FString ProcessName, FShidenScenarioProgress& ScenarioProgress, FShidenCancelInfo& CancelInfo, bool& bIsLastElement, bool& bIsMacro, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static void ToNext(const FString ProcessName, int& NextIndex);
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Internal|Scenario", meta = (ProcessName = "Default"))
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Scenario", meta = (ProcessName = "Default"))
 	static bool IsEndOfScenario(const FString ProcessName);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioFromCache(const FGuid ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioByIdOrObjectPath(const FString ScenarioIdOrObjectPath, FGuid& ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, FShidenCommand& Command);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Utility")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void GetCommandFromCache(UObject* Outer, const FString ProcessName, const FSoftObjectPath CommandSoftObjectPath, UShidenCommandObject*& Command, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void LoadScenarioAssets(UObject* Outer, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void InitFromSaveData(const UShidenWidget* Widget, const TScriptInterface<IShidenScenarioManagerInterface> ScenarioManager, UObject* CallerObject, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Scenario")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioByPackagePath(const FString& PackagePath, UShidenScenario*& OutScenario, bool& bSuccess);
 };

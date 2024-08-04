@@ -38,11 +38,6 @@ public:
 
 	virtual void ClearAllFade_Implementation() {}
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Fade")
-	void FadeInOut(const float DeltaTime);
-
-	virtual void FadeInOut_Implementation(const float DeltaTime) {}
-
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Text")
 	void GetTexts(TMap <FString, URichTextBlock*>& TextObjects);
 
@@ -174,16 +169,17 @@ public:
 	virtual void TogglePreviewMode_Implementation() {}
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Window")
+	void ChangeWindowMode(EShidenWindowMode WindowMode, bool bShouldRegisterCurrentProperty);
+
+	virtual void ChangeWindowMode_Implementation(EShidenWindowMode WindowMode, bool bShouldRegisterCurrentProperty) {}
+
+	// internal functions
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "SvnInternal|Window")
 	void InitializeWidget(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage);
 
 	virtual void InitializeWidget_Implementation(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage) {}
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Window")
-	void ChangeWindowMode(EShidenWindowMode WindowMode, bool ShouldRegisterCurrentProperty);
-
-	virtual void ChangeWindowMode_Implementation(EShidenWindowMode WindowMode, bool ShouldRegisterCurrentProperty) {}
-
-	// Variables
+	// variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
 	TMap <FString, FShidenCanvasPanelSlotMoveParams> CanvasPanelSlotMoveParams;
 

@@ -23,7 +23,7 @@ public:
 	FSoftObjectPath PreviewWidget;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference", Meta = (ConfigRestartRequired = true))
-	float VariableDebuggerRefreshInterval;
+	float ShidenDebuggerRefreshInterval;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference", Meta = (ConfigRestartRequired = true))
 	bool bAutoSaveScenario;
@@ -36,9 +36,9 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetVariableDebuggerRefreshInterval(const float interval) {
+	static void SetShidenDebuggerRefreshInterval(const float interval) {
 		TObjectPtr <UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault <UShidenEditorConfig>();
-		ShidenEditorConfig->VariableDebuggerRefreshInterval = interval;
+		ShidenEditorConfig->ShidenDebuggerRefreshInterval = interval;
 		ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
 	}
 
