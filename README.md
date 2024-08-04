@@ -7,7 +7,7 @@
 Shiden Visual Novel Editor はUE5で簡単にノベルゲームを製作できるプラグインです。<br>
 シンプルな作りなのでノベルゲーム以外にも柔軟に対応可能です。
 
-![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/4700a131-c693-4bf8-af7c-b507110794a9)
+![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/3029cdc2-5460-45dd-8463-c78356569b76)
 
 本プラグインはベータ版です。<br>
 Version 1.0 リリース時に破壊的変更が入る可能性がありますので予めご了承ください。

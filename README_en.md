@@ -5,7 +5,7 @@
 Shiden Visual Novel Editor is a plugin that allows easy creation of visual novel games in UE5. <br>
 It is designed to be simple and flexible, allowing for more than just visual novel games.
 
-![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/4700a131-c693-4bf8-af7c-b507110794a9)
+![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/3029cdc2-5460-45dd-8463-c78356569b76)
 
 This plugin is in beta version. <br>
 Please note that there may be breaking changes in Version 1.0 release.
