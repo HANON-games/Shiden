@@ -1,0 +1,4 @@
+ - B4980BD74C7C54D8BC9E90AC00E54859 
+	/Shiden/Editor/Utilities/EUB_ShidenOpenDebuggerMenu.Default__EUB_ShidenOpenDebuggerMenu_C.Data.Label - "Open Shiden Debugger" 
+	/Shiden/Editor/Utilities/EUB_ShidenOpenShidenDebuggerMenu.Default__EUB_ShidenOpenShidenDebuggerMenu_C.Data.Label - "Shiden Debugger" 
+

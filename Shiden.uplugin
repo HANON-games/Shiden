@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "0.9.26",
+	"VersionName": "0.9.28",
 	"FriendlyName": "Shiden Visual Novel Editor",
 	"Description": "A simple visual novel editor",
 	"Category": "Other",
@@ -52,6 +52,13 @@
 		{
 			"Name": "EnhancedInput",
 			"Enabled": true
+		}
+	],
+	"LocalizationTargets": [
+		{
+			"Name": "Shiden",
+			"LoadingPolicy": "Always",
+			"ConfigGenerationPolicy": "Never"
 		}
 	]
 }

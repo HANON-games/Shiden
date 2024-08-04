@@ -119,8 +119,8 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength
 			{
 				if (p.ContentStart == -1)
 				{
-					// TODO: Image タグは 1 文字扱いなので -1 して調整
-					// タグごとに処理を分けられるようにする
+					// TODO: Image tag is treated as 1 character, so adjust by -1.
+					// Make it possible to process each tag separately.
 					resultLen = p.CloseTagEnd - 1;
 					break;
 				}
@@ -256,7 +256,6 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadTextFile(FString& FileName, 
 		IDesktopPlatform* desktopPlatform = FDesktopPlatformModule::Get();
 		if (desktopPlatform)
 		{
-			//ダイアログを開く
 			bool bResult = desktopPlatform->OpenFileDialog(
 				windowHandle,
 				TEXT("Open File Dialog"),
@@ -301,6 +300,10 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::MultiThreadDelay(UObject* WorldC
 
 SHIDENCORE_API UClass* UShidenCoreFunctionLibrary::ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath softObjectPath)
 {
+	if (softObjectPath.IsNull())
+	{
+		return nullptr;
+	}
 	FString path = softObjectPath.GetAssetPathString() + "_C";
 	return StaticLoadClass(UObject::StaticClass(), NULL, *path, NULL, LOAD_None, NULL);
 }

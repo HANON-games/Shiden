@@ -159,12 +159,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables")
 	static FShidenCommand ReplaceAllTextWithVariable(const FString ProcessName, const FShidenCommand Command);
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables")
-	static void ConvertToVariableKind(const FString VariableKind, EShidenVariableKind& Result, bool& bSuccess);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables")
-	static void ConvertToVariableType(const FString VariableType, EShidenVariableType& Result, bool& bSuccess);
-
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables")
 	static void InitPredefindSystemVariable();
 
@@ -259,6 +253,12 @@ public:
 	static void SetMarkedReadLines(const TMap<FGuid, FShidenReadLines>& MarkedReadLines);
 
 	// internal functions
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Internal|Variables")
+	static void ConvertToVariableKind(const FString VariableKind, EShidenVariableKind& Result, bool& bSuccess);
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Internal|Variables")
+	static void ConvertToVariableType(const FString VariableType, EShidenVariableType& Result, bool& bSuccess);
+
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Internal|Variables")
 	static void AddVariable(const FString ProcessName, const EShidenVariableKind Kind, const EShidenVariableType Type, const FString Key, const bool bBooleanValue, const FString StringValue, const int IntegerValue, const float FloatValue, const FVector2D Vector2Value, const FVector Vector3Value, bool& bSuccess, FString& ErrorMessage);
 

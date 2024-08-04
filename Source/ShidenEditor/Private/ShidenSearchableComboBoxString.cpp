@@ -1,13 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ShidenSearchableComboBoxString.h"
-
 #include "Widgets/SNullWidget.h"
 #include "UObject/EditorObjectVersion.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Font.h"
 #include "Styling/DefaultStyleCache.h"
 #include "Styling/UMGCoreStyle.h"
+
+#ifdef LOCTEXT_NAMESPACE
+#undef LOCTEXT_NAMESPACE
+#endif
 
 #define LOCTEXT_NAMESPACE "UMG"
 

@@ -23,22 +23,22 @@ public:
 	void EnableShidenInput(const UInputMappingContext* MappingContext);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void GetShidenInput(TMap <FString, bool>& DigitalInputs);
+	void GetShidenInput(TMap <UInputAction*, bool>& DigitalInputs);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Hook")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void PlaySound2d(const FShidenSoundInfo SoundInfo, float& Duration, bool& bSuccess);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Hook")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void StopSound2d(const int32 TrackId, const EShidenSoundType Type);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Hook")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void StopVoiceAuto();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void PlayForceFeedback(const FString& ForceFeedbackEffectPath, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
-	void CallMacroAsParallel(const FString& NewProcessName, const UObject* HookedObject);
+	void CallMacroAsParallel(const FString& NewProcessName, const UObject* CallerObject);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void SetScenarioWidget(const UShidenWidget* Widget);

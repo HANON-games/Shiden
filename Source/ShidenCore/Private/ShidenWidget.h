@@ -88,6 +88,11 @@ public:
 
 	virtual void CollapseMovie_Implementation() {}
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Movie")
+	void OpenMoviePauseMenu();
+
+	virtual void OpenMoviePauseMenu_Implementation() {}
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Material")
 	void GetRetainerBoxes(TMap<FString, URetainerBox*>& RetainerBoxes);
 
