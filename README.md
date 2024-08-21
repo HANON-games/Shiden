@@ -35,7 +35,7 @@ Version 1.0 リリース時に破壊的変更が入る可能性があります�
 
 ## 動作環境
 
-- UE5.3 ～ UE5.4
+- UE5.4
 - Windows, Android
 
 Mac, iOS でも動く可能性が高いですが uplugin ファイルの編集が必要です。
