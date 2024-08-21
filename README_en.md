@@ -33,7 +33,7 @@ Please note that there may be breaking changes in Version 1.0 release.
 
 ## System Requirements
 
-- UE5.3 ～ UE5.4
+- UE5.4
 - Windows, Android
 
 It is highly likely to work on Mac and iOS as well, but editing of the uplugin file is required.
