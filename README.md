@@ -42,7 +42,7 @@ Mac, iOS でも動く可能性が高いですが uplugin ファイルの編集�
 
 ## 導入方法
 
-[Releases](https://github.com/HANON-games/Shiden/releases/latest) からダウンロードしたファイルを解凍し、Shiden フォルダをプロジェクトの Plugin フォルダに入れてください。
+[Releases](https://github.com/HANON-games/Shiden/releases/latest) からダウンロードしたファイルを解凍し、Shiden フォルダをプロジェクトの Plugins フォルダに入れてください。
 
 ## 使い方
 

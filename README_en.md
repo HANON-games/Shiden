@@ -40,7 +40,7 @@ It is highly likely to work on Mac and iOS as well, but editing of the uplugin f
 
 ## Installation
 
-Unzip the downloaded file from [Releases](https://github.com/HANON-games/Shiden/releases/latest) and place the Shiden folder into the Plugin folder of your project.
+Unzip the downloaded file from [Releases](https://github.com/HANON-games/Shiden/releases/latest) and place the Shiden folder into the Plugins folder of your project.
 
 ## Usage
 
