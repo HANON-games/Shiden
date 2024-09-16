@@ -2,7 +2,7 @@
 
 #include "ShidenEditorUtilityWidget.h"
 
-SHIDENEDITOR_API UShidenEditorUtilityWidget::UShidenEditorUtilityWidget(const FObjectInitializer& ObjectInitializer)
+UShidenEditorUtilityWidget::UShidenEditorUtilityWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 }

@@ -104,9 +104,9 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 
 				if (RunParseResult.Name == TEXT("img"))
 				{
-					for (int32 i = 0; i < TargetRange.Len(); ++i)
+					for (int32 Index = 0; Index < TargetRange.Len(); ++Index)
 					{
-						int32 TargetIndex = TargetRange.BeginIndex + i;
+						int32 TargetIndex = TargetRange.BeginIndex + Index;
 						if (ensure(InOutConcatenatedLines.IsValidIndex(TargetIndex)))
 						{
 							if (CharIndex < DisplayCharacterCount)
@@ -124,9 +124,9 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 				}
 				else 
 				{
-					for (int32 i = 0; i < TargetRange.Len(); ++i)
+					for (int32 Index = 0; Index < TargetRange.Len(); ++Index)
 					{
-						int32 TargetIndex = TargetRange.BeginIndex + i;
+						int32 TargetIndex = TargetRange.BeginIndex + Index;
 						if (ensure(InOutConcatenatedLines.IsValidIndex(TargetIndex)))
 						{
 							if (CharIndex++ < DisplayCharacterCount)
@@ -157,10 +157,10 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::ParseLineRanges(const FString& 
 	FRegexMatcher ElementRegexMatcher(ElementRegexPattern, Input);
 
 	// Parse line ranges, creating line parse results and run parse results.
-	for (int32 i = 0; i < LineRanges.Num(); ++i)
+	for (int32 Index = 0; Index < LineRanges.Num(); ++Index)
 	{
 		FTextLineParseResults LineParseResults;
-		LineParseResults.Range = LineRanges[i];
+		LineParseResults.Range = LineRanges[Index];
 
 		// Limit the element regex matcher to the current line.
 		ElementRegexMatcher.SetLimits(LineParseResults.Range.BeginIndex, LineParseResults.Range.EndIndex);
@@ -254,16 +254,16 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::ParseLineRanges(const FString& 
 SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FString& Input, TArray<FTextLineParseResults>& LineParseResultsArray, FString& ConcatenatedUnescapedLines) const
 {
 	// Modify original string to handle escape sequences that need to be replaced while updating run ranges.
-	for (int32 i = 0; i < LineParseResultsArray.Num(); ++i)
+	for (int32 I = 0; I < LineParseResultsArray.Num(); ++I)
 	{
-		FTextLineParseResults& LineParseResults = LineParseResultsArray[i];
+		FTextLineParseResults& LineParseResults = LineParseResultsArray[I];
 
 		// Adjust begin indices for previous substitutions.
 		LineParseResults.Range.BeginIndex = ConcatenatedUnescapedLines.Len();
 
-		for (int32 j = 0; j < LineParseResults.Runs.Num(); ++j)
+		for (int32 J = 0; J < LineParseResults.Runs.Num(); ++J)
 		{
-			FTextRunParseResults& RunParseResults = LineParseResults.Runs[j];
+			FTextRunParseResults& RunParseResults = LineParseResults.Runs[J];
 			FRegexMatcher EscapeSequenceRegexMatcher(EscapeSequenceRegexPattern, Input);
 
 			TArray<int32*> IndicesToUpdate;
@@ -312,14 +312,14 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FSt
 					ConcatenatedUnescapedLines += Input.Mid(LastCopiedIndex, EscapeSequenceRegexMatcher.GetEndLimit() - LastCopiedIndex);
 				};
 
-				int32 k;
-				for (k = 0; k + 1 < IndicesToUpdate.Num(); ++k)
+				int32 K;
+				for (K = 0; K + 1 < IndicesToUpdate.Num(); ++K)
 				{
-					EscapeSequenceRegexMatcher.SetLimits(*(IndicesToUpdate[k]), *(IndicesToUpdate[k + 1]));
-					*(IndicesToUpdate[k]) = ConcatenatedUnescapedLines.Len();
+					EscapeSequenceRegexMatcher.SetLimits(*(IndicesToUpdate[K]), *(IndicesToUpdate[K + 1]));
+					*(IndicesToUpdate[K]) = ConcatenatedUnescapedLines.Len();
 					GetUnescapedString();
 				}
-				*(IndicesToUpdate[k]) = ConcatenatedUnescapedLines.Len();
+				*(IndicesToUpdate[K]) = ConcatenatedUnescapedLines.Len();
 			}
 		}
 

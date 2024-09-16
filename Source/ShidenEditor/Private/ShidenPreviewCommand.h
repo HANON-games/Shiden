@@ -12,7 +12,7 @@ struct FShidenPreviewCommand
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor")
-	int Index = -1;
+	int32 Index = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor")
 	FShidenCommand Command;

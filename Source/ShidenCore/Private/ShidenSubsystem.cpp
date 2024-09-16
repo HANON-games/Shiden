@@ -2,16 +2,6 @@
 
 #include "ShidenSubsystem.h"
 
-SHIDENCORE_API bool UShidenSubsystem::IsPreviewMode() const
-{
-	return bPreviewMode;
-}
-
-SHIDENCORE_API void UShidenSubsystem::SetPreviewMode(bool bMode)
-{
-	bPreviewMode = bMode;
-}
-
 SHIDENCORE_API bool UShidenSubsystem::IsAutoTextMode() const
 {
 	return bAutoTextMode;

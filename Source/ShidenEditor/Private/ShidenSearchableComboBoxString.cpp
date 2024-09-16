@@ -6,7 +6,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Font.h"
 #include "Styling/DefaultStyleCache.h"
-#include "Styling/UMGCoreStyle.h"
 
 #ifdef LOCTEXT_NAMESPACE
 #undef LOCTEXT_NAMESPACE
@@ -313,7 +312,10 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::UpdateOrGenerateWidget(TS
 	else
 	{
 		DefaultComboBoxContent.Reset();
-		ComboBoxContent->SetContent(HandleGenerateWidget(Item));
+		if (ComboBoxContent.IsValid())
+		{
+			ComboBoxContent->SetContent(HandleGenerateWidget(Item));
+		}
 	}
 }
 
@@ -324,7 +326,7 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGene
 	// Call the user's delegate to see if they want to generate a custom widget bound to the data source.
 	if (!IsDesignTime() && OnGenerateWidgetEvent.IsBound())
 	{
-		UWidget* Widget = OnGenerateWidgetEvent.Execute(StringItem);
+		TObjectPtr<UWidget> Widget = OnGenerateWidgetEvent.Execute(StringItem);
 		if (Widget != NULL)
 		{
 			return Widget->TakeWidget();

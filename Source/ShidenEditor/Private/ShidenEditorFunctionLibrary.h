@@ -7,6 +7,7 @@
 #include "ShidenEditorConfig.h"
 #include "IContentBrowserDataModule.h"
 #include "ContentBrowserDataSubsystem.h"
+#include "Components/PanelWidget.h"
 #include "ShidenEditorFunctionLibrary.generated.h"
 
 UCLASS()
@@ -17,7 +18,6 @@ class SHIDENEDITOR_API UShidenEditorFunctionLibrary : public UBlueprintFunctionL
 public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility")
 	static void CreateModalForSave(UClass* AssetClass, const FString DefaultPath, const FString DefaultAssetName, FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess);
-
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|EditorUtility")
 	static bool CanCreateFolder(FName InPath);

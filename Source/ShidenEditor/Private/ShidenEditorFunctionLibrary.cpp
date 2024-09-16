@@ -26,6 +26,6 @@ SHIDENEDITOR_API void UShidenEditorFunctionLibrary::CreateModalForSave(UClass* A
 
 SHIDENEDITOR_API bool UShidenEditorFunctionLibrary::CanCreateFolder(FName InPath)
 {
-	UContentBrowserDataSubsystem* ContentBrowserData = IContentBrowserDataModule::Get().GetSubsystem();
+	TObjectPtr<UContentBrowserDataSubsystem> ContentBrowserData = IContentBrowserDataModule::Get().GetSubsystem();
 	return ContentBrowserData->CanCreateFolder(InPath, nullptr);
 }

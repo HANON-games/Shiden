@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "0.9.30",
+	"VersionName": "0.10.7",
 	"FriendlyName": "Shiden Visual Novel Editor",
 	"Description": "A simple visual novel editor",
 	"Category": "Other",
@@ -23,6 +23,15 @@
 				"Mac",
 				"Win64",
 				"Android"
+			]
+		},
+		{
+			"Name": "ShidenK2Node",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Mac",
+				"Win64"
 			]
 		},
 		{
