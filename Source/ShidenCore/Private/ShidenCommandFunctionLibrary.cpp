@@ -1,14 +1,13 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "ShidenCommandFunctionLibrary.h"
+#include "Engine/Engine.h"
 
 SHIDENCORE_API void UShidenCommandFunctionLibrary::RegisterScenarioProperty(const FString CommandName, const FString Key, const FString Value)
 {
-	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	if (!ShidenSubsystem) {
-		return;
-	}
+	check(ShidenSubsystem);
 
 	TMap<FString, FShidenScenarioProperties>& CurrentScenarioProperties = ShidenSubsystem->CurrentScenarioProperties;
 
@@ -25,11 +24,9 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::RegisterScenarioProperty(cons
 
 SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveScenarioProperty(const FString CommandName, const FString Key)
 {
-	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	
-	if (!ShidenSubsystem) {
-		return;
-	}
+	check(ShidenSubsystem);
 	
 	if (!ShidenSubsystem->CurrentScenarioProperties.Contains(CommandName)) {
 		return;
@@ -44,11 +41,9 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveScenarioProperty(const 
 
 SHIDENCORE_API void UShidenCommandFunctionLibrary::ClearScenarioProperties(const FString CommandName)
 {
-	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	if (!ShidenSubsystem) {
-		return;
-	}
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->CurrentScenarioProperties.Remove(CommandName);
 }

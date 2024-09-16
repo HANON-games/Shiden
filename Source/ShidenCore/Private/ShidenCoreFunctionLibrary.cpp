@@ -1,21 +1,6 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "ShidenCoreFunctionLibrary.h"
-#include "Internationalization/Regex.h"
-#include "Misc/FileHelper.h"
-#include <Misc/OutputDeviceNull.h>
-#include "Misc/Paths.h"
-#include "Developer/DesktopPlatform/Public/IDesktopPlatform.h"
-#include "Developer/DesktopPlatform/Public/DesktopPlatformModule.h"
-#include "Editor/MainFrame/Public/Interfaces/IMainFrameModule.h"
-#include "Serialization/Csv/CsvParser.h"
-#include "Engine/Engine.h"
-#include "HAL/PlatformFilemanager.h"
-#include "DelayAction.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "HAL/PlatformApplicationMisc.h"
-#include "Widgets/SWindow.h"
-#include "ShidenCommand.h"
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString Str)
 {
@@ -27,40 +12,40 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetFromClipboard(FString& Dest)
 	FPlatformApplicationMisc::ClipboardPaste(Dest);
 }
 
-SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString text)
+SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString Text)
 {
-	FString resultText = text;
+	FString ResultText = Text;
 
-	resultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
 
 	// pattern like <img id="value"/>
-	const FRegexPattern pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
-	FRegexMatcher matcher(pattern, text);
+	const FRegexPattern Pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
+	FRegexMatcher Matcher(Pattern, Text);
 
-	while (matcher.FindNext())
+	while (Matcher.FindNext())
 	{
-		FString s1 = matcher.GetCaptureGroup(1);
-		resultText.ReplaceInline(*s1, TEXT("o"), ESearchCase::CaseSensitive);
+		FString Str = Matcher.GetCaptureGroup(1);
+		ResultText.ReplaceInline(*Str, TEXT("o"), ESearchCase::CaseSensitive);
 	}
 
 	// pattern like <tagname> ... </>
-	const FRegexPattern pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
-	FRegexMatcher matcher2(pattern2, text);
+	const FRegexPattern Pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
+	FRegexMatcher Matcher2(Pattern2, Text);
 
-	while (matcher2.FindNext())
+	while (Matcher2.FindNext())
 	{
-		FString s1 = matcher2.GetCaptureGroup(0);
-		FString s2 = matcher2.GetCaptureGroup(1);
-		resultText.ReplaceInline(*s1 , *s2, ESearchCase::CaseSensitive);
+		FString Str1 = Matcher2.GetCaptureGroup(0);
+		FString Str2 = Matcher2.GetCaptureGroup(1);
+		ResultText.ReplaceInline(*Str1 , *Str2, ESearchCase::CaseSensitive);
 	}
 
-	return resultText.Len();
+	return ResultText.Len();
 }
 
-struct TextPosition
+struct FTextPosition
 {
 	int32 OpenTagStart;
 	int32 CloseTagEnd;
@@ -68,108 +53,108 @@ struct TextPosition
 	int32 ContentEnd;
 };
 
-SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString text, const int32 len)
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(const FString Text, const int32 Len)
 {
-	FString resultText = text;
-	int32 length = len;
+	FString ResultText = Text;
+	int32 Length = Len;
 
-	resultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
-	resultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
 
-	TArray<TextPosition> pos;
+	TArray<FTextPosition> Pos;
 
 	// pattern like <img id="value"/>
-	const FRegexPattern pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
-	FRegexMatcher matcher(pattern, text);
+	const FRegexPattern Pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
+	FRegexMatcher Matcher(Pattern, Text);
 
-	while (matcher.FindNext())
+	while (Matcher.FindNext())
 	{
-		int32 s1 = matcher.GetMatchBeginning();
-		int32 s2 = matcher.GetMatchEnding();
-		pos.Add({ s1, s2, -1, -1});
+		int32 Str1 = Matcher.GetMatchBeginning();
+		int32 Str2 = Matcher.GetMatchEnding();
+		Pos.Add({ Str1, Str2, -1, -1});
 	}
 
 	// pattern like <tagname> ... </>
-	const FRegexPattern pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
-	FRegexMatcher matcher2(pattern2, text);
+	const FRegexPattern Pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
+	FRegexMatcher Matcher2(Pattern2, Text);
 
-	while (matcher2.FindNext())
+	while (Matcher2.FindNext())
 	{
-		int32 s1 = matcher2.GetMatchBeginning();
-		int32 s2 = matcher2.GetMatchEnding();
+		int32 Str1 = Matcher2.GetMatchBeginning();
+		int32 Str2 = Matcher2.GetMatchEnding();
 
-		pos.Add({ s1, s2, matcher2.GetCaptureGroupBeginning(1), matcher2.GetCaptureGroupEnding(1)});
+		Pos.Add({ Str1, Str2, Matcher2.GetCaptureGroupBeginning(1), Matcher2.GetCaptureGroupEnding(1)});
 	}
 
-	if (pos.Num() == 0)
+	if (Pos.Num() == 0)
 	{
-		return text.Left(len);
+		return Text.Left(Len);
 	}
 
 	bool bIsInTag = false;
-	int32 resultLen = 0;
+	int32 ResultLen = 0;
 
-	for (int i = 0; i < len; i++)
+	for (int32 Index = 0; Index < Len; Index++)
 	{
-		for (auto& p : pos)
+		for (auto& P : Pos)
 		{
-			if (p.OpenTagStart == resultLen)
+			if (P.OpenTagStart == ResultLen)
 			{
-				if (p.ContentStart == -1)
+				if (P.ContentStart == -1)
 				{
 					// TODO: Image tag is treated as 1 character, so adjust by -1.
 					// Make it possible to process each tag separately.
-					resultLen = p.CloseTagEnd - 1;
+					ResultLen = P.CloseTagEnd - 1;
 					break;
 				}
 				else 
 				{
 					bIsInTag = true;
-					resultLen = p.ContentStart;
+					ResultLen = P.ContentStart;
 					break;
 				}
 			}
-			else if (p.ContentEnd == resultLen)
+			else if (P.ContentEnd == ResultLen)
 			{
 				bIsInTag = false;
-				resultLen = p.CloseTagEnd;
+				ResultLen = P.CloseTagEnd;
 				break;
 			}
 		}
-		resultLen++;
+		ResultLen++;
 	}
 
-	resultText = resultText.Left(resultLen);
+	ResultText = ResultText.Left(ResultLen);
 
 	if (bIsInTag)
 	{
-		resultText += TEXT("</>");
+		ResultText += TEXT("</>");
 	}
 
-	return resultText;
+	return ResultText;
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* targetObject, const FString functionName, const FString parameters)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* TargetObject, const FString FunctionName, const FString Parameters)
 {
-	if (targetObject == nullptr)
+	if (TargetObject == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("targetObject is nullptr"));
 		return;
 	}
 
-	FString trimmedParam = parameters.TrimStartAndEnd();
-	FString cmd = trimmedParam.IsEmpty() ? functionName : FString::Printf(TEXT("%s %s"), *functionName, *parameters);
+	FString TrimmedParam = Parameters.TrimStartAndEnd();
+	FString Cmd = TrimmedParam.IsEmpty() ? FunctionName : FString::Printf(TEXT("%s %s"), *FunctionName, *Parameters);
 	FOutputDeviceNull _Null;
 
-	targetObject->CallFunctionByNameWithArguments(*cmd, _Null, nullptr, true);
+	TargetObject->CallFunctionByNameWithArguments(*Cmd, _Null, nullptr, true);
 }
 
 SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString DefaultFileName, const FString SaveText)
 {
 	// get window handle
-	void* windowHandle = nullptr;
+	void* WindowHandle = nullptr;
 	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
 	{
 		const FName MainFrameModuleName = "MainFrame";
@@ -177,22 +162,22 @@ SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString Defa
 		TSharedPtr<SWindow> MainWindow = MainFrameModule.GetParentWindow();
 		if (MainWindow.IsValid() && MainWindow->GetNativeWindow().IsValid())
 		{
-			windowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
+			WindowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
 		}
 	}
 
-	if (windowHandle)
+	if (WindowHandle)
 	{
-		IDesktopPlatform* desktopPlatform = FDesktopPlatformModule::Get();
-		if (desktopPlatform)
+		IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+		if (DesktopPlatform)
 		{
 			TArray<FString> FilePath = { };
 
-			bool bResult = desktopPlatform->SaveFileDialog(
-				windowHandle,
+			bool bResult = DesktopPlatform->SaveFileDialog(
+				WindowHandle,
 				TEXT("Save File Dialog"),
 				TEXT(""),
-				DefaultFileName,
+				DefaultFileName + TEXT(".csv"),
 				TEXT("Scenario CSV (*.csv)|*.csv"),
 				EFileDialogFlags::Type::None,
 				FilePath
@@ -210,13 +195,13 @@ SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString Defa
 SHIDENCORE_API void UShidenCoreFunctionLibrary::ParseCsv(FString CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow)
 {
 	FCsvParser Parser = FCsvParser(CsvText);
-	auto& rows = Parser.GetRows();
+	auto& Rows = Parser.GetRows();
 	bool bCommentEnd = false;
 
-	for (auto& row : rows)
+	for (auto& Row : Rows)
 	{
 		// Skip comment lines like "# comment"
-		if (!bCommentEnd && FString(row[0]).TrimStart().TrimEnd().StartsWith(TEXT("#")))
+		if (!bCommentEnd && FString(Row[0]).TrimStart().TrimEnd().StartsWith(TEXT("#")))
 		{
 			continue;
 		}
@@ -224,20 +209,18 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::ParseCsv(FString CsvText, TArray
 		bCommentEnd = true;
 
 		FShidenCsvParsedRow ParsedRow;
-		for (const TCHAR* cell : row)
+		for (const TCHAR* Cell : Row)
 		{
-			ParsedRow.Row.Add(FString(cell));
+			ParsedRow.Row.Add(FString(Cell));
 		}
 		CsvParsedRow.Add(ParsedRow);
 	}
-
-	return;
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadTextFile(FString& FileName, FString& FileData, bool& bSuccess)
 {
 	// Get window handle
-	void* windowHandle = nullptr;
+	void* WindowHandle = nullptr;
 	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
 	{
 		const FName MainFrameModuleName = "MainFrame";
@@ -245,19 +228,19 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadTextFile(FString& FileName, 
 		TSharedPtr<SWindow> MainWindow = MainFrameModule.GetParentWindow();
 		if (MainWindow.IsValid() && MainWindow->GetNativeWindow().IsValid())
 		{
-			windowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
+			WindowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
 		}
 	}
 
 	TArray<FString> FilePath = { };
 
-	if (windowHandle)
+	if (WindowHandle)
 	{
-		IDesktopPlatform* desktopPlatform = FDesktopPlatformModule::Get();
-		if (desktopPlatform)
+		IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+		if (DesktopPlatform)
 		{
-			bool bResult = desktopPlatform->OpenFileDialog(
-				windowHandle,
+			bool bResult = DesktopPlatform->OpenFileDialog(
+				WindowHandle,
 				TEXT("Open File Dialog"),
 				TEXT(""),
 				TEXT(""),
@@ -291,35 +274,35 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadTextFile(FString& FileName, 
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::MultiThreadDelay(UObject* WorldContextObject, float Duration, struct FLatentActionInfo LatentInfo)
 {
-	if (TObjectPtr <UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	if (TObjectPtr<UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FDelayAction(Duration, LatentInfo));
 	}
 }
 
-SHIDENCORE_API UClass* UShidenCoreFunctionLibrary::ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath softObjectPath)
+SHIDENCORE_API UClass* UShidenCoreFunctionLibrary::ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath SoftObjectPath)
 {
-	if (softObjectPath.IsNull())
+	if (SoftObjectPath.IsNull())
 	{
 		return nullptr;
 	}
-	FString path = softObjectPath.GetAssetPathString() + "_C";
-	return StaticLoadClass(UObject::StaticClass(), NULL, *path, NULL, LOAD_None, NULL);
+	FString Path = SoftObjectPath.GetAssetPathString() + "_C";
+	return StaticLoadClass(UObject::StaticClass(), NULL, *Path, NULL, LOAD_None, NULL);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::TakeScreenshotWithFileName(const FString InFileName, bool bInShowUI)
 {
 	FString ScreenShotDir = FPaths::ScreenShotDir();
 	FString FilePath = ScreenShotDir + FString(TEXT("/")) + InFileName + FString(TEXT(".png"));
-	FScreenshotRequest request = FScreenshotRequest();
-	request.RequestScreenshot(InFileName, bInShowUI, false);
+	FScreenshotRequest Request = FScreenshotRequest();
+	Request.RequestScreenshot(InFileName, bInShowUI, false);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::TakeScreenshot(const FString InFilePath, bool bInShowUI, bool bAddFilenameSuffix)
 {
-	FScreenshotRequest request = FScreenshotRequest();
-	request.RequestScreenshot(InFilePath, bInShowUI, bAddFilenameSuffix);
+	FScreenshotRequest Request = FScreenshotRequest();
+	Request.RequestScreenshot(InFilePath, bInShowUI, bAddFilenameSuffix);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FString ObjectPath, UShidenScenario*& Scenario, bool& bSuccess)
@@ -339,14 +322,14 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FStri
 	}
 
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-	TObjectPtr <UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
+	TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
 	if (!LoadedAsset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to load asset from ObjectPath: %s"), *ObjectPath);
 		return;
 	}
 
-	TObjectPtr <UShidenScenario> ShidenScenario = Cast<UShidenScenario>(LoadedAsset);
+	TObjectPtr<UShidenScenario> ShidenScenario = Cast<UShidenScenario>(LoadedAsset);
 	if (!ShidenScenario)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to cast loaded asset to UShidenScenario"));
@@ -363,13 +346,11 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetAsset(const FString ObjectPat
 	Asset = nullptr;
 	bSuccess = false;
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	TObjectPtr <UObject>* AssetPtr = ShidenSubsystem->AssetCache.Find(ObjectPath);
+	check(ShidenSubsystem);
+
+	TObjectPtr<UObject>* AssetPtr = ShidenSubsystem->AssetCache.Find(ObjectPath);
 	if (AssetPtr)
 	{
 		Asset = *AssetPtr;
@@ -380,11 +361,9 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetAsset(const FString ObjectPat
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::UnloadAssets(const bool ForceGC)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->AssetCache.Empty();
 
@@ -396,7 +375,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::UnloadAssets(const bool ForceGC)
 
 SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeErrorMessage(const FGuid ScenarioId, const int32 Index, const FString CommandName, const FString ErrorMessage)
 {
-	const UShidenProjectConfig* ProjectConfig = GetDefault<UShidenProjectConfig>();
+	TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	if (!ProjectConfig)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ShidenProjectConfig is null"));
@@ -424,13 +403,11 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotN
 		return;
 	}
 
-	TObjectPtr <UShidenUserSaveGame> SaveGameInstance = Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenUserSaveGame::StaticClass()));
+	TObjectPtr<UShidenUserSaveGame> SaveGameInstance = Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenUserSaveGame::StaticClass()));
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	SaveGameInstance->WidgetClass = ShidenSubsystem->CurrentWidgetClass;
 	SaveGameInstance->ScenarioProperties = ShidenSubsystem->CurrentScenarioProperties;
@@ -448,13 +425,11 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotN
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveSystemData()
 {
-	TObjectPtr <UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSystemSaveGame::StaticClass()));
+	TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSystemSaveGame::StaticClass()));
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	SaveGameInstance->SystemVariables = ShidenSubsystem->SystemVariable;
 	SaveGameInstance->PredefinedSystemVariables = ShidenSubsystem->PredefinedSystemVariable;
@@ -470,14 +445,11 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadUserData(const FString SlotN
 		return;
 	}
 
-	TObjectPtr <UShidenUserSaveGame> SaveGameInstance = Cast<UShidenUserSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+	TObjectPtr<UShidenUserSaveGame> SaveGameInstance = Cast<UShidenUserSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->CurrentScenarioProperties = SaveGameInstance->ScenarioProperties;
 	ShidenSubsystem->UserVariable = SaveGameInstance->UserVariables;
@@ -494,16 +466,32 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadSystemData()
 		return;
 	}
 
-	TObjectPtr <UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSystemData"), 0));
+	TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSystemData"), 0));
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable = SaveGameInstance->SystemVariables;
 	ShidenSubsystem->PredefinedSystemVariable = SaveGameInstance->PredefinedSystemVariables;
+	// Update platform name
+	ShidenSubsystem->PredefinedSystemVariable.PlatformName = UGameplayStatics::GetPlatformName();
+}
+
+SHIDENCORE_API void UShidenCoreFunctionLibrary::DeleteUserData(const FString SlotName)
+{
+	if (UShidenCoreFunctionLibrary::DoesUserDataExist(SlotName))
+	{
+		UGameplayStatics::DeleteGameInSlot(SlotName, 0);
+	}
+}
+
+SHIDENCORE_API void UShidenCoreFunctionLibrary::DeleteSystemData()
+{
+	if (UShidenCoreFunctionLibrary::DoesSystemDataExist())
+	{
+		UGameplayStatics::DeleteGameInSlot(TEXT("ShidenSystemData"), 0);
+	}
 }
 
 SHIDENCORE_API bool UShidenCoreFunctionLibrary::DoesUserDataExist(const FString SlotName)
@@ -518,22 +506,18 @@ SHIDENCORE_API bool UShidenCoreFunctionLibrary::DoesSystemDataExist()
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::AddBacklog(const FString SlotName, const FString Text)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->BacklogItems.Add(FShidenBacklogItem{ SlotName, Text });
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::UpdateBacklog(int32 Index, const FString SlotName, const FString Text)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->BacklogItems.IsValidIndex(Index))
 	{
@@ -548,22 +532,18 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::UpdateBacklog(int32 Index, const
 
 SHIDENCORE_API TArray<FShidenBacklogItem> UShidenCoreFunctionLibrary::GetBacklog()
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return TArray<FShidenBacklogItem>();
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	check(ShidenSubsystem);
 
 	return ShidenSubsystem->BacklogItems;
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearBacklog()
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->BacklogItems.Empty();
 }
@@ -576,23 +556,21 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetObjectPathFromClass(const 
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->CommandDefinitionCache.Num() > 0)
 	{
 		return;
 	}
 
-	const UShidenProjectConfig* ProjectConfig = GetDefault<UShidenProjectConfig>();
+	TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 
 	for (const FSoftObjectPath& CommandDefinitionSoftObjectPath : ProjectConfig->CommandDefinitions)
 	{
 		FString ObjectPath = CommandDefinitionSoftObjectPath.GetAssetPathString();
-		TObjectPtr <UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(StaticLoadObject(UShidenCommandDefinitions::StaticClass(), nullptr, *ObjectPath));
+		TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(StaticLoadObject(UShidenCommandDefinitions::StaticClass(), nullptr, *ObjectPath));
 		if (!CommandDefinitions)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Failed to load CommandDefinitions from ObjectPath: %s"), *ObjectPath);
@@ -612,13 +590,25 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 	}
 }
 
+SHIDENCORE_API TMap<FString, FShidenCommandDefinition> UShidenCoreFunctionLibrary::GetCommandDefinitionsCache()
+{
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	check(ShidenSubsystem);
+
+	if (ShidenSubsystem->CommandDefinitionCache.Num() == 0)
+	{
+		InitCommandDefinitions();
+	}
+
+	return ShidenSubsystem->CommandDefinitionCache;
+}
+
 SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearAllTempValues()
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->CurrentScenarioProperties.Empty();
 	ShidenSubsystem->AssetCache.Empty();
@@ -648,15 +638,15 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(
 	const FShidenScenarioProgressStack* Stack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (Stack)
 	{
-		const int32 lastIndex = Stack->Stack.Num() - 1;
+		const int32 LastIndex = Stack->Stack.Num() - 1;
 		bSuccess = true;
-		return FString::Printf(TEXT("%s$%d"), *ProcessName, lastIndex);
+		return FString::Printf(TEXT("%s$%d"), *ProcessName, LastIndex);
 	}
 #if WITH_EDITOR
 	TObjectPtr<UGameViewportClient> GameViewport = GEngine->GameViewport;
 	if (GameViewport)
 	{
-		UWorld* World = GameViewport->GetWorld();
+		TObjectPtr<UWorld> World = GameViewport->GetWorld();
 		if (World)
 		{
 			if (World->WorldType == EWorldType::PIE)
@@ -670,4 +660,9 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(
 #endif
 	bSuccess = false;
 	return FString();
+}
+
+SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCommandArgument(const FShidenCommand Command, const FString ArgName)
+{
+	return Command.Args.Contains(ArgName) ? Command.Args[ArgName] : TEXT("");
 }

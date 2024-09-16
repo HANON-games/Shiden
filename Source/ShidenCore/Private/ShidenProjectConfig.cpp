@@ -14,38 +14,38 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	};
 }
 
-SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid& scenarioId, const FString scenarioPath) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioPaths.Add(scenarioId, scenarioPath);
+SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid& ScenarioId, const FString ScenarioPath) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->ScenarioPaths.Add(ScenarioId, ScenarioPath);
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FString>& paths) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioPaths = paths;
+SHIDENCORE_API void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FString>& Paths) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->ScenarioPaths = Paths;
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetScenarioDirectoryPath(const FString path) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioDirectoryPath = path;
+SHIDENCORE_API void UShidenProjectConfig::SetScenarioDirectoryPath(const FString Path) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->ScenarioDirectoryPath = Path;
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetMacroDirectoryPath(const FString path) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->MacroDirectoryPath = path;
+SHIDENCORE_API void UShidenProjectConfig::SetMacroDirectoryPath(const FString Path) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->MacroDirectoryPath = Path;
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }
 
-SHIDENCORE_API void UShidenProjectConfig::AddPreset(const FShidenPreset& preset) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->Presets.Add(preset);
+SHIDENCORE_API void UShidenProjectConfig::AddPreset(const FShidenPreset& Preset) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->Presets.Add(Preset);
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }
 
-SHIDENCORE_API void UShidenProjectConfig::RemovePreset(const FShidenPreset& preset) {
-	TObjectPtr <UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
-	ShidenProjectConfig->Presets.Remove(preset);
+SHIDENCORE_API void UShidenProjectConfig::RemovePreset(const FShidenPreset& Preset) {
+	TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault <UShidenProjectConfig>();
+	ShidenProjectConfig->Presets.Remove(Preset);
 	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
 }

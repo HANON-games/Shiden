@@ -29,30 +29,14 @@ public:
 	bool bAutoSaveScenario;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetPreviewSound(const bool bBool) {
-		TObjectPtr <UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault <UShidenEditorConfig>();
-		ShidenEditorConfig->bPreviewSound = bBool;
-		ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	}
+	static void SetPreviewSound(const bool bBool);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetShidenDebuggerRefreshInterval(const float interval) {
-		TObjectPtr <UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault <UShidenEditorConfig>();
-		ShidenEditorConfig->ShidenDebuggerRefreshInterval = interval;
-		ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	}
+	static void SetShidenDebuggerRefreshInterval(const float Interval);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetEditScenarioPath(const FString& path) {
-		TObjectPtr <UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault <UShidenEditorConfig>();
-		ShidenEditorConfig->EditScenarioPath = path;
-		ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	}
+	static void SetEditScenarioPath(const FString& Path);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetAutoSaveScenario(const bool bBool) {
-		TObjectPtr <UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault <UShidenEditorConfig>();
-		ShidenEditorConfig->bAutoSaveScenario = bBool;
-		ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	}
+	static void SetAutoSaveScenario(const bool bBool);
 };

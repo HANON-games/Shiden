@@ -28,6 +28,8 @@ public class ShidenCore : ModuleRules
 			{
 				"Core",
                 "ApplicationCore",
+                "EnhancedInput",
+                "MediaAssets",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,7 +44,7 @@ public class ShidenCore : ModuleRules
 				"SlateCore",
                 "UMG",
 				"Core",
-                "EnhancedInput",
+                "MediaAssets",
 #if WITH_EDITOR
 				"Settings",
 #endif

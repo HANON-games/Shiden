@@ -1,15 +1,12 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "ShidenScenarioFunctionLibrary.h"
-#include <ShidenLoadingAssetInfo.h>
 
 SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsScenarioPlaying()
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return false;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	return ShidenSubsystem->ScenarioProgressStack.Num() > 0;
 }
@@ -19,11 +16,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::PopScenario(const FString Pr
 	ScenarioProgress = FShidenScenarioProgress();
 	bIsLastElement = false;
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
@@ -49,11 +44,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::PushScenario(const FString P
 		return;
 	}
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->ScenarioCache.Add(Scenario->ScenarioId, const_cast<UShidenScenario*>(Scenario));
 
@@ -67,11 +60,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::PushScenario(const FString P
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::RemoveScenario(const FString ProcessName)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
@@ -80,17 +71,15 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::RemoveScenario(const FString
 	}
 }
 
-SHIDENCORE_API void UShidenScenarioFunctionLibrary::SetCurrentScenarioIndex(const FString ProcessName, const int32 currentIndex)
+SHIDENCORE_API void UShidenScenarioFunctionLibrary::SetCurrentScenarioIndex(const FString ProcessName, const int32 CurrentIndex)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
-		ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last().CurrentIndex = currentIndex;
+		ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last().CurrentIndex = CurrentIndex;
 	}
 }
 
@@ -102,11 +91,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::PeekScenario(const FString P
 	bIsMacro = false;
 	bSuccess = false;
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
 		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
@@ -124,11 +111,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::PeekScenario(const FString P
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::ToNext(const FString ProcessName, int& NextIndex)
 {
 	NextIndex = 0;
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
@@ -138,11 +123,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ToNext(const FString Process
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::RequestCancelScenario(const FString ProcessName, const FString Reason, const EShidenCancelType CancelType)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
@@ -157,11 +140,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::RequestCancelScenario(const 
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::RequestCancelScenarioAll(const FString Reason, const EShidenCancelType CancelType)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	for (auto& Progress : ShidenSubsystem->ScenarioProgressStack)
 	{
@@ -180,11 +161,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::IsCancelRequested(const FStr
 	CancelReason = TEXT("");
 	CancelType = EShidenCancelType::None;
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName))
 	{
@@ -201,11 +180,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::IsCancelRequested(const FStr
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::MarkReadLine(const FString ProcessName, const FGuid CommandGuid)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	FShidenCancelInfo CancelInfo = FShidenCancelInfo();
 	FShidenScenarioProgress ScenarioProgress = FShidenScenarioProgress();
@@ -225,11 +202,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::MarkReadLine(const FString P
 
 SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsAlreadyRead(const FString ProcessName, const FGuid CommandGuid)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return false;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	FShidenCancelInfo CancelInfo = FShidenCancelInfo();
 	FShidenScenarioProgress ScenarioProgress = FShidenScenarioProgress();
@@ -252,13 +227,11 @@ SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsAlreadyRead(const FString 
 	return ReadLines->Ids.Contains(CommandGuid);
 }
 
-SHIDENCORE_API void UShidenScenarioFunctionLibrary::CanSkipCommand(bool& bReturnValue)
+SHIDENCORE_API bool UShidenScenarioFunctionLibrary::CanSkipCommand()
 {
-	bReturnValue = false;
-
 	if (!IsScenarioPlaying())
 	{
-		return;
+		return false;
 	}
 
 	FShidenCancelInfo CancelInfo = FShidenCancelInfo();
@@ -270,14 +243,14 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::CanSkipCommand(bool& bReturn
 	PeekScenario(TEXT("Default"), ScenarioProgress, CancelInfo, bIsLastElement, bIsMacro, bSuccess);
 	if (!bSuccess)
 	{
-		return;
+		return false;
 	}
 
 	UShidenScenario* Scenario = nullptr;
 	UShidenScenarioFunctionLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
 	if (!bSuccess)
 	{
-		return;
+		return false;
 	}
 
 	bool bSkipUnread;
@@ -285,10 +258,10 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::CanSkipCommand(bool& bReturn
 
 	if (Scenario->Commands.Num() <= ScenarioProgress.CurrentIndex)
 	{
-		return;
+		return false;
 	}
 
-	bReturnValue = IsAlreadyRead(TEXT("Default"), Scenario->Commands[ScenarioProgress.CurrentIndex].CommandId) || bSkipUnread;
+	return IsAlreadyRead(TEXT("Default"), Scenario->Commands[ScenarioProgress.CurrentIndex].CommandId) || bSkipUnread;
 }
 
 SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsEndOfScenario(const FString ProcessName)
@@ -320,19 +293,18 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioFromCache(const F
 	Scenario = nullptr;
 	bSuccess = false;
 
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem) {
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	TObjectPtr <UShidenScenario>* TempScenario = ShidenSubsystem->ScenarioCache.Find(ScenarioId);
+	check(ShidenSubsystem);
+
+	TObjectPtr<UShidenScenario>* TempScenario = ShidenSubsystem->ScenarioCache.Find(ScenarioId);
 	if (TempScenario) {
 		Scenario = *TempScenario;
 		bSuccess = true;
 		return;
 	}
 
-	const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+	TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 
 	const FString* ScenarioPath = ShidenProjectConfig->ScenarioPaths.Find(ScenarioId);
 	if (!ScenarioPath) {
@@ -352,7 +324,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioFromCache(const F
 	}
 
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-	TObjectPtr <UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
+	TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
 	if (!LoadedAsset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), (TCHAR*)ScenarioPath);
@@ -383,8 +355,8 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(
 		return;
 	}
 
-	TObjectPtr <const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	TArray <FGuid> ScenarioIds = TArray <FGuid>();
+	TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	TArray<FGuid> ScenarioIds = TArray<FGuid>();
 	for (auto& ScenarioPath : ProjectConfig->ScenarioPaths)
 	{
 		if (ScenarioPath.Value == ScenarioIdOrObjectPath)
@@ -406,7 +378,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 		return;
 	}
 
-	const UShidenProjectConfig* ProjectConfig = GetDefault<UShidenProjectConfig>();
+	TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 
 	const FString OriginalCommandName = OriginalCommand.CommandName;
 	const FString OriginalPresetName = OriginalCommand.PresetName;
@@ -414,6 +386,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 	const FShidenPreset* Preset = ProjectConfig->Presets.FindByPredicate([OriginalCommandName, OriginalPresetName](const FShidenPreset& Preset) {
 		return Preset.CommandName == OriginalCommandName && Preset.PresetName == OriginalPresetName;
 	});
+
 	if (!Preset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Error: Preset \"%s\" is not found."), *OriginalCommand.PresetName);
@@ -421,23 +394,24 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 		return;
 	}
 
-	FShidenCommand TempCommand = FShidenCommand
+	FShidenCommand TempCommand = FShidenCommand();
+
+	TempCommand.CommandName = OriginalCommand.CommandName;
+	TempCommand.PresetName = OriginalCommand.PresetName;
+	TempCommand.CommandId = OriginalCommand.CommandId;
+	TempCommand.bEnabled = OriginalCommand.bEnabled;
+	TempCommand.Args = OriginalCommand.Args;
+
+	TArray<FString> PresetArgKeys;
+
+	Preset->Args.GetKeys(PresetArgKeys);
+	for (const FString& Key : PresetArgKeys)
 	{
-		OriginalCommand.CommandName,
-		OriginalCommand.PresetName,
-		OriginalCommand.Arg1.IsEmpty() ? Preset->Arg1 : OriginalCommand.Arg1,
-		OriginalCommand.Arg2.IsEmpty() ? Preset->Arg2 : OriginalCommand.Arg2,
-		OriginalCommand.Arg3.IsEmpty() ? Preset->Arg3 : OriginalCommand.Arg3,
-		OriginalCommand.Arg4.IsEmpty() ? Preset->Arg4 : OriginalCommand.Arg4,
-		OriginalCommand.Arg5.IsEmpty() ? Preset->Arg5 : OriginalCommand.Arg5,
-		OriginalCommand.Arg6.IsEmpty() ? Preset->Arg6 : OriginalCommand.Arg6,
-		OriginalCommand.Arg7.IsEmpty() ? Preset->Arg7 : OriginalCommand.Arg7,
-		OriginalCommand.Arg8.IsEmpty() ? Preset->Arg8 : OriginalCommand.Arg8,
-		OriginalCommand.Arg9.IsEmpty() ? Preset->Arg9 : OriginalCommand.Arg9,
-		OriginalCommand.Arg10.IsEmpty() ? Preset->Arg10 : OriginalCommand.Arg10,
-		OriginalCommand.CommandId,
-		OriginalCommand.bEnabled
-	};
+		if (TempCommand.Args.FindRef(Key).IsEmpty())
+		{
+			TempCommand.Args.Add(Key, Preset->Args.FindRef(Key));
+		}
+	}
 
 	Command = UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, TempCommand);
 	return;
@@ -468,15 +442,12 @@ SHIDENCORE_API void GetCommand(UObject* Outer, const FSoftObjectPath CommandSoft
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetCommandFromCache(UObject* Outer, const FString ProcessName, const FSoftObjectPath CommandSoftObjectPath, UShidenCommandObject*& Command, bool& bSuccess)
 {
-	TObjectPtr <UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		bSuccess = false;
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	FString CommandCacheKey = ProcessName + TEXT("::") + CommandSoftObjectPath.GetAssetPathString();
-	TObjectPtr <UShidenCommandObject>* CommandPtr = ShidenSubsystem->CommandCache.Find(CommandCacheKey);
+	TObjectPtr<UShidenCommandObject>* CommandPtr = ShidenSubsystem->CommandCache.Find(CommandCacheKey);
 	if (CommandPtr)
 	{
 		Command = *CommandPtr;
@@ -498,7 +469,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetCommandFromCache(UObject*
 	return;
 }
 
-SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenScenario* Scenario, TArray <FShidenLoadingAssetInfo>& AssetInfo, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex)
+SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenScenario* Scenario, TArray<FShidenLoadingAssetInfo>& AssetInfo, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex)
 {
 	AssetInfo.Empty();
 	bSuccess = false;
@@ -513,6 +484,9 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 	}
 
 	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
 	if (ShidenSubsystem->CommandDefinitionCache.Num() == 0)
 	{
 		UShidenCoreFunctionLibrary::InitCommandDefinitions();
@@ -530,7 +504,7 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 
 		if (Command.CommandName == TEXT("RunMacro"))
 		{
-			if (Command.Arg1.IsEmpty())
+			if (Command.Args["MacroName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacro: MacroName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
@@ -540,15 +514,15 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 			FGuid TempScenarioId = FGuid();
 			bool bTempSuccess = false;
 			UShidenScenario* MacroScenario = nullptr;
-			UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(Command.Arg1, TempScenarioId, MacroScenario, bTempSuccess);
+			UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(Command.Args["MacroName"], TempScenarioId, MacroScenario, bTempSuccess);
 			if (!bTempSuccess)
 			{
-				ErrorMessage = FString::Printf(TEXT("RunMacro: Scenario \"%s\" is not found. Index: %d"), *Command.Arg1, Index);
+				ErrorMessage = FString::Printf(TEXT("RunMacro: Scenario \"%s\" is not found. Index: %d"), *Command.Args["MacroName"], Index);
 				ErrorScenarioId = Scenario->ScenarioId;
 				ErrorIndex = Index;
 				return;
 			}
-			TArray <FShidenLoadingAssetInfo> TempAssetInfo = TArray<FShidenLoadingAssetInfo>();
+			TArray<FShidenLoadingAssetInfo> TempAssetInfo = TArray<FShidenLoadingAssetInfo>();
 			LoadScenarioAssetPaths(CallerObject, MacroScenario, TempAssetInfo, bTempSuccess, ErrorMessage, ErrorScenarioId, ErrorIndex);
 			if (!bTempSuccess)
 			{
@@ -561,14 +535,14 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 		}
 		else if (Command.CommandName == TEXT("RunMacroAsParallel"))
 		{
-			if (Command.Arg1.IsEmpty())
+			if (Command.Args["NewProcessName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacroAsParallel: NewProcessName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
 				ErrorIndex = Index;
 				return;
 			}
-			if (Command.Arg2.IsEmpty())
+			if (Command.Args["MacroName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacroAsParallel: MacroName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
@@ -578,15 +552,15 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 			FGuid TempScenarioId = FGuid();
 			bool bTempSuccess = false;
 			UShidenScenario* MacroScenario = nullptr;
-			UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(Command.Arg2, TempScenarioId, MacroScenario, bTempSuccess);
+			UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(Command.Args["MacroName"], TempScenarioId, MacroScenario, bTempSuccess);
 			if (!bTempSuccess)
 			{
-				ErrorMessage = FString::Printf(TEXT("RunMacro: Scenario \"%s\" is not found. Index: %d"), *Command.Arg2, Index);
+				ErrorMessage = FString::Printf(TEXT("RunMacro: Scenario \"%s\" is not found. Index: %d"), *Command.Args["MacroName"], Index);
 				ErrorScenarioId = Scenario->ScenarioId;
 				ErrorIndex = Index;
 				return;
 			}
-			TArray <FShidenLoadingAssetInfo> TempAssetInfo = TArray<FShidenLoadingAssetInfo>();
+			TArray<FShidenLoadingAssetInfo> TempAssetInfo;
 			LoadScenarioAssetPaths(CallerObject, MacroScenario, TempAssetInfo, bTempSuccess, ErrorMessage, ErrorScenarioId, ErrorIndex);
 			if (!bTempSuccess)
 			{
@@ -653,7 +627,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::LoadScenarioAssets(UObject* 
 	GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bTempSuccess);
 	if (!bTempSuccess)
 	{
-		const UShidenProjectConfig* ProjectConfig = GetDefault<UShidenProjectConfig>();
+		TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 		const FString* ScenarioPath = ProjectConfig->ScenarioPaths.Find(ScenarioProgress.ScenarioId);
 		ErrorMessage = FString::Printf(TEXT("Load scenario failed: %s"), ScenarioPath);
 		ErrorScenarioId = ScenarioProgress.ScenarioId;
@@ -661,18 +635,13 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::LoadScenarioAssets(UObject* 
 		return;
 	}
 
-	UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		ErrorMessage = TEXT("ShidenSubsystem is null");
-		ErrorScenarioId = ScenarioProgress.ScenarioId;
-		ErrorIndex = -1;
-		return;
-	}
+	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
 
 	ShidenSubsystem->AssetCache.Empty();
 
-	TArray <FShidenLoadingAssetInfo> AssetInfo = TArray<FShidenLoadingAssetInfo>();
+	TArray<FShidenLoadingAssetInfo> AssetInfo = TArray<FShidenLoadingAssetInfo>();
 	FString TempErrorMessage = TEXT("");
 	FGuid TempErrorScenarioId = FGuid();
 	int32 TempErrorIndex = -1;
@@ -689,7 +658,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::LoadScenarioAssets(UObject* 
 	for (int32 Index = 0; Index < AssetInfo.Num(); Index++)
 	{
 		const FShidenLoadingAssetInfo& LoadingAssetInfo = AssetInfo[Index];
-		UObject* LoadedAsset = Streamable.LoadSynchronous(LoadingAssetInfo.ObjectPath, false);
+		TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(LoadingAssetInfo.ObjectPath, false);
 		if (!LoadedAsset)
 		{
 			ErrorMessage = FString::Printf(TEXT("Load asset failed: %s"), *LoadingAssetInfo.ObjectPath);
@@ -711,10 +680,8 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::InitFromSaveData(const UShid
 	ErrorMessage = TEXT("");
 
 	TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	if (!ShidenSubsystem)
-	{
-		return;
-	}
+
+	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->CommandDefinitionCache.Num() == 0)
 	{
@@ -779,7 +746,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByPackagePath(con
 	}
 
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-	TObjectPtr <UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
+	TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
 	if (!LoadedAsset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to load asset from ObjectPath: %s"), *ObjectPath.ToString());
@@ -787,7 +754,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByPackagePath(con
 		return;
 	}
 
-	TObjectPtr <UShidenScenario> ShidenScenario = Cast<UShidenScenario>(LoadedAsset);
+	TObjectPtr<UShidenScenario> ShidenScenario = Cast<UShidenScenario>(LoadedAsset);
 	if (!ShidenScenario)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to cast loaded asset to UShidenScenario"));
@@ -797,5 +764,4 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByPackagePath(con
 
 	OutScenario = ShidenScenario;
 	bSuccess = true;
-	return;
 }
