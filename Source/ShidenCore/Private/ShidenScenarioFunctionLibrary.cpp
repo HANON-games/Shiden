@@ -504,7 +504,7 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 
 		if (Command.CommandName == TEXT("RunMacro"))
 		{
-			if (Command.Args["MacroName"].IsEmpty())
+			if (!Command.Args.Contains("MacroName") || Command.Args["MacroName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacro: MacroName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
@@ -535,14 +535,14 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 		}
 		else if (Command.CommandName == TEXT("RunMacroAsParallel"))
 		{
-			if (Command.Args["NewProcessName"].IsEmpty())
+			if (!Command.Args.Contains("NewProcessName") || Command.Args["NewProcessName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacroAsParallel: NewProcessName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
 				ErrorIndex = Index;
 				return;
 			}
-			if (Command.Args["MacroName"].IsEmpty())
+			if (!Command.Args.Contains("MacroName") || Command.Args["MacroName"].IsEmpty())
 			{
 				ErrorMessage = FString::Printf(TEXT("RunMacroAsParallel: MacroName is empty. Index: %d"), Index);
 				ErrorScenarioId = Scenario->ScenarioId;
