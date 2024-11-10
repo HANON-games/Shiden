@@ -6,7 +6,7 @@ public class ShidenCore : ModuleRules
 {
 	public ShidenCore(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -36,7 +36,7 @@ public class ShidenCore : ModuleRules
 			
 		
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"CoreUObject",
 				"Engine",
@@ -45,6 +45,9 @@ public class ShidenCore : ModuleRules
                 "UMG",
 				"Core",
                 "MediaAssets",
+                "RenderCore",
+                "RHI",
+                "Projects"
 #if WITH_EDITOR
 				"Settings",
 #endif

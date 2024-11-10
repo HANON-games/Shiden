@@ -12,7 +12,7 @@
 #include "Textures/SlateIcon.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/UObjectGlobals.h"
-#include "ShidenCommandDefinitions.h"
+#include "Command/ShidenCommandDefinitions.h"
 #include "K2Node_GetCommandArguments.generated.h"
 
 class FBlueprintActionDatabaseRegistrar;
@@ -48,15 +48,15 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual bool IsNodePure() const override { return true; }
 	//~ End UK2Node Interface
 
-	UEdGraphPin* GetCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch = NULL) const;
+	UEdGraphPin* GetCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	UEdGraphPin* GetCommandDefinitionsPin(const TArray<UEdGraphPin*>* InPinsToSearch = NULL) const;
+	UEdGraphPin* GetCommandDefinitionsPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	UEdGraphPin* GetCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch = NULL) const;
+	UEdGraphPin* GetCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString CommandName);
+	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& CommandName);
 
-	void OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions);
+	void OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const;
 private:
 	/**
 	 * Takes the specified "MutatablePin" and sets its 'PinToolTip' field (according
@@ -73,11 +73,12 @@ private:
 
 	void ChangeAdvancedView();
 
-	bool IsOutputPinChanged(TArray<UEdGraphPin*> OldPins, UShidenCommandDefinitions* Definitions, FString CommandName);
+	static bool IsOutputPinChanged(TArray<UEdGraphPin*> OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName);
 
 	FText NodeTooltip;
 
 	FDelegateHandle OnCommandDefinitionsChangedHandle;
 
+	UPROPERTY()
 	UShidenCommandDefinitions* CommandDefinitionsCache;
 };

@@ -19,7 +19,7 @@
 
 class FShidenCustomGraphPanelPinFactory : public FGraphPanelPinFactory
 {
-	TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
+	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
 	{
 		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_String)
 		{

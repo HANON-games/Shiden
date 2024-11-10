@@ -3,14 +3,14 @@
 #include "SGraphPinShidenCommandName.h"
 
 #include "Containers/Array.h"
-#include "ShidenCommandDefinitions.h"
+#include "Command/ShidenCommandDefinitions.h"
 #include "HAL/PlatformCrt.h"
 #include "Templates/SharedPointer.h"
 #include "UObject/NameTypes.h"
 
 class UEdGraphPin;
 
-void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, class UShidenCommandDefinitions* InCommandDefinitions)
+void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const class UShidenCommandDefinitions* InCommandDefinitions)
 {
 	RefreshNameList(InCommandDefinitions);
 	SGraphPinNameList::Construct(SGraphPinNameList::FArguments(), InGraphPinObj, NameList);
@@ -24,7 +24,7 @@ SGraphPinShidenCommandName::~SGraphPinShidenCommandName()
 {
 }
 
-void SGraphPinShidenCommandName::RefreshNameList(TSoftObjectPtr<UShidenCommandDefinitions> CommandDefinitions)
+void SGraphPinShidenCommandName::RefreshNameList(const TSoftObjectPtr<UShidenCommandDefinitions>& CommandDefinitions)
 {
 	NameList.Empty();
 	if (CommandDefinitions.IsValid())

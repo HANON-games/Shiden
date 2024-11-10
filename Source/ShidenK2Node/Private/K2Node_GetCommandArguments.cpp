@@ -8,7 +8,6 @@
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "EdGraphSchema_K2.h"
-#include "EditorCategoryUtils.h"
 #include "Engine/MemberReference.h"
 #include "Internationalization/Internationalization.h"
 #include "K2Node_CallFunction.h"
@@ -26,9 +25,9 @@
 #include "UObject/UnrealNames.h"
 #include "UObject/WeakObjectPtr.h"
 #include "UObject/WeakObjectPtrTemplates.h"
-#include "ShidenCommandDefinitions.h"
-#include "ShidenCommand.h"
-#include "ShidenCoreFunctionLibrary.h"
+#include "Command/ShidenCommandDefinitions.h"
+#include "Command/ShidenCommand.h"
+#include "Utility/ShidenCoreFunctionLibrary.h"
 
 class UBlueprint;
 
@@ -39,7 +38,7 @@ static const FName CommandDefinitionsPinName(TEXT("CommandDefinitions"));
 static const FName CommandNamePinName(TEXT("CommandName"));
 
 UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer), CommandDefinitionsCache(nullptr)
 {
 	NodeTooltip = LOCTEXT("NodeTooltip", "Attempts to retrieve a Command Arguments from a CommandDefinitions");
 	OnCommandDefinitionsChangedHandle = FDelegateHandle();
@@ -47,8 +46,6 @@ UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitialize
 
 void UK2Node_GetCommandArguments::AllocateDefaultPins()
 {
-	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
-
 	// Add CommandDefinitions pin
 	UEdGraphPin* CommandDefinitionsPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UShidenCommandDefinitions::StaticClass(), CommandDefinitionsPinName);
 	CommandDefinitionsPin->bNotConnectable = true;
@@ -82,10 +79,10 @@ void UK2Node_GetCommandArguments::SetPinToolTip(UEdGraphPin& MutatablePin, const
 	MutatablePin.PinToolTip += FString(TEXT("\n")) + PinDescription.ToString();
 }
 
-bool UK2Node_GetCommandArguments::IsOutputPinChanged(TArray<UEdGraphPin*> OldPins, UShidenCommandDefinitions* Definitions, FString CommandName)
+bool UK2Node_GetCommandArguments::IsOutputPinChanged(TArray<UEdGraphPin*> OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName)
 {
 	TArray<FString> OldPinNames = TArray<FString>();
-	for (UEdGraphPin* OldPin : OldPins)
+	for (const UEdGraphPin* OldPin : OldPins)
 	{
 		if (OldPin->Direction == EEdGraphPinDirection::EGPD_Output)
 		{
@@ -128,10 +125,10 @@ void UK2Node_GetCommandArguments::RefreshOutputPin()
 {
 	TArray<UEdGraphPin*> OldPins = Pins;
 	TArray<UEdGraphPin*> OldOutputPins = TArray<UEdGraphPin*>();
-	UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
-	UEdGraphPin* CommandNamePin = GetCommandNamePin();
-	FString CommandName = CommandNamePin->DefaultValue;
-	TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject);
+	const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
+	const UEdGraphPin* CommandNamePin = GetCommandNamePin();
+	const FString CommandName = CommandNamePin->DefaultValue;
+	const TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject);
 
 	if (Definitions)
 	{
@@ -173,7 +170,7 @@ void UK2Node_GetCommandArguments::RefreshOutputPin()
 void UK2Node_GetCommandArguments::ChangeAdvancedView()
 {
 	int32 NewOutputPinCount = 0;
-	for (UEdGraphPin* Pin : Pins)
+	for (const UEdGraphPin* Pin : Pins)
 	{
 		if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
 		{
@@ -202,12 +199,12 @@ void UK2Node_GetCommandArguments::ChangeAdvancedView()
 	}
 }
 
-void UK2Node_GetCommandArguments::OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions)
+void UK2Node_GetCommandArguments::OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const
 {
-	UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
+	const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
 	if (CommandDefinitions && CommandDefinitionsPin && CommandDefinitions == CommandDefinitionsPin->DefaultObject)
 	{
-		UEdGraphPin* CommandNamePin = GetCommandNamePin();
+		const UEdGraphPin* CommandNamePin = GetCommandNamePin();
 		const bool TryRefresh = CommandNamePin && !CommandNamePin->LinkedTo.Num();
 		const FString CurrentName = CommandNamePin ? *CommandNamePin->GetDefaultAsString() : TEXT("");
 		TArray<FString> Keys = TArray<FString>();
@@ -219,7 +216,7 @@ void UK2Node_GetCommandArguments::OnCommandDefinitionsRowListChanged(const UShid
 	}
 }
 
-void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString CommandName)
+void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& CommandName)
 {
 	check(InDefinitions != NULL);
 
@@ -239,7 +236,7 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 {
 	Super::ReallocatePinsDuringReconstruction(OldPins);
 
-	if (UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin(&OldPins))
+	if (const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin(&OldPins))
 	{
 		if (UShidenCommandDefinitions* Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 		{
@@ -251,7 +248,7 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 
 			OnCommandDefinitionsChangedHandle = Definitions->OnCommandDefinitionsChanged.AddUObject(this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
 			CommandDefinitionsCache = Definitions;
-			if (UEdGraphPin* CommandNamePin = GetCommandNamePin(&OldPins))
+			if (const UEdGraphPin* CommandNamePin = GetCommandNamePin(&OldPins))
 			{
 				CreateOutputPins(Definitions, CommandNamePin->DefaultValue);
 				ChangeAdvancedView();
@@ -271,7 +268,7 @@ void UK2Node_GetCommandArguments::GetMenuActions(FBlueprintActionDatabaseRegistr
 	// actions might have to be updated (or deleted) if their object-key is  
 	// mutated (or removed)... here we use the node's class (so if the node 
 	// type disappears, then the action should go with it)
-	UClass* ActionKey = GetClass();
+	const UClass* ActionKey = GetClass();
 	// to keep from needlessly instantiating a UBlueprintNodeSpawner, first   
 	// check to make sure that the registrar is looking for actions of this type
 	// (could be regenerating actions for a specific asset, and therefore the 
@@ -287,7 +284,7 @@ void UK2Node_GetCommandArguments::GetMenuActions(FBlueprintActionDatabaseRegistr
 
 FText UK2Node_GetCommandArguments::GetMenuCategory() const
 {
-	return FText::FromString(TEXT("ShidenVisualNovel|Command"));
+	return FText::FromString(TEXT("Shiden Visual Novel|Command"));
 }
 
 void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* ChangedPin)
@@ -407,8 +404,8 @@ void UK2Node_GetCommandArguments::ExpandNode(class FKismetCompilerContext& Compi
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
-	UEdGraphPin* OriginalGetCommandDefinitionsInPin = GetCommandDefinitionsPin();
-	TObjectPtr<UShidenCommandDefinitions> Definitions = (OriginalGetCommandDefinitionsInPin != NULL) ? Cast<UShidenCommandDefinitions>(OriginalGetCommandDefinitionsInPin->DefaultObject) : NULL;
+	const UEdGraphPin* OriginalGetCommandDefinitionsInPin = GetCommandDefinitionsPin();
+	const TObjectPtr<UShidenCommandDefinitions> Definitions = (OriginalGetCommandDefinitionsInPin != nullptr) ? Cast<UShidenCommandDefinitions>(OriginalGetCommandDefinitionsInPin->DefaultObject) : nullptr;
 	if ((nullptr == OriginalGetCommandDefinitionsInPin) || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
 		CompilerContext.MessageLog.Error(*LOCTEXT("GetCommandArgumentsNoCommandDefinitions_Error", "GetCommandArguments must have a CommandDefinitions specified.").ToString(), this);
@@ -508,7 +505,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 
 void UK2Node_GetCommandArguments::PreloadRequiredAssets()
 {
-	if (UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin())
+	if (const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin())
 	{
 		if (UShidenCommandDefinitions* CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 		{

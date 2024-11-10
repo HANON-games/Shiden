@@ -1,7 +1,6 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "ShidenEditorStartup.h"
-#include "EditorUtilityObject.h"
 #include "EditorUtilitySubsystem.h"
 #include "Editor/EditorEngine.h"
 
@@ -13,7 +12,7 @@ SHIDENEDITORSTARTUP_API void FShidenEditorStartupModule::StartupModule()
 
 	if (GEditor)
 	{
-		TObjectPtr <UObject> Object = LoadObject<UObject>(nullptr, TEXT("/Shiden/Editor/Utilities/EUB_ShidenStartup.EUB_ShidenStartup"));
+		const TObjectPtr <UObject> Object = LoadObject<UObject>(nullptr, TEXT("/Shiden/Editor/Utilities/EUB_ShidenStartup.EUB_ShidenStartup"));
 		GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->TryRun(Object);
 	}
 }
