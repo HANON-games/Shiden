@@ -18,7 +18,7 @@ Please note that there may be breaking changes in Version 1.0 release.
     - You can save combinations of frequently used commands and parameters as presets.
     - Import/export functionality in CSV format.
 - Various features required for visual novel games
-    - 35 types of basic commands
+    - 36 types of basic commands
     - Basic save functionality
     - Simple variable functionality
         - Includes both variables managed per save slot and system variables.
@@ -33,7 +33,7 @@ Please note that there may be breaking changes in Version 1.0 release.
 
 ## System Requirements
 
-- UE5.3 ～ 5.4
+- UE5.3 ～ 5.5
 - Windows, Android
 
 It is highly likely to work on Mac and iOS as well, but editing of the uplugin file is required.
