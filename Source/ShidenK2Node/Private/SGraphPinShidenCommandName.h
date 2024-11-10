@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ShidenCommandDefinitions.h"
+#include "Command/ShidenCommandDefinitions.h"
 #include "SGraphPinNameList.h"
 #include "UObject/SoftObjectPtr.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
@@ -17,11 +17,11 @@ public:
 	SLATE_BEGIN_ARGS(SGraphPinShidenCommandName) {}
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, class UShidenCommandDefinitions* InCommandDefinitions);
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const class UShidenCommandDefinitions* InCommandDefinitions);
 
 	SGraphPinShidenCommandName();
-	virtual ~SGraphPinShidenCommandName();
+	virtual ~SGraphPinShidenCommandName() override;
 
 protected:
-	void RefreshNameList(TSoftObjectPtr<UShidenCommandDefinitions> CommandDefinitions);
+	void RefreshNameList(const TSoftObjectPtr<UShidenCommandDefinitions>& CommandDefinitions);
 };

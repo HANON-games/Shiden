@@ -1,7 +1,7 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "ShidenCore.h"
-#include "ShidenProjectConfig.h"
+#include "Config/ShidenProjectConfig.h"
 #if WITH_EDITOR
 #include "ISettingsModule.h"
 #endif

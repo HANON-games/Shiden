@@ -7,7 +7,7 @@
 
 void FShidenK2NodeModule::StartupModule()
 {
-	TSharedPtr<FShidenCustomGraphPanelPinFactory> CGraphPinFactory = MakeShareable(new FShidenCustomGraphPanelPinFactory());
+	const TSharedPtr<FShidenCustomGraphPanelPinFactory> CGraphPinFactory = MakeShareable(new FShidenCustomGraphPanelPinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(CGraphPinFactory);
 }
 
