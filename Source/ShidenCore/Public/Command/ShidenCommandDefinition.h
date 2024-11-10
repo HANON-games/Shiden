@@ -16,7 +16,7 @@ struct FShidenCommandArgument
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FText DisplayName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowedClasses = "/Script/ShidenCore.ShidenEditorInputDataAsset"), Category = "Shiden Visual Novel|Command")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowedClasses = "/Script/ShidenEditor.ShidenEditorInputDataAsset"), Category = "Shiden Visual Novel|Command")
 	FSoftObjectPath InputType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
