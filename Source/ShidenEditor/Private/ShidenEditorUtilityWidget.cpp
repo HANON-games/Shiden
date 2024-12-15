@@ -11,5 +11,5 @@ void UShidenEditorUtilityWidget::PostEditUndo()
 {
 	Super::PostEditUndo();
 
-	UShidenEditorUtilityWidget::ReceivePostUndo();
+	ReceivePostUndo();
 }

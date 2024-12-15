@@ -12,7 +12,7 @@ class SHIDENEDITOR_API UShidenEditorUtilityWidget : public UEditorUtilityWidget
 	GENERATED_BODY()
 
 public:
-	UShidenEditorUtilityWidget(const FObjectInitializer& ObjectInitializer);
+	explicit UShidenEditorUtilityWidget(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnPostUndo"))
 	void ReceivePostUndo();

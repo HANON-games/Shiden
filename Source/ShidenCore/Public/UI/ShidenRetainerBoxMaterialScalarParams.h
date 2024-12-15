@@ -12,7 +12,7 @@ struct FShidenRetainerBoxMaterialScalarParams
 	GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TObjectPtr <URetainerBox> Target;
+    TObjectPtr<URetainerBox> Target;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     FName ParameterName;
@@ -21,7 +21,7 @@ struct FShidenRetainerBoxMaterialScalarParams
     float MoveDuration = 0.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TEnumAsByte <EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
+    TEnumAsByte<EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float EasingAlpha = 0.0f;

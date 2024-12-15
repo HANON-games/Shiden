@@ -50,5 +50,5 @@ struct FShidenCommandDefinition
 	FSoftObjectPath CommandBlueprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	TArray <FShidenCommandArgument> Args;
+	TArray<FShidenCommandArgument> Args;
 };

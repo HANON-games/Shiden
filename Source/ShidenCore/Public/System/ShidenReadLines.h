@@ -10,5 +10,5 @@ struct FShidenReadLines
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TSet<FGuid> Ids;
+	TSet<FGuid> CommandGuids;
 };

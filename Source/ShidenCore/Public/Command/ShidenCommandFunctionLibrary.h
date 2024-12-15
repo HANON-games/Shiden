@@ -24,5 +24,5 @@ public:
 	static void IsTrue(const FString CommandArgument, bool& bResult);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Shiden Visual Novel|Command")
-	static void IsEmptyAsset(const FString CommandArgument, bool& bResult);
+	static void IsEmptyAssetPath(const FString CommandArgument, bool& bResult);
 };

@@ -34,7 +34,7 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 	virtual FText GetTooltipText() const override;
-	virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
+	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	//~ End UEdGraphNode Interface.
 
@@ -43,7 +43,7 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual void ReallocatePinsDuringReconstruction(TArray<UEdGraphPin*>& OldPins) override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual FText GetMenuCategory() const override;
-	virtual void EarlyValidation(class FCompilerResultsLog& MessageLog) const override;
+	virtual void EarlyValidation(FCompilerResultsLog& MessageLog) const override;
 	virtual void PreloadRequiredAssets() override;
 	virtual bool IsNodePure() const override { return true; }
 	//~ End UK2Node Interface

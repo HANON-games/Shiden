@@ -10,7 +10,7 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	, TargetFrameRate(60)
 	, bAutoSaveOnMobileAppWillDeactivate(true)
 {
-	WidgetClass = TSoftClassPtr<UShidenWidget>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")));
+	WidgetClass = Cast<UClass>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")).TryLoad());
 	Presets = TArray<FShidenPreset>();
 	AdditionalTextTypes = TMap<FString, FShidenTextType>();
 	CommandDefinitions = {

@@ -28,6 +28,9 @@ public class ShidenEditor : ModuleRules
 			{
 				"Core",
                 "ApplicationCore",
+                "ShidenCore",
+                "JsonUtilities",
+                "Json"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

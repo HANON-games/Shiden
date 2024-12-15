@@ -53,7 +53,7 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::IsTrue(const FString CommandA
 	bResult = CommandArgument.Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
 }
 
-SHIDENCORE_API void UShidenCommandFunctionLibrary::IsEmptyAsset(const FString CommandArgument, bool& bResult)
+SHIDENCORE_API void UShidenCommandFunctionLibrary::IsEmptyAssetPath(const FString CommandArgument, bool& bResult)
 {
 	bResult = CommandArgument.IsEmpty() || CommandArgument.Compare(TEXT("None"), ESearchCase::CaseSensitive) == 0;
 }

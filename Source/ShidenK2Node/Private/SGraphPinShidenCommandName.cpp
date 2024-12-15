@@ -10,7 +10,7 @@
 
 class UEdGraphPin;
 
-void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const class UShidenCommandDefinitions* InCommandDefinitions)
+void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions)
 {
 	RefreshNameList(InCommandDefinitions);
 	SGraphPinNameList::Construct(SGraphPinNameList::FArguments(), InGraphPinObj, NameList);
@@ -24,10 +24,10 @@ SGraphPinShidenCommandName::~SGraphPinShidenCommandName()
 {
 }
 
-void SGraphPinShidenCommandName::RefreshNameList(const TSoftObjectPtr<UShidenCommandDefinitions>& CommandDefinitions)
+void SGraphPinShidenCommandName::RefreshNameList(const TObjectPtr<UShidenCommandDefinitions>& CommandDefinitions)
 {
 	NameList.Empty();
-	if (CommandDefinitions.IsValid())
+	if (IsValid(CommandDefinitions))
 	{
 		TArray<FString> Keys = TArray<FString>();
 		CommandDefinitions->CommandDefinitions.GetKeys(Keys);

@@ -39,8 +39,8 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 {
 	bResult = false;
 	FString ParsedText = UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(RawText, Length);
-	const auto ParsedLength = UShidenCoreFunctionLibrary::GetParsedLength(RawText);
-	const auto TextTypes = UShidenCoreFunctionLibrary::GetShidenTextTypes();
+	const int32 ParsedLength = UShidenCoreFunctionLibrary::GetParsedLength(RawText);
+	const TMap<FString, FShidenTextType> TextTypes = UShidenCoreFunctionLibrary::GetShidenTextTypes();
 
 	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph && ParsedLength <= Length)
 	{
@@ -51,14 +51,28 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
-		OriginalTexts.Add(TextType, RawText);
+		if (RawText.IsEmpty())
+		{
+			OriginalTexts.Remove(TextType);
+		}
+		else
+		{
+			OriginalTexts.Add(TextType, RawText);
+		}
 		CurrentLength = Length;
 		RichTextBlock->SetText(FText::FromString(ParsedText));
 		bResult = true;
 	}
 	else if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
 	{
-		OriginalTexts.Add(TextType, RawText);
+		if (RawText.IsEmpty())
+		{
+			OriginalTexts.Remove(TextType);
+		}
+		else
+		{
+			OriginalTexts.Add(TextType, RawText);
+		}
 		CurrentLength = Length;
 		TextBlock->SetText(FText::FromString(ParsedText));
 		bResult = true;
@@ -67,41 +81,17 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 
 SHIDENCORE_API void UShidenTextWidget::ClearText_Implementation(const FString& TextType, bool& bResult)
 {
-	bResult = OriginalTexts.Remove(TextType) > 0;
-	if (bResult)
-	{
-		if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
-		{
-			RichTextBlock->SetText(FText::FromString(TEXT("")));
-			return;
-		}
-
-		if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
-		{
-			TextBlock->SetText(FText::FromString(TEXT("")));
-			return;
-		}
-		
-		bResult = false;
-	}
+	SetText(TextType, TEXT(""), 0, bResult);
 }
 
-SHIDENCORE_API void UShidenTextWidget::ClearAllText_Implementation()
+SHIDENCORE_API void UShidenTextWidget::ClearAllTexts_Implementation()
 {
-	OriginalTexts.Empty();
-	for (const auto& RichTextBlock : RichTextBlocks)
+	TArray<FString> TextTypes;
+	UShidenCoreFunctionLibrary::GetShidenTextTypes().GetKeys(TextTypes);
+	bool bResult = false;
+	for (const FString& TextType : TextTypes)
 	{
-		if (const TObjectPtr<URichTextBlock> RichTextBlockValue = RichTextBlock.Value)
-		{
-			RichTextBlockValue->SetText(FText::FromString(TEXT("")));
-		}
-	}
-	for (const auto& TextBlock : TextBlocks)
-	{
-		if (const TObjectPtr<UTextBlock> TextBlockValue = TextBlock.Value)
-		{
-			TextBlockValue->SetText(FText::FromString(TEXT("")));
-		}
+		ClearText(TextType, bResult);
 	}
 }
 

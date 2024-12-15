@@ -74,9 +74,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 		
 		TArray<FColor> Bitmap;
 
-		const bool bScreenshotSuccessful = RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags());
-
-		if (bScreenshotSuccessful)
+		if (RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags()))
 		{
 			Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
 			for (auto& Color : Bitmap)
@@ -92,9 +90,9 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 			FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
 			Mip.BulkData.Unlock();
 			ResultTexture->UpdateResource();
+
+			bResult = true;
 		}
-		
-		bResult = true;
 	}
 }
 
@@ -410,9 +408,9 @@ SHIDENCORE_API void UShidenWidget::FindTextWidget(const FString& TextWidgetName,
 
 SHIDENCORE_API void UShidenWidget::ClearAllTexts()
 {
-	for(const auto& TextWidget : TextWidgets)
+	for(const TTuple<FString, TObjectPtr<UShidenTextWidget>>& TextWidget : TextWidgets)
 	{
-		TextWidget.Value->ClearAllText();
+		TextWidget.Value->ClearAllTexts();
 	}
 }
 
@@ -430,7 +428,7 @@ SHIDENCORE_API void UShidenWidget::FindImage(const FString& ImageName, UImage*& 
 
 SHIDENCORE_API void UShidenWidget::ClearAllImages()
 {
-	for (const auto& Image : Images)
+	for (const TTuple<FString, TObjectPtr<UImage>>& Image : Images)
 	{
 		if (const TObjectPtr<UImage> ImageValue = Image.Value)
 		{
@@ -568,7 +566,7 @@ SHIDENCORE_API void UShidenWidget::PlayMedia(const FString& MediaSourcePath, con
 	MediaLayer->SetVisibility(ESlateVisibility::Visible);
 	UObject* Asset = nullptr;
 	bool bTempSuccess = false;
-	UShidenCoreFunctionLibrary::GetAsset(MediaSourcePath, Asset, bTempSuccess);
+	UShidenCoreFunctionLibrary::GetOrLoadAsset(MediaSourcePath, Asset, bTempSuccess);
 	if (!bTempSuccess)
 	{
 		bSuccess = false;
@@ -741,6 +739,13 @@ SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPan
 		return;
 	}
 
+	if (!PanelSlot)
+	{
+		ErrorMessage = TEXT("Canvas panel slot is null.");
+		Success = false;
+		return;
+	}
+
 	if (Duration == 0)
 	{
 		if (bChangePosition)
@@ -823,7 +828,7 @@ SHIDENCORE_API void UShidenWidget::ResetAllAnimations()
 		if (TObjectPtr<UWidgetAnimation> Animation = WidgetAnimation.Value)
 		{
 			const float EndTime = Animation->GetEndTime();
-			UShidenWidget::PlayAnimation(Animation, EndTime, 1, EUMGSequencePlayMode::Reverse, 1.0, false);
+			PlayAnimation(Animation, EndTime, 1, EUMGSequencePlayMode::Reverse, 1.0, false);
 		}
 	}
 }
@@ -889,22 +894,25 @@ SHIDENCORE_API void UShidenWidget::IsSkipPressed(bool& bPressed) const
 	bPressed = bPressSkipButton;
 }
 
-SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FName Name, ESlateVisibility& Result) const
+SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const
 {
-	const TObjectPtr<UWidget> Widget = WidgetTree->FindWidget(Name);
-	Result = Widget->GetVisibility();
+	if (const TObjectPtr<UWidget> Widget = AllWidgets[Name])
+	{
+		Result = Widget->GetVisibility();
+	}
 }
 
-SHIDENCORE_API void UShidenWidget::SetVisibilityByName(const FName Name, const ESlateVisibility InVisibility, const bool bShouldRegisterScenarioProperty, bool& bSuccess)
+SHIDENCORE_API void UShidenWidget::SetVisibilityByName(const FString& Name, const ESlateVisibility InVisibility, const bool bShouldRegisterScenarioProperty, bool& bSuccess)
 {
-	bSuccess = false;
-	if (!WidgetTree)
+	if (!AllWidgets.Contains(Name))
 	{
+		bSuccess = false;
 		return;
 	}
-	const TObjectPtr<UWidget> Widget = WidgetTree->FindWidget(Name);
+	const TObjectPtr<UWidget> Widget = AllWidgets[Name];
 	if (!Widget)
 	{
+		bSuccess = false;
 		return;
 	}
 	bSuccess = true;
@@ -932,7 +940,7 @@ SHIDENCORE_API void UShidenWidget::SetVisibilityByName(const FName Name, const E
 			break;
 		}
 
-		UShidenCommandFunctionLibrary::RegisterScenarioProperty(TEXT("ChangeVisibility"), Name.ToString(), VisibilityStr);
+		UShidenCommandFunctionLibrary::RegisterScenarioProperty(TEXT("ChangeVisibility"), Name, VisibilityStr);
 	}
 }
 
@@ -954,23 +962,49 @@ SHIDENCORE_API bool UShidenWidget::IsMenuOpen() const
 	return false;
 }
 
-SHIDENCORE_API void UShidenWidget::UpdateWidgetCache() {
+SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, const UWidgetTree* Tree)
+{
+	if (!Tree)
+	{
+		return;
+	}
+	
 	TArray<UWidget*> Children;
-	WidgetTree->GetAllWidgets(Children);
+	Tree->GetAllWidgets(Children);
+	
 	for (TObjectPtr <UWidget> Child : Children) {
+		const FString ChildName = Child->GetName();
+		if (ChildName.Contains(TEXT("."))) {
+			UE_LOG(LogTemp, Warning, TEXT("Widget name \"%s\" contains a period. Please avoid using periods in widget names."), *ChildName);
+		}
+
+		const FString WidgetPath = Prefix.IsEmpty() ? ChildName : Prefix + TEXT(".") + ChildName;
+		
+		if (const TObjectPtr<UUserWidget> UserWidget = Cast<UUserWidget>(Child))
+		{
+			UpdateWidgetCacheCore(WidgetPath, UserWidget->WidgetTree);
+		}
+
+		AllWidgets.Add(WidgetPath, Child);
+
 		if (TObjectPtr <UShidenTextWidget> TextWidget = Cast<UShidenTextWidget>(Child)) {
-			TextWidgets.Add(Child->GetName(), TextWidget);
+			TextWidgets.Add(WidgetPath, TextWidget);
 		}
 		else if (TObjectPtr <UImage> Image = Cast<UImage>(Child)) {
-			Images.Add(Child->GetName(), Image);
+			Images.Add(WidgetPath, Image);
 		}
 		else if (TObjectPtr <URetainerBox> RetainerBox = Cast<URetainerBox>(Child)) {
-			RetainerBoxes.Add(Child->GetName(), RetainerBox);
+			RetainerBoxes.Add(WidgetPath, RetainerBox);
 		}
 		else if (TObjectPtr <UCanvasPanel> CanvasPanel = Cast<UCanvasPanel>(Child)) {
-			CanvasPanels.Add(Child->GetName(), CanvasPanel);
+			CanvasPanels.Add(WidgetPath, CanvasPanel);
 		}
 	}
+}
+
+SHIDENCORE_API void UShidenWidget::UpdateWidgetCache()
+{
+	UpdateWidgetCacheCore(TEXT(""), WidgetTree);
 }
 
 SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations()

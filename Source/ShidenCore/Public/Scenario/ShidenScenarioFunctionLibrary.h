@@ -30,10 +30,10 @@ public:
 	static void IsCancelRequested(const FString& ProcessName, bool& bIsCancelRequested, FString& CancelReason, EShidenCancelType& CancelType);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario", meta = (ProcessName = "Default"))
-	static void MarkReadLine(const FString ProcessName, const FGuid CommandGuid);
+	static void MarkAsRead(const FString ProcessName, const FGuid CommandGuid);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Scenario", meta = (ProcessName = "Default"))
-	static bool IsAlreadyRead(const FString& ProcessName, const FGuid CommandGuid);
+	static bool IsRead(const FString& ProcessName, const FGuid CommandGuid);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Scenario", meta = (ProcessName = "Default"))
 	static bool CanSkipCommand();
@@ -63,8 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioByIdOrObjectPath(const FString ScenarioIdOrObjectPath, FGuid& ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
-	static void ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, FShidenCommand& Command);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (bReplaceWithVariable = true))
+	static void ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, const bool bReplaceWithVariable, FShidenCommand& Command);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void GetCommandFromCache(UObject* Outer, const FString ProcessName, const FSoftObjectPath CommandSoftObjectPath, UShidenCommandObject*& Command, bool& bSuccess);

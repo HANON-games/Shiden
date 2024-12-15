@@ -19,12 +19,12 @@ struct FShidenSaveTexture
 	int32 Height = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
-	TEnumAsByte <EPixelFormat> Format = PF_R8G8B8A8;
+	TEnumAsByte<EPixelFormat> Format = PF_R8G8B8A8;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
-	TArray <uint8> Pixels = TArray<uint8>();
+	TArray<uint8> Pixels = TArray<uint8>();
 
-	FShidenSaveTexture(UTexture2D* Texture) {
+	explicit FShidenSaveTexture(UTexture2D* Texture) {
 		if (!Texture) {
 			return;
 		}

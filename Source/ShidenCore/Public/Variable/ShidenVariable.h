@@ -11,25 +11,25 @@ struct FShidenVariable
     GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, bool> BooleanVariables;
+	TMap<FString, bool> BooleanVariables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, int> IntegerVariables;
+	TMap<FString, int> IntegerVariables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, float> FloatVariables;
+	TMap<FString, float> FloatVariables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, FString> StringVariables;
+	TMap<FString, FString> StringVariables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, FVector> Vector3Variables;
+	TMap<FString, FVector> Vector3Variables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, FVector2D> Vector2Variables;
+	TMap<FString, FVector2D> Vector2Variables;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Variable")
-	TMap <FString, EShidenVariableType> InternalKeys;
+	TMap<FString, EShidenVariableType> InternalKeys;
 
 	FShidenVariable()
 	{

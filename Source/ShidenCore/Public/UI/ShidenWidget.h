@@ -45,16 +45,17 @@ class SHIDENCORE_API UShidenWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-private:
+protected:
 	UPROPERTY()
 	bool bIsEndOfMedia = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	EShidenCaptureScreenMode CaptureScreenMode = EShidenCaptureScreenMode::UIOnlyWithoutTextBaseLayer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float CaptureScale = 0.25f;
 	
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMediaPlayer> MediaPlayer = nullptr;
 
@@ -71,25 +72,25 @@ private:
 	int32 MultiLineTextMaxLines = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, FShidenCanvasPanelMoveParams> CanvasPanelMoveParams;
+	TMap<FString, FShidenCanvasPanelMoveParams> CanvasPanelMoveParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, FShidenImageFadeParams> ImageFadeParams;
+	TMap<FString, FShidenImageFadeParams> ImageFadeParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, FShidenImageMaterialScalarParams> ImageMaterialParams;
+	TMap<FString, FShidenImageMaterialScalarParams> ImageMaterialParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, FShidenRetainerBoxMaterialScalarParams> RetainerBoxMaterialParams;
+	TMap<FString, FShidenRetainerBoxMaterialScalarParams> RetainerBoxMaterialParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, FShidenFadeParams> FadeParams;
+	TMap<FString, FShidenFadeParams> FadeParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap <FString, TObjectPtr<UBorder>> FadeWidgets;
+	TMap<FString, TObjectPtr<UBorder>> FadeWidgets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TScriptInterface <IShidenScenarioManagerInterface> ScenarioManager;
+	TScriptInterface<IShidenScenarioManagerInterface> ScenarioManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	bool bIsSkipped = false;
@@ -106,6 +107,9 @@ private:
 	UFUNCTION()
 	void TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture, bool& bResult);
 
+	UFUNCTION()
+	void UpdateWidgetCacheCore(const FString& Prefix, const UWidgetTree* Tree);
+	
 public:
 	UFUNCTION()
 	void FadeInOut(float DeltaTime);
@@ -139,6 +143,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void InitializeWidget(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
+	void InitializePreviewWidget(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Media")
 	void OnMediaSuspended();
@@ -267,10 +274,10 @@ public:
 	void IsSkipPressed(bool& bPressed) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Widget")
-	void GetVisibilityByName(const FName Name, ESlateVisibility& Result) const;
+	void GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void SetVisibilityByName(const FName Name, const ESlateVisibility InVisibility, const bool bShouldRegisterScenarioProperty, bool& bSuccess);
+	void SetVisibilityByName(const FString& Name, const ESlateVisibility InVisibility, const bool bShouldRegisterScenarioProperty, bool& bSuccess);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Widget")
 	bool IsMenuOpen() const;
@@ -332,17 +339,20 @@ public:
 	TObjectPtr<UPanelWidget> MultiLineTextInputLayer = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap <FString, UShidenTextWidget*> TextWidgets;
+	TMap<FString, TObjectPtr<UShidenTextWidget>> TextWidgets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap <FString, UImage*> Images;
+	TMap<FString, TObjectPtr<UImage>> Images;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap <FString, UWidgetAnimation*> WidgetAnimations;
+	TMap<FString, TObjectPtr<UWidgetAnimation>> WidgetAnimations;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap<FString, URetainerBox*> RetainerBoxes;
+	TMap<FString, TObjectPtr<URetainerBox>> RetainerBoxes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap <FString, UCanvasPanel*> CanvasPanels;
+	TMap<FString, TObjectPtr<UCanvasPanel>> CanvasPanels;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
+	TMap<FString, TObjectPtr<UWidget>> AllWidgets;
 };

@@ -17,6 +17,7 @@
 #include "Save/ShidenUserSaveGame.h"
 #include "System/ShidenBacklogItem.h"
 #include "Async/Async.h"
+#include "Scenario/ShidenScenarioFunctionLibrary.h"
 
 FPipe UShidenCoreFunctionLibrary::SaveGamePipe = FPipe{ TEXT("SaveGamePipe") };
 
@@ -115,28 +116,25 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength
 
 	for (int32 Index = 0; Index < Len; Index++)
 	{
-		for (const auto& P : Pos)
+		for (const auto& [OpenTagStart, CloseTagEnd, ContentStart, ContentEnd] : Pos)
 		{
-			if (P.OpenTagStart == ResultLen)
+			if (OpenTagStart == ResultLen)
 			{
-				if (P.ContentStart == -1)
+				if (ContentStart == -1)
 				{
 					// TODO: Image tag is treated as 1 character, so adjust by -1.
 					// Make it possible to process each tag separately.
-					ResultLen = P.CloseTagEnd - 1;
+					ResultLen = CloseTagEnd - 1;
 					break;
 				}
-				else 
-				{
-					bIsInTag = true;
-					ResultLen = P.ContentStart;
-					break;
-				}
+				bIsInTag = true;
+				ResultLen = ContentStart;
+				break;
 			}
-			else if (P.ContentEnd == ResultLen)
+			if (ContentEnd == ResultLen)
 			{
 				bIsInTag = false;
-				ResultLen = P.CloseTagEnd;
+				ResultLen = CloseTagEnd;
 				break;
 			}
 		}
@@ -163,102 +161,9 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* Targ
 
 	const FString TrimmedParam = Parameters.TrimStartAndEnd();
 	const FString Cmd = TrimmedParam.IsEmpty() ? FunctionName : FString::Printf(TEXT("%s %s"), *FunctionName, *Parameters);
-	FOutputDeviceNull _Null;
+	FOutputDeviceNull Null;
 
-	TargetObject->CallFunctionByNameWithArguments(*Cmd, _Null, nullptr, true);
-}
-
-SHIDENCORE_API bool UShidenCoreFunctionLibrary::SaveFileAsCsv(const FString DefaultFileName, const FString SaveText)
-{
-	// get window handle
-	const void* WindowHandle = nullptr;
-	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
-	{
-		const FName MainFrameModuleName = "MainFrame";
-		const IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(MainFrameModuleName);
-		const TSharedPtr<SWindow> MainWindow = MainFrameModule.GetParentWindow();
-		if (MainWindow.IsValid() && MainWindow->GetNativeWindow().IsValid())
-		{
-			WindowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
-		}
-	}
-
-	if (WindowHandle)
-	{
-		if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
-		{
-			TArray<FString> FilePath = { };
-
-			const bool bResult = DesktopPlatform->SaveFileDialog(
-				WindowHandle,
-				TEXT("Save File Dialog"),
-				TEXT(""),
-				DefaultFileName + TEXT(".csv"),
-				TEXT("Scenario CSV (*.csv)|*.csv"),
-				EFileDialogFlags::Type::None,
-				FilePath
-			);
-
-			if (bResult)
-			{
-				return FFileHelper::SaveStringToFile(SaveText, *FPaths::ConvertRelativePathToFull(FilePath[0]), FFileHelper::EEncodingOptions::ForceUTF8);			
-			}
-		}
-	}
-	return false;
-}
-
-SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadTextFile(FString& FileName, FString& FileData, bool& bSuccess)
-{
-	// Get window handle
-	const void* WindowHandle = nullptr;
-	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
-	{
-		const FName MainFrameModuleName = "MainFrame";
-		const IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(MainFrameModuleName);
-		const TSharedPtr<SWindow> MainWindow = MainFrameModule.GetParentWindow();
-		if (MainWindow.IsValid() && MainWindow->GetNativeWindow().IsValid())
-		{
-			WindowHandle = MainWindow->GetNativeWindow()->GetOSWindowHandle();
-		}
-	}
-
-	TArray<FString> FilePath = { };
-
-	if (WindowHandle)
-	{
-		if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
-		{
-			const bool bResult = DesktopPlatform->OpenFileDialog(
-				WindowHandle,
-				TEXT("Open File Dialog"),
-				TEXT(""),
-				TEXT(""),
-				TEXT("Scenario CSV (*.csv)|*.csv"),
-				EFileDialogFlags::Type::None,
-				FilePath
-			);
-
-			if (bResult)
-			{
-				if (GEngine)
-				{
-					const FString LoadFilePath = FPaths::ConvertRelativePathToFull(FilePath[0]);
-					
-					if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*LoadFilePath))
-					{
-						bSuccess = false;
-						return;
-					}
-					FileName = FPaths::GetCleanFilename(LoadFilePath);
-					FFileHelper::LoadFileToString(FileData, *LoadFilePath);
-					bSuccess = true;
-
-				}
-			}
-		}
-	}
-	bSuccess = false;
+	TargetObject->CallFunctionByNameWithArguments(*Cmd, Null, nullptr, true);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::MultiThreadDelay(UObject* WorldContextObject, const float Duration, const struct FLatentActionInfo LatentInfo)
@@ -358,13 +263,11 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetScenarioDataAsset(const FStri
 
 	Scenario = ShidenScenario;
 	bSuccess = true;
-	return;
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::GetAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::GetOrLoadAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess)
 {
 	Asset = nullptr;
-	bSuccess = false;
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -374,7 +277,20 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetAsset(const FString& ObjectPa
 	{
 		Asset = *AssetPtr;
 		bSuccess = true;
+		return;
 	}
+
+	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+	Asset = Streamable.LoadSynchronous(ObjectPath, false);
+
+	if (!Asset)
+	{
+		bSuccess = false;
+		return;
+	}
+
+	bSuccess = true;
+	ShidenSubsystem->AssetCache.Add(ObjectPath, Asset);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::UnloadAssets(const bool bForceGC)
@@ -436,9 +352,11 @@ TObjectPtr<UShidenUserSaveGame> UpdateUserSaveGameInstance(const FString& SlotNa
 
 TObjectPtr<UShidenSaveSlotsSaveGame> UpdateSaveSlotsSaveGameInstance(const FString& SlotName, const FShidenSaveTexture& SaveTexture, const TMap<FString, FString>& SaveSlotMetadata)
 {
-	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenCoreFunctionLibrary::AcquireSaveSlots();
-	const FDateTime CreatedAt = SaveSlotsInstance->SaveSlots.Contains(SlotName) ? SaveSlotsInstance->SaveSlots[SlotName].CreatedAt : FDateTime::UtcNow();
-	SaveSlotsInstance->SaveSlots.Add(SlotName, FShidenSaveSlot{ SlotName, SaveSlotMetadata, SaveTexture, CreatedAt, FDateTime::UtcNow() });
+	TMap<FString, FShidenSaveSlot> SaveSlots = UShidenCoreFunctionLibrary::AcquireSaveSlots();
+	const FDateTime CreatedAt = SaveSlots.Contains(SlotName) ? SaveSlots[SlotName].CreatedAt : FDateTime::UtcNow();
+	SaveSlots.Add(SlotName, FShidenSaveSlot{ SlotName, SaveSlotMetadata, SaveTexture, CreatedAt, FDateTime::UtcNow() });
+	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()));
+	SaveSlotsInstance->SaveSlots = SaveSlots;
 	return SaveSlotsInstance;
 }
 
@@ -454,7 +372,7 @@ void UShidenCoreFunctionLibrary::WaitUntilEmpty()
 	}
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, bool& bSuccess)
 {
 	if (SlotName == TEXT("ShidenSystemData"))
 	{
@@ -471,11 +389,16 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveUserData(const FString SlotN
 	WaitUntilEmpty();
 
 	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UpdateUserSaveGameInstance(SlotName);
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, 0);
+	bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, 0);
 
+	if (!bSuccess)
+	{
+		return;
+	}
+	
 	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail);
 	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UpdateSaveSlotsSaveGameInstance(SlotName, SaveTexture, SlotMetadata);
-	UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
+	bSuccess = UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, FAsyncSaveDataDelegate SavedDelegate)
@@ -537,11 +460,11 @@ TObjectPtr<UShidenSystemSaveGame> UpdateSystemSaveGameInstance()
 	return SaveGameInstance;
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveSystemData()
+SHIDENCORE_API void UShidenCoreFunctionLibrary::SaveSystemData(bool& bSuccess)
 {
 	WaitUntilEmpty();
 	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UpdateSystemSaveGameInstance();
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
+	bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate SavedDelegate)
@@ -557,17 +480,17 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDa
 	});
 }
 
-SHIDENCORE_API UShidenSaveSlotsSaveGame* UShidenCoreFunctionLibrary::AcquireSaveSlots()
+SHIDENCORE_API TMap<FString, FShidenSaveSlot> UShidenCoreFunctionLibrary::AcquireSaveSlots()
 {
 	WaitUntilEmpty();
 
 	if (!DoesUserDataExist(TEXT("ShidenSaveSlots")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
-		return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()));
+		return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()))->SaveSlots;
 	}
 
-	return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0));
+	return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0))->SaveSlots;
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::LoadUserData(const FString SlotName)

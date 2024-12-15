@@ -10,9 +10,9 @@
 class SHIDENCORE_API FShidenRichTextMarkupParser : public IRichTextMarkupParser
 {
 public:
-	static TSharedRef< FShidenRichTextMarkupParser > Create();
+	static TSharedRef<FShidenRichTextMarkupParser> Create();
 	
-	static TSharedRef< FShidenRichTextMarkupParser > GetStaticInstance();
+	static TSharedRef<FShidenRichTextMarkupParser> GetStaticInstance();
 
 public:
 	virtual void Process(TArray<FTextLineParseResults>& Results, const FString& Input, FString& Output) override;

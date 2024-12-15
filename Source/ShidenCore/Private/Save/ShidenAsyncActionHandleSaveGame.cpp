@@ -35,11 +35,10 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	case ESaveGameOperationName::SaveSystemData:
 		UShidenCoreFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
+	default:
+		UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
+		UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
 	}
-
-	UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
-
-	UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
 }
 
 void UShidenAsyncActionHandleSaveGame::ExecuteCompleted(const bool bSuccess)

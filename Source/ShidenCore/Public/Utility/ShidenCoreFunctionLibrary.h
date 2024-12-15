@@ -15,6 +15,7 @@
 #include "UnrealClient.h"
 #include "Widgets/SWindow.h"
 #include "AssetRegistry/AssetData.h"
+#include "Save/ShidenSaveSlotsSaveGame.h"
 #include "Save/ShidenSaveTexture.h"
 #include "UI/ShidenTextType.h"
 #include "Tasks/Pipe.h"
@@ -37,10 +38,10 @@ private:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static UTexture2D* ConvertSaveTextureToTexture2D(const FShidenSaveTexture SaveTexture);
-
+	
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Utility")
-	static void GetAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess);
-
+	static void GetOrLoadAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess);
+	
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void UnloadAssets(const bool bForceGC);
 
@@ -48,17 +49,17 @@ public:
 	static FString MakeErrorMessage(const FGuid ScenarioId, const int32 Index, const FString& CommandName, const FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (AutoCreateRefTerm = "SlotMetadata"))
-    static void SaveUserData(const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata);
+	static void SaveUserData(const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, bool& bSuccess);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
-	static void SaveSystemData();
+	static void SaveSystemData(bool& bSuccess);
 
 	static void AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, FAsyncSaveDataDelegate SavedDelegate = FAsyncSaveDataDelegate());
 
 	static void AsyncSaveSystemData(FAsyncSaveDataDelegate SavedDelegate = FAsyncSaveDataDelegate());
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
-	static UShidenSaveSlotsSaveGame* AcquireSaveSlots();
+	static TMap<FString, FShidenSaveSlot> AcquireSaveSlots();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static void LoadUserData(const FString SlotName);
@@ -81,7 +82,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Backlog", meta = (AutoCreateRefTerm = "AdditionalProperties"))
 	static void AddBacklogItem(const FShidenCommand Command, const TMap<FString, FString> AdditionalProperties);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Backlog")
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Backlog", meta = (AutoCreateRefTerm = "AdditionalProperties"))
 	static void UpdateBacklogItem(int32 Index, const FShidenCommand Command, const TMap<FString, FString> AdditionalProperties);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Backlog")
@@ -105,13 +106,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void CallFunctionByName(UObject* TargetObject, const FString FunctionName, const FString Parameters);
-
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static void LoadTextFile(FString& FileName, FString& FileData, bool& bSuccess);
-
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static bool SaveFileAsCsv(const FString DefaultFileName, const FString SaveText);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static FString GetCharactersWithParsedLength(const FString Text, const int32 Len);
 
