@@ -22,5 +22,5 @@ struct FShidenCommand
 	FString PresetName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	TMap <FString, FString> Args;
+	TMap<FString, FString> Args;
 };

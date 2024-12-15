@@ -19,13 +19,13 @@
 
 class FShidenCustomGraphPanelPinFactory : public FGraphPanelPinFactory
 {
-	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
+	virtual TSharedPtr<SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
 	{
 		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_String)
 		{
-			UObject* Outer = InPin->GetOuter();
+			const TObjectPtr<UObject> Outer = InPin->GetOuter();
 
-			if (Outer->IsA(UK2Node_GetCommandArguments::StaticClass()) && InPin->Direction == EEdGraphPinDirection::EGPD_Input && InPin->GetName() == TEXT("CommandName"))
+			if (Outer->IsA(UK2Node_GetCommandArguments::StaticClass()) && InPin->Direction == EGPD_Input && InPin->GetName() == TEXT("CommandName"))
 			{
 				const UK2Node_GetCommandArguments* GetShidenCommandNode = CastChecked<UK2Node_GetCommandArguments>(Outer);
 				

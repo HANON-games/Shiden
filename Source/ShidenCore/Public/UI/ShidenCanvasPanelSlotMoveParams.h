@@ -12,13 +12,13 @@ struct FShidenCanvasPanelMoveParams
 	GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TObjectPtr <UCanvasPanel> Target;
+    TObjectPtr<UCanvasPanel> Target;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float MoveDuration = 0.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TEnumAsByte <EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
+    TEnumAsByte<EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float EasingAlpha = 0.0f;

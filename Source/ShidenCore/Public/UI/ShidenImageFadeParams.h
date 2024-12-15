@@ -12,7 +12,7 @@ struct FShidenImageFadeParams
 	GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TObjectPtr <UImage> Target;
+    TObjectPtr<UImage> Target;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float FadeDuration = 0.0f;
@@ -24,7 +24,7 @@ struct FShidenImageFadeParams
     bool bToBeTransparent = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TEnumAsByte <EEasingFunc::Type> FadeFunction = EEasingFunc::Linear;
+    TEnumAsByte<EEasingFunc::Type> FadeFunction = EEasingFunc::Linear;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float EasingAlpha = 0.0f;

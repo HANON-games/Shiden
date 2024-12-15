@@ -21,7 +21,7 @@ struct FShidenImageMaterialScalarParams
     float MoveDuration = 0.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TEnumAsByte <EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
+    TEnumAsByte<EEasingFunc::Type> MoveFunction = EEasingFunc::Linear;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float EasingAlpha = 0.0f;

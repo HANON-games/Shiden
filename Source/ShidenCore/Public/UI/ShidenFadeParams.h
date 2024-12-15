@@ -26,7 +26,7 @@ struct FShidenFadeParams
     float EasingAlpha = 0.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    TEnumAsByte <EEasingFunc::Type> FadeFunction = EEasingFunc::Linear;
+    TEnumAsByte<EEasingFunc::Type> FadeFunction = EEasingFunc::Linear;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
     float BlendExp = 0.0f;

@@ -17,11 +17,11 @@ public:
 	SLATE_BEGIN_ARGS(SGraphPinShidenCommandName) {}
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const class UShidenCommandDefinitions* InCommandDefinitions);
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions);
 
 	SGraphPinShidenCommandName();
 	virtual ~SGraphPinShidenCommandName() override;
 
 protected:
-	void RefreshNameList(const TSoftObjectPtr<UShidenCommandDefinitions>& CommandDefinitions);
+	void RefreshNameList(const TObjectPtr<UShidenCommandDefinitions>& CommandDefinitions);
 };

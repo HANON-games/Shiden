@@ -143,10 +143,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
 	static void FindPredefinedSystemVariableAsString(const FString Key, FString& Result, bool& bReturnValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
 	static TArray<FString> GetVariableNamesFromText(const FString Text);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables")
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
 	static FShidenCommand ReplaceAllTextWithVariable(const FString ProcessName, const FShidenCommand Command);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
@@ -180,7 +180,7 @@ public:
 	static void GetSkipUnread(bool& bSkipUnread);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetMarkedReadLines(TMap<FGuid, FShidenReadLines>& MarkedReadLines);
+	static void GetScenarioReadLines(TMap<FGuid, FShidenReadLines>& ScenarioReadLines);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
 	static void GetClickWaitingGlyph(FString& ClickWaitingGlyph);
@@ -216,7 +216,7 @@ public:
 	static void SetSkipUnread(const bool bSkipUnread);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetMarkedReadLines(const TMap<FGuid, FShidenReadLines>& MarkedReadLines);
+	static void SetScenarioReadLines(const TMap<FGuid, FShidenReadLines>& ScenarioReadLines);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
 	static void SetClickWaitingGlyph(const FString ClickWaitingGlyph);

@@ -12,5 +12,5 @@ struct FShidenCommandsForSerialize
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TArray <FShidenCommand> Commands;
+	TArray<FShidenCommand> Commands;
 };

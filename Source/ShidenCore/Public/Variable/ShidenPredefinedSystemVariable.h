@@ -46,7 +46,7 @@ struct FShidenPredefinedSystemVariable
 	FString PlatformName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
-	TMap<FGuid, FShidenReadLines> MarkedReadLines;
+	TMap<FGuid, FShidenReadLines> ScenarioReadLines;
 
 	FShidenPredefinedSystemVariable()
 	{
@@ -61,6 +61,6 @@ struct FShidenPredefinedSystemVariable
 		bSkipUnread = false;
 		ClickWaitingGlyph = FString();
 		PlatformName = UGameplayStatics::GetPlatformName();
-		MarkedReadLines = TMap<FGuid, FShidenReadLines>();
+		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
 	}
 };

@@ -148,7 +148,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::RequestCancelScenarioAll(con
 
 	check(ShidenSubsystem);
 
-	for (auto& Progress : ShidenSubsystem->ScenarioProgressStack)
+	for (TTuple<FString, FShidenScenarioProgressStack>& Progress : ShidenSubsystem->ScenarioProgressStack)
 	{
 		if (!Progress.Value.CancelInfo.bIsRequested)
 		{
@@ -182,7 +182,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::IsCancelRequested(const FStr
 	}
 }
 
-SHIDENCORE_API void UShidenScenarioFunctionLibrary::MarkReadLine(const FString ProcessName, const FGuid CommandGuid)
+SHIDENCORE_API void UShidenScenarioFunctionLibrary::MarkAsRead(const FString ProcessName, const FGuid CommandGuid)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -194,17 +194,17 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::MarkReadLine(const FString P
 	bool bIsMacro = false;
 	bool bSuccess = false;
 
-	UShidenScenarioFunctionLibrary::PeekScenario(ProcessName, ScenarioProgress, CancelInfo, bIsLastElement, bIsMacro, bSuccess);
+	PeekScenario(ProcessName, ScenarioProgress, CancelInfo, bIsLastElement, bIsMacro, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
 
-	FShidenReadLines ReadLines = ShidenSubsystem->PredefinedSystemVariable.MarkedReadLines.FindOrAdd(ScenarioProgress.ScenarioId);
-	ReadLines.Ids.Add(CommandGuid);
+	FShidenReadLines ReadLines = ShidenSubsystem->PredefinedSystemVariable.ScenarioReadLines.FindOrAdd(ScenarioProgress.ScenarioId);
+	ReadLines.CommandGuids.Add(CommandGuid);
 }
 
-SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsAlreadyRead(const FString& ProcessName, const FGuid CommandGuid)
+SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsRead(const FString& ProcessName, const FGuid CommandGuid)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -216,19 +216,19 @@ SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsAlreadyRead(const FString&
 	bool bIsMacro = false;
 	bool bSuccess = false;
 
-	UShidenScenarioFunctionLibrary::PeekScenario(ProcessName, ScenarioProgress, CancelInfo, bIsLastElement, bIsMacro, bSuccess);
+	PeekScenario(ProcessName, ScenarioProgress, CancelInfo, bIsLastElement, bIsMacro, bSuccess);
 	if (!bSuccess)
 	{
 		return false;
 	}
 
-	const FShidenReadLines* ReadLines = ShidenSubsystem->PredefinedSystemVariable.MarkedReadLines.Find(ScenarioProgress.ScenarioId);
+	const FShidenReadLines* ReadLines = ShidenSubsystem->PredefinedSystemVariable.ScenarioReadLines.Find(ScenarioProgress.ScenarioId);
 	if (!ReadLines)
 	{
 		return false;
 	}
 
-	return ReadLines->Ids.Contains(CommandGuid);
+	return ReadLines->CommandGuids.Contains(CommandGuid);
 }
 
 SHIDENCORE_API bool UShidenScenarioFunctionLibrary::CanSkipCommand()
@@ -251,7 +251,7 @@ SHIDENCORE_API bool UShidenScenarioFunctionLibrary::CanSkipCommand()
 	}
 
 	UShidenScenario* Scenario = nullptr;
-	UShidenScenarioFunctionLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
+	GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
 	if (!bSuccess)
 	{
 		return false;
@@ -265,7 +265,7 @@ SHIDENCORE_API bool UShidenScenarioFunctionLibrary::CanSkipCommand()
 		return false;
 	}
 
-	return IsAlreadyRead(TEXT("Default"), Scenario->Commands[ScenarioProgress.CurrentIndex].CommandId) || bSkipUnread;
+	return IsRead(TEXT("Default"), Scenario->Commands[ScenarioProgress.CurrentIndex].CommandId) || bSkipUnread;
 }
 
 SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsEndOfScenario(const FString& ProcessName)
@@ -283,7 +283,7 @@ SHIDENCORE_API bool UShidenScenarioFunctionLibrary::IsEndOfScenario(const FStrin
 	}
 
 	UShidenScenario* Scenario = nullptr;
-	UShidenScenarioFunctionLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
+	GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
 	if (!bSuccess)
 	{
 		return true;
@@ -371,11 +371,13 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(
 	UE_LOG(LogTemp, Warning, TEXT("Error: Scenario \"%s\" is not found in scenario paths."), *ScenarioIdOrObjectPath);
 }
 
-SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, FShidenCommand& Command)
+SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FString ProcessName, const FShidenCommand OriginalCommand, const bool bReplaceWithVariable, FShidenCommand& Command)
 {
 	if (OriginalCommand.PresetName.IsEmpty())
 	{
-		Command = UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, OriginalCommand);
+		Command = bReplaceWithVariable
+			? UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, OriginalCommand)
+			: OriginalCommand;
 		return;
 	}
 
@@ -391,7 +393,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 	if (!Preset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Error: Preset \"%s\" is not found."), *OriginalCommand.PresetName);
-		Command = UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, OriginalCommand);
+		Command = bReplaceWithVariable
+			? UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, OriginalCommand)
+			: OriginalCommand;
 		return;
 	}
 
@@ -414,7 +418,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 		}
 	}
 
-	Command = UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, TempCommand);
+	Command = bReplaceWithVariable
+		? UShidenVariableFunctionLibrary::ReplaceAllTextWithVariable(ProcessName, TempCommand)
+		: TempCommand;
 }
 
 SHIDENCORE_API void GetCommand(UObject* Outer, const FSoftObjectPath& CommandSoftObjectPath, UShidenCommandObject*& CommandObject, bool& Success)
@@ -493,7 +499,7 @@ SHIDENCORE_API void LoadScenarioAssetPaths(UObject* CallerObject, const UShidenS
 	{
 		const FShidenCommand& OriginalCommand = Scenario->Commands[Index];
 		FShidenCommand Command = FShidenCommand();
-		UShidenScenarioFunctionLibrary::ConstructCommand(TEXT("Default"), OriginalCommand, Command);
+		UShidenScenarioFunctionLibrary::ConstructCommand(TEXT("Default"), OriginalCommand, false, Command);
 		
 		if (!Command.bEnabled) {
 			continue;
@@ -647,21 +653,30 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::LoadScenarioAssets(UObject* 
 		ErrorIndex = TempErrorIndex;
 		return;
 	}
-
+	
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
 	for (int32 Index = 0; Index < AssetInfo.Num(); Index++)
 	{
-		const FShidenLoadingAssetInfo& LoadingAssetInfo = AssetInfo[Index];
-		TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(LoadingAssetInfo.ObjectPath, false);
+		const auto& [ScenarioIndex, ObjectPath] = AssetInfo[Index];
+
+		// In UnrealEngine, an error occurs if "{" or "}" is included in the asset name,
+		// so if they are included, they are treated as variables and skipped.
+		if (ObjectPath.Contains(TEXT("{")) || ObjectPath.Contains(TEXT("}")))
+		{
+			continue;
+		}
+		
+		TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(ObjectPath, false);
 		if (!LoadedAsset)
 		{
-			ErrorMessage = FString::Printf(TEXT("Load asset failed: %s"), *LoadingAssetInfo.ObjectPath);
+			ErrorMessage = FString::Printf(TEXT("Load asset failed: %s"), *ObjectPath);
 			ErrorScenarioId = ScenarioProgress.ScenarioId;
-			ErrorIndex = LoadingAssetInfo.ScenarioIndex;
+			ErrorIndex = ScenarioIndex;
 			return;
 		}
 
-		ShidenSubsystem->AssetCache.Add(LoadingAssetInfo.ObjectPath, LoadedAsset);
+		ShidenSubsystem->AssetCache.Add(ObjectPath, LoadedAsset);
 	}
 
 	bSuccess = true;
@@ -686,7 +701,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::InitFromSaveData(const UShid
 		const FSoftObjectPath CommandPath = ShidenSubsystem->CommandDefinitionCache.FindRef(CommandName).CommandBlueprint;
 		UShidenCommandObject* CommandObject = nullptr;
 		bool bTempSuccess = false;
-		UShidenScenarioFunctionLibrary::GetCommandFromCache(CallerObject, TEXT("Default"), CommandPath, CommandObject, bTempSuccess);
+		GetCommandFromCache(CallerObject, TEXT("Default"), CommandPath, CommandObject, bTempSuccess);
 		if (!bTempSuccess)
 		{
 			ErrorMessage = FString::Printf(TEXT("Get Command \"%s\" Failed. Please check project config and command definitions."), *CommandName);

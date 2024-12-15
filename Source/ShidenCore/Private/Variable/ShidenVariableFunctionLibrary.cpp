@@ -23,11 +23,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserBoolean(const FString
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Boolean)
-	{
-		RemoveUserVariable(Key);
-	}
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::Boolean);
 	ShidenSubsystem->UserVariable.BooleanVariables.Add(Key, bValue);
 }
@@ -43,11 +39,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserInteger(const FString
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Integer)
-	{
-		RemoveUserVariable(Key);
-	}
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::Integer);
 	ShidenSubsystem->UserVariable.IntegerVariables.Add(Key, Value);
 }
@@ -63,11 +55,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserFloat(const FString K
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Float)
-	{
-		RemoveUserVariable(Key);
-	}
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::Float);
 	ShidenSubsystem->UserVariable.FloatVariables.Add(Key, Value);
 }
@@ -83,12 +71,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserString(const FString 
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::String)
-	{
-		RemoveUserVariable(Key);
-	}
-
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::String);
 	ShidenSubsystem->UserVariable.StringVariables.Add(Key, Value);
 }
@@ -104,11 +87,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserVector3(const FString
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector3)
-	{
-		RemoveUserVariable(Key);
-	}
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::Vector3);
 	ShidenSubsystem->UserVariable.Vector3Variables.Add(Key, Value);
 }
@@ -124,11 +103,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddUserVector2(const FString
 
 	check(ShidenSubsystem);
 	
-	const EShidenVariableType* CurrentType = ShidenSubsystem->UserVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector2)
-	{
-		RemoveUserVariable(Key);
-	}
+	RemoveUserVariable(Key);
 	ShidenSubsystem->UserVariable.InternalKeys.Add(Key, EShidenVariableType::Vector2);
 	ShidenSubsystem->UserVariable.Vector2Variables.Add(Key, Value);
 }
@@ -314,11 +289,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemBoolean(const FStri
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Boolean)
-	{
-		RemoveSystemVariable(Key);
-	}
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::Boolean);
 	ShidenSubsystem->SystemVariable.BooleanVariables.Add(Key, bValue);
 }
@@ -329,11 +300,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemInteger(const FStri
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Integer)
-	{
-		RemoveSystemVariable(Key);
-	}
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::Integer);
 	ShidenSubsystem->SystemVariable.IntegerVariables.Add(Key, Value);
 }
@@ -343,11 +310,8 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemFloat(const FString
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Float)
-	{
-		RemoveSystemVariable(Key);
-	}
+
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::Float);
 	ShidenSubsystem->SystemVariable.FloatVariables.Add(Key, Value);
 }
@@ -358,11 +322,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemString(const FStrin
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::String)
-	{
-		RemoveSystemVariable(Key);
-	}
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::String);
 	ShidenSubsystem->SystemVariable.StringVariables.Add(Key, Value);
 }
@@ -373,11 +333,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemVector2(const FStri
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector2)
-	{
-		RemoveSystemVariable(Key);
-	}
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::Vector2);
 	ShidenSubsystem->SystemVariable.Vector2Variables.Add(Key, Value);
 }
@@ -388,11 +344,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddSystemVector3(const FStri
 
 	check(ShidenSubsystem);
 
-	const EShidenVariableType* CurrentType = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector3)
-	{
-		RemoveSystemVariable(Key);
-	}
+	RemoveSystemVariable(Key);
 	ShidenSubsystem->SystemVariable.InternalKeys.Add(Key, EShidenVariableType::Vector3);
 	ShidenSubsystem->SystemVariable.Vector3Variables.Add(Key, Value);
 }
@@ -420,6 +372,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::SystemVariableKeys(TArray<FS
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
+	
 	ShidenSubsystem->SystemVariable.InternalKeys.GetKeys(Keys);
 }
 
@@ -471,7 +424,6 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindSystemVariable(const FSt
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
-
 
 	if (const EShidenVariableType* Type = ShidenSubsystem->SystemVariable.InternalKeys.Find(Key))
 	{
@@ -563,7 +515,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveLocalVariable(const FS
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
@@ -607,18 +559,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalBoolean(const FStrin
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Boolean)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::Boolean);
 	LocalVariables->BooleanVariables.Add(Key, bValue);
 }
@@ -629,18 +577,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalInteger(const FStrin
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Integer)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::Integer);
 	LocalVariables->IntegerVariables.Add(Key, Value);
 }
@@ -651,18 +595,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalFloat(const FString 
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Float)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::Float);
 	LocalVariables->FloatVariables.Add(Key, Value);
 }
@@ -673,18 +613,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalString(const FString
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::String)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::String);
 	LocalVariables->StringVariables.Add(Key, Value);
 }
@@ -695,18 +631,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalVector2(const FStrin
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector2)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::Vector2);
 	LocalVariables->Vector2Variables.Add(Key, Value);
 }
@@ -717,18 +649,14 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::AddLocalVector3(const FStrin
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
 		return;
 	}
+	RemoveLocalVariable(ProcessName, Key);
 	FShidenVariable* LocalVariables = &ShidenSubsystem->LocalVariables.FindOrAdd(LocalKey);
-	const EShidenVariableType* CurrentType = LocalVariables->InternalKeys.Find(Key);
-	if (CurrentType && *CurrentType != EShidenVariableType::Vector3)
-	{
-		RemoveLocalVariable(ProcessName, Key);
-	}
 	LocalVariables->InternalKeys.Add(Key, EShidenVariableType::Vector3);
 	LocalVariables->Vector3Variables.Add(Key, Value);
 }
@@ -739,7 +667,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveCurrentLocalVariables(
 
 	check(ShidenSubsystem);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	const FString LocalKey = UShidenCoreFunctionLibrary::MakeLocalVariableKeyInternal(ShidenSubsystem, ProcessName, bSuccess);
 	if (!bSuccess)
 	{
@@ -747,8 +675,6 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveCurrentLocalVariables(
 	}
 
 	ShidenSubsystem->LocalVariables.Remove(LocalKey);
-
-	return;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveProcessLocalVariables(const FString ProcessName)
@@ -759,7 +685,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::RemoveProcessLocalVariables(
 
 	FString SearchKey = ProcessName + TEXT("$");
 
-	for (const auto& Elem : ShidenSubsystem->LocalVariables)
+	for (const TTuple<FString, FShidenVariable>& Elem : ShidenSubsystem->LocalVariables)
 	{
 		if (const FString Key = Elem.Key; Key.StartsWith(ProcessName, ESearchCase::CaseSensitive))
 		{
@@ -773,6 +699,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::ClearAllLocalVariables()
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
+	
 	ShidenSubsystem->LocalVariables.Empty();
 }
 
@@ -915,7 +842,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindPredefinedSystemVariable
 	}
 	if (PredefinedVariableKeyEquals(SearchKey, PROPERTY_NAME_OF(FShidenPredefinedSystemVariable::MarkedReadLines)))
 	{
-		IntegerValue = ShidenSubsystem->PredefinedSystemVariable.MarkedReadLines.Num();
+		IntegerValue = ShidenSubsystem->PredefinedSystemVariable.ScenarioReadLines.Num();
 		Type = EShidenVariableType::Integer;
 		return;
 	}
@@ -987,7 +914,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindPredefinedSystemVariable
 	FVector2D Vector2Value;
 	FVector Vector3Value;
 	bool bTempReturnValue;
-	UShidenVariableFunctionLibrary::FindPredefinedSystemVariable(Key, Type, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bTempReturnValue);
+	FindPredefinedSystemVariable(Key, Type, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bTempReturnValue);
 	if (!bTempReturnValue)
 	{
 		bReturnValue = false;
@@ -1015,7 +942,6 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindPredefinedSystemVariable
 			break;
 	}
 	bReturnValue = true;
-	return;
 }
 
 SHIDENCORE_API TArray<FString> UShidenVariableFunctionLibrary::GetVariableNamesFromText(const FString text)
@@ -1129,35 +1055,30 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::ConvertToVariableKind(const 
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableKind.Equals(TEXT("LocalVariable"), ESearchCase::IgnoreCase))
+	if (CleanedVariableKind.Equals(TEXT("LocalVariable"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableKind::LocalVariable;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableKind.Equals(TEXT("SystemVariable"), ESearchCase::IgnoreCase))
+	if (CleanedVariableKind.Equals(TEXT("SystemVariable"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableKind::SystemVariable;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableKind.Equals(TEXT("PredefinedSystemVariable"), ESearchCase::IgnoreCase))
+	if (CleanedVariableKind.Equals(TEXT("PredefinedSystemVariable"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableKind::PredefinedSystemVariable;
 		bSuccess = true;
 		return;
 	}
-	else
-	{
-		Result = EShidenVariableKind::UserVariable;
-		return;
-	}
+	Result = EShidenVariableKind::UserVariable;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::ConvertToVariableType(const FString& VariableType, EShidenVariableType& Result, bool& bSuccess)
 {
 	const FString CleanedVariableType = VariableType.Replace(TEXT(" "), TEXT(""));
-	bSuccess = false;
 
 	if (CleanedVariableType.Equals(TEXT("Boolean"), ESearchCase::IgnoreCase))
 	{
@@ -1165,41 +1086,39 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::ConvertToVariableType(const 
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableType.Equals(TEXT("String"), ESearchCase::IgnoreCase))
+	if (CleanedVariableType.Equals(TEXT("String"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableType::String;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableType.Equals(TEXT("Integer"), ESearchCase::IgnoreCase))
+	if (CleanedVariableType.Equals(TEXT("Integer"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableType::Integer;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableType.Equals(TEXT("Float"), ESearchCase::IgnoreCase))
+	if (CleanedVariableType.Equals(TEXT("Float"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableType::Float;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableType.Equals(TEXT("Vector2"), ESearchCase::IgnoreCase))
+	if (CleanedVariableType.Equals(TEXT("Vector2"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableType::Vector2;
 		bSuccess = true;
 		return;
 	}
-	else if (CleanedVariableType.Equals(TEXT("Vector3"), ESearchCase::IgnoreCase))
+	if (CleanedVariableType.Equals(TEXT("Vector3"), ESearchCase::IgnoreCase))
 	{
 		Result = EShidenVariableType::Vector3;
 		bSuccess = true;
 		return;
 	}
-	else
-	{
-		Result = EShidenVariableType::Boolean;
-		return;
-	}
+	
+	bSuccess = false;
+	Result = EShidenVariableType::Boolean;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::InitPredefinedSystemVariables()
@@ -1294,13 +1213,13 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::GetSkipUnread(bool& bSkipUnr
 	bSkipUnread = ShidenSubsystem->PredefinedSystemVariable.bSkipUnread;
 }
 
-SHIDENCORE_API void UShidenVariableFunctionLibrary::GetMarkedReadLines(TMap<FGuid, FShidenReadLines>& MarkedReadLines)
+SHIDENCORE_API void UShidenVariableFunctionLibrary::GetScenarioReadLines(TMap<FGuid, FShidenReadLines>& ScenarioReadLines)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
 
-	MarkedReadLines = ShidenSubsystem->PredefinedSystemVariable.MarkedReadLines;
+	ScenarioReadLines = ShidenSubsystem->PredefinedSystemVariable.ScenarioReadLines;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::GetClickWaitingGlyph(FString& ClickWaitingGlyph)
@@ -1402,9 +1321,9 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::SetSkipUnread(const bool bSk
 	ShidenSubsystem->PredefinedSystemVariable.bSkipUnread = bSkipUnread;
 }
 
-SHIDENCORE_API void UShidenVariableFunctionLibrary::SetMarkedReadLines(const TMap<FGuid, FShidenReadLines>& MarkedReadLines)
+SHIDENCORE_API void UShidenVariableFunctionLibrary::SetScenarioReadLines(const TMap<FGuid, FShidenReadLines>& ScenarioReadLines)
 {
-	if (MarkedReadLines.Num() == 0)
+	if (ScenarioReadLines.Num() == 0)
 	{
 		return;
 	}
@@ -1413,7 +1332,7 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::SetMarkedReadLines(const TMa
 
 	check(ShidenSubsystem);
 
-	ShidenSubsystem->PredefinedSystemVariable.MarkedReadLines = MarkedReadLines;
+	ShidenSubsystem->PredefinedSystemVariable.ScenarioReadLines = ScenarioReadLines;
 }
 
 SHIDENCORE_API void UShidenVariableFunctionLibrary::SetClickWaitingGlyph(const FString ClickWaitingGlyph)
@@ -1708,16 +1627,16 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::FindVariable(const FString P
 	switch (Kind)
 	{
 		case EShidenVariableKind::UserVariable:
-			UShidenVariableFunctionLibrary::FindUserVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
+			FindUserVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
 			break;
 		case EShidenVariableKind::LocalVariable:
-			UShidenVariableFunctionLibrary::FindLocalVariable(ProcessName, Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
+			FindLocalVariable(ProcessName, Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
 			break;
 		case EShidenVariableKind::SystemVariable:
-			UShidenVariableFunctionLibrary::FindSystemVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
+			FindSystemVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
 			break;
 		case EShidenVariableKind::PredefinedSystemVariable:
-			UShidenVariableFunctionLibrary::FindPredefinedSystemVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
+			FindPredefinedSystemVariable(Key, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bReturnValue);
 			break;
 	}
 }
@@ -1731,160 +1650,154 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::EvaluateCondition(const EShi
 	switch (Type)
 	{
 		case EShidenVariableType::Boolean:
-			if (Operator == TEXT("=="))
 			{
-				bSuccess = true;
-				bResult = bABooleanValue == bBBooleanValue;
-				return;
-			}
-			else if (Operator == TEXT("!="))
-			{
-				bSuccess = true;
-				bResult = bABooleanValue != bBBooleanValue;
-				return;
-			}
-			else
-			{
+				if (Operator == TEXT("=="))
+				{
+					bSuccess = true;
+					bResult = bABooleanValue == bBBooleanValue;
+					return;
+				}
+				if (Operator == TEXT("!="))
+				{
+					bSuccess = true;
+					bResult = bABooleanValue != bBBooleanValue;
+					return;
+				}
 				ErrorMessage = TEXT("Invalid Operator");
 				return;
 			}
 		case EShidenVariableType::String:
-			if (Operator == TEXT("=="))
 			{
-				bSuccess = true;
-				bResult = AStringValue.Equals(BStringValue, ESearchCase::IgnoreCase);
-				return;
-			}
-			else if (Operator == TEXT("!="))
-			{
-				bSuccess = true;
-				bResult = !AStringValue.Equals(BStringValue, ESearchCase::IgnoreCase);
-				return;
-			}
-			else
-			{
+				if (Operator == TEXT("=="))
+				{
+					bSuccess = true;
+					bResult = AStringValue.Equals(BStringValue, ESearchCase::IgnoreCase);
+					return;
+				}
+				if (Operator == TEXT("!="))
+				{
+					bSuccess = true;
+					bResult = !AStringValue.Equals(BStringValue, ESearchCase::IgnoreCase);
+					return;
+				}
 				ErrorMessage = TEXT("Invalid Operator");
 				return;
 			}
 		case EShidenVariableType::Integer:
-			if (Operator == TEXT("=="))
 			{
-				bSuccess = true;
-				bResult = AIntegerValue == BIntegerValue;
-				return;
-			}
-			else if (Operator == TEXT("!="))
-			{
-				bSuccess = true;
-				bResult = AIntegerValue != BIntegerValue;
-				return;
-			}
-			else if (Operator == TEXT(">"))
-			{
-				bSuccess = true;
-				bResult = AIntegerValue > BIntegerValue;
-				return;
-			}
-			else if (Operator == TEXT("<"))
-			{
-				bSuccess = true;
-				bResult = AIntegerValue < BIntegerValue;
-				return;
-			}
-			else if (Operator == TEXT(">="))
-			{
-				bSuccess = true;
-				bResult = AIntegerValue >= BIntegerValue;
-				return;
-			}
-			else if (Operator == TEXT("<="))
-			{
-				bSuccess = true;
-				bResult = AIntegerValue <= BIntegerValue;
-				return;
-			}
-			else
-			{
+				if (Operator == TEXT("=="))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue == BIntegerValue;
+					return;
+				}
+				if (Operator == TEXT("!="))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue != BIntegerValue;
+					return;
+				}
+				if (Operator == TEXT(">"))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue > BIntegerValue;
+					return;
+				}
+				if (Operator == TEXT("<"))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue < BIntegerValue;
+					return;
+				}
+				if (Operator == TEXT(">="))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue >= BIntegerValue;
+					return;
+				}
+				if (Operator == TEXT("<="))
+				{
+					bSuccess = true;
+					bResult = AIntegerValue <= BIntegerValue;
+					return;
+				}
 				ErrorMessage = TEXT("Invalid Operator");
 				return;
 			}
 		case EShidenVariableType::Float:
-			if (Operator == TEXT("=="))
 			{
-				bSuccess = true;
-				bResult = AFloatValue == BFloatValue;
-				return;
-			}
-			else if (Operator == TEXT("!="))
-			{
-				bSuccess = true;
-				bResult = AFloatValue != BFloatValue;
-				return;
-			}
-			else if (Operator == TEXT(">"))
-			{
-				bSuccess = true;
-				bResult = AFloatValue > BFloatValue;
-				return;
-			}
-			else if (Operator == TEXT("<"))
-			{
-				bSuccess = true;
-				bResult = AFloatValue < BFloatValue;
-				return;
-			}
-			else if (Operator == TEXT(">="))
-			{
-				bSuccess = true;
-				bResult = AFloatValue >= BFloatValue;
-				return;
-			}
-			else if (Operator == TEXT("<="))
-			{
-				bSuccess = true;
-				bResult = AFloatValue <= BFloatValue;
-				return;
-			}
-			else
-			{
+				if (Operator == TEXT("=="))
+				{
+					bSuccess = true;
+					bResult = AFloatValue == BFloatValue;
+					return;
+				}
+				if (Operator == TEXT("!="))
+				{
+					bSuccess = true;
+					bResult = AFloatValue != BFloatValue;
+					return;
+				}
+				if (Operator == TEXT(">"))
+				{
+					bSuccess = true;
+					bResult = AFloatValue > BFloatValue;
+					return;
+				}
+				if (Operator == TEXT("<"))
+				{
+					bSuccess = true;
+					bResult = AFloatValue < BFloatValue;
+					return;
+				}
+				if (Operator == TEXT(">="))
+				{
+					bSuccess = true;
+					bResult = AFloatValue >= BFloatValue;
+					return;
+				}
+				if (Operator == TEXT("<="))
+				{
+					bSuccess = true;
+					bResult = AFloatValue <= BFloatValue;
+					return;
+				}
 				ErrorMessage = TEXT("Invalid Operator");
 				return;
 			}
-		case EShidenVariableType::Vector2:
+	case EShidenVariableType::Vector2:
+		{
 			if (Operator == TEXT("=="))
 			{
 				bSuccess = true;
 				bResult = AVector2Value == BVector2Value;
 				return;
 			}
-			else if (Operator == TEXT("!="))
+			if (Operator == TEXT("!="))
 			{
 				bSuccess = true;
 				bResult = AVector2Value != BVector2Value;
 				return;
 			}
-			else
-			{
-				ErrorMessage = TEXT("Invalid Operator");
-				return;
-			}
-		case EShidenVariableType::Vector3:
+			ErrorMessage = TEXT("Invalid Operator");
+			return;
+		}
+	case EShidenVariableType::Vector3:
+		{
 			if (Operator == TEXT("=="))
 			{
 				bSuccess = true;
 				bResult = AVector3Value == BVector3Value;
 				return;
 			}
-			else if (Operator == TEXT("!="))
+			if (Operator == TEXT("!="))
 			{
 				bSuccess = true;
 				bResult = AVector3Value != BVector3Value;
 				return;
 			}
-			else
-			{
-				ErrorMessage = TEXT("Invalid Operator");
-				return;
-			}
+			ErrorMessage = TEXT("Invalid Operator");
+			return;
+		}
 	}
 }

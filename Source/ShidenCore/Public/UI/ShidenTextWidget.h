@@ -12,16 +12,17 @@ class SHIDENCORE_API UShidenTextWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TMap<FString, FString> OriginalTexts;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	int CurrentLength;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TMap<FString, TObjectPtr<URichTextBlock>> RichTextBlocks;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TMap<FString, TObjectPtr<UTextBlock>> TextBlocks;
 
 public:
@@ -31,18 +32,18 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget")
 	void GetAllFullTexts(TMap<FString, FString>& Texts);
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget")
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void GetFullText(const FString& TextType, FString& Text, bool& bResult);
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget")
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void GetCurrentText(const FString& TextType, FString& Text, bool& bResult);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void SetText(const FString& TextType, const FString& RawText, const int Length, bool& bResult);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void ClearText(const FString& TextType, bool& bResult);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void ClearAllText();
+	void ClearAllTexts();
 };
