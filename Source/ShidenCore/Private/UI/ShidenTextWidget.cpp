@@ -1,7 +1,6 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "UI/ShidenTextWidget.h"
-
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "Utility/ShidenCoreFunctionLibrary.h"
@@ -44,10 +43,12 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 
 	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph && ParsedLength <= Length)
 	{
-		FString ClickWaitingGlyph;
-		UShidenVariableFunctionLibrary::GetClickWaitingGlyph(ClickWaitingGlyph);
-		ParsedText = ParsedText.Append(ClickWaitingGlyph);
-	}	
+		const UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+		check(ShidenSubsystem);
+		
+		ParsedText = ParsedText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
+	}
 
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
@@ -98,14 +99,17 @@ SHIDENCORE_API void UShidenTextWidget::ClearAllTexts_Implementation()
 SHIDENCORE_API void UShidenTextWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	TArray<UWidget*> Children;
 	WidgetTree->GetAllWidgets(Children);
-	for (TObjectPtr <UWidget> Child : Children) {
-		if (TObjectPtr <URichTextBlock> RichTextBlock = Cast<URichTextBlock>(Child)) {
+	for (const TObjectPtr<UWidget> Child : Children)
+	{
+		if (TObjectPtr<URichTextBlock> RichTextBlock = Cast<URichTextBlock>(Child))
+		{
 			RichTextBlocks.Add(Child->GetName(), RichTextBlock);
 		}
-		else if (TObjectPtr <UTextBlock> TextBlock = Cast<UTextBlock>(Child)) {
+		else if (TObjectPtr<UTextBlock> TextBlock = Cast<UTextBlock>(Child))
+		{
 			TextBlocks.Add(Child->GetName(), TextBlock);
 		}
 	}

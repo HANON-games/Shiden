@@ -18,7 +18,7 @@ Please note that there may be breaking changes in Version 1.0 release.
     - You can save combinations of frequently used commands and parameters as presets.
     - Import/export functionality in CSV format.
 - Various features required for visual novel games
-    - 36 types of basic commands
+    - 37 types of basic commands
     - Basic save functionality
     - Simple variable functionality
         - Includes both variables managed per save slot and system variables.

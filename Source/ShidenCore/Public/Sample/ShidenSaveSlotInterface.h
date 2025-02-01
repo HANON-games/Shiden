@@ -21,7 +21,9 @@ class SHIDENCORE_API IShidenSaveSlotInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "DisplayName,UpdatedAtText,NameText,TalkText"))
-	void InitSaveSlot(const FString& SlotName, const FText& DisplayName, const UUserWidget* SaveMenuWidget, const bool bIsSaveMode, const UTexture2D* Thumbnail, const FText& UpdatedAtText, const FText& NameText, const FText& TalkText);
+	void InitSaveSlot(const FString& SlotName, const FText& DisplayName, const UUserWidget* SaveMenuWidget,
+	                  const bool bIsSaveMode, const UTexture2D* Thumbnail, const FText& UpdatedAtText,
+	                  const FText& NameText, const FText& TalkText);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "DisplayName"))
 	void InitNoDataSaveSlot(const FString& SlotName, const FText& DisplayName, const UUserWidget* SaveMenuWidget, const bool bIsSaveMode);

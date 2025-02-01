@@ -2,11 +2,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Save/ShidenAsyncActionHandleSaveGame.h"
-#include "Utility/ShidenCoreFunctionLibrary.h"
+#include "Save/ShidenSaveFunctionLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ShidenAsyncActionHandleSaveGame)
 
-UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUserData(UObject* WorldContextObject, const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
 {
 	UShidenAsyncActionHandleSaveGame* Action = NewObject<UShidenAsyncActionHandleSaveGame>();
 	Action->Operation = ESaveGameOperationName::SaveUserData;
@@ -30,10 +30,10 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	switch (Operation)
 	{
 	case ESaveGameOperationName::SaveUserData:
-		UShidenCoreFunctionLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata, FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveFunctionLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata, FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	case ESaveGameOperationName::SaveSystemData:
-		UShidenCoreFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	default:
 		UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));

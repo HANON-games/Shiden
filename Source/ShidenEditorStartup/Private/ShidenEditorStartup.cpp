@@ -12,7 +12,7 @@ SHIDENEDITORSTARTUP_API void FShidenEditorStartupModule::StartupModule()
 
 	if (GEditor)
 	{
-		const TObjectPtr <UObject> Object = LoadObject<UObject>(nullptr, TEXT("/Shiden/Editor/Utilities/EUB_ShidenStartup.EUB_ShidenStartup"));
+		const TObjectPtr<UObject> Object = LoadObject<UObject>(nullptr, TEXT("/Shiden/Editor/Utilities/EUB_ShidenStartup.EUB_ShidenStartup"));
 		GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->TryRun(Object);
 	}
 }
@@ -22,5 +22,5 @@ SHIDENEDITORSTARTUP_API void FShidenEditorStartupModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FShidenEditorStartupModule, ShidenEditorStartup)

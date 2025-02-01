@@ -19,6 +19,7 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	DECLARE_EVENT(UShidenCommandDefinitions, FOnChanged);
+
 	FOnChanged OnCommandDefinitionsChanged;
 #endif
 };

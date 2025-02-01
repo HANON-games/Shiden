@@ -18,208 +18,160 @@ class SHIDENCORE_API UShidenVariableFunctionLibrary : public UBlueprintFunctionL
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserBoolean(const FString Key, const bool bValue);
+	static void UpdateUserBoolean(const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserInteger(const FString Key, const int32 Value);
+	static void UpdateUserInteger(const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserFloat(const FString Key, const float Value);
+	static void UpdateUserFloat(const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserString(const FString Key, const FString Value);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateUserString(const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserVector3(const FString Key, const FVector Value);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateUserVector2(const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void AddUserVector2(const FString Key, const FVector2D Value);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void ContainsUserVariable(const FString Key, bool& bResult);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static bool IsEmptyUserVariable();
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void UserVariableKeys(TArray<FString>& Keys);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static int32 UserVariableLength();
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void RemoveUserVariable(const FString Key);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindUserVariable(const FString Key, EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void ClearUserVariables();
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateUserVector3(const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
 	
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindUserVariableAsString(const FString Key, FString& Result, bool& bReturnValue);
+	static void ContainsUserVariable(const FString& Name, bool& bResult);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemBoolean(const FString Key, const bool bValue);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void GetUserVariableNames(TArray<FString>& Names);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static int32 UserVariableNum();
 	
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemInteger(const FString Key, const int32 Value);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void GetUserVariableType(const FString& Name, EShidenVariableType& Type, bool& bResult);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void ResetUserVariable(const FString& Name);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void FindUserVariable(const FString& Name, EShidenVariableType& VariableType, bool& bBooleanValue,
+	                             FString& StringValue, int32& IntegerValue, float& FloatValue,
+	                             FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void ResetUserVariables();
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void FindUserVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bReturnValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemFloat(const FString Key, const float Value);
+	static void UpdateSystemBoolean(const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemString(const FString Key, const FString Value);
+	static void UpdateSystemInteger(const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemVector3(const FString Key, const FVector Value);
+	static void UpdateSystemFloat(const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateSystemString(const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateSystemVector2(const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
+	static void UpdateSystemVector3(const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
+	
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void GetSystemVariableType(const FString& Name, EShidenVariableType& Type, bool& bResult);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void AddSystemVector2(const FString Key, const FVector2D Value);
+	static void ResetSystemVariable(const FString& Name);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void RemoveSystemVariable(const FString Key);
+	static void ContainsSystemVariable(const FString& Name, bool& bResult);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void ContainsSystemVariable(const FString Key, bool& bResult);
+	static void GetSystemVariableNames(TArray<FString>& Names);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static bool IsEmptySystemVariable();
+	static int32 SystemVariableNum();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void SystemVariableKeys(TArray<FString>& Keys);
+	static void FindSystemVariable(const FString& Name, EShidenVariableType& VariableType,
+	                               bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+	                               float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static int32 SystemVariableLength();
+	static void ResetSystemVariables();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void FindSystemVariable(const FString Key, EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue);
+	static void FindSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bReturnValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void ClearSystemVariables();
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void FindSystemVariableAsString(const FString Key, FString& Result, bool& bReturnValue);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Arguments"))
+	static void InitLocalVariable(const FString& ProcessName, const UShidenScenario* Scenario, const TMap<FString, FString>& Arguments);
+	
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
+	static void UpdateLocalBoolean(const FString& ProcessName, const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalBoolean(const FString ProcessName, const FString Key, const bool bValue);
+	static void UpdateLocalInteger(const FString& ProcessName, const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalInteger(const FString ProcessName, const FString Key, const int32 Value);
+	static void UpdateLocalFloat(const FString& ProcessName, const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
+	static void UpdateLocalString(const FString& ProcessName, const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
+	static void UpdateLocalVector2(const FString& ProcessName, const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
+	static void UpdateLocalVector3(const FString& ProcessName, const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (ProcessName = "Default"))
+	static void GetLocalVariableType(const FString& ProcessName, const FString& Name, EShidenVariableType& Type, bool& bResult);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalFloat(const FString ProcessName, const FString Key, const float Value);
+	static void FindLocalVariable(const FString& ProcessName, const FString& Name,
+	                              EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+	                              float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalString(const FString ProcessName, const FString Key, const FString Value);
+	static void FindLocalVariableAsString(const FString& ProcessName, const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bReturnValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalVector3(const FString ProcessName, const FString Key, const FVector Value);
+	static void ResetLocalVariable(const FString& ProcessName, const FString& Name);
+	
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
+	static void RemoveLocalVariablesInCurrentScope(const FString& ProcessName);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void AddLocalVector2(const FString ProcessName, const FString Key, const FVector2D Value);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariable(const FString ProcessName, const FString Key, EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariableAsString(const FString ProcessName, const FString Key, FString& Result, bool& bReturnValue);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void RemoveLocalVariable(const FString ProcessName, const FString Key);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void RemoveCurrentLocalVariables(const FString ProcessName);
-		
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void RemoveProcessLocalVariables(const FString ProcessName);
+	static void RemoveLocalVariablesInProcess(const FString& ProcessName);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables")
-	static void ClearAllLocalVariables();
+	static void ResetAllLocalVariables();
+	
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
+	static void UpdatePredefinedSystemVariableByString(const FString& Name, const FString& Value, bool& bReturnValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void FindPredefinedSystemVariable(const FString Key, EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void FindPredefinedSystemVariableAsString(const FString Key, FString& Result, bool& bReturnValue);
+	static void FindPredefinedSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bReturnValue);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
-	static TArray<FString> GetVariableNamesFromText(const FString Text);
+	static TArray<FString> GetVariableNamesFromText(const FString& Text);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
-	static FShidenCommand ReplaceAllTextWithVariable(const FString ProcessName, const FShidenCommand Command);
+	static FShidenCommand ReplaceVariablesForLoad(FShidenVariable TempLocalVariable, const FShidenCommand& Command);
+	
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
+	static FShidenCommand ReplaceAllVariable(const FString& ProcessName, const FShidenCommand& Command);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
 	static void InitPredefinedSystemVariables();
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetSkipSpeedRate(float& SkipSpeedRate);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetVoiceVolumeRate(float& VoiceVolumeRate);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetSeVolumeRate(float& SeVolumeRate);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetBgmVolumeRate(float& BgmVolumeRate);
 	
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetLanguageIndex(int& LanguageIndex);
+	static const FShidenPredefinedSystemVariable& GetPredefinedSystemVariable();
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetSecondsToWaitForEachLetter(float& SecondsToWaitForEachLetter);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetWaitTimeOnAutoMode(float& WaitTimeOnAutoMode);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetVoiceStopCondition(EShidenVoiceStopCondition& VoiceStopCondition);
-	
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetSkipUnread(bool& bSkipUnread);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetScenarioReadLines(TMap<FGuid, FShidenReadLines>& ScenarioReadLines);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetClickWaitingGlyph(FString& ClickWaitingGlyph);
-
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void GetPlatformName(FString& PlatformName);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetSkipSpeedRate(const float SkipSpeedRate);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetVoiceVolumeRate(const float VoiceVolumeRate);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetSeVolumeRate(const float SeVolumeRate);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetBgmVolumeRate(const float BgmVolumeRate);
-	
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetLanguageIndex(const int32 LanguageIndex);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetSecondsToWaitForEachLetter(const float SecondsToWaitForEachLetter);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetWaitTimeOnAutoMode(const float WaitTimeOnAutoMode);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetVoiceStopCondition(EShidenVoiceStopCondition VoiceStopCondition);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetSkipUnread(const bool bSkipUnread);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetScenarioReadLines(const TMap<FGuid, FShidenReadLines>& ScenarioReadLines);
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void SetClickWaitingGlyph(const FString ClickWaitingGlyph);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
+	static void GetPredefinedSystemVariableType(const FString& Name, EShidenVariableType& Type, bool& bResult);
 
 	// internal functions
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
@@ -228,13 +180,31 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
 	static void ConvertToVariableType(const FString& VariableType, EShidenVariableType& Result, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
-	static void AddVariable(const FString ProcessName, const EShidenVariableKind Kind, const EShidenVariableType Type, const FString Key, const bool bBooleanValue, const FString StringValue, const int32 IntegerValue, const float FloatValue, const FVector2D Vector2Value, const FVector Vector3Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
+	static void GetVariableDefinition(const FString& ProcessName, EShidenVariableKind Kind, const FString& Name,
+								FShidenVariableDefinition& Definition, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
-	static void FindVariable(const FString ProcessName, const EShidenVariableKind Kind, const FString Key, EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bReturnValue);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value"))
+	static void UpdateVariable(const FString& ProcessName, EShidenVariableKind Kind, EShidenVariableType Type,
+	                           const FString& Name, bool bBooleanValue, const FString& StringValue,
+	                           int32 IntegerValue, float FloatValue, const FVector2D& Vector2Value,
+	                           const FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
-	static void EvaluateCondition(const EShidenVariableType Type, const FString Operator, const bool bABooleanValue, const FString AStringValue, const int32 AIntegerValue, const float AFloatValue, const FVector2D AVector2Value, const FVector AVector3Value, 
-		const bool bBBooleanValue, const FString BStringValue, const int32 BIntegerValue, const float BFloatValue, const FVector2D BVector2Value, const FVector BVector3Value, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
+	static void FindVariable(const FString& ProcessName, EShidenVariableKind Kind,
+	                         const FString& Name, EShidenVariableType& VariableType, bool& bBooleanValue,
+	                         FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value,
+	                         FVector& Vector3Value, bool& bReturnValue, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (AutoCreateRefTerm = "AStringValue,AVector2Value,AVector3Value,BStringValue,BVector2Value,BVector3Value"))
+	static void EvaluateCondition(EShidenVariableType Type, const FString& Operator, bool bABooleanValue,
+	                              const FString& AStringValue, int32 AIntegerValue, float AFloatValue,
+	                              const FVector2D& AVector2Value, const FVector& AVector3Value,
+	                              bool bBBooleanValue, const FString& BStringValue, int32 BIntegerValue,
+	                              float BFloatValue, const FVector2D& BVector2Value, const FVector& BVector3Value,
+	                              bool& bResult, bool& bSuccess, FString& ErrorMessage);
+
+	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
+
+	static FString MakeUpdateErrorMessage(TObjectPtr<UShidenSubsystem> ShidenSubsystem, const FString& Name, const EShidenVariableType& Type);
 };

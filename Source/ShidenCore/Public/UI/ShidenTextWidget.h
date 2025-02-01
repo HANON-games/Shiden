@@ -31,10 +31,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget")
 	void GetAllFullTexts(TMap<FString, FString>& Texts);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void GetFullText(const FString& TextType, FString& Text, bool& bResult);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void GetCurrentText(const FString& TextType, FString& Text, bool& bResult);
 

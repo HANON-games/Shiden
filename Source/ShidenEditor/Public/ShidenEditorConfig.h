@@ -10,14 +10,14 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
-public: 
+public:
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	FString EditScenarioPath;
 
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	bool bPreviewSound;
-	
-	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
+
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	float ShidenDebuggerRefreshInterval;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference", Meta = (ConfigRestartRequired = true))
@@ -27,14 +27,17 @@ public:
 	FString DefaultCommand;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
+	static void SetEditScenarioPath(const FString& Path);
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
 	static void SetPreviewSound(const bool bBool);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
 	static void SetShidenDebuggerRefreshInterval(const float Interval);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetEditScenarioPath(const FString& Path);
+	static void SetAutoSaveScenario(const bool bBool);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetAutoSaveScenario(const bool bBool);
+	static void SetDefaultCommand(const FString& CommandName);
 };

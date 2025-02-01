@@ -12,17 +12,17 @@ class SHIDENCORE_API UShidenCommandFunctionLibrary : public UBlueprintFunctionLi
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
-	static void RegisterScenarioProperty(const FString CommandName, const FString Key, const FString Value);
+	static void RegisterScenarioProperty(const FString& CommandName, const FString& Key, const FString& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
-	static void RemoveScenarioProperty(const FString CommandName, const FString Key);
+	static void RemoveScenarioProperty(const FString& CommandName, const FString& Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
-	static void ClearScenarioProperties(const FString CommandName);
+	static void ClearScenarioProperties(const FString& CommandName);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Shiden Visual Novel|Command")
-	static void IsTrue(const FString CommandArgument, bool& bResult);
+	static void IsTrue(const FString& CommandArgument, bool& bResult);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Shiden Visual Novel|Command")
-	static void IsEmptyAssetPath(const FString CommandArgument, bool& bResult);
+	static void IsEmptyAssetPath(const FString& CommandArgument, bool& bResult);
 };

@@ -5,13 +5,13 @@
 #include "ShidenScenarioStruct.generated.h"
 
 /// <summary>
-/// This class is used to convert UShidenScenario to Json.
+/// This struct is used to convert UShidenScenario to Json.
 /// </summary>
 USTRUCT()
 struct SHIDENEDITOR_API FShidenScenarioStruct
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY()
 	FGuid ScenarioId;
 
@@ -22,7 +22,10 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 	TArray<FShidenCommand> Commands;
 
 	UPROPERTY()
-	TArray<FShidenMacroArgument> MacroArguments;
+	TArray<FShidenMacroParameter> MacroParameterDefinitions;
+
+	UPROPERTY()
+	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
 
 	UShidenScenario* ToShidenScenario()
 	{
@@ -30,7 +33,8 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 		Scenario->ScenarioId = ScenarioId;
 		Scenario->Note = Note;
 		Scenario->Commands = Commands;
-		Scenario->MacroArguments = MacroArguments;
+		Scenario->MacroParameterDefinitions = MacroParameterDefinitions;
+		Scenario->LocalVariableDefinitions = LocalVariableDefinitions;
 		return Scenario;
 	}
 
@@ -39,7 +43,8 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 		ScenarioId = Scenario->ScenarioId;
 		Note = Scenario->Note;
 		Commands = Scenario->Commands;
-		MacroArguments = Scenario->MacroArguments;
+		MacroParameterDefinitions = Scenario->MacroParameterDefinitions;
+		LocalVariableDefinitions = Scenario->LocalVariableDefinitions;
 	}
 
 	FShidenScenarioStruct()

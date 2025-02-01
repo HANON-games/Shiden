@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ShidenReadLines.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Variable/ShidenVariable.h"
 #include "Variable/ShidenPredefinedSystemVariable.h"
@@ -14,6 +15,7 @@
 #include "Command/ShidenCommandObject.h"
 #include "Engine/World.h"
 #include "UObject/Object.h"
+#include "Variable/ShidenLocalVariable.h"
 #include "ShidenSubsystem.generated.h"
 
 UCLASS(Category = "Shiden Visual Novel|Subsystem")
@@ -22,12 +24,6 @@ class SHIDENCORE_API UShidenSubsystem : public UEngineSubsystem
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Subsystem")
-	bool IsAutoTextMode() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Subsystem")
-	void SetAutoTextMode(bool bMode);
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenPredefinedSystemVariable PredefinedSystemVariable;
 
@@ -38,10 +34,10 @@ public:
 	FShidenVariable UserVariable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TMap<FString, FShidenVariable> LocalVariables;
+	FShidenLocalVariable LocalVariable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TMap<FString, FShidenScenarioProperties> CurrentScenarioProperties;
+	TMap<FString, FShidenScenarioProperties> ScenarioProperties;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, FShidenScenarioProgressStack> ScenarioProgressStack;
@@ -61,39 +57,47 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TMap<FString, TObjectPtr<UShidenCommandObject>> CommandCache;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	TMap<FGuid, FShidenReadLines> ScenarioReadLines;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	bool bAutoTextMode = false;
+
 	UFUNCTION()
-	void SetDefaultPredefinedSystemVariables() {
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault <UShidenProjectConfig>();
+	void SetDefaultPredefinedSystemVariables()
+	{
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		PredefinedSystemVariable = ShidenProjectConfig->PredefinedSystemVariable;
 	}
 
 #if WITH_EDITOR
 	void BeginPlay(UWorld* InWorld)
 	{
-		SystemVariable = FShidenVariable();
-		UserVariable = FShidenVariable();
-		LocalVariables = TMap<FString, FShidenVariable>();
-		CurrentScenarioProperties = TMap<FString, FShidenScenarioProperties>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);
+		UserVariable = FShidenVariable(ShidenProjectConfig->UserVariableDefinitions);
+		LocalVariable = FShidenLocalVariable();
+		ScenarioProperties = TMap<FString, FShidenScenarioProperties>();
 		ScenarioProgressStack = TMap<FString, FShidenScenarioProgressStack>();
 		BacklogItems = TArray<FShidenBacklogItem>();
+		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
 		SetDefaultPredefinedSystemVariables();
 	}
 #endif
 
 	UShidenSubsystem()
 	{
-		SystemVariable = FShidenVariable();
-		UserVariable = FShidenVariable();
-		LocalVariables = TMap<FString, FShidenVariable>();
-		CurrentScenarioProperties = TMap<FString, FShidenScenarioProperties>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);
+		UserVariable = FShidenVariable(ShidenProjectConfig->UserVariableDefinitions);
+		LocalVariable = FShidenLocalVariable();
+		ScenarioProperties = TMap<FString, FShidenScenarioProperties>();
 		ScenarioProgressStack = TMap<FString, FShidenScenarioProgressStack>();
 		BacklogItems = TArray<FShidenBacklogItem>();
+		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
 		SetDefaultPredefinedSystemVariables();
 #if WITH_EDITOR
 		FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UShidenSubsystem::BeginPlay);
 #endif
 	}
-
-private:
-	bool bAutoTextMode = false;
 };

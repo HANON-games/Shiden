@@ -9,9 +9,9 @@ struct FShidenImageInfo
 {
 	GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    FString ImagePath;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FString ImagePath;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-    FLinearColor ImageColor = FLinearColor::White;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FLinearColor ImageColor = FLinearColor::White;
 };

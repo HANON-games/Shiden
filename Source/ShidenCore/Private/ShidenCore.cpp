@@ -45,5 +45,5 @@ void FShidenCoreModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FShidenCoreModule, ShidenCore)

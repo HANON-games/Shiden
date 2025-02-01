@@ -28,7 +28,6 @@ UCLASS()
 class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 {
 	GENERATED_UCLASS_BODY()
-
 	//~ Begin UEdGraphNode Interface.
 	virtual void AllocateDefaultPins() override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
@@ -57,6 +56,7 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& CommandName);
 
 	void OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const;
+
 private:
 	/**
 	 * Takes the specified "MutatablePin" and sets its 'PinToolTip' field (according
@@ -73,7 +73,7 @@ private:
 
 	void ChangeAdvancedView();
 
-	static bool IsOutputPinChanged(TArray<UEdGraphPin*> OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName);
+	static bool IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName);
 
 	FText NodeTooltip;
 

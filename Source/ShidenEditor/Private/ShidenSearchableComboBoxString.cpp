@@ -20,7 +20,7 @@ SHIDENEDITOR_API UShidenSearchableComboBoxString::UShidenSearchableComboBoxStrin
 	WidgetStyle = UE::Slate::Private::FDefaultStyleCache::GetRuntime().GetComboBoxStyle();
 	ItemStyle = UE::Slate::Private::FDefaultStyleCache::GetRuntime().GetTableRowStyle();
 
-#if WITH_EDITOR 
+#if WITH_EDITOR
 	if (IsEditorWidget())
 	{
 		WidgetStyle = UE::Slate::Private::FDefaultStyleCache::GetEditor().GetComboBoxStyle();
@@ -90,7 +90,7 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWid
 		CurrentOptionPtr = Options[InitialIndex];
 	}
 	PRAGMA_DISABLE_DEPRECATION_WARNINGS
-		MyComboBox =
+	MyComboBox =
 		SNew(SSearchableComboBox)
 		.ComboBoxStyle(&WidgetStyle)
 		.ItemStyle(&ItemStyle)
@@ -233,6 +233,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetSelectedIndex(const in
 		}
 	}
 }
+
 SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetSelectedOption() const
 {
 	if (CurrentOptionPtr.IsValid())
@@ -340,8 +341,8 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGene
 
 	// If a row wasn't generated just create the default one, a simple text block of the item's name.
 	return SNew(STextBlock)
-	.Text(FText::FromString(StringItem))
-	.Font(Font);
+		.Text(FText::FromString(StringItem))
+		.Font(Font);
 }
 
 SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleSelectionChanged(const TSharedPtr<FString> Item, const ESelectInfo::Type SelectionType)

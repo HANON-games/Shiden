@@ -12,5 +12,6 @@ enum class EShidenVariableType : uint8
 	Integer,
 	Float,
 	Vector2 UMETA(DisplayName = "Vector2"),
-	Vector3 UMETA(DisplayName = "Vector3")
+	Vector3 UMETA(DisplayName = "Vector3"),
+	AssetPath UMETA(DisplayName = "AssetPath"), // This type is treated as String internally
 };

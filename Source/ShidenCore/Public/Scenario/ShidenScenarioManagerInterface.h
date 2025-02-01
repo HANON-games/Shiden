@@ -34,7 +34,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void AdjustBgmVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve, bool& bSuccess);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void PlayForceFeedback(const FString& ForceFeedbackEffectPath, bool& bSuccess);
 

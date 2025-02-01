@@ -11,21 +11,23 @@ USTRUCT(BlueprintType, Category = "Shiden Visual Novel|Save Game")
 struct FShidenSaveTexture
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
 	int32 Width = 0;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
 	int32 Height = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
 	TEnumAsByte<EPixelFormat> Format = PF_R8G8B8A8;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
 	TArray<uint8> Pixels = TArray<uint8>();
 
-	explicit FShidenSaveTexture(UTexture2D* Texture) {
-		if (!Texture) {
+	explicit FShidenSaveTexture(UTexture2D* Texture)
+	{
+		if (!Texture)
+		{
 			return;
 		}
 
@@ -40,5 +42,7 @@ struct FShidenSaveTexture
 		Mip.BulkData.Unlock();
 	}
 
-	FShidenSaveTexture() {}
+	FShidenSaveTexture()
+	{
+	}
 };
