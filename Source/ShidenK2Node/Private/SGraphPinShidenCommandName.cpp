@@ -29,11 +29,11 @@ void SGraphPinShidenCommandName::RefreshNameList(const TObjectPtr<UShidenCommand
 	NameList.Empty();
 	if (IsValid(CommandDefinitions))
 	{
-		TArray<FString> Keys = TArray<FString>();
+		TArray<FString> Keys;
 		CommandDefinitions->CommandDefinitions.GetKeys(Keys);
-		for (FString Name : Keys)
+		for (FString& Key : Keys)
 		{
-			TSharedPtr<FName> RowNameItem = MakeShareable(new FName(Name));
+			TSharedPtr<FName> RowNameItem = MakeShareable(new FName(Key));
 			NameList.Add(RowNameItem);
 		}
 	}

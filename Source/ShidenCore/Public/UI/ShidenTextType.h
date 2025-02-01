@@ -8,7 +8,7 @@ USTRUCT(BlueprintType)
 struct FShidenTextType
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
 	bool bShouldShowClickWaitingGlyph = false;
 };

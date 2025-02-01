@@ -18,12 +18,11 @@ UCLASS(meta = (DisplayName = "SearchableComboBox (String)"))
 class SHIDENEDITOR_API UShidenSearchableComboBoxString : public UWidget
 {
 	GENERATED_UCLASS_BODY()
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSelectionChangedEvent, FString, SelectedItem, ESelectInfo::Type, SelectionType);
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpeningEvent);
 
 private:
-
 	UPROPERTY(EditAnywhere, Category = Content)
 	TArray<FString> DefaultOptions;
 
@@ -31,7 +30,6 @@ private:
 	FString SelectedOption;
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Style, meta = (DisplayName = "Style"))
 	FComboBoxStyle WidgetStyle;
 
@@ -59,7 +57,6 @@ public:
 	FSlateColor ForegroundColor;
 
 public:
-
 	UPROPERTY(EditAnywhere, Category = Events, meta = (IsBindableEvent = "True"))
 	FGenerateWidgetForString OnGenerateWidgetEvent;
 
@@ -70,7 +67,6 @@ public:
 	FOnOpeningEvent OnOpening;
 
 public:
-
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
 	void AddOption(const FString& Option);
 
@@ -133,26 +129,26 @@ public:
 #endif
 
 protected:
-	void UpdateOrGenerateWidget(const TSharedPtr< FString >& Item);
+	void UpdateOrGenerateWidget(const TSharedPtr<FString>& Item);
 
-	virtual TSharedRef< SWidget > HandleGenerateWidget(TSharedPtr< FString > Item) const;
+	virtual TSharedRef<SWidget> HandleGenerateWidget(TSharedPtr<FString> Item) const;
 
-	virtual void HandleSelectionChanged(TSharedPtr< FString > Item, ESelectInfo::Type SelectionType);
+	virtual void HandleSelectionChanged(TSharedPtr<FString> Item, ESelectInfo::Type SelectionType);
 
 	virtual void HandleOpening();
 
 	//~ Begin UWidget Interface
-	virtual TSharedRef< SWidget > RebuildWidget() override;
+	virtual TSharedRef<SWidget> RebuildWidget() override;
 	//~ End UWidget Interface
 
 protected:
-	TArray< TSharedPtr<FString> > Options;
+	TArray<TSharedPtr<FString>> Options;
 
-	TSharedPtr< SSearchableComboBox > MyComboBox;
+	TSharedPtr<SSearchableComboBox> MyComboBox;
 
-	TSharedPtr< SBox > ComboBoxContent;
+	TSharedPtr<SBox> ComboBoxContent;
 
-	TWeakPtr< STextBlock > DefaultComboBoxContent;
+	TWeakPtr<STextBlock> DefaultComboBoxContent;
 
-	TSharedPtr< FString > CurrentOptionPtr;
+	TSharedPtr<FString> CurrentOptionPtr;
 };

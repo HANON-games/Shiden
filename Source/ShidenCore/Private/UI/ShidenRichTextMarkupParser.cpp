@@ -10,12 +10,15 @@ struct FUnescapeHelper
 
 	FUnescapeHelper()
 	{
-		EscapeSequences.Add(TEXT("quot"));	UnescapedCharacters.Add(TEXT("\""));
-		EscapeSequences.Add(TEXT("lt"));	UnescapedCharacters.Add(TEXT("<"));
-		EscapeSequences.Add(TEXT("gt"));	UnescapedCharacters.Add(TEXT(">"));
-		EscapeSequences.Add(TEXT("amp"));	UnescapedCharacters.Add(TEXT("&"));
+		EscapeSequences.Add(TEXT("quot"));
+		UnescapedCharacters.Add(TEXT("\""));
+		EscapeSequences.Add(TEXT("lt"));
+		UnescapedCharacters.Add(TEXT("<"));
+		EscapeSequences.Add(TEXT("gt"));
+		UnescapedCharacters.Add(TEXT(">"));
+		EscapeSequences.Add(TEXT("amp"));
+		UnescapedCharacters.Add(TEXT("&"));
 	}
-
 } static const UnescapeHelper;
 
 struct FEscapeSequenceRegexPatternString
@@ -45,14 +48,14 @@ struct FEscapeSequenceRegexPatternString
 	}
 };
 
-SHIDENCORE_API TSharedRef< FShidenRichTextMarkupParser > FShidenRichTextMarkupParser::Create()
+SHIDENCORE_API TSharedRef<FShidenRichTextMarkupParser> FShidenRichTextMarkupParser::Create()
 {
 	return MakeShareable(new FShidenRichTextMarkupParser());
 }
 
-SHIDENCORE_API TSharedRef< FShidenRichTextMarkupParser > FShidenRichTextMarkupParser::GetStaticInstance()
+SHIDENCORE_API TSharedRef<FShidenRichTextMarkupParser> FShidenRichTextMarkupParser::GetStaticInstance()
 {
-	static TSharedRef< FShidenRichTextMarkupParser > Parser = MakeShareable(new FShidenRichTextMarkupParser());
+	static TSharedRef<FShidenRichTextMarkupParser> Parser = MakeShareable(new FShidenRichTextMarkupParser());
 	return Parser;
 }
 
@@ -98,8 +101,7 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 			for (const FTextRunParseResults& RunParseResult : LineParseResult.Runs)
 			{
 				FTextRange TargetRange =
-					RunParseResult.ContentRange.IsEmpty() ?
-					RunParseResult.OriginalRange : RunParseResult.ContentRange;
+					RunParseResult.ContentRange.IsEmpty() ? RunParseResult.OriginalRange : RunParseResult.ContentRange;
 
 				bool bFoundInRunParseResult = false;
 
@@ -123,7 +125,7 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 					}
 					CharIndex++;
 				}
-				else 
+				else
 				{
 					for (int32 Index = 0; Index < TargetRange.Len(); ++Index)
 					{
@@ -141,7 +143,6 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 							bFoundInRunParseResult = true;
 						}
 					}
-
 				}
 
 				bFoundToReplace |= bFoundInRunParseResult;
@@ -152,7 +153,10 @@ SHIDENCORE_API bool FShidenRichTextMarkupParser::HideCharacters(
 	return bFoundToReplace;
 }
 
-SHIDENCORE_API void FShidenRichTextMarkupParser::ParseLineRanges(const FString& Input, const TArray<FTextRange>& LineRanges, TArray<FTextLineParseResults>& LineParseResultsArray) const
+SHIDENCORE_API void FShidenRichTextMarkupParser::ParseLineRanges(const FString& Input,
+                                                                 const TArray<FTextRange>& LineRanges,
+                                                                 TArray<FTextLineParseResults>& LineParseResultsArray)
+const
 {
 	// Special regular expression pattern for matching rich text markup elements. IE: <ElementName AttributeName="AttributeValue">Content</>
 	FRegexMatcher ElementRegexMatcher(ElementRegexPattern, Input);
@@ -252,7 +256,10 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::ParseLineRanges(const FString& 
 	}
 }
 
-SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FString& Input, TArray<FTextLineParseResults>& LineParseResultsArray, FString& ConcatenatedUnescapedLines) const
+SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FString& Input,
+                                                                       TArray<FTextLineParseResults>&
+                                                                       LineParseResultsArray,
+                                                                       FString& ConcatenatedUnescapedLines) const
 {
 	// Modify original string to handle escape sequences that need to be replaced while updating run ranges.
 	for (int32 I = 0; I < LineParseResultsArray.Num(); ++I)
@@ -282,7 +289,7 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FSt
 			IndicesToUpdate.Add(&RunParseResults.OriginalRange.EndIndex);
 
 			{
-				const auto GetUnescapedString = [&]()
+				const auto GetUnescapedString = [&]
 				{
 					int32 LastCopiedIndex = EscapeSequenceRegexMatcher.GetBeginLimit();
 					while (EscapeSequenceRegexMatcher.FindNext())

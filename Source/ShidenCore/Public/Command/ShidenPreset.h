@@ -13,13 +13,5 @@ struct FShidenPreset
 	FString CommandName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	FString PresetName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	TMap <FString, FString> Args;
-
-	bool operator==(const FShidenPreset& That) const noexcept
-	{
-		return CommandName == That.CommandName && PresetName == That.PresetName;
-	}
+	TMap<FString, FString> Args;
 };

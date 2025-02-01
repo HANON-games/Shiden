@@ -7,7 +7,7 @@
 #include "ShidenPreviewCommand.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenPreviewCommand
+struct SHIDENEDITOR_API FShidenPreviewCommand
 {
 	GENERATED_BODY()
 

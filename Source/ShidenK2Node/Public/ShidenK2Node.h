@@ -8,7 +8,6 @@
 class SHIDENK2NODE_API FShidenK2NodeModule : public IModuleInterface
 {
 public:
-
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;

@@ -21,6 +21,6 @@ class SHIDENCORE_API IShidenBacklogInterface
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "Name,Text,VoicePath"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void InitBacklog(const TScriptInterface<UShidenScenarioManagerInterface>& ScenarioManager);
 };

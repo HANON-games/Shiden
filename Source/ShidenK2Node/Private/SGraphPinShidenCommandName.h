@@ -14,7 +14,10 @@ class UEdGraphPin;
 class SHIDENK2NODE_API SGraphPinShidenCommandName : public SGraphPinNameList
 {
 public:
-	SLATE_BEGIN_ARGS(SGraphPinShidenCommandName) {}
+	SLATE_BEGIN_ARGS(SGraphPinShidenCommandName)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions);

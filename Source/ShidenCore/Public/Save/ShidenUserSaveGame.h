@@ -6,6 +6,7 @@
 #include "Variable/ShidenVariable.h"
 #include "Scenario/ShidenScenarioProgressStack.h"
 #include "Scenario/ShidenScenarioProperties.h"
+#include "Variable/ShidenLocalVariable.h"
 #include "ShidenUserSaveGame.generated.h"
 
 UCLASS(Category = "Shiden Visual Novel|Save Game")
@@ -15,10 +16,10 @@ class SHIDENCORE_API UShidenUserSaveGame : public USaveGame
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
-	FShidenVariable UserVariables;
+	FShidenVariable UserVariable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
-	TMap<FString, FShidenVariable> LocalVariables;
+	FShidenLocalVariable LocalVariable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FString, FShidenScenarioProgressStack> ScenarioProgressStack;

@@ -15,12 +15,18 @@ struct FShidenCommandArgument
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FText DisplayName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowedClasses = "/Script/ShidenEditor.ShidenEditorInputDataAsset"), Category = "Shiden Visual Novel|Command")
-	FSoftObjectPath InputType;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FString DefaultValue;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command", Meta = (AllowedClasses = "/Script/Blutility.EditorUtilityWidgetBlueprint", ExactClass = false))
+	FSoftObjectPath TemplateWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	TMap<FString, FString> TemplateParameters = TMap<FString, FString>();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	bool bIsAssetToBeLoaded = false;
 };
 
 USTRUCT(BlueprintType)
@@ -45,7 +51,7 @@ struct FShidenCommandDefinition
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	bool bCanCallInMacro = true;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowedClasses = "/Script/Engine.Blueprint"), Category = "Shiden Visual Novel|Command")
 	FSoftObjectPath CommandBlueprint;
 

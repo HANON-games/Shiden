@@ -11,7 +11,7 @@ class SHIDENCORE_API FShidenRichTextMarkupParser : public IRichTextMarkupParser
 {
 public:
 	static TSharedRef<FShidenRichTextMarkupParser> Create();
-	
+
 	static TSharedRef<FShidenRichTextMarkupParser> GetStaticInstance();
 
 public:
@@ -19,15 +19,15 @@ public:
 
 private:
 	void ParseLineRanges(const FString& Input, const TArray<FTextRange>& LineRanges, TArray<FTextLineParseResults>& LineParseResultsArray) const;
-	
+
 	void HandleEscapeSequences(const FString& Input, TArray<FTextLineParseResults>& LineParseResultsArray, FString& ConcatenatedUnescapedLines) const;
-	
+
 	bool HideCharacters(const TArray<FTextLineParseResults>& LineParseResultsArray, FString& InOutConcatenatedLines) const;
-	
+
 	FRegexPattern EscapeSequenceRegexPattern;
-	
+
 	FRegexPattern ElementRegexPattern;
-	
+
 	FRegexPattern AttributeRegexPattern;
 
 	bool bHiddenCharacters;

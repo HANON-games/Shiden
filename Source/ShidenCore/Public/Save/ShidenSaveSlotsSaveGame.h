@@ -16,7 +16,7 @@ struct FShidenSaveSlot
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FString, FString> SlotMetadata;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	FShidenSaveTexture Thumbnail;
 
@@ -27,9 +27,13 @@ struct FShidenSaveSlot
 	FDateTime UpdatedAt;
 
 	FShidenSaveSlot(const FString& SlotName, const TMap<FString, FString>& SlotMetadata, const FShidenSaveTexture& Thumbnail, const FDateTime CreatedAt, const FDateTime UpdatedAt)
-		: SlotName(SlotName), SlotMetadata(SlotMetadata), Thumbnail(Thumbnail), CreatedAt(CreatedAt), UpdatedAt(UpdatedAt) {}
+		: SlotName(SlotName), SlotMetadata(SlotMetadata), Thumbnail(Thumbnail), CreatedAt(CreatedAt), UpdatedAt(UpdatedAt)
+	{
+	}
 
-	FShidenSaveSlot(){}
+	FShidenSaveSlot()
+	{
+	}
 };
 
 UCLASS(Category = "Shiden Visual Novel|Save Game")

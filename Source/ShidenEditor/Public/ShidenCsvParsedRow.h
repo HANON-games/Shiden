@@ -7,7 +7,7 @@
 USTRUCT(BlueprintType)
 struct FShidenCsvParsedRow
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SvnInternal")
 	TArray<FString> Row;

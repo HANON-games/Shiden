@@ -45,27 +45,42 @@ class SHIDENCORE_API UShidenCommandObject : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
+	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget,
+	                         const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+	                         const UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void PreviewCommand(const FShidenCommand& Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
-
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void PreProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
-
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget,
+	                                                const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject,
+	                                                EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void ProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const float DeltaTime, const UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage);
+	void PreviewCommand(const FShidenCommand& Command, const UShidenWidget* Widget,
+	                    const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+	                    const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget, const TScriptInterface <IShidenScenarioManagerInterface>& ScenarioManager, const float DeltaTime, const UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage);
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, const UShidenWidget* Widget,
+	                                           const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+	                                           const bool bIsCurrentCommand, EShidenPreviewStatus& Status,
+	                                           FString& ErrorMessage);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void GetAssetPaths(const FShidenCommand Command, TSet<FString>& AssetObjectPaths, const UObject* CallerObject);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
+	void PreProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	                       const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+	                       const UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
 
-	virtual void GetAssetPaths_Implementation(const FShidenCommand Command, TSet<FString>& AssetObjectPaths, const UObject* CallerObject);
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	                                              const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject,
+	                                              EShidenPreProcessStatus& Status, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
+	void ProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	                    const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager, const float DeltaTime,
+	                    const UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
+	                    FString& NextScenarioName, FString& ErrorMessage);
+
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	                                           const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+	                                           const float DeltaTime, const UObject* CallerObject,
+	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           FString& NextScenarioName, FString& ErrorMessage);
 };

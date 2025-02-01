@@ -22,10 +22,10 @@ UCLASS()
 class SHIDENCORE_API UShidenAsyncActionHandleSaveGame : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
-public:
 
+public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
-	static UShidenAsyncActionHandleSaveGame* AsyncSaveUserData(UObject* WorldContextObject, const FString SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata);
+	static UShidenAsyncActionHandleSaveGame* AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
 	static UShidenAsyncActionHandleSaveGame* AsyncSaveSystemData(UObject* WorldContextObject);
@@ -41,7 +41,7 @@ protected:
 
 	UPROPERTY()
 	FString SlotName;
-	
+
 	UPROPERTY()
 	UTexture2D* Thumbnail;
 

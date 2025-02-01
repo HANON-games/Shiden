@@ -7,7 +7,6 @@
 class SHIDENCORE_API FShidenCoreModule : public IModuleInterface
 {
 public:
-
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 

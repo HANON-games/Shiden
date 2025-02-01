@@ -28,12 +28,12 @@ class FShidenCustomGraphPanelPinFactory : public FGraphPanelPinFactory
 			if (Outer->IsA(UK2Node_GetCommandArguments::StaticClass()) && InPin->Direction == EGPD_Input && InPin->GetName() == TEXT("CommandName"))
 			{
 				const UK2Node_GetCommandArguments* GetShidenCommandNode = CastChecked<UK2Node_GetCommandArguments>(Outer);
-				
+
 				if (const UEdGraphPin* CommandDefinitionsPin = GetShidenCommandNode->GetCommandDefinitionsPin())
 				{
 					if (CommandDefinitionsPin->DefaultObject != nullptr && CommandDefinitionsPin->LinkedTo.Num() == 0)
 					{
-						if (auto CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
+						if (TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 						{
 							return SNew(SGraphPinShidenCommandName, InPin, CommandDefinitions);
 						}

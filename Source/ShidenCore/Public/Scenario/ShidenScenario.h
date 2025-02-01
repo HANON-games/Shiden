@@ -4,29 +4,9 @@
 
 #include "Command/ShidenCommand.h"
 #include "Engine/DataAsset.h"
-#include "Variable/ShidenVariableType.h"
+#include "Variable/ShidenMacroParameter.h"
+#include "Variable/ShidenVariableDefinition.h"
 #include "ShidenScenario.generated.h"
-
-USTRUCT(BlueprintType)
-struct FShidenMacroArgument
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	EShidenVariableType Type;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	FString DefaultValue;
-
-	FShidenMacroArgument() {
-		Name = "";
-		Type = EShidenVariableType::String;
-		DefaultValue = "";
-	}
-};
 
 UCLASS(Blueprintable)
 class SHIDENCORE_API UShidenScenario : public UDataAsset
@@ -44,12 +24,17 @@ public:
 	TArray<FShidenCommand> Commands;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	TArray<FShidenMacroArgument> MacroArguments;
+	TArray<FShidenMacroParameter> MacroParameterDefinitions;
 
-	UShidenScenario() {
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
+
+	UShidenScenario()
+	{
 		ScenarioId = FGuid::NewGuid();
 		Commands = TArray<FShidenCommand>();
-		MacroArguments = TArray<FShidenMacroArgument>();
+		MacroParameterDefinitions = TArray<FShidenMacroParameter>();
+		LocalVariableDefinitions = TArray<FShidenVariableDefinition>();
 	}
 
 	virtual void PostDuplicate(bool bDuplicateForPie) override;

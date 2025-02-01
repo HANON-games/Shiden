@@ -16,5 +16,5 @@ void FShidenK2NodeModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FShidenK2NodeModule, ShidenK2Node)
