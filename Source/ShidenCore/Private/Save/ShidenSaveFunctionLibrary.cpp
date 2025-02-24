@@ -1,6 +1,7 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "Save/ShidenSaveFunctionLibrary.h"
+#include "AudioDevice.h"
 #include "Kismet/GameplayStatics.h"
 #include "Save/ShidenSystemSaveGame.h"
 #include "Save/ShidenUserSaveGame.h"
@@ -188,7 +189,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDa
 	{
 		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UpdateSystemSaveGameInstance();
 		const bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
-		AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSuccess]()
+		AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSuccess]
 		{
 			SavedDelegate.ExecuteIfBound(bSuccess);
 		});
@@ -234,20 +235,13 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::LoadUserData(const FString& Slot
 	ShidenSubsystem->LocalVariable.UpdateVariableDefinitions();
 }
 
-SHIDENCORE_API void UShidenSaveFunctionLibrary::LoadSystemData()
+SHIDENCORE_API void UShidenSaveFunctionLibrary::LoadSystemData(const UObject* WorldContextObject)
 {
 	WaitUntilEmpty();
 
 	if (!DoesUserDataExist(TEXT("ShidenSystemData")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
-
-		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-		check(ShidenSubsystem);
-
-		// Update platform name
-		ShidenSubsystem->PredefinedSystemVariable.PlatformName = UGameplayStatics::GetPlatformName();
 		return;
 	}
 
@@ -261,10 +255,29 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::LoadSystemData()
 
 	ShidenSubsystem->SystemVariable = SaveGameInstance->SystemVariable;
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ShidenProjectConfig->SystemVariableDefinitions);
-	ShidenSubsystem->PredefinedSystemVariable = SaveGameInstance->PredefinedSystemVariable;
+	ShidenSubsystem->PredefinedSystemVariable = FShidenPredefinedSystemVariable(SaveGameInstance->PredefinedSystemVariable);
 	ShidenSubsystem->ScenarioReadLines = SaveGameInstance->ScenarioReadLines;
-	// Update platform name
-	ShidenSubsystem->PredefinedSystemVariable.PlatformName = UGameplayStatics::GetPlatformName();
+
+	// Apply volume rate
+	if (!GEngine || !GEngine->UseSound())
+	{
+		return;
+	}
+
+	const TObjectPtr<UWorld> ThisWorld = WorldContextObject->GetWorld();
+	if (!ThisWorld || !ThisWorld->bAllowAudioPlayback)
+	{
+		return;
+	}
+
+	if (FAudioDeviceHandle AudioDevice = ThisWorld->GetAudioDevice())
+	{
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(), ShidenSubsystem->PredefinedSystemVariable.MasterVolumeRate, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBgmSoundClass(), ShidenSubsystem->PredefinedSystemVariable.BgmVolumeRate, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSeSoundClass(), ShidenSubsystem->PredefinedSystemVariable.SeVolumeRate, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(), ShidenSubsystem->PredefinedSystemVariable.VoiceVolumeRate, 1.0, 0.0, true);
+		AudioDevice->PushSoundMixModifier(ShidenProjectConfig->GetSoundClassMix());
+	}
 }
 
 SHIDENCORE_API void UShidenSaveFunctionLibrary::DeleteUserData(const FString& SlotName)

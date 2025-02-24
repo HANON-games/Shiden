@@ -11,7 +11,7 @@
 class UShidenCommandDefinitions;
 class UEdGraphPin;
 
-class SHIDENK2NODE_API SGraphPinShidenCommandName : public SGraphPinNameList
+class SHIDENK2NODE_API SGraphPinShidenCommandName final : public SGraphPinNameList
 {
 public:
 	SLATE_BEGIN_ARGS(SGraphPinShidenCommandName)

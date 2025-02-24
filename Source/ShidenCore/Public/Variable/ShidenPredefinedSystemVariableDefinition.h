@@ -33,7 +33,7 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition: public FShidenV
 	{
 	}
 
-	FShidenPredefinedSystemVariableDefinition(FString InName, const EShidenVariableType InType, FString InDefaultValue, const bool InIsReadOnly, TFunction<FString()> InGetter, TFunction<void(FString)> InSetter)
+	FShidenPredefinedSystemVariableDefinition(FString InName, const EShidenVariableType InType, FString InDefaultValue, const bool InIsReadOnly, const TFunction<FString()>& InGetter, const TFunction<void(FString)>& InSetter)
 	{
 		Name = InName;
 		Type = InType;

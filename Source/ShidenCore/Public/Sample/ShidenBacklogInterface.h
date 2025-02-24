@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Scenario/ShidenScenarioManagerInterface.h"
+#include "Scenario/ShidenManagerInterface.h"
 #include "UObject/Interface.h"
 #include "ShidenBacklogInterface.generated.h"
 
@@ -22,5 +22,5 @@ class SHIDENCORE_API IShidenBacklogInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void InitBacklog(const TScriptInterface<UShidenScenarioManagerInterface>& ScenarioManager);
+	void InitBacklog(const TScriptInterface<UShidenManagerInterface>& ShidenManager);
 };

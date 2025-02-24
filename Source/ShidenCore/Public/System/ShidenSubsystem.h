@@ -24,7 +24,7 @@ class SHIDENCORE_API UShidenSubsystem : public UEngineSubsystem
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SvnInternal")
 	FShidenPredefinedSystemVariable PredefinedSystemVariable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
@@ -62,12 +62,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	bool bAutoTextMode = false;
-
+	
 	UFUNCTION()
 	void SetDefaultPredefinedSystemVariables()
 	{
 		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		PredefinedSystemVariable = ShidenProjectConfig->PredefinedSystemVariable;
+		PredefinedSystemVariable = FShidenPredefinedSystemVariable(ShidenProjectConfig->PredefinedSystemVariable);
 	}
 
 #if WITH_EDITOR

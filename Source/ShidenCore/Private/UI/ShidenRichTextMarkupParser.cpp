@@ -31,7 +31,7 @@ struct FEscapeSequenceRegexPatternString
 		for (const FString& EscapeSequence : EscapeSequences)
 		{
 			// Add alternation operator to regex.
-			if (!(EscapeSequenceRegexPatternString.IsEmpty()))
+			if (!EscapeSequenceRegexPatternString.IsEmpty())
 			{
 				EscapeSequenceRegexPatternString += TEXT("|");
 			}
@@ -78,7 +78,7 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::Process(
 	HandleEscapeSequences(Input, Results, Output);
 
 	// Add processing to further format the formatted string
-	bHiddenCharacters = FShidenRichTextMarkupParser::HideCharacters(Results, Output);
+	bHiddenCharacters = HideCharacters(Results, Output);
 }
 
 SHIDENCORE_API void FShidenRichTextMarkupParser::SetDisplayCharacterCount(const int32 NewCount)
@@ -319,11 +319,11 @@ SHIDENCORE_API void FShidenRichTextMarkupParser::HandleEscapeSequences(const FSt
 				int32 K;
 				for (K = 0; K + 1 < IndicesToUpdate.Num(); ++K)
 				{
-					EscapeSequenceRegexMatcher.SetLimits(*(IndicesToUpdate[K]), *(IndicesToUpdate[K + 1]));
-					*(IndicesToUpdate[K]) = ConcatenatedUnescapedLines.Len();
+					EscapeSequenceRegexMatcher.SetLimits(*IndicesToUpdate[K], *IndicesToUpdate[K + 1]);
+					*IndicesToUpdate[K] = ConcatenatedUnescapedLines.Len();
 					GetUnescapedString();
 				}
-				*(IndicesToUpdate[K]) = ConcatenatedUnescapedLines.Len();
+				*IndicesToUpdate[K] = ConcatenatedUnescapedLines.Len();
 			}
 		}
 

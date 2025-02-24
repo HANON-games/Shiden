@@ -9,8 +9,7 @@ UCLASS(config = Editor, defaultconfig, Category = "Shiden Visual Novel|Editor Co
 class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 {
 	GENERATED_UCLASS_BODY()
-
-public:
+	
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	FString EditScenarioPath;
 

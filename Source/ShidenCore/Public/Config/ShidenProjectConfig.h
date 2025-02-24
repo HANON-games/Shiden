@@ -13,7 +13,24 @@ UCLASS(config = Game, defaultconfig, Category = "Shiden Visual Novel|Config")
 class SHIDENCORE_API UShidenProjectConfig : public UObject
 {
 	GENERATED_UCLASS_BODY()
+
+private:
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
+	TSoftObjectPtr<USoundClass> MasterSoundClass;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
+	TSoftObjectPtr<USoundClass> BgmSoundClass;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
+	TSoftObjectPtr<USoundClass> SeSoundClass;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
+	TSoftObjectPtr<USoundClass> VoiceSoundClass;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
+	TSoftObjectPtr<USoundMix> SoundClassMix;
 	
+public:
 	UPROPERTY(VisibleAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TMap<FGuid, FString> ScenarioPaths;
 
@@ -76,4 +93,19 @@ class SHIDENCORE_API UShidenProjectConfig : public UObject
 	
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void SetSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions);
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
+	static USoundClass* GetMasterSoundClass();
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
+	static USoundClass* GetBgmSoundClass();
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
+	static USoundClass* GetSeSoundClass();
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
+	static USoundClass* GetVoiceSoundClass();
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
+	static USoundMix* GetSoundClassMix();
 };

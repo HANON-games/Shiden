@@ -7,34 +7,37 @@
 #include "Audio/ShidenSoundInfo.h"
 #include "UI/ShidenWidget.h"
 #include "Engine/Texture2D.h"
-#include "ShidenScenarioManagerInterface.generated.h"
+#include "ShidenManagerInterface.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class UShidenScenarioManagerInterface : public UInterface
+class UShidenManagerInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class SHIDENCORE_API IShidenScenarioManagerInterface
+class SHIDENCORE_API IShidenManagerInterface
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void FindShidenDigitalInput(const UInputAction* InputAction, bool& bValue, bool& bResult);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (bRegisterSound = true))
+	void PlaySound(const FShidenSoundInfo SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void PlaySound2d(const FShidenSoundInfo SoundInfo, float& Duration, bool& bSuccess);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void StopSound2d(const int32 TrackId, const EShidenSoundType Type);
+	void StopSound(const int32 TrackId, const EShidenSoundType Type);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void StopVoices();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void AdjustBgmVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve, bool& bSuccess);
-
+	void AdjustBgmVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
+	void PauseAllSounds(const bool bPause);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void PlayForceFeedback(const FString& ForceFeedbackEffectPath, bool& bSuccess);
 
@@ -42,7 +45,7 @@ public:
 	void CallMacroAsParallel(const FString& NewProcessName, const UObject* CallerObject);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
-	void SetScenarioWidget(const UShidenWidget* Widget);
+	void Initialize(const UShidenWidget* Widget);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void Destroy();

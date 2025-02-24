@@ -11,6 +11,8 @@
 #include "Slate/WidgetRenderer.h"
 #include "TextureResource.h"
 #include "Runtime/RenderCore/Public/RenderingThread.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Framework/Application/SlateApplication.h"
 
 TArray<FColor> ResizeBitmap(const TArray<FColor>& OriginalBitmap, const int32 OriginalWidth, const int32 OriginalHeight, const int32 TargetWidth, const int32 TargetHeight)
 {
@@ -185,7 +187,7 @@ SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const
 
 	FadeInOut(DeltaTime);
 	ImageFadeInOut(DeltaTime);
-	MoveCanvasPanel(DeltaTime);
+	MoveCanvasPanelSlot(DeltaTime);
 	ChangeImageMaterial(DeltaTime);
 	ChangeRetainerBoxMaterial(DeltaTime);
 }
@@ -246,17 +248,17 @@ SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::MoveCanvasPanel(const float DeltaTime)
+SHIDENCORE_API void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
 {
 	TArray<FString> Keys;
 	CanvasPanelMoveParams.GetKeys(Keys);
 
-	for (FString Key : Keys)
+	for (FString& Key : Keys)
 	{
-		FShidenCanvasPanelMoveParams* Param = CanvasPanelMoveParams.Find(Key);
+		FShidenCanvasPanelSlotMoveParams* Param = CanvasPanelMoveParams.Find(Key);
 		Param->EasingAlpha += DeltaTime / Param->MoveDuration;
 		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
-		const TObjectPtr<UCanvasPanelSlot> PanelSlot = Cast<UCanvasPanelSlot>(Param->Target->Slot);
+		const TObjectPtr<UCanvasPanelSlot> PanelSlot = Param->Target;
 
 		if (Param->bChangePosition)
 		{
@@ -358,7 +360,7 @@ SHIDENCORE_API void UShidenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UpdateAllWidgetAnimations();
+	UpdateAllWidgetAnimations(TEXT(""), this);
 	UpdateWidgetCache();
 }
 
@@ -606,7 +608,7 @@ SHIDENCORE_API void UShidenWidget::IsMediaCompleted(bool& bResult) const
 	bResult = bIsEndOfMedia;
 }
 
-SHIDENCORE_API void UShidenWidget::CollapseMedia()
+SHIDENCORE_API void UShidenWidget::CollapseMedia() const
 {
 	if (MediaLayer)
 	{
@@ -690,7 +692,7 @@ SHIDENCORE_API void UShidenWidget::StartImageMaterialScalarChange(const FString&
 
 SHIDENCORE_API void UShidenWidget::IsImageMaterialParameterChangeCompleted(const FString& ImageName, const FString& ParameterName, bool& bResult) const
 {
-	const FString Key = UShidenWidget::MakeMaterialParamsKey(ImageName, ParameterName);
+	const FString Key = MakeMaterialParamsKey(ImageName, ParameterName);
 	bResult = !ImageMaterialParams.Contains(Key);
 }
 
@@ -757,14 +759,13 @@ SHIDENCORE_API void UShidenWidget::IsRetainerBoxMaterialParameterChangeCompleted
 	bResult = !RetainerBoxMaterialParams.Contains(Key);
 }
 
-SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPanelName, UPARAM(ref) UCanvasPanel* Target,
+SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPanelName, UPARAM(ref) UCanvasPanelSlot* Target,
                                                         const EEasingFunc::Type Function, const float Duration,
                                                         const bool bChangePosition, const FVector2D EndPosition,
                                                         const bool bChangeSize, const FVector2D EndSize, const float BlendExp,
                                                         const int32 Steps, const FString& OwnerProcessName, bool& Success, FString& ErrorMessage)
 {
-	const FShidenCanvasPanelMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelName);
-	const TObjectPtr<UCanvasPanelSlot> PanelSlot = Cast<UCanvasPanelSlot>(Target->Slot);
+	const FShidenCanvasPanelSlotMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelName);
 	if (Params && Params->OwnerProcessName != OwnerProcessName)
 	{
 		ErrorMessage = FString::Printf(TEXT("Process \"%s\" is currently executing the move canvas panel command."), *Params->OwnerProcessName);
@@ -772,7 +773,7 @@ SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPan
 		return;
 	}
 
-	if (!PanelSlot)
+	if (!Target)
 	{
 		ErrorMessage = TEXT("Canvas panel slot is null.");
 		Success = false;
@@ -783,11 +784,11 @@ SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPan
 	{
 		if (bChangePosition)
 		{
-			PanelSlot->SetPosition(EndPosition);
+			Target->SetPosition(EndPosition);
 		}
 		if (bChangeSize)
 		{
-			PanelSlot->SetSize(EndSize);
+			Target->SetSize(EndSize);
 		}
 		CanvasPanelMoveParams.Remove(CanvasPanelName);
 		Success = true;
@@ -798,24 +799,24 @@ SHIDENCORE_API void UShidenWidget::StartCanvasPanelMove(const FString& CanvasPan
 	{
 		if (Params->bChangePosition)
 		{
-			PanelSlot->SetPosition(Params->EndPosition);
+			Target->SetPosition(Params->EndPosition);
 		}
 		if (Params->bChangeSize)
 		{
-			PanelSlot->SetSize(Params->EndSize);
+			Target->SetSize(Params->EndSize);
 		}
 	}
 
-	FShidenCanvasPanelMoveParams MoveParams = FShidenCanvasPanelMoveParams();
+	FShidenCanvasPanelSlotMoveParams MoveParams = FShidenCanvasPanelSlotMoveParams();
 	MoveParams.Target = Target;
 	MoveParams.MoveDuration = Duration;
 	MoveParams.MoveFunction = Function;
 	MoveParams.EasingAlpha = 0;
 	MoveParams.bChangePosition = bChangePosition;
-	MoveParams.StartPosition = PanelSlot->GetPosition();
+	MoveParams.StartPosition = Target->GetPosition();
 	MoveParams.EndPosition = EndPosition;
 	MoveParams.bChangeSize = bChangeSize;
-	MoveParams.StartSize = PanelSlot->GetSize();
+	MoveParams.StartSize = Target->GetSize();
 	MoveParams.EndSize = EndSize;
 	MoveParams.BlendExp = BlendExp;
 	MoveParams.Steps = Steps;
@@ -830,50 +831,46 @@ SHIDENCORE_API void UShidenWidget::IsCanvasPanelMoveCompleted(const FString& Can
 	bResult = !CanvasPanelMoveParams.Contains(CanvasPanelName);
 }
 
-SHIDENCORE_API void UShidenWidget::FindCanvasPanel(const FString& CanvasPanelName, UCanvasPanel*& CanvasPanel, bool& bResult) const
+SHIDENCORE_API void UShidenWidget::FindCanvasPanelSlot(const FString& CanvasPanelName, UCanvasPanelSlot*& CanvasPanelSlot, bool& bResult) const
 {
-	const TObjectPtr<UCanvasPanel> Result = CanvasPanels.FindRef(CanvasPanelName);
+	const TObjectPtr<UCanvasPanelSlot> Result = CanvasPanelSlots.FindRef(CanvasPanelName);
 	if (!Result)
 	{
 		bResult = false;
 		return;
 	}
-	CanvasPanel = Result;
+	CanvasPanelSlot = Result;
 	bResult = true;
 }
 
-SHIDENCORE_API void UShidenWidget::FindAnimation(const FString& AnimationName, UWidgetAnimation*& WidgetAnimation, bool& bResult) const
+SHIDENCORE_API void UShidenWidget::FindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation, bool& bResult) const
 {
-	const TObjectPtr<UWidgetAnimation> Result = WidgetAnimations.FindRef(AnimationName);
+	const FShidenAnimation* Result = WidgetAnimations.Find(AnimationName);
 	if (!Result)
 	{
 		bResult = false;
 		return;
 	}
-	WidgetAnimation = Result;
+	WidgetAnimation = Result->Animation;
+	TargetWidget = Result->TargetWidget;
 	bResult = true;
 }
 
 SHIDENCORE_API void UShidenWidget::ResetAllAnimations()
 {
-	for (const TTuple<FString, TObjectPtr<UWidgetAnimation>>& WidgetAnimation : WidgetAnimations)
+	for (const TTuple<FString, FShidenAnimation>& WidgetAnimation : WidgetAnimations)
 	{
-		if (TObjectPtr<UWidgetAnimation> Animation = WidgetAnimation.Value)
+		if (WidgetAnimation.Value.TargetWidget && WidgetAnimation.Value.Animation)
 		{
-			const float EndTime = Animation->GetEndTime();
-			PlayAnimation(Animation, EndTime, 1, EUMGSequencePlayMode::Reverse, 1.0, false);
+			const float EndTime = WidgetAnimation.Value.Animation->GetEndTime();
+			WidgetAnimation.Value.TargetWidget->PlayAnimation(WidgetAnimation.Value.Animation, EndTime, 1, EUMGSequencePlayMode::Reverse, 1.0, false);
 		}
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::SetInputModeSingleLineTextInput_Implementation()
+SHIDENCORE_API void UShidenWidget::SetInputModeTextInput_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeSingleLineTextInput function of Shiden Widget!"));
-}
-
-SHIDENCORE_API void UShidenWidget::SetInputModeMultiLineTextInput_Implementation()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeMultiLineTextInput function of Shiden Widget!"));
+	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeTextInput function of Shiden Widget!"));
 }
 
 SHIDENCORE_API void UShidenWidget::SetInputModeOptionSelection_Implementation()
@@ -881,15 +878,9 @@ SHIDENCORE_API void UShidenWidget::SetInputModeOptionSelection_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeOptionSelection function of Shiden Widget!"));
 }
 
-SHIDENCORE_API void UShidenWidget::InitSingleLineTextInput_Implementation(const FText& DefaultText, const FText& HintText)
+SHIDENCORE_API void UShidenWidget::InitTextInput_Implementation(const FShidenTextInputProperties& Properties)
 {
-	bIsSingleLineTextSubmitted = false;
-}
-
-SHIDENCORE_API void UShidenWidget::InitMultiLineTextInput_Implementation(const FText& DefaultText, const FText& HintText, const int32 MaxLines)
-{
-	bIsMultiLineTextSubmitted = false;
-	MultiLineTextMaxLines = MaxLines;
+	UE_LOG(LogTemp, Warning, TEXT("Please override InitTextInput function of Shiden Widget!"));
 }
 
 SHIDENCORE_API void UShidenWidget::SetInputModeGameAndUI_Implementation()
@@ -901,25 +892,41 @@ SHIDENCORE_API void UShidenWidget::SetInputModeGameAndUI_Implementation()
 	FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }
 
-SHIDENCORE_API void UShidenWidget::RemoveExceedingLines(const FString& Text, const int32 MaxLines, FString& Result)
+SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result)
 {
 	TArray<FString> Lines;
 	Text.ParseIntoArrayLines(Lines, false);
-	if (Lines.Num() <= MaxLines)
+	Result = TEXT("");
+	if (Properties.MaxLines > 0 && Properties.MaxLines < Lines.Num())
 	{
-		Result = Text;
-		return;
-	}
-	FString NewText = TEXT("");
-	for (int32 Index = 0; Index < MaxLines; Index++)
-	{
-		NewText += Lines[Index];
-		if (Index < MaxLines - 1)
+		for (int32 Index = 0; Index < Properties.MaxLines; Index++)
 		{
-			NewText += TEXT("\n");
+			Result += Lines[Index];
+			if (Index < Properties.MaxLines - 1)
+			{
+				Result += TEXT("\n");
+			}
 		}
 	}
-	Result = NewText;
+	else
+	{
+		Result = Text;
+	}
+	if (Properties.MaxLength > 0)
+	{
+		Result = Result.Left(Properties.MaxLength);
+	}
+	if (!Properties.AllowedCharacterRegex.IsEmpty())
+	{
+		FString SanitizedText;
+		const FRegexPattern Pattern(Properties.AllowedCharacterRegex);
+		FRegexMatcher Matcher(Pattern, Result);
+		while (Matcher.FindNext())
+		{
+			SanitizedText += Matcher.GetCaptureGroup(0);
+		}
+		Result = SanitizedText;
+	}
 }
 
 SHIDENCORE_API void UShidenWidget::IsSkipPressed(bool& bPressed) const
@@ -1023,7 +1030,12 @@ SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, 
 		}
 
 		AllWidgets.Add(WidgetPath, Child);
-
+		
+		if (TObjectPtr<UCanvasPanelSlot> CanvasPanelSlot = Cast<UCanvasPanelSlot>(Child->Slot))
+		{
+			CanvasPanelSlots.Add(WidgetPath, CanvasPanelSlot);
+		}
+		
 		if (TObjectPtr<UShidenTextWidget> TextWidget = Cast<UShidenTextWidget>(Child))
 		{
 			TextWidgets.Add(WidgetPath, TextWidget);
@@ -1036,10 +1048,6 @@ SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, 
 		{
 			RetainerBoxes.Add(WidgetPath, RetainerBox);
 		}
-		else if (TObjectPtr<UCanvasPanel> CanvasPanel = Cast<UCanvasPanel>(Child))
-		{
-			CanvasPanels.Add(WidgetPath, CanvasPanel);
-		}
 	}
 }
 
@@ -1048,9 +1056,14 @@ SHIDENCORE_API void UShidenWidget::UpdateWidgetCache()
 	UpdateWidgetCacheCore(TEXT(""), WidgetTree);
 }
 
-SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations()
+SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget)
 {
-	for (TFieldIterator<FProperty> PropIt(GetClass(), EFieldIteratorFlags::IncludeSuper); PropIt; ++PropIt)
+	if (!TargetWidget)
+	{
+		return;
+	}
+	
+	for (TFieldIterator<FProperty> PropIt(TargetWidget->GetClass(), EFieldIteratorFlags::IncludeSuper); PropIt; ++PropIt)
 	{
 		FProperty* Property = *PropIt;
 
@@ -1060,10 +1073,16 @@ SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations()
 
 			if (ObjectProperty->PropertyClass->IsChildOf(UWidgetAnimation::StaticClass()))
 			{
-				if (TObjectPtr<UWidgetAnimation> Animation = Cast<UWidgetAnimation>(
-					ObjectProperty->GetObjectPropertyValue_InContainer(this)))
+				if (const TObjectPtr<UWidgetAnimation> Animation = Cast<UWidgetAnimation>(ObjectProperty->GetObjectPropertyValue_InContainer(TargetWidget)))
 				{
-					WidgetAnimations.Add(Property->GetName(), Animation);
+					WidgetAnimations.Add(Prefix + Property->GetName(), FShidenAnimation{ const_cast<UUserWidget*>(TargetWidget), Animation });
+				}
+			}
+			else if (ObjectProperty->PropertyClass->IsChildOf(UUserWidget::StaticClass()))
+			{
+				if (const TObjectPtr<UUserWidget> UserWidget = Cast<UUserWidget>(ObjectProperty->GetObjectPropertyValue_InContainer(TargetWidget)))
+				{
+					UpdateAllWidgetAnimations(Prefix + Property->GetName() + TEXT("."), UserWidget);
 				}
 			}
 		}
@@ -1075,9 +1094,9 @@ SHIDENCORE_API void UShidenWidget::GetAllWidgets(TArray<UWidget*>& Children) con
 	WidgetTree->GetAllWidgets(Children);
 }
 
-SHIDENCORE_API void UShidenWidget::FindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelMoveParams& Value, bool& bSuccess)
+SHIDENCORE_API void UShidenWidget::FindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelSlotMoveParams& Value, bool& bSuccess)
 {
-	const FShidenCanvasPanelMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelName);
+	const FShidenCanvasPanelSlotMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelName);
 	if (!Params)
 	{
 		bSuccess = false;

@@ -7,7 +7,7 @@
 UENUM(BlueprintType)
 enum class EShidenVoiceStopCondition : uint8
 {
-	None,
+	Never,
 	NextTextOrVoice,
 	NextVoice
 };

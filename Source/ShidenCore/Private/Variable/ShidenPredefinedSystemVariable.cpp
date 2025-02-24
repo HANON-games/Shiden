@@ -1,6 +1,7 @@
 // Copyright (c) 2024 HANON. All Rights Reserved.
 
 #include "Variable/ShidenPredefinedSystemVariable.h"
+#include "Config/ShidenProjectConfig.h"
 #include "Variable/ShidenVariableDescriptor.h"
 
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name, FShidenPredefinedSystemVariableDefinition& Definition) const

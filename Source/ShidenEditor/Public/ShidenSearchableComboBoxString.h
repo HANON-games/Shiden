@@ -56,7 +56,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Style, meta = (DesignerRebuild))
 	FSlateColor ForegroundColor;
 
-public:
 	UPROPERTY(EditAnywhere, Category = Events, meta = (IsBindableEvent = "True"))
 	FGenerateWidgetForString OnGenerateWidgetEvent;
 
@@ -66,7 +65,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = Events)
 	FOnOpeningEvent OnOpening;
 
-public:
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
 	void AddOption(const FString& Option);
 
@@ -86,7 +84,7 @@ public:
 	void ClearSelection();
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
-	void RefreshOptions();
+	void RefreshOptions() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
 	void SetSelectedOption(FString Option);
@@ -141,7 +139,6 @@ protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	//~ End UWidget Interface
 
-protected:
 	TArray<TSharedPtr<FString>> Options;
 
 	TSharedPtr<SSearchableComboBox> MyComboBox;

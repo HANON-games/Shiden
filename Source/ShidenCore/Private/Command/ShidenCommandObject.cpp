@@ -4,7 +4,7 @@
 
 SHIDENCORE_API void UShidenCommandObject::RestoreFromSaveData_Implementation(
 	const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget,
-	const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject,
+	const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UObject* CallerObject,
 	EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
 	Status = EShidenInitFromSaveDataStatus::Complete;
@@ -12,7 +12,7 @@ SHIDENCORE_API void UShidenCommandObject::RestoreFromSaveData_Implementation(
 }
 
 SHIDENCORE_API void UShidenCommandObject::PreviewCommand_Implementation(const FShidenCommand& Command, const UShidenWidget* Widget,
-                                                                        const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+                                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                         const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	Status = EShidenPreviewStatus::Complete;
@@ -21,7 +21,7 @@ SHIDENCORE_API void UShidenCommandObject::PreviewCommand_Implementation(const FS
 
 SHIDENCORE_API void UShidenCommandObject::PreProcessCommand_Implementation(
 	const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
-	const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager, const UObject* CallerObject,
+	const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UObject* CallerObject,
 	EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	Status = EShidenPreProcessStatus::Complete;
@@ -29,7 +29,7 @@ SHIDENCORE_API void UShidenCommandObject::PreProcessCommand_Implementation(
 }
 
 SHIDENCORE_API void UShidenCommandObject::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
-                                                                        const TScriptInterface<IShidenScenarioManagerInterface>& ScenarioManager,
+                                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                         const float DeltaTime, const UObject* CallerObject, EShidenProcessStatus& Status,
                                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
