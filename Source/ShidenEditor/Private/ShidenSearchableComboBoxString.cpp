@@ -39,7 +39,7 @@ SHIDENEDITOR_API UShidenSearchableComboBoxString::UShidenSearchableComboBoxStrin
 	// We don't want to try and load fonts on the server.
 	if (!IsRunningDedicatedServer())
 	{
-		static ConstructorHelpers::FObjectFinder<UFont> RobotoFontObj(*UWidget::GetDefaultFontName());
+		static ConstructorHelpers::FObjectFinder<UFont> RobotoFontObj(*GetDefaultFontName());
 		Font = FSlateFontInfo(RobotoFontObj.Object, 16, FName("Bold"));
 	}
 	PRAGMA_ENABLE_DEPRECATION_WARNINGS
@@ -163,7 +163,7 @@ SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetOptionAtIndex(const
 {
 	if (Index >= 0 && Index < Options.Num())
 	{
-		return *(Options[Index]);
+		return *Options[Index];
 	}
 	return FString();
 }
@@ -196,7 +196,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::ClearSelection()
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::RefreshOptions()
+SHIDENEDITOR_API void UShidenSearchableComboBoxString::RefreshOptions() const
 {
 	if (MyComboBox.IsValid())
 	{
@@ -372,7 +372,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleOpening()
 
 SHIDENEDITOR_API const FText UShidenSearchableComboBoxString::GetPaletteCategory()
 {
-	return LOCTEXT("Input", "Input");
+	return LOCTEXT("Shiden Editor", "Shiden Editor");
 }
 
 #endif

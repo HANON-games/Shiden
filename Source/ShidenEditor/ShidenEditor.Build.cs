@@ -51,7 +51,8 @@ public class ShidenEditor : ModuleRules
 				"UnrealEd",
 				"ShidenCore",
 				"ContentBrowserData",
-				"ToolWidgets"
+				"ToolWidgets",
+				"PropertyEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

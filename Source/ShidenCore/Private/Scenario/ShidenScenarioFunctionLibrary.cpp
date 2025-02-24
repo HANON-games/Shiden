@@ -400,7 +400,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioByIdOrObjectPath(
 
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	TArray<FGuid> ScenarioIds = TArray<FGuid>();
-	for (auto& ScenarioPath : ProjectConfig->ScenarioPaths)
+	for (const TTuple<FGuid, FString>& ScenarioPath : ProjectConfig->ScenarioPaths)
 	{
 		if (ScenarioPath.Value == ScenarioIdOrObjectPath)
 		{
@@ -505,7 +505,7 @@ SHIDENCORE_API void GetCommand(UObject* Outer, const FSoftObjectPath& CommandSof
 	CommandObject = nullptr;
 	Success = false;
 
-	const TObjectPtr<UClass> Class = UShidenCoreFunctionLibrary::ConstructBlueprintClassFromSoftObjectPath(CommandSoftObjectPath);
+	const TObjectPtr<UClass> Class = UShidenCoreFunctionLibrary::ConstructClassFromSoftObjectPath(CommandSoftObjectPath);
 	if (!Class)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to load class from ObjectPath: %s"), *CommandSoftObjectPath.GetAssetPathString());
@@ -734,10 +734,10 @@ void LoadScenarioAssetPathsInternal(UObject* CallerObject, const UShidenScenario
 		else
 		{
 			bool bTempSuccess = false;
-			UShidenCommandObject* CommandObject = nullptr;
 			FShidenCommandDefinition* Definition = ShidenSubsystem->CommandDefinitionCache.Find(Command.CommandName);
 			if (Definition)
 			{
+				UShidenCommandObject* CommandObject = nullptr;
 				GetCommand(CallerObject, Definition->CommandBlueprint, CommandObject, bTempSuccess);
 			}
 			if (!bTempSuccess)
@@ -860,7 +860,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::LoadScenarioAssets(UObject* 
 }
 
 SHIDENCORE_API void UShidenScenarioFunctionLibrary::InitFromSaveData(const UShidenWidget* Widget,
-                                                                     const TScriptInterface<IShidenScenarioManagerInterface> ScenarioManager,
+                                                                     const TScriptInterface<IShidenManagerInterface> ShidenManager,
                                                                      UObject* CallerObject, bool& bSuccess, FString& ErrorMessage)
 {
 	bSuccess = false;
@@ -888,7 +888,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::InitFromSaveData(const UShid
 			return;
 		}
 		EShidenInitFromSaveDataStatus Status = EShidenInitFromSaveDataStatus::Complete;
-		CommandObject->RestoreFromSaveData(ScenarioProperties.ScenarioProperties, Widget, ScenarioManager, CallerObject, Status, ErrorMessage);
+		CommandObject->RestoreFromSaveData(ScenarioProperties.ScenarioProperties, Widget, ShidenManager, CallerObject, Status, ErrorMessage);
 		if (Status == EShidenInitFromSaveDataStatus::Error)
 		{
 			bSuccess = false;

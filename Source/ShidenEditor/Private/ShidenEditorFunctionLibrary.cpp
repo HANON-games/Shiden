@@ -571,7 +571,8 @@ void UShidenEditorFunctionLibrary::AddUserVariableDefinition(const FShidenVariab
 	}
 	
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
-
+	ProjectConfig->TryUpdateDefaultConfigFile();
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
@@ -597,7 +598,8 @@ void UShidenEditorFunctionLibrary::UpdateUserVariableDefinition(const FString& O
 	}
 	
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
-
+	ProjectConfig->TryUpdateDefaultConfigFile();
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
@@ -611,7 +613,8 @@ void UShidenEditorFunctionLibrary::RemoveUserVariableDefinition(const FString& N
 		return VariableDefinition.Name == Name;
 	});
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
-
+	ProjectConfig->TryUpdateDefaultConfigFile();
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
@@ -637,7 +640,8 @@ void UShidenEditorFunctionLibrary::AddSystemVariableDefinition(const FShidenVari
 	}
 	
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
-
+	ProjectConfig->TryUpdateDefaultConfigFile();
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
@@ -663,7 +667,8 @@ void UShidenEditorFunctionLibrary::UpdateSystemVariableDefinition(const FString&
 	}
 	
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
-
+	ProjectConfig->TryUpdateDefaultConfigFile();
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
@@ -677,6 +682,7 @@ void UShidenEditorFunctionLibrary::RemoveSystemVariableDefinition(const FString&
 		return VariableDefinition.Name == Name;
 	});
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
+	ProjectConfig->TryUpdateDefaultConfigFile();
 	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);

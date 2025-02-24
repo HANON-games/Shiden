@@ -83,7 +83,7 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 	TArray<FString> OldPinNames = TArray<FString>();
 	for (const UEdGraphPin* OldPin : OldPins)
 	{
-		if (OldPin->Direction == EEdGraphPinDirection::EGPD_Output)
+		if (OldPin->Direction == EGPD_Output)
 		{
 			OldPinNames.Add(OldPin->PinName.ToString());
 		}
@@ -141,8 +141,7 @@ void UK2Node_GetCommandArguments::RefreshOutputPin()
 
 	for (int32 i = 0; i < OldPins.Num(); i++)
 	{
-		UEdGraphPin* OldPin = OldPins[i];
-		if (OldPin->Direction == EEdGraphPinDirection::EGPD_Output)
+		if (UEdGraphPin* OldPin = OldPins[i]; OldPin->Direction == EGPD_Output)
 		{
 			OldOutputPins.Add(OldPin);
 			Pins.Remove(OldPin);
@@ -171,7 +170,7 @@ void UK2Node_GetCommandArguments::ChangeAdvancedView()
 	int32 NewOutputPinCount = 0;
 	for (const UEdGraphPin* Pin : Pins)
 	{
-		if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
+		if (Pin->Direction == EGPD_Output)
 		{
 			NewOutputPinCount++;
 		}
@@ -237,7 +236,7 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 
 	if (const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin(&OldPins))
 	{
-		if (TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
+		if (const TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 		{
 			PreloadObject(Definitions);
 			if (CommandDefinitionsCache && OnCommandDefinitionsChangedHandle.IsValid())
@@ -294,7 +293,7 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* ChangedPin
 		{
 			if (UEdGraphPin* CommandNamePin = GetCommandNamePin())
 			{
-				if (TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(ChangedPin->DefaultObject))
+				if (const TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(ChangedPin->DefaultObject))
 				{
 					TArray<FString> Keys;
 					CommandDefinitions->CommandDefinitions.GetKeys(Keys);
@@ -401,7 +400,7 @@ FText UK2Node_GetCommandArguments::GetNodeTitle(ENodeTitleType::Type TitleType) 
 	return NSLOCTEXT("K2Node", "Get Command Arguments", "Get Command Arguments");
 }
 
-void UK2Node_GetCommandArguments::ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
@@ -409,7 +408,7 @@ void UK2Node_GetCommandArguments::ExpandNode(class FKismetCompilerContext& Compi
 	const TObjectPtr<UShidenCommandDefinitions> Definitions = (OriginalGetCommandDefinitionsInPin != nullptr)
 		                                                          ? Cast<UShidenCommandDefinitions>(OriginalGetCommandDefinitionsInPin->DefaultObject)
 		                                                          : nullptr;
-	if ((nullptr == OriginalGetCommandDefinitionsInPin) || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
+	if (nullptr == OriginalGetCommandDefinitionsInPin || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
 		CompilerContext.MessageLog.Error(*LOCTEXT("GetCommandArgumentsNoCommandDefinitions_Error",
 		                                          "GetCommandArguments must have a CommandDefinitions specified.").
@@ -424,7 +423,7 @@ void UK2Node_GetCommandArguments::ExpandNode(class FKismetCompilerContext& Compi
 	TArray<UEdGraphPin*> OutputPins = TArray<UEdGraphPin*>();
 	for (UEdGraphPin* TestPin : Pins)
 	{
-		if (TestPin && TestPin->Direction == EEdGraphPinDirection::EGPD_Output && TestPin->LinkedTo.Num() > 0)
+		if (TestPin && TestPin->Direction == EGPD_Output && TestPin->LinkedTo.Num() > 0)
 		{
 			OutputPins.Add(TestPin);
 		}
@@ -496,7 +495,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 			}
 			for (const UEdGraphPin* Pin : Pins)
 			{
-				if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
+				if (Pin->Direction == EGPD_Output)
 				{
 					if (!ArgKeys.Contains(Pin->PinName.ToString()))
 					{

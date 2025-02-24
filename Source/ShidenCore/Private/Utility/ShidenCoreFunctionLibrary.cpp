@@ -12,6 +12,8 @@
 #include "System/ShidenBacklogItem.h"
 #include "Async/Async.h"
 #include "Scenario/ShidenScenarioFunctionLibrary.h"
+#include "Sound/SoundClass.h"
+#include "Sound/SoundBase.h"
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::CopyToClipboard(const FString& Str)
 {
@@ -169,7 +171,7 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::MultiThreadDelay(UObject* WorldC
 	}
 }
 
-SHIDENCORE_API UClass* UShidenCoreFunctionLibrary::ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
+SHIDENCORE_API UClass* UShidenCoreFunctionLibrary::ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
 {
 	if (SoftObjectPath.IsNull())
 	{
@@ -358,6 +360,35 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetObjectPathFromClass(const 
 	return Path.ToString().LeftChop(2);
 }
 
+void UShidenCoreFunctionLibrary::GetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType, bool& bSuccess)
+{
+	const TObjectPtr<USoundClass> SoundClass = SoundBase->GetSoundClass();
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	const TObjectPtr<USoundClass> BgmSoundClass = ProjectConfig->GetBgmSoundClass();
+	const TObjectPtr<USoundClass> SeSoundClass = ProjectConfig->GetSeSoundClass();
+	const TObjectPtr<USoundClass> VoiceSoundClass = ProjectConfig->GetVoiceSoundClass();
+
+	if (SoundClass == BgmSoundClass || BgmSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::BGM;
+		bSuccess = true;
+	}
+	else if (SoundClass == SeSoundClass || SeSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::SE;
+		bSuccess = true;
+	}
+	else if (SoundClass == VoiceSoundClass || VoiceSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::Voice;
+		bSuccess = true;
+	}
+	else
+	{
+		bSuccess = false;
+	}
+}
+
 SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -373,11 +404,10 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::InitCommandDefinitions()
 
 	for (const FSoftObjectPath& CommandDefinitionSoftObjectPath : ProjectConfig->CommandDefinitions)
 	{
-		FString ObjectPath = CommandDefinitionSoftObjectPath.GetAssetPathString();
-		TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(StaticLoadObject(UShidenCommandDefinitions::StaticClass(), nullptr, *ObjectPath));
+		TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionSoftObjectPath.TryLoad());
 		if (!CommandDefinitions)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to load CommandDefinitions from ObjectPath: %s"), *ObjectPath);
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load CommandDefinitions from ObjectPath: %s"), *CommandDefinitionSoftObjectPath.GetAssetPathString());
 			continue;
 		}
 
@@ -408,14 +438,14 @@ SHIDENCORE_API const TMap<FString, FShidenCommandDefinition>& UShidenCoreFunctio
 	return ShidenSubsystem->CommandDefinitionCache;
 }
 
-SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearLoadedSystemData()
+SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearLoadedSystemData(const UObject* WorldContextObject)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	check(ShidenSubsystem);
 
 	UShidenVariableFunctionLibrary::ResetSystemVariables();
-	UShidenVariableFunctionLibrary::InitPredefinedSystemVariables();
+	UShidenVariableFunctionLibrary::InitPredefinedSystemVariables(WorldContextObject);
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearLoadedUserData()

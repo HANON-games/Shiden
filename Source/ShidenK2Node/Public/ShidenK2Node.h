@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class SHIDENK2NODE_API FShidenK2NodeModule : public IModuleInterface
+class SHIDENK2NODE_API FShidenK2NodeModule final : public IModuleInterface
 {
 public:
 	/** IModuleInterface implementation */

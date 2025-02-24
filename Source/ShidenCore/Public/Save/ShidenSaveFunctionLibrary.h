@@ -39,8 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static void LoadUserData(const FString& SlotName);
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
-	static void LoadSystemData();
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game",  meta = (WorldContext = "WorldContextObject"))
+	static void LoadSystemData(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static void DeleteUserData(const FString& SlotName);

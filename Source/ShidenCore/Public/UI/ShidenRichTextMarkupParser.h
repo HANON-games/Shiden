@@ -7,14 +7,13 @@
 #include "Internationalization/Regex.h"
 #include "Framework/Text/IRichTextMarkupParser.h"
 
-class SHIDENCORE_API FShidenRichTextMarkupParser : public IRichTextMarkupParser
+class SHIDENCORE_API FShidenRichTextMarkupParser final : public IRichTextMarkupParser
 {
 public:
 	static TSharedRef<FShidenRichTextMarkupParser> Create();
 
 	static TSharedRef<FShidenRichTextMarkupParser> GetStaticInstance();
 
-public:
 	virtual void Process(TArray<FTextLineParseResults>& Results, const FString& Input, FString& Output) override;
 
 private:

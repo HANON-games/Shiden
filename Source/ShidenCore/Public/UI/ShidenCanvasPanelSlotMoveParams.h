@@ -7,12 +7,12 @@
 #include "ShidenCanvasPanelSlotMoveParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenCanvasPanelMoveParams
+struct FShidenCanvasPanelSlotMoveParams
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TObjectPtr<UCanvasPanel> Target;
+	TObjectPtr<UCanvasPanelSlot> Target;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	float MoveDuration = 0.0f;

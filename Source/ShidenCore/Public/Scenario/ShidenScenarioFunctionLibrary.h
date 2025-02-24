@@ -80,7 +80,7 @@ public:
 	static void LoadScenarioAssets(UObject* Outer, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
-	static void InitFromSaveData(const UShidenWidget* Widget, const TScriptInterface<IShidenScenarioManagerInterface> ScenarioManager, UObject* CallerObject, bool& bSuccess, FString& ErrorMessage);
+	static void InitFromSaveData(const UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface> ShidenManager, UObject* CallerObject, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioByPackagePath(const FString& PackagePath, UShidenScenario*& OutScenario, bool& bSuccess);

@@ -16,12 +16,10 @@
 #include "ShidenFadeParams.h"
 #include "Components/Border.h"
 #include "Components/CanvasPanel.h"
-#include "Materials/MaterialInstanceDynamic.h"
-#include "Framework/Application/SlateApplication.h"
 #include "ShidenTextWidget.h"
 #include "ShidenWidget.generated.h"
 
-class IShidenScenarioManagerInterface;
+class IShidenManagerInterface;
 
 /*
  * The mode for capturing the scene.
@@ -40,6 +38,39 @@ enum class EShidenCaptureScreenMode : uint8
 	FullSceneWithoutTextBaseLayer
 };
 
+USTRUCT(Blueprintable)
+struct FShidenTextInputProperties
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	int32 MaxLength = -1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FString AllowedCharacterRegex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FString DefaultText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FString HintText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	int32 MaxLines = 1;
+};
+
+USTRUCT(Blueprintable)
+struct FShidenAnimation
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	TObjectPtr<UUserWidget> TargetWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	TObjectPtr<UWidgetAnimation> Animation;
+};
+
 UCLASS(Abstract, Blueprintable)
 class SHIDENCORE_API UShidenWidget : public UUserWidget
 {
@@ -55,6 +86,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float CaptureScale = 0.25f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	FShidenTextInputProperties TextInputProperties;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMediaPlayer> MediaPlayer = nullptr;
@@ -63,16 +97,10 @@ private:
 	int32 SelectedOption = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	bool bIsSingleLineTextSubmitted = false;
-
+	bool bIsTextSubmitted = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	bool bIsMultiLineTextSubmitted = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	int32 MultiLineTextMaxLines = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TMap<FString, FShidenCanvasPanelMoveParams> CanvasPanelMoveParams;
+	TMap<FString, FShidenCanvasPanelSlotMoveParams> CanvasPanelMoveParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, FShidenImageFadeParams> ImageFadeParams;
@@ -90,7 +118,7 @@ private:
 	TMap<FString, TObjectPtr<UBorder>> FadeWidgets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
-	TScriptInterface<IShidenScenarioManagerInterface> ScenarioManager;
+	TScriptInterface<IShidenManagerInterface> ShidenManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	bool bIsSkipped = false;
@@ -118,7 +146,7 @@ public:
 	void ImageFadeInOut(float DeltaTime);
 
 	UFUNCTION()
-	void MoveCanvasPanel(float DeltaTime);
+	void MoveCanvasPanelSlot(float DeltaTime);
 
 	UFUNCTION()
 	void ChangeRetainerBoxMaterial(float DeltaTime);
@@ -142,10 +170,10 @@ public:
 	void SaveGameWithScreenCapture(const FString& SlotName);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void InitWidget(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage);
+	void InitWidget(const TScriptInterface<IShidenManagerInterface>& InShidenManager, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void InitPreviewWidget(const TScriptInterface<IShidenScenarioManagerInterface>& ShidenScenarioManager, bool& Success, FString& ErrorMessage);
+	void InitPreviewWidget(const TScriptInterface<IShidenManagerInterface>& InShidenManager, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Media")
 	void OnMediaSuspended();
@@ -210,7 +238,7 @@ public:
 	void IsMediaCompleted(bool& bResult) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Media")
-	void CollapseMedia();
+	void CollapseMedia() const;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Media")
 	void OpenMediaPauseMenu();
@@ -242,30 +270,27 @@ public:
 	void IsRetainerBoxMaterialParameterChangeCompleted(const FString& RetainerBoxName, const FString& ParameterName, bool& bResult) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Canvas Panel", meta = (OwnerProcessName = "Default"))
-	void StartCanvasPanelMove(const FString& CanvasPanelName, UPARAM(ref) UCanvasPanel* Target,
-	                          const EEasingFunc::Type Function, const float Duration, const bool bChangePosition,
-	                          const FVector2D EndPosition, const bool bChangeSize, const FVector2D EndSize,
-	                          const float BlendExp, const int32 Steps, const FString& OwnerProcessName, bool& Success,
+	void StartCanvasPanelMove(const FString& CanvasPanelName, UPARAM(ref) UCanvasPanelSlot* Target,
+	                          EEasingFunc::Type Function, float Duration, bool bChangePosition,
+	                          FVector2D EndPosition, bool bChangeSize, FVector2D EndSize,
+	                          float BlendExp, int32 Steps, const FString& OwnerProcessName, bool& Success,
 	                          FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Canvas Panel")
 	void IsCanvasPanelMoveCompleted(const FString& CanvasPanelName, bool& bResult) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Canvas Panel")
-	void FindCanvasPanel(const FString& CanvasPanelName, UCanvasPanel*& CanvasPanel, bool& bResult) const;
+	void FindCanvasPanelSlot(const FString& CanvasPanelName, UCanvasPanelSlot*& CanvasPanelSlot, bool& bResult) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Animation")
-	void FindAnimation(const FString& AnimationName, UWidgetAnimation*& WidgetAnimation, bool& bResult) const;
+	void FindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation, bool& bResult) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Animation")
 	void ResetAllAnimations();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void SetInputModeSingleLineTextInput();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void SetInputModeMultiLineTextInput();
-
+	void SetInputModeTextInput();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void SetInputModeOptionSelection();
 
@@ -273,19 +298,13 @@ public:
 	void SetInputModeGameAndUI();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void InitSingleLineTextInput(const FText& DefaultText, const FText& HintText);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void InitMultiLineTextInput(const FText& DefaultText, const FText& HintText, int32 MaxLines);
-
+	void InitTextInput(const FShidenTextInputProperties& Properties);
+	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Input")
-	FText GetSingleLineTextInput();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Input")
-	FText GetMultiLineTextInput();
-
+	FText GetTextInput();
+	
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static void RemoveExceedingLines(const FString& Text, const int32 MaxLines, FString& Result);
+	static void SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Input")
 	void IsSkipPressed(bool& bPressed) const;
@@ -304,14 +323,14 @@ public:
 	void UpdateWidgetCache();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void UpdateAllWidgetAnimations();
+	void UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget);
 
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Widget")
 	void GetAllWidgets(TArray<UWidget*>& Children) const;
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Widget")
-	void FindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelMoveParams& Value, bool& bSuccess);
+	void FindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelSlotMoveParams& Value, bool& bSuccess);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Widget")
 	void FindImageFadeParams(const FString& ImageName, FShidenImageFadeParams& Value, bool& bSuccess);
@@ -353,9 +372,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Shiden Visual Novel|Widget", meta = (BindWidget))
 	TObjectPtr<UPanelWidget> TextInputLayer = nullptr;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Shiden Visual Novel|Widget", meta = (BindWidget))
-	TObjectPtr<UPanelWidget> MultiLineTextInputLayer = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
 	TMap<FString, TObjectPtr<UShidenTextWidget>> TextWidgets;
 
@@ -363,13 +379,13 @@ public:
 	TMap<FString, TObjectPtr<UImage>> Images;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap<FString, TObjectPtr<UWidgetAnimation>> WidgetAnimations;
+	TMap<FString, FShidenAnimation> WidgetAnimations;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
 	TMap<FString, TObjectPtr<URetainerBox>> RetainerBoxes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
-	TMap<FString, TObjectPtr<UCanvasPanel>> CanvasPanels;
+	TMap<FString, TObjectPtr<UCanvasPanelSlot>> CanvasPanelSlots;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Widget")
 	TMap<FString, TObjectPtr<UWidget>> AllWidgets;

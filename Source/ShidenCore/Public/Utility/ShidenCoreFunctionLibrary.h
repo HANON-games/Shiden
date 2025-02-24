@@ -48,8 +48,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	static TMap<FString, FShidenTextType> GetShidenTextTypes();
 
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
-	static void ClearLoadedSystemData();
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility", meta = (WorldContext = "WorldContextObject"))
+	static void ClearLoadedSystemData(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void ClearLoadedUserData();
@@ -77,13 +77,16 @@ public:
 	static void MultiThreadDelay(UObject* WorldContextObject, float Duration, FLatentActionInfo LatentInfo);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static UClass* ConstructBlueprintClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath);
+	static UClass* ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static void GetScenarioDataAsset(const FString& ObjectPath, UShidenScenario*& Scenario, bool& bSuccess);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Utility")
 	static FString GetObjectPathFromClass(const UClass* InClass);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
+	static void GetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType, bool& bSuccess);
 
 	UFUNCTION()
 	static void InitCommandDefinitions();

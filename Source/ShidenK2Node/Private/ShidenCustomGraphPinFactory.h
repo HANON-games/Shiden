@@ -17,9 +17,9 @@
 #include "SGraphPinShidenCommandName.h"
 #include "EdGraphUtilities.h"
 
-class FShidenCustomGraphPanelPinFactory : public FGraphPanelPinFactory
+class FShidenCustomGraphPanelPinFactory final : public FGraphPanelPinFactory
 {
-	virtual TSharedPtr<SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
+	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* InPin) const override
 	{
 		if (InPin->PinType.PinCategory == UEdGraphSchema_K2::PC_String)
 		{
