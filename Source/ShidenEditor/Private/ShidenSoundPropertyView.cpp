@@ -110,7 +110,7 @@ FString UShidenSoundPropertyView::GetCurrentAssetPath() const
 
 void UShidenSoundPropertyView::OnObjectChanged(const FAssetData& AssetData)
 {
-	SelectedAsset = AssetData.GetAsset();
+	SelectedAsset = TSoftObjectPtr<USoundBase>(AssetData.GetAsset());
 	OnAssetChanged.Broadcast(SelectedAsset.Get());
 }
 

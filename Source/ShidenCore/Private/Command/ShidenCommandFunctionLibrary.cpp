@@ -44,6 +44,15 @@ SHIDENCORE_API void UShidenCommandFunctionLibrary::RemoveScenarioProperty(const 
 	}
 }
 
+void UShidenCommandFunctionLibrary::ClearAllScenarioProperties()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	ShidenSubsystem->ScenarioProperties.Empty();
+}
+
 SHIDENCORE_API void UShidenCommandFunctionLibrary::ClearScenarioProperties(const FString& CommandName)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();

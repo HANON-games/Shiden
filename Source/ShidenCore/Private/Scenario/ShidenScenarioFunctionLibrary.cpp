@@ -338,9 +338,9 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetScenarioFromCache(const F
 
 	check(ShidenSubsystem);
 
-	if (TObjectPtr<UShidenScenario>* TempScenario = ShidenSubsystem->ScenarioCache.Find(ScenarioId))
+	if (TObjectPtr<UShidenScenario> TempScenario = ShidenSubsystem->ScenarioCache.FindRef(ScenarioId))
 	{
-		Scenario = *TempScenario;
+		Scenario = TempScenario;
 		bSuccess = true;
 		return;
 	}
@@ -421,7 +421,7 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::ConstructCommand(const FStri
 		return;
 	}
 
-	TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 
 	const FString OriginalCommandName = OriginalCommand.CommandName;
 	const FString OriginalPresetName = OriginalCommand.PresetName;
@@ -531,24 +531,19 @@ SHIDENCORE_API void UShidenScenarioFunctionLibrary::GetCommandFromCache(UObject*
 	check(ShidenSubsystem);
 
 	const FString CommandCacheKey = ProcessName + TEXT("::") + CommandSoftObjectPath.GetAssetPathString();
-	if (const TObjectPtr<UShidenCommandObject>* CommandPtr = ShidenSubsystem->CommandCache.Find(CommandCacheKey))
+	if (const TObjectPtr<UShidenCommandObject> CommandPtr = ShidenSubsystem->CommandCache.FindRef(CommandCacheKey))
 	{
-		Command = *CommandPtr;
+		Command = CommandPtr;
 		bSuccess = true;
 		return;
 	}
 
-	bool bTempSuccess = false;
-	GetCommand(Outer, CommandSoftObjectPath, Command, bTempSuccess);
+	GetCommand(Outer, CommandSoftObjectPath, Command, bSuccess);
 
-	if (!bTempSuccess)
+	if (bSuccess)
 	{
-		bSuccess = false;
-		return;
+		ShidenSubsystem->CommandCache.Add(CommandCacheKey, Command);
 	}
-
-	ShidenSubsystem->CommandCache.Add(CommandCacheKey, Command);
-	bSuccess = true;
 }
 
 FShidenVariable ExtractReadOnlyLocalVariable(const UShidenScenario* Scenario, const TMap<FString, FString>& CommandArgs)
@@ -756,6 +751,7 @@ void LoadScenarioAssetPathsInternal(UObject* CallerObject, const UShidenScenario
 				}
 			}
 			TempAssetPaths.Remove(TEXT(""));
+			TempAssetPaths.Remove(TEXT("None"));
 			for (const FString& AssetPath : TempAssetPaths)
 			{
 				AssetInfo.AddUnique(FShidenLoadingAssetInfo{ Index, AssetPath });
