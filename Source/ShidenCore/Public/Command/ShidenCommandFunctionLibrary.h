@@ -18,6 +18,9 @@ public:
 	static void RemoveScenarioProperty(const FString& CommandName, const FString& Key);
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
+	static void ClearAllScenarioProperties();
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
 	static void ClearScenarioProperties(const FString& CommandName);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Shiden Visual Novel|Command")

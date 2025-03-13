@@ -240,9 +240,9 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::GetOrLoadAsset(const FString& Ob
 
 	check(ShidenSubsystem);
 
-	if (const TObjectPtr<UObject>* AssetPtr = ShidenSubsystem->AssetCache.Find(ObjectPath))
+	if (const TObjectPtr<UObject> AssetPtr = ShidenSubsystem->AssetCache.FindRef(ObjectPath))
 	{
-		Asset = *AssetPtr;
+		Asset = AssetPtr;
 		bSuccess = true;
 		return;
 	}
