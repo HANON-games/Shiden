@@ -167,6 +167,9 @@ public:
 	void CaptureScreenToTexture2D(UTexture2D*& ResultTexture, bool& bResult);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
+	void SaveGame(const FString& SlotName, const UTexture2D* Thumbnail);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void SaveGameWithScreenCapture(const FString& SlotName);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
@@ -214,10 +217,10 @@ public:
 	void ClearAllImages();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Image", meta = (OwnerProcessName = "Default"))
-	void StartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target, const EEasingFunc::Type Function,
-	                    const float Duration, const bool bIsWhiteFade, const bool bShouldBeTransparent,
-	                    const float BlendExp, const int32 Steps, const FString& OwnerProcessName, bool& Success,
-	                    FString& ErrorMessage);
+	void StartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target, EEasingFunc::Type Function,
+	                    float Duration, bool bIsWhiteFade, bool bShouldBeTransparent,
+	                    float BlendExp, int32 Steps, const FString& OwnerProcessName, bool ClearImageOnCompleted,
+	                    bool& Success, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Image")
 	void IsImageFadeCompleted(const FString& ImageName, bool& bResult) const;

@@ -73,6 +73,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static FString GetCharactersWithParsedLength(const FString& Text, int32 Len);
 
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
+	static float ParseWaitTimeFromLastTag(const FString& RawText, int32 Length);
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))
 	static void MultiThreadDelay(UObject* WorldContextObject, float Duration, FLatentActionInfo LatentInfo);
 
@@ -96,4 +99,11 @@ public:
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintInternalUseOnly = "true"))
 	static FString GetCommandArgument(const FShidenCommand& Command, const FString& ArgName);
+
+private:
+	static FRegexPattern& GetSelfClosingTagPattern();
+
+	static FRegexPattern& GetNonSelfClosingTagPattern();
+	
+	static FRegexPattern& GetWaitTimePattern();
 };

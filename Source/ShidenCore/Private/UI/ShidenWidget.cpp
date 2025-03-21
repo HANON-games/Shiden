@@ -49,7 +49,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 	const FVector2D OutSize = FVector2D(WidgetRef->GetDesiredSize().X, WidgetRef->GetDesiredSize().Y);
 	constexpr TextureFilter Filter = TF_Bilinear;
 
-	if (UTextureRenderTarget2D* RenderTarget = FWidgetRenderer::CreateTargetFor(OutSize, Filter, true))
+	if (const TObjectPtr<UTextureRenderTarget2D> RenderTarget = FWidgetRenderer::CreateTargetFor(OutSize, Filter, true))
 	{
 		RenderTarget->bForceLinearGamma = true;
 		RenderTarget->UpdateResourceImmediate();
@@ -75,9 +75,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 			TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
 		}
 
-		TArray<FColor> Bitmap;
-
-		if (RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags()))
+		if (TArray<FColor> Bitmap; RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags()))
 		{
 			Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
 			for (FColor& Color : Bitmap)
@@ -230,7 +228,7 @@ SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 	TArray<FString> Keys;
 	ImageFadeParams.GetKeys(Keys);
 
-	for (FString Key : Keys)
+	for (FString& Key : Keys)
 	{
 		FShidenImageFadeParams* Param = ImageFadeParams.Find(Key);
 		Param->EasingAlpha += DeltaTime / Param->FadeDuration;
@@ -243,6 +241,10 @@ SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 
 		if (Alpha >= 1.0f)
 		{
+			if (Param->ClearImageOnCompleted)
+			{
+				Param->Target->SetBrush(FSlateNoResource());
+			}
 			ImageFadeParams.Remove(Key);
 		}
 	}
@@ -453,7 +455,8 @@ SHIDENCORE_API void UShidenWidget::StartImageFade(const FString& ImageName, UPAR
                                                   const EEasingFunc::Type Function, const float Duration,
                                                   const bool bIsWhiteFade, const bool bShouldBeTransparent,
                                                   const float BlendExp, const int32 Steps,
-                                                  const FString& OwnerProcessName, bool& Success, FString& ErrorMessage)
+                                                  const FString& OwnerProcessName, const bool ClearImageOnCompleted,
+                                                  bool& Success, FString& ErrorMessage)
 {
 	if (const FShidenImageFadeParams* FadeParam = ImageFadeParams.Find(ImageName); FadeParam && FadeParam->OwnerProcessName != OwnerProcessName)
 	{
@@ -487,6 +490,7 @@ SHIDENCORE_API void UShidenWidget::StartImageFade(const FString& ImageName, UPAR
 	Params.BlendExp = BlendExp;
 	Params.Steps = Steps;
 	Params.OwnerProcessName = OwnerProcessName;
+	Params.ClearImageOnCompleted = ClearImageOnCompleted;
 
 	ImageFadeParams.Add(ImageName, Params);
 	Success = true;

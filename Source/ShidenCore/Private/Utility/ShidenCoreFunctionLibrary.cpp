@@ -35,26 +35,25 @@ SHIDENCORE_API int32 UShidenCoreFunctionLibrary::GetParsedLength(const FString& 
 	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
 
 	// pattern like <img id="value"/>
-	const FRegexPattern Pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
-	FRegexMatcher Matcher(Pattern, Text);
+	FRegexMatcher Matcher(GetSelfClosingTagPattern(), ResultText);
 
 	while (Matcher.FindNext())
 	{
-		FString Str = Matcher.GetCaptureGroup(1);
+		FString Str = Matcher.GetCaptureGroup(0);
+		// Treat as 1 character
 		ResultText.ReplaceInline(*Str, TEXT("o"), ESearchCase::CaseSensitive);
 	}
-
+	
 	// pattern like <tagName> ... </>
-	const FRegexPattern Pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
-	FRegexMatcher Matcher2(Pattern2, Text);
+	FRegexMatcher TagMatcher(GetNonSelfClosingTagPattern(), ResultText);
 
-	while (Matcher2.FindNext())
+	while (TagMatcher.FindNext())
 	{
-		FString Str1 = Matcher2.GetCaptureGroup(0);
-		FString Str2 = Matcher2.GetCaptureGroup(1);
+		FString Str1 = TagMatcher.GetCaptureGroup(0);
+		FString Str2 = TagMatcher.GetCaptureGroup(1);
 		ResultText.ReplaceInline(*Str1, *Str2, ESearchCase::CaseSensitive);
 	}
-
+	
 	return ResultText.Len();
 }
 
@@ -78,33 +77,31 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength
 	TArray<FTextPosition> Pos;
 
 	// pattern like <img id="value"/>
-	const FRegexPattern Pattern = FRegexPattern(FString(TEXT("(<[\\w\\d\\.-]+((?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?(?:(?:/>)))")));
-	FRegexMatcher Matcher(Pattern, Text);
+	FRegexMatcher Matcher(GetSelfClosingTagPattern(), Text);
 
 	while (Matcher.FindNext())
 	{
-		const int32 Str1 = Matcher.GetMatchBeginning();
-		const int32 Str2 = Matcher.GetMatchEnding();
-		Pos.Add({Str1, Str2, -1, -1});
+		const int32 TagStart = Matcher.GetMatchBeginning();
+		const int32 TagEnd = Matcher.GetMatchEnding();
+		Pos.Add({TagStart, TagEnd - 1, -1, -1});
 	}
 
 	// pattern like <tagName> ... </>
-	const FRegexPattern Pattern2 = FRegexPattern(FString(TEXT("<.+>(.*?)</>")));
-	FRegexMatcher Matcher2(Pattern2, Text);
+	FRegexMatcher Matcher2(GetNonSelfClosingTagPattern(), Text);
 
 	while (Matcher2.FindNext())
 	{
-		const int32 Str1 = Matcher2.GetMatchBeginning();
-		const int32 Str2 = Matcher2.GetMatchEnding();
+		const int32 TagStart = Matcher2.GetMatchBeginning();
+		const int32 TagEnd = Matcher2.GetMatchEnding();
 
-		Pos.Add({Str1, Str2, Matcher2.GetCaptureGroupBeginning(1), Matcher2.GetCaptureGroupEnding(1)});
+		Pos.Add({TagStart, TagEnd - 1, Matcher2.GetCaptureGroupBeginning(1), Matcher2.GetCaptureGroupEnding(1) - 1});
 	}
 
 	if (Pos.Num() == 0)
 	{
 		return Text.Left(Len);
 	}
-
+	
 	bool bIsInTag = false;
 	int32 ResultLen = 0;
 
@@ -116,13 +113,20 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength
 			{
 				if (ContentStart == -1)
 				{
-					// TODO: Image tag is treated as 1 character, so adjust by -1.
-					// Make it possible to process each tag separately.
-					ResultLen = CloseTagEnd - 1;
+					// Image and Wait tag is treated as 1 character.
+					ResultLen = CloseTagEnd;
 					break;
 				}
-				bIsInTag = true;
-				ResultLen = ContentStart;
+				if (ContentStart != ContentEnd)
+				{
+					bIsInTag = true;
+					ResultLen = ContentStart;
+				}
+				else
+				{
+					bIsInTag = false;
+					ResultLen = CloseTagEnd;
+				}
 				break;
 			}
 			if (ContentEnd == ResultLen)
@@ -141,8 +145,26 @@ SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCharactersWithParsedLength
 	{
 		ResultText += TEXT("</>");
 	}
-
+	
 	return ResultText;
+}
+
+SHIDENCORE_API float UShidenCoreFunctionLibrary::ParseWaitTimeFromLastTag(const FString& RawText, const int32 Length)
+{
+	const FString ParsedText = GetCharactersWithParsedLength(RawText, Length);
+
+	if (ParsedText.IsEmpty() || !ParsedText.EndsWith(TEXT("/>")))
+	{
+		return 0.0f;
+	}
+
+	if (FRegexMatcher MatcherWait(GetWaitTimePattern(), ParsedText); MatcherWait.FindNext())
+	{
+		const FString TimeStr = MatcherWait.GetCaptureGroup(1);
+		return FCString::Atof(*TimeStr);
+	}
+	
+	return 0.0f;
 }
 
 SHIDENCORE_API void UShidenCoreFunctionLibrary::CallFunctionByName(UObject* TargetObject, const FString& FunctionName, const FString& Parameters)
@@ -475,4 +497,22 @@ SHIDENCORE_API void UShidenCoreFunctionLibrary::ClearAllCache()
 SHIDENCORE_API FString UShidenCoreFunctionLibrary::GetCommandArgument(const FShidenCommand& Command, const FString& ArgName)
 {
 	return Command.Args.Contains(ArgName) ? Command.Args[ArgName] : TEXT("");
+}
+
+FRegexPattern& UShidenCoreFunctionLibrary::GetSelfClosingTagPattern()
+{
+	static FRegexPattern SelfClosingTagPattern(TEXT("<(?:[\\w\\d\\.-]+)(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?/>"));
+	return SelfClosingTagPattern;
+}
+
+FRegexPattern& UShidenCoreFunctionLibrary::GetNonSelfClosingTagPattern()
+{
+	static FRegexPattern NonSelfClosingTagPattern(TEXT("<(?:[\\w\\d\\.-]+)(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?>(.*?)</>"));
+	return NonSelfClosingTagPattern;
+}
+
+FRegexPattern& UShidenCoreFunctionLibrary::GetWaitTimePattern()
+{
+	static FRegexPattern WaitTimePattern(TEXT("<wait\\stime=\"([\\d.]+)\"/>$"));
+	return WaitTimePattern;
 }

@@ -871,6 +871,18 @@ SHIDENCORE_API void UShidenVariableFunctionLibrary::ApplyVolumeRate(const UObjec
 	}
 }
 
+FRegexPattern& UShidenVariableFunctionLibrary::GetReplaceTextPattern()
+{
+	static FRegexPattern TextReplacePattern = FRegexPattern(TEXT("((?<!\\\\)\\{ *[^ \\}]+ *(?<!\\\\)\\})"));
+	return TextReplacePattern;
+}
+
+FRegexPattern& UShidenVariableFunctionLibrary::GetVariablePattern()
+{
+	static FRegexPattern VariablePattern = FRegexPattern(TEXT("(?<!\\\\)\\{\\s*([^ \\}]+?)\\s*(?<!\\\\)\\}"));
+	return VariablePattern;
+}
+
 SHIDENCORE_API TArray<FString> UShidenVariableFunctionLibrary::GetVariableNamesFromText(const FString& Text)
 {
 	if (!Text.Contains(TEXT("{")) || !Text.Contains(TEXT("}")))
@@ -880,9 +892,7 @@ SHIDENCORE_API TArray<FString> UShidenVariableFunctionLibrary::GetVariableNamesF
 
 	TArray<FString> Result;
 
-	const FRegexPattern GetVariablePattern =
-		FRegexPattern(FString(TEXT("(?<!\\\\)\\{\\s*([^ \\}]+?)\\s*(?<!\\\\)\\}")));
-	FRegexMatcher Matcher(GetVariablePattern, Text);
+	FRegexMatcher Matcher(GetVariablePattern(), Text);
 
 	while (Matcher.FindNext())
 	{
@@ -905,8 +915,7 @@ SHIDENCORE_API FString UShidenVariableFunctionLibrary::ReplaceVariables(const FS
 	
 	FString ResultText = Text;
 
-	const FRegexPattern ReplaceTextPattern = FRegexPattern(FString(TEXT("((?<!\\\\)\\{ *[^ \\}]+ *(?<!\\\\)\\})")));
-	FRegexMatcher Matcher(ReplaceTextPattern, Text);
+	FRegexMatcher Matcher(GetReplaceTextPattern(), Text);
 
 	while (Matcher.FindNext())
 	{
@@ -986,8 +995,7 @@ SHIDENCORE_API FShidenCommand UShidenVariableFunctionLibrary::ReplaceVariablesFo
 
 		FString ResultText = Value;
 
-		const FRegexPattern ReplaceTextPattern = FRegexPattern(FString(TEXT("((?<!\\\\)\\{ *[^ \\}]+ *(?<!\\\\)\\})")));
-		FRegexMatcher Matcher(ReplaceTextPattern, Value);
+		FRegexMatcher Matcher(GetReplaceTextPattern(), Value);
 
 		while (Matcher.FindNext())
 		{
