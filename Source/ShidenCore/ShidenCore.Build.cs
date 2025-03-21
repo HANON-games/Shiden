@@ -49,14 +49,18 @@ public class ShidenCore : ModuleRules
 				"RenderCore",
 				"RHI",
 				"Projects"
-#if WITH_EDITOR
-				"Settings",
-#endif
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
-
-
+		
+		if (Target.Type == TargetType.Editor)
+		{
+			PrivateDependencyModuleNames.AddRange(new string[] {
+				"Settings",
+				"UnrealEd",
+			});
+		}
+		
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{

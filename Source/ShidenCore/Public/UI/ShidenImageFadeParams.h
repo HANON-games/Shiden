@@ -37,4 +37,7 @@ struct FShidenImageFadeParams
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FString OwnerProcessName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	bool ClearImageOnCompleted = false;
 };

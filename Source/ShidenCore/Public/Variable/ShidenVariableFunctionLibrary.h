@@ -224,4 +224,8 @@ private:
 	static FString MakeUpdateErrorMessage(TObjectPtr<UShidenSubsystem> ShidenSubsystem, const FString& Name, const EShidenVariableType& Type);
 
 	static void ApplyVolumeRate(const UObject* WorldContextObject, USoundMix* TargetSoundMix, USoundClass* TargetSoundClass, float TargetVolumeRate);
+
+	static FRegexPattern& GetReplaceTextPattern();
+
+	static FRegexPattern& GetVariablePattern();
 };

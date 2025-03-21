@@ -2,6 +2,9 @@
 
 #pragma once
 
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
 #include "ShidenReadLines.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Variable/ShidenVariable.h"
@@ -71,7 +74,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	void BeginPlay(UWorld* InWorld)
+	void BeginPlay(bool bInBool)
 	{
 		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);
@@ -97,7 +100,7 @@ public:
 		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
 		SetDefaultPredefinedSystemVariables();
 #if WITH_EDITOR
-		FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UShidenSubsystem::BeginPlay);
+		FEditorDelegates::PreBeginPIE.AddUObject(this, &UShidenSubsystem::BeginPlay);
 #endif
 	}
 };

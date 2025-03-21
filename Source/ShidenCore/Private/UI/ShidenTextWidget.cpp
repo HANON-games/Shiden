@@ -6,11 +6,6 @@
 #include "Utility/ShidenCoreFunctionLibrary.h"
 #include "Variable/ShidenVariableFunctionLibrary.h"
 
-SHIDENCORE_API EShidenTextWidgetInteractionState UShidenTextWidget::GetWidgetInteractionState() const
-{
-	return InteractionState;
-}
-
 SHIDENCORE_API void UShidenTextWidget::GetAllFullTexts_Implementation(TMap<FString, FString>& Texts)
 {
 	Texts = OriginalTexts;
@@ -39,26 +34,22 @@ SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FStri
 	Text = UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(Original, CurrentLength);
 }
 
-SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, bool& bResult)
+SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bResult)
 {
 	bResult = true;
-	InteractionState = EShidenTextWidgetInteractionState::Interactive;
+	// ReSharper disable once CppExpressionWithoutSideEffects
+	OnOpened.ExecuteIfBound();
 }
 
-SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, bool& bResult)
+SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bResult)
 {
 	bResult = true;
+	// ReSharper disable once CppExpressionWithoutSideEffects
+	OnClosed.ExecuteIfBound();
 }
 
 SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int Length, bool& bResult)
 {
-	if (InteractionState == EShidenTextWidgetInteractionState::Busy)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Set text is not allowed in busy state."));
-		bResult = false;
-		return;
-	}
-	
 	bResult = false;
 	FString ParsedText = UShidenCoreFunctionLibrary::GetCharactersWithParsedLength(RawText, Length);
 	const int32 ParsedLength = UShidenCoreFunctionLibrary::GetParsedLength(RawText);
@@ -146,7 +137,7 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 	
 	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph)
 	{
-		const UShidenSubsystem* ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 		check(ShidenSubsystem);
 		

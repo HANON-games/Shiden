@@ -121,6 +121,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveUserData(const FString&
 	if (SlotName == TEXT("ShidenSystemData"))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSystemData\" as user save slot name"));
+		// ReSharper disable once CppExpressionWithoutSideEffects
 		SavedDelegate.ExecuteIfBound(false);
 		return;
 	}
@@ -128,6 +129,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveUserData(const FString&
 	if (SlotName == TEXT("ShidenSaveSlots"))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSaveSlots\" as user save slot name"));
+		// ReSharper disable once CppExpressionWithoutSideEffects
 		SavedDelegate.ExecuteIfBound(false);
 		return;
 	}
@@ -143,6 +145,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveUserData(const FString&
 			const bool bSaveUserDataSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, 0);
 			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveUserDataSuccess]
 			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
 				SavedDelegate.ExecuteIfBound(bSaveUserDataSuccess);
 			});
 		}
@@ -150,6 +153,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveUserData(const FString&
 		{
 			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveSlotSuccess]
 			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
 				SavedDelegate.ExecuteIfBound(bSaveSlotSuccess);
 			});
 		}
@@ -191,6 +195,7 @@ SHIDENCORE_API void UShidenSaveFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDa
 		const bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
 		AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSuccess]
 		{
+			// ReSharper disable once CppExpressionWithoutSideEffects
 			SavedDelegate.ExecuteIfBound(bSuccess);
 		});
 	});
