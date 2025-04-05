@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -38,7 +38,7 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition: public FShidenV
 		Name = InName;
 		Type = InType;
 		DefaultValue = InDefaultValue;
-		IsReadOnly = InIsReadOnly;
+		bIsReadOnly = InIsReadOnly;
 		Getter = InGetter;
 		Setter = InSetter;
 	}

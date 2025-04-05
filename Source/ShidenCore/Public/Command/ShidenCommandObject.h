@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -45,42 +45,42 @@ class SHIDENCORE_API UShidenCommandObject : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget,
+	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
 	                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                         const UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
+	                         UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, const UShidenWidget* Widget,
-	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UObject* CallerObject,
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
 	                                                EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void PreviewCommand(const FShidenCommand& Command, const UShidenWidget* Widget,
+	void PreviewCommand(const FShidenCommand& Command, UShidenWidget* Widget,
 	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                    const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
+	                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, const UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const bool bIsCurrentCommand, EShidenPreviewStatus& Status,
+	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
-	void PreProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	void PreProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
 	                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                       const UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
+	                       UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
-	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UObject* CallerObject,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
 	                                              EShidenPreProcessStatus& Status, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
-	void ProcessCommand(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
-	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
-	                    const UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
+	void ProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager, float DeltaTime,
+	                    UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                    FString& NextScenarioName, FString& ErrorMessage);
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand Command, const UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, const UObject* CallerObject,
+	                                           float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage);
 };

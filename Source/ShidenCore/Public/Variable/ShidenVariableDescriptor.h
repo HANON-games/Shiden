@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -26,7 +26,7 @@ struct SHIDENCORE_API FShidenVariableDescriptor
 	FString DefaultValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	bool IsReadOnly = false;
+	bool bIsReadOnly = false;
 	
 	FShidenVariableDescriptor()
 	{
@@ -35,16 +35,16 @@ struct SHIDENCORE_API FShidenVariableDescriptor
 		Type = EShidenVariableType::Boolean;
 		Value = "";
 		DefaultValue = "";
-		IsReadOnly = false;
+		bIsReadOnly = false;
 	}
 
 	FShidenVariableDescriptor(const FString& Name, const EShidenVariableType VariableType, const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
-		: Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), IsReadOnly(bIsReadOnly)
+		: Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), bIsReadOnly(bIsReadOnly)
 	{
 	}
 
 	FShidenVariableDescriptor(const FString& ScenarioKey, const FString& Name, const EShidenVariableType VariableType, const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
-		: ScenarioKey(ScenarioKey), Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), IsReadOnly(bIsReadOnly)
+		: ScenarioKey(ScenarioKey), Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), bIsReadOnly(bIsReadOnly)
 	{
 	}
 };

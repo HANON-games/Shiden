@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include "ShidenScenarioStruct.h"
 #include "Variable/ShidenPredefinedSystemVariableDefinition.h"
 #include "Variable/ShidenVariableDescriptor.h"
+#include "ShidenCommandRedirector.h"
 #include "ShidenEditorFunctionLibrary.generated.h"
 
 UCLASS()
@@ -77,6 +78,11 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|EditorUtility|Config")
 	static void GetPredefinedSystemVariableDefinitions(TArray<FShidenVariableDefinition>& VariableDefinitions);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static void RedirectCommands(UShidenScenario* Scenario, bool& bAnyCommandUpdated);
+
+	static TArray<FShidenCommandRedirector> GetRedirectDefinitions();
 
 private:
 	static void ParseCsv(const FString& CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);

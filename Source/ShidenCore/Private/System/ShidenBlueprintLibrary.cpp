@@ -1,0 +1,461 @@
+// Copyright (c) 2025 HANON. All Rights Reserved.
+
+// ReSharper disable CppExpressionWithoutSideEffects
+#include "System/ShidenBlueprintLibrary.h"
+#include "DelayAction.h"
+#include "Command/ShidenCommandDefinitions.h"
+#include "Engine/AssetManager.h"
+#include "HAL/PlatformApplicationMisc.h"
+#include "System/ShidenBacklogItem.h"
+#include "Async/Async.h"
+#include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "Sound/SoundClass.h"
+#include "Sound/SoundBase.h"
+
+SHIDENCORE_API void UShidenBlueprintLibrary::CopyToClipboard(const FString& Str)
+{
+	FPlatformApplicationMisc::ClipboardCopy(*Str);
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::GetClipboardContent(FString& Dest)
+{
+	FPlatformApplicationMisc::ClipboardPaste(Dest);
+}
+
+SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Text)
+{
+	FString ResultText = Text;
+
+	ResultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
+
+	// pattern like <img id="value"/>
+	FRegexMatcher Matcher(GetSelfClosingTagPattern(), ResultText);
+
+	while (Matcher.FindNext())
+	{
+		FString Str = Matcher.GetCaptureGroup(0);
+		// Treat as 1 character
+		ResultText.ReplaceInline(*Str, TEXT("o"), ESearchCase::CaseSensitive);
+	}
+	
+	// pattern like <tagName> ... </>
+	FRegexMatcher TagMatcher(GetNonSelfClosingTagPattern(), ResultText);
+
+	while (TagMatcher.FindNext())
+	{
+		FString Str1 = TagMatcher.GetCaptureGroup(0);
+		FString Str2 = TagMatcher.GetCaptureGroup(1);
+		ResultText.ReplaceInline(*Str1, *Str2, ESearchCase::CaseSensitive);
+	}
+	
+	return ResultText.Len();
+}
+
+struct FTextPosition
+{
+	int32 OpenTagStart;
+	int32 CloseTagEnd;
+	int32 ContentStart;
+	int32 ContentEnd;
+};
+
+SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(const FString& Text, const int32 Len)
+{
+	FString ResultText = Text;
+
+	ResultText.ReplaceInline(TEXT("&quot;"), TEXT("\""), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&amp;"), TEXT("&"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&apos;"), TEXT("'"), ESearchCase::CaseSensitive);
+	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("<"), ESearchCase::CaseSensitive);
+
+	TArray<FTextPosition> Pos;
+
+	// pattern like <img id="value"/>
+	FRegexMatcher Matcher(GetSelfClosingTagPattern(), Text);
+
+	while (Matcher.FindNext())
+	{
+		const int32 TagStart = Matcher.GetMatchBeginning();
+		const int32 TagEnd = Matcher.GetMatchEnding();
+		Pos.Add({TagStart, TagEnd - 1, -1, -1});
+	}
+
+	// pattern like <tagName> ... </>
+	FRegexMatcher Matcher2(GetNonSelfClosingTagPattern(), Text);
+
+	while (Matcher2.FindNext())
+	{
+		const int32 TagStart = Matcher2.GetMatchBeginning();
+		const int32 TagEnd = Matcher2.GetMatchEnding();
+
+		Pos.Add({TagStart, TagEnd - 1, Matcher2.GetCaptureGroupBeginning(1), Matcher2.GetCaptureGroupEnding(1) - 1});
+	}
+
+	if (Pos.Num() == 0)
+	{
+		return Text.Left(Len);
+	}
+	
+	bool bIsInTag = false;
+	int32 ResultLen = 0;
+
+	for (int32 Index = 0; Index < Len; Index++)
+	{
+		for (const auto& [OpenTagStart, CloseTagEnd, ContentStart, ContentEnd] : Pos)
+		{
+			if (OpenTagStart == ResultLen)
+			{
+				if (ContentStart == -1)
+				{
+					// Image and Wait tag is treated as 1 character.
+					ResultLen = CloseTagEnd;
+					break;
+				}
+				if (ContentStart != ContentEnd)
+				{
+					bIsInTag = true;
+					ResultLen = ContentStart;
+				}
+				else
+				{
+					bIsInTag = false;
+					ResultLen = CloseTagEnd;
+				}
+				break;
+			}
+			if (ContentEnd == ResultLen)
+			{
+				bIsInTag = false;
+				ResultLen = CloseTagEnd;
+				break;
+			}
+		}
+		ResultLen++;
+	}
+
+	ResultText = ResultText.Left(ResultLen);
+
+	if (bIsInTag)
+	{
+		ResultText += TEXT("</>");
+	}
+	
+	return ResultText;
+}
+
+SHIDENCORE_API float UShidenBlueprintLibrary::ParseWaitTimeFromLastTag(const FString& RawText, const int32 Length)
+{
+	const FString ParsedText = GetCharactersWithParsedLength(RawText, Length);
+
+	if (ParsedText.IsEmpty() || !ParsedText.EndsWith(TEXT("/>")))
+	{
+		return 0.0f;
+	}
+
+	if (FRegexMatcher MatcherWait(GetWaitTimePattern(), ParsedText); MatcherWait.FindNext())
+	{
+		const FString TimeStr = MatcherWait.GetCaptureGroup(1);
+		return FCString::Atof(*TimeStr);
+	}
+	
+	return 0.0f;
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::MultiThreadDelay(UObject* WorldContextObject, const float Duration, const FLatentActionInfo LatentInfo)
+{
+	if (const TObjectPtr<UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FDelayAction(Duration, LatentInfo));
+	}
+}
+
+SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
+{
+	if (SoftObjectPath.IsNull())
+	{
+		return nullptr;
+	}
+
+	if (SoftObjectPath.GetAssetPathString().StartsWith(TEXT("/Script/")))
+	{
+		return StaticLoadClass(UObject::StaticClass(), nullptr, *SoftObjectPath.GetAssetPathString(), nullptr, LOAD_None, nullptr);
+	}
+
+	const FString Path = SoftObjectPath.GetAssetPathString() + "_C";
+	return StaticLoadClass(UObject::StaticClass(), nullptr, *Path, nullptr, LOAD_None, nullptr);
+}
+
+void FlipBitmapVertical(TArray<FColor>& Bitmap, const int32 Width, const int32 Height)
+{
+	for (int32 Y = 0; Y < Height / 2; ++Y)
+	{
+		const int32 IndexTop = Y * Width;
+		const int32 IndexBottom = (Height - 1 - Y) * Width;
+
+		for (int32 X = 0; X < Width; ++X)
+		{
+			const FColor Temp = Bitmap[IndexTop + X];
+			Bitmap[IndexTop + X] = Bitmap[IndexBottom + X];
+			Bitmap[IndexBottom + X] = Temp;
+		}
+	}
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::GetOrLoadAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess)
+{
+	Asset = nullptr;
+
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	if (const TObjectPtr<UObject> AssetPtr = ShidenSubsystem->AssetCache.FindRef(ObjectPath))
+	{
+		Asset = AssetPtr;
+		bSuccess = true;
+		return;
+	}
+
+	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+	Asset = Streamable.LoadSynchronous(ObjectPath, false);
+
+	if (!Asset)
+	{
+		bSuccess = false;
+		return;
+	}
+
+	bSuccess = true;
+	ShidenSubsystem->AssetCache.Add(ObjectPath, Asset);
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::UnloadAssets(const bool bForceGC)
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	ShidenSubsystem->AssetCache.Empty();
+
+	if (bForceGC)
+	{
+		GEngine->ForceGarbageCollection(true);
+	}
+}
+
+SHIDENCORE_API FString UShidenBlueprintLibrary::MakeErrorMessage(const FGuid& ScenarioId, const int32 Index,
+                                                                    const FString& CommandName, const FString& ErrorMessage)
+{
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (!ProjectConfig)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ShidenProjectConfig is null"));
+		return TEXT("");
+	}
+
+	const FString ScenarioPath = ProjectConfig->ScenarioPaths.FindRef(ScenarioId);
+
+	FString LeftS, RightS;
+	ScenarioPath.Split(TEXT("/"), nullptr, &RightS, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+	RightS.Split(TEXT("."), &LeftS, nullptr, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+
+	const FString LineNumber = Index == -1 ? TEXT("") : TEXT(" L") + FString::FromInt(Index + 1);
+
+	const FString Command = CommandName.IsEmpty() ? TEXT("") : CommandName + TEXT(": ");
+
+	return FString::Printf(TEXT("[%s%s] %s%s"), *LeftS, *LineNumber, *Command, *ErrorMessage);
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::AddBacklogItem(const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties)
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	ShidenSubsystem->BacklogItems.Add(FShidenBacklogItem{Command, AdditionalProperties});
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::UpdateBacklogItem(const int32 Index, const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties)
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	if (!ShidenSubsystem->BacklogItems.IsValidIndex(Index))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid backlog index: %d"), Index);
+		return;
+	}
+
+	FShidenBacklogItem& BacklogItem = ShidenSubsystem->BacklogItems[Index];
+	BacklogItem.Command = Command;
+	BacklogItem.AdditionalProperties = AdditionalProperties;
+}
+
+SHIDENCORE_API TArray<FShidenBacklogItem>& UShidenBlueprintLibrary::GetBacklogItems()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	return ShidenSubsystem->BacklogItems;
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::ClearBacklogItems()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	ShidenSubsystem->BacklogItems.Empty();
+}
+
+SHIDENCORE_API TMap<FString, FShidenTextType> UShidenBlueprintLibrary::GetShidenTextTypes()
+{
+	TMap<FString, FShidenTextType> TextTypes
+	{
+		{TEXT("Default"), FShidenTextType{true}},
+		{TEXT("Name"), FShidenTextType{false}}
+	};
+
+	const TMap<FString, FShidenTextType> AdditionalTextTypes = GetDefault<UShidenProjectConfig>()->AdditionalTextTypes;
+	TextTypes.Append(AdditionalTextTypes);
+	return TextTypes;
+}
+
+SHIDENCORE_API FString UShidenBlueprintLibrary::GetObjectPathFromClass(const UClass* InClass)
+{
+	const FTopLevelAssetPath Path = FTopLevelAssetPath(InClass);
+	return Path.ToString().LeftChop(2);
+}
+
+void UShidenBlueprintLibrary::GetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType, bool& bSuccess)
+{
+	const TObjectPtr<USoundClass> SoundClass = SoundBase->GetSoundClass();
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	const TObjectPtr<USoundClass> BgmSoundClass = ProjectConfig->GetBgmSoundClass();
+	const TObjectPtr<USoundClass> SeSoundClass = ProjectConfig->GetSeSoundClass();
+	const TObjectPtr<USoundClass> VoiceSoundClass = ProjectConfig->GetVoiceSoundClass();
+
+	if (SoundClass == BgmSoundClass || BgmSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::BGM;
+		bSuccess = true;
+	}
+	else if (SoundClass == SeSoundClass || SeSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::SE;
+		bSuccess = true;
+	}
+	else if (SoundClass == VoiceSoundClass || VoiceSoundClass->ChildClasses.Contains(SoundClass))
+	{
+		SoundType = EShidenSoundType::Voice;
+		bSuccess = true;
+	}
+	else
+	{
+		bSuccess = false;
+	}
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::InitCommandDefinitions()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	if (ShidenSubsystem->CommandDefinitionCache.Num() > 0)
+	{
+		return;
+	}
+
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+
+	for (const FSoftObjectPath& CommandDefinitionSoftObjectPath : ProjectConfig->CommandDefinitions)
+	{
+		TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionSoftObjectPath.TryLoad());
+		if (!CommandDefinitions)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load CommandDefinitions from ObjectPath: %s"), *CommandDefinitionSoftObjectPath.GetAssetPathString());
+			continue;
+		}
+
+		for (const auto& [CommandName, CommandDefinition] : CommandDefinitions->CommandDefinitions)
+		{
+			if (ShidenSubsystem->CommandDefinitionCache.Contains(CommandName))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("CommandDefinition already exists for CommandName: %s"), *CommandName);
+				continue;
+			}
+
+			ShidenSubsystem->CommandDefinitionCache.Add(CommandName, CommandDefinition);
+		}
+	}
+}
+
+SHIDENCORE_API const TMap<FString, FShidenCommandDefinition>& UShidenBlueprintLibrary::GetCommandDefinitionsCache()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	if (ShidenSubsystem->CommandDefinitionCache.Num() == 0)
+	{
+		InitCommandDefinitions();
+	}
+
+	return ShidenSubsystem->CommandDefinitionCache;
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::ClearAllCache()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	check(ShidenSubsystem);
+
+	ShidenSubsystem->AssetCache.Empty();
+	ShidenSubsystem->CommandCache.Empty();
+	ShidenSubsystem->CommandDefinitionCache.Empty();
+	ShidenSubsystem->ScenarioCache.Empty();
+}
+
+SHIDENCORE_API FString UShidenBlueprintLibrary::GetCommandArgument(const FShidenCommand& Command, const FString& ArgName)
+{
+return Command.Args.Contains(ArgName) ? Command.Args[ArgName] : TEXT("");
+}
+
+SHIDENCORE_API bool UShidenBlueprintLibrary::IsAutoTextMode()
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	return ShidenSubsystem->bAutoTextMode;
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::SetAutoTextMode(const bool bMode)
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	ShidenSubsystem->bAutoTextMode = bMode;
+}
+
+FRegexPattern& UShidenBlueprintLibrary::GetSelfClosingTagPattern()
+{
+	static FRegexPattern SelfClosingTagPattern(TEXT("<(?:[\\w\\d\\.-]+)(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?/>"));
+	return SelfClosingTagPattern;
+}
+
+FRegexPattern& UShidenBlueprintLibrary::GetNonSelfClosingTagPattern()
+{
+	static FRegexPattern NonSelfClosingTagPattern(TEXT("<(?:[\\w\\d\\.-]+)(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?>(.*?)</>"));
+	return NonSelfClosingTagPattern;
+}
+
+FRegexPattern& UShidenBlueprintLibrary::GetWaitTimePattern()
+{
+	static FRegexPattern WaitTimePattern(TEXT("<wait\\stime=\"([\\d.]+)\"/>$"));
+	return WaitTimePattern;
+}

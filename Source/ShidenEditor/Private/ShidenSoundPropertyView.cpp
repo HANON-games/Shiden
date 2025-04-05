@@ -110,7 +110,7 @@ FString UShidenSoundPropertyView::GetCurrentAssetPath() const
 
 void UShidenSoundPropertyView::OnObjectChanged(const FAssetData& AssetData)
 {
-	SelectedAsset = TSoftObjectPtr<USoundBase>(AssetData.GetAsset());
+	SelectedAsset = TSoftObjectPtr<USoundBase>(Cast<USoundBase>(AssetData.GetAsset()));
 	OnAssetChanged.Broadcast(SelectedAsset.Get());
 }
 
@@ -151,7 +151,7 @@ USoundBase* UShidenSoundPropertyView::GetSelectedAsset() const
 
 const FText UShidenSoundPropertyView::GetPaletteCategory()
 {
-	return LOCTEXT("Shiden Editor", "Shiden Editor");
+	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
 }
 
 #endif

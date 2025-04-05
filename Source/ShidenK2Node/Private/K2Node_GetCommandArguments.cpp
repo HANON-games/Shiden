@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "K2Node_GetCommandArguments.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -26,7 +26,7 @@
 #include "UObject/WeakObjectPtrTemplates.h"
 #include "Command/ShidenCommandDefinitions.h"
 #include "Command/ShidenCommand.h"
-#include "Utility/ShidenCoreFunctionLibrary.h"
+#include "System/ShidenBlueprintLibrary.h"
 
 class UBlueprint;
 
@@ -39,7 +39,7 @@ static const FName CommandNamePinName(TEXT("CommandName"));
 UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), CommandDefinitionsCache(nullptr)
 {
-	NodeTooltip = LOCTEXT("NodeTooltip", "Attempts to retrieve a Command Arguments from a CommandDefinitions");
+	NodeTooltip = NSLOCTEXT("ShidenNamespace", "NodeTooltip", "Attempt to retrieve a arguments from a command");
 	OnCommandDefinitionsChangedHandle = FDelegateHandle();
 }
 
@@ -48,18 +48,18 @@ void UK2Node_GetCommandArguments::AllocateDefaultPins()
 	// Add CommandDefinitions pin
 	UEdGraphPin* CommandDefinitionsPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UShidenCommandDefinitions::StaticClass(), CommandDefinitionsPinName);
 	CommandDefinitionsPin->bNotConnectable = true;
-	SetPinToolTip(*CommandDefinitionsPin, LOCTEXT("CommandDefinitionsPinDescription", "The CommandDefinitions"));
+	SetPinToolTip(*CommandDefinitionsPin, NSLOCTEXT("ShidenNamespace", "CommandDefinitionsPinDescription", "The CommandDefinitions"));
 
 	// Command Name pin
 	UEdGraphPin* CommandNamePin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, CommandNamePinName);
 	CommandNamePin->bNotConnectable = true;
 	CommandNamePin->bHidden = !CommandDefinitionsPin->DefaultObject;
-	SetPinToolTip(*CommandNamePin, LOCTEXT("CommandNamePinDescription", "The command name"));
+	SetPinToolTip(*CommandNamePin, NSLOCTEXT("ShidenNamespace", "CommandNamePinDescription", "The command name"));
 
 	// Add Command pin
 	UScriptStruct* ShidenCommandStruct = TBaseStructure<FShidenCommand>::Get();
 	UEdGraphPin* CommandPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, ShidenCommandStruct, CommandPinName);
-	SetPinToolTip(*CommandPin, LOCTEXT("CommandPinDescription", "The Command"));
+	SetPinToolTip(*CommandPin, NSLOCTEXT("ShidenNamespace", "CommandPinDescription", "The Command"));
 
 	Super::AllocateDefaultPins();
 }
@@ -397,7 +397,7 @@ UEdGraphPin* UK2Node_GetCommandArguments::GetCommandNamePin(const TArray<UEdGrap
 
 FText UK2Node_GetCommandArguments::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return NSLOCTEXT("K2Node", "Get Command Arguments", "Get Command Arguments");
+	return NSLOCTEXT("ShidenNamespace", "Get Command Arguments", "Get Command Arguments");
 }
 
 void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
@@ -410,7 +410,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 		                                                          : nullptr;
 	if (nullptr == OriginalGetCommandDefinitionsInPin || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
-		CompilerContext.MessageLog.Error(*LOCTEXT("GetCommandArgumentsNoCommandDefinitions_Error",
+		CompilerContext.MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "GetCommandArgumentsNoCommandDefinitions_Error",
 		                                          "GetCommandArguments must have a CommandDefinitions specified.").
 		                                 ToString(), this);
 		// we break exec links so this is the only error we get
@@ -418,7 +418,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 		return;
 	}
 
-	const FName FunctionName = GET_MEMBER_NAME_CHECKED(UShidenCoreFunctionLibrary, GetCommandArgument);
+	const FName FunctionName = GET_MEMBER_NAME_CHECKED(UShidenBlueprintLibrary, GetCommandArgument);
 	int32 Count = 0;
 	TArray<UEdGraphPin*> OutputPins = TArray<UEdGraphPin*>();
 	for (UEdGraphPin* TestPin : Pins)
@@ -432,7 +432,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 	{
 		Count++;
 		UK2Node_CallFunction* GetCommandArgumentFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
-		GetCommandArgumentFunction->SetFromFunction(UShidenCoreFunctionLibrary::StaticClass()->FindFunctionByName(FunctionName));
+		GetCommandArgumentFunction->SetFromFunction(UShidenBlueprintLibrary::StaticClass()->FindFunctionByName(FunctionName));
 		GetCommandArgumentFunction->AllocateDefaultPins();
 		UEdGraphPin* ArgNameInPin = GetCommandArgumentFunction->FindPinChecked(TEXT("ArgName"));
 		ArgNameInPin->DefaultValue = OutputPin->PinName.ToString();
@@ -467,14 +467,14 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 	const UEdGraphPin* CommandNamePin = GetCommandNamePin();
 	if (!CommandDefinitionsPin || !CommandNamePin)
 	{
-		MessageLog.Error(*LOCTEXT("MissingPins", "Missing pins in @@").ToString(), this);
+		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "MissingPins", "Missing pins in @@").ToString(), this);
 		return;
 	}
 
 	const UEdGraphPin* CommandPin = GetCommandPin();
 	if (!CommandPin || (CommandPin->LinkedTo.Num() == 0 && !CommandPin->DefaultObject && CommandPin->SubPins.Num() == 0))
 	{
-		MessageLog.Error(*LOCTEXT("CommandPinDefaultValue", "The current value of the '@@' pin is invalid.").ToString(), this);
+		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandPinDefaultValue", "The current value of the '@@' pin is invalid.").ToString(), this);
 		return;
 	}
 
@@ -484,7 +484,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 		CommandDefinitions->CommandDefinitions.GetKeys(Keys);
 		if (!Keys.Contains(CommandNamePin->DefaultValue))
 		{
-			MessageLog.Error(*LOCTEXT("CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(), this);
+			MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(), this);
 		}
 		else
 		{
@@ -499,7 +499,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 				{
 					if (!ArgKeys.Contains(Pin->PinName.ToString()))
 					{
-						MessageLog.Error(*LOCTEXT("ArgNameNotFound", "@@ not found in CommandDefinitions.").ToString(), Pin);
+						MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "ArgNameNotFound", "@@ not found in CommandDefinitions.").ToString(), Pin);
 					}
 				}
 			}

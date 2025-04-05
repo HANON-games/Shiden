@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenCore.h"
 #include "Config/ShidenProjectConfig.h"
@@ -19,8 +19,8 @@ void FShidenCoreModule::StartupModule()
 			"Project",
 			"Plugins",
 			"ShidenVisualNovelEditor",
-			LOCTEXT("ShidenVisualNovelEditorName", "Shiden Visual Novel Editor"),
-			LOCTEXT("ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor"),
+			NSLOCTEXT("ShidenNamespace", "ShidenVisualNovelEditorName", "Shiden Visual Novel Editor"),
+			NSLOCTEXT("ShidenNamespace", "ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor"),
 			GetMutableDefault<UShidenProjectConfig>()
 		);
 	}

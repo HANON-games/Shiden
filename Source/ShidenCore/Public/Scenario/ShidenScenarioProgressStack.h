@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -49,4 +49,12 @@ struct FShidenScenarioProgressStack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenCancelInfo CancelInfo;
+	
+	void SetCurrentIndex(const int32 NewIndex)
+	{
+		if (Stack.Num() > 0)
+		{
+			Stack.Last().CurrentIndex = NewIndex;
+		}
+	}
 };

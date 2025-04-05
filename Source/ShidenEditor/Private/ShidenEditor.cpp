@@ -1,9 +1,10 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenEditor.h"
 #include "ISettingsModule.h"
 #include "ShidenEditorConfig.h"
 #include "EditorSubsystem.h"
+#include "ShidenCommandDefinitionCustomization.h"
 #include "Editor/EditorEngine.h"
 
 #define LOCTEXT_NAMESPACE "FShidenEditorModule"
@@ -23,6 +24,13 @@ void FShidenEditorModule::StartupModule()
 			GetMutableDefault<UShidenEditorConfig>()
 		);
 	}
+	
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+		"ShidenCommandDefinition",
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenCommandDefinitionCustomization::MakeInstance)
+	);
+	PropertyEditorModule.NotifyCustomizationModuleChanged();
 }
 
 void FShidenEditorModule::ShutdownModule()
@@ -38,6 +46,9 @@ void FShidenEditorModule::ShutdownModule()
 			"ShidenVisualNovelEditor"
 		);
 	}
+
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandDefinition");
 }
 
 #undef LOCTEXT_NAMESPACE

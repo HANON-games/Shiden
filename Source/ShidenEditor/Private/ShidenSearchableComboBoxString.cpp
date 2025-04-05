@@ -372,7 +372,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleOpening()
 
 SHIDENEDITOR_API const FText UShidenSearchableComboBoxString::GetPaletteCategory()
 {
-	return LOCTEXT("Shiden Editor", "Shiden Editor");
+	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
 }
 
 #endif

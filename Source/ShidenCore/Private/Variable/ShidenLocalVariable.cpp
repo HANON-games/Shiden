@@ -1,7 +1,7 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Variable/ShidenLocalVariable.h"
-#include "Scenario/ShidenScenarioFunctionLibrary.h"
+#include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 
 SHIDENCORE_API bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeKey, const FString& Name, FShidenVariableDefinition& Definition)
@@ -33,7 +33,7 @@ SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
 	{
 		UShidenScenario* Scenario = nullptr;
 		bool bSuccess;
-		UShidenScenarioFunctionLibrary::GetScenarioFromCache(ScenarioIds[ScopeKey], Scenario, bSuccess);
+		UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioIds[ScopeKey], Scenario, bSuccess);
 		if (bSuccess)
 		{
 			TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
@@ -289,7 +289,7 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 						break;
 					}
 				}
-				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Value, Definition.DefaultValue, Definition.IsReadOnly));
+				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Value, Definition.DefaultValue, Definition.bIsReadOnly));
 			}
 		}
 	}

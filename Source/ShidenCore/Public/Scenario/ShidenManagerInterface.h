@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -21,19 +21,19 @@ class SHIDENCORE_API IShidenManagerInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
-	void FindShidenDigitalInput(const UInputAction* InputAction, bool& bValue, bool& bResult);
+	void FindShidenDigitalInput(const UInputAction* InputAction, bool& bValue, bool& bSuccess);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (bRegisterSound = true))
-	void PlaySound(const FShidenSoundInfo SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess);
+	void PlaySound(const FShidenSoundInfo& SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void StopSound(const int32 TrackId, const EShidenSoundType Type);
+	void StopSound(const int32& TrackId, const EShidenSoundType Type);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void StopVoices();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void AdjustBgmVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve);
+	void AdjustBgmVolume(const int32& TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FadeCurve);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
 	void PauseAllSounds(const bool bPause);

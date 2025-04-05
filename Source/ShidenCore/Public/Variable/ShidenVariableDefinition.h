@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -20,7 +20,7 @@ struct FShidenVariableDefinition
 	FString DefaultValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	bool IsReadOnly = false;
+	bool bIsReadOnly = false;
 
 	static const FShidenVariableDefinition Empty;
 	

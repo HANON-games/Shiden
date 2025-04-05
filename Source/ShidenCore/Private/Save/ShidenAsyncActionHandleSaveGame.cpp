@@ -1,8 +1,8 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Save/ShidenAsyncActionHandleSaveGame.h"
-#include "Save/ShidenSaveFunctionLibrary.h"
+#include "Save/ShidenSaveBlueprintLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ShidenAsyncActionHandleSaveGame)
 
@@ -30,10 +30,10 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	switch (Operation)
 	{
 	case ESaveGameOperationName::SaveUserData:
-		UShidenSaveFunctionLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata, FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata, FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	case ESaveGameOperationName::SaveSystemData:
-		UShidenSaveFunctionLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	default:
 		UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
