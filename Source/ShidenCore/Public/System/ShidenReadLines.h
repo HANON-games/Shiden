@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -10,5 +10,5 @@ struct FShidenReadLines
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TSet<FGuid> CommandGuids;
+	TSet<FGuid> ReadLineHashSet;
 };

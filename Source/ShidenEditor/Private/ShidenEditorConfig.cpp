@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenEditorConfig.h"
 

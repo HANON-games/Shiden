@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -36,26 +36,26 @@ public:
 	void GetAllFullTexts(TMap<FString, FString>& Texts);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void GetFullText(const FString& TextType, FString& Text, bool& bResult);
+	void GetFullText(const FString& TextType, FString& Text, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void GetCurrentText(const FString& TextType, FString& Text, bool& bResult);
+	void GetCurrentText(const FString& TextType, FString& Text, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default", AutoCreateRefTerm = "OnOpened"))
-	void OpenWindow(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bResult);
+	void OpenWindow(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default", AutoCreateRefTerm = "OnClosed"))
-	void CloseWindow(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bResult);
+	void CloseWindow(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void SetText(const FString& TextType, const FString& RawText, const int Length, bool& bResult);
+	void SetText(const FString& TextType, const FString& RawText, int Length);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void ClearText(const FString& TextType, bool& bResult);
+	void ClearText(const FString& TextType);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void ClearAllTexts();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void PreviewText(const FString& TextType, const FString& Text, bool& bResult);
+	void PreviewText(const FString& TextType, const FString& Text, bool& bSuccess);
 };

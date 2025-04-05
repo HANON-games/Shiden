@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Config/ShidenProjectConfig.h"
 #include "Sound/SoundClass.h"
@@ -22,7 +22,7 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	Presets = TMap<FString, FShidenPreset>();
 	AdditionalTextTypes = TMap<FString, FShidenTextType>();
 	CommandDefinitions = {
-		FSoftObjectPath(TEXT("/Shiden/Commands/DA_ShidenPrimaryCommandDefinitions.DA_ShidenPrimaryCommandDefinitions"))
+		FSoftObjectPath(TEXT("/Shiden/Core/DA_ShidenStandardCommandDefinitions.DA_ShidenStandardCommandDefinitions"))
 	};
 	UserVariableDefinitions = TArray<FShidenVariableDefinition>();
 	SystemVariableDefinitions = TArray<FShidenVariableDefinition>();

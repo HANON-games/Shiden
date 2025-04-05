@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -8,6 +8,6 @@ UENUM(BlueprintType)
 enum class EShidenSkipCondition : uint8
 {
 	ReadOnly,
-	Always,
-	Never
+	All,
+	None
 };

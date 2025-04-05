@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -18,28 +18,28 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 	float SkipSpeedRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Predefined System Variables")
-	float MasterVolumeRate;
+	float MasterVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Predefined System Variables")
-	float BgmVolumeRate;
+	float BgmVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Predefined System Variables")
-	float SeVolumeRate;
+	float SeVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Predefined System Variables")
-	float VoiceVolumeRate;
+	float VoiceVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
 	int32 LanguageIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
-	float SecondsToWaitForEachLetter;
+	float CharacterWaitTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
-	float WaitTimeInAutoMode;
+	float AutoModeWaitTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
-	bool bWaitForVoiceInAutoMode;
+	bool bShouldWaitForVoiceInAutoMode;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
 	EShidenVoiceStopCondition VoiceStopCondition;
@@ -80,14 +80,14 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 	{
 		if (this != &Other) {
 			SkipSpeedRate = Other.SkipSpeedRate;
-			VoiceVolumeRate = Other.VoiceVolumeRate;
-			SeVolumeRate = Other.SeVolumeRate;
-			MasterVolumeRate = Other.MasterVolumeRate;
-			BgmVolumeRate = Other.BgmVolumeRate;
+			VoiceVolume = Other.VoiceVolume;
+			SeVolume = Other.SeVolume;
+			MasterVolume = Other.MasterVolume;
+			BgmVolume = Other.BgmVolume;
 			LanguageIndex = Other.LanguageIndex;
-			SecondsToWaitForEachLetter = Other.SecondsToWaitForEachLetter;
-			WaitTimeInAutoMode = Other.WaitTimeInAutoMode;
-			bWaitForVoiceInAutoMode = Other.bWaitForVoiceInAutoMode;
+			CharacterWaitTime = Other.CharacterWaitTime;
+			AutoModeWaitTime = Other.AutoModeWaitTime;
+			bShouldWaitForVoiceInAutoMode = Other.bShouldWaitForVoiceInAutoMode;
 			VoiceStopCondition = Other.VoiceStopCondition;
 			SkipCondition = Other.SkipCondition;
 			ClickWaitingGlyph = Other.ClickWaitingGlyph;
@@ -100,42 +100,42 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 			FShidenPredefinedSystemVariableDefinition(
 				"SkipSpeedRate",
 				EShidenVariableType::Float,
-				"10.0",
+				"30.0",
 				false,
 				[this] { return FString::SanitizeFloat(SkipSpeedRate); },
 				[this](const FString& InValue) { SkipSpeedRate = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"MasterVolumeRate",
+				"MasterVolume",
 				EShidenVariableType::Float,
 				"1.0",
 				false,
-				[this] { return FString::SanitizeFloat(MasterVolumeRate); },
-				[this](const FString& InValue) { MasterVolumeRate = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(MasterVolume); },
+				[this](const FString& InValue) { MasterVolume = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"BgmVolumeRate",
+				"BgmVolume",
 				EShidenVariableType::Float,
 				"1.0",
 				false,
-				[this] { return FString::SanitizeFloat(BgmVolumeRate); },
-				[this](const FString& InValue) { BgmVolumeRate = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(BgmVolume); },
+				[this](const FString& InValue) { BgmVolume = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"SeVolumeRate",
+				"SeVolume",
 				EShidenVariableType::Float,
 				"1.0",
 				false,
-				[this] { return FString::SanitizeFloat(SeVolumeRate); },
-				[this](const FString& InValue) { SeVolumeRate = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(SeVolume); },
+				[this](const FString& InValue) { SeVolume = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"VoiceVolumeRate",
+				"VoiceVolume",
 				EShidenVariableType::Float,
 				"1.0",
 				false,
-				[this] { return FString::SanitizeFloat(VoiceVolumeRate); },
-				[this](const FString& InValue) { VoiceVolumeRate = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(VoiceVolume); },
+				[this](const FString& InValue) { VoiceVolume = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
 				"LanguageIndex",
@@ -146,28 +146,28 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 				[this](const FString& InValue) { LanguageIndex = FCString::Atoi(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"SecondsToWaitForEachLetter",
+				"CharacterWaitTime",
 				EShidenVariableType::Float,
 				"0.08",
 				false,
-				[this] { return FString::SanitizeFloat(SecondsToWaitForEachLetter); },
-				[this](const FString& InValue) { SecondsToWaitForEachLetter = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(CharacterWaitTime); },
+				[this](const FString& InValue) { CharacterWaitTime = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"WaitTimeInAutoMode",
+				"AutoModeWaitTime",
 				EShidenVariableType::Float,
 				"3.0",
 				false,
-				[this] { return FString::SanitizeFloat(WaitTimeInAutoMode); },
-				[this](const FString& InValue) { WaitTimeInAutoMode = FCString::Atof(*InValue); }
+				[this] { return FString::SanitizeFloat(AutoModeWaitTime); },
+				[this](const FString& InValue) { AutoModeWaitTime = FCString::Atof(*InValue); }
 			),
 			FShidenPredefinedSystemVariableDefinition(
-				"WaitForVoiceInAutoMode",
+				"ShouldWaitForVoiceInAutoMode",
 				EShidenVariableType::Boolean,
 				"true",
 				false,
-				[this] { return bWaitForVoiceInAutoMode ? TEXT("true") : TEXT("false"); },
-				[this](const FString& InValue) { bWaitForVoiceInAutoMode = InValue.Compare("true", ESearchCase::IgnoreCase) == 0; }
+				[this] { return bShouldWaitForVoiceInAutoMode ? TEXT("true") : TEXT("false"); },
+				[this](const FString& InValue) { bShouldWaitForVoiceInAutoMode = InValue.Compare("true", ESearchCase::IgnoreCase) == 0; }
 			),
 			FShidenPredefinedSystemVariableDefinition(
 				"VoiceStopCondition",
@@ -203,12 +203,12 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 						SkipCondition = EShidenSkipCondition::ReadOnly;
 						return;
 					}
-					if (InValue.Compare("Always", ESearchCase::IgnoreCase) == 0)
+					if (InValue.Compare("All", ESearchCase::IgnoreCase) == 0)
 					{
-						SkipCondition = EShidenSkipCondition::Always;
+						SkipCondition = EShidenSkipCondition::All;
 						return;
 					}
-					SkipCondition = EShidenSkipCondition::Never;
+					SkipCondition = EShidenSkipCondition::None;
 				}
 			),
 			FShidenPredefinedSystemVariableDefinition(

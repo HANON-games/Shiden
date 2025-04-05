@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Variable/ShidenPredefinedSystemVariable.h"
 #include "Config/ShidenProjectConfig.h"
@@ -18,7 +18,7 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FStr
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value, const bool bForceUpdateReadOnly /*= false*/) const
 {
 	const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name);
-	if (Definition && (bForceUpdateReadOnly || !Definition->IsReadOnly))
+	if (Definition && (bForceUpdateReadOnly || !Definition->bIsReadOnly))
 	{
 		Definition->SetVariable(Value);
 		return true;
@@ -80,6 +80,6 @@ SHIDENCORE_API void FShidenPredefinedSystemVariable::ListDescriptors(TArray<FShi
 	VariableDescriptors.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)
 	{
-		VariableDescriptors.Add(FShidenVariableDescriptor(Definition.Name, Definition.Type, Definition.GetVariable(), Definition.DefaultValue, Definition.IsReadOnly));
+		VariableDescriptors.Add(FShidenVariableDescriptor(Definition.Name, Definition.Type, Definition.GetVariable(), Definition.DefaultValue, Definition.bIsReadOnly));
 	}
 }

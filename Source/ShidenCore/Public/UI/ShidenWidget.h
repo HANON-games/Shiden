@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -130,10 +130,10 @@ private:
 	bool bPressSkipButton = false;
 
 	UFUNCTION()
-	void CaptureWidget(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture, bool& bResult);
+	void CaptureWidget(bool bShowTextBaseLayer, UTexture2D*& ResultTexture);
 
 	UFUNCTION()
-	void TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture, bool& bResult);
+	void TakeScreenshot(bool bShowTextBaseLayer, UTexture2D*& ResultTexture);
 
 	UFUNCTION()
 	void UpdateWidgetCacheCore(const FString& Prefix, const UWidgetTree* Tree);
@@ -164,7 +164,7 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
-	void CaptureScreenToTexture2D(UTexture2D*& ResultTexture, bool& bResult);
+	void CaptureScreenToTexture2D(UTexture2D*& ResultTexture);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void SaveGame(const FString& SlotName, const UTexture2D* Thumbnail);
@@ -196,22 +196,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Fade", meta = (OwnerProcessName = "Default"))
 	void StartFade(const FString& LayerName, const EEasingFunc::Type Function, const float Duration,
 	               const FLinearColor TargetColor, const bool bIsFadeOut, const float BlendExp, const int32 Steps,
-	               const FString& OwnerProcessName, const int32 ZOrder, bool& Success, FString& ErrorMessage);
+	               const FString& OwnerProcessName, const int32 ZOrder, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Fade")
-	void IsFadeCompleted(const FString& LayerName, bool& bResult) const;
+	bool IsFadeCompleted(const FString& LayerName) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Fade")
 	void ClearAllFade();
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Text")
-	void FindTextWidget(const FString& TextWidgetName, UShidenTextWidget*& TextWidget, bool& bResult) const;
+	void FindTextWidget(const FString& TextWidgetName, UShidenTextWidget*& TextWidget, bool& bSuccess) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Text")
 	void ClearAllTexts();
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Image")
-	void FindImage(const FString& ImageName, UImage*& Image, bool& bResult) const;
+	void FindImage(const FString& ImageName, UImage*& Image, bool& bSuccess) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Image")
 	void ClearAllImages();
@@ -220,16 +220,16 @@ public:
 	void StartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target, EEasingFunc::Type Function,
 	                    float Duration, bool bIsWhiteFade, bool bShouldBeTransparent,
 	                    float BlendExp, int32 Steps, const FString& OwnerProcessName, bool ClearImageOnCompleted,
-	                    bool& Success, FString& ErrorMessage);
+	                    bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Image")
-	void IsImageFadeCompleted(const FString& ImageName, bool& bResult) const;
+	bool IsImageFadeCompleted(const FString& ImageName) const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Option")
 	void SetOptions(const TArray<FString>& Options);
-
+	
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Option")
-	void GetSelectedOption(int32& Result) const;
+	int32 GetSelectedOption() const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Option")
 	bool IsOptionSelected() const;
@@ -238,7 +238,7 @@ public:
 	void PlayMedia(const FString& MediaSourcePath, const bool bCanOpenPauseMenu, const int32 MediaZOrder, bool& bSuccess);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Media")
-	void IsMediaCompleted(bool& bResult) const;
+	bool IsMediaCompleted() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Media")
 	void CollapseMedia() const;
@@ -247,7 +247,7 @@ public:
 	void OpenMediaPauseMenu();
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Material")
-	void FindRetainerBox(const FString& RetainerBoxName, URetainerBox*& RetainerBox, bool& bResult) const;
+	void FindRetainerBox(const FString& RetainerBoxName, URetainerBox*& RetainerBox, bool& bSuccess) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Material")
 	static FString MakeMaterialParamsKey(const FString& TargetName, const FString& ParameterName);
@@ -256,37 +256,37 @@ public:
 	void StartImageMaterialScalarChange(const FString& ImageName, UPARAM(ref) UImage* Target,
 	                                    const FName& ParameterName, const EEasingFunc::Type Function,
 	                                    const float Duration, const float EndValue, const float BlendExp,
-	                                    const int32 Steps, const FString& OwnerProcessName, bool& Success,
+	                                    const int32 Steps, const FString& OwnerProcessName, bool& bSuccess,
 	                                    FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Material")
-	void IsImageMaterialParameterChangeCompleted(const FString& ImageName, const FString& ParameterName, bool& bResult) const;
+	bool IsImageMaterialParameterChangeCompleted(const FString& ImageName, const FString& ParameterName) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Material", meta = (OwnerProcessName = "Default"))
 	void StartRetainerBoxMaterialScalarChange(const FString& RetainerBoxName, UPARAM(ref) URetainerBox* Target,
 	                                          const FName& ParameterName, const EEasingFunc::Type Function,
 	                                          const float Duration, const float EndValue, const float BlendExp,
-	                                          const int32 Steps, const FString& OwnerProcessName, bool& Success,
+	                                          const int32 Steps, const FString& OwnerProcessName, bool& bSuccess,
 	                                          FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Material")
-	void IsRetainerBoxMaterialParameterChangeCompleted(const FString& RetainerBoxName, const FString& ParameterName, bool& bResult) const;
+	bool IsRetainerBoxMaterialParameterChangeCompleted(const FString& RetainerBoxName, const FString& ParameterName) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Canvas Panel", meta = (OwnerProcessName = "Default"))
-	void StartCanvasPanelMove(const FString& CanvasPanelName, UPARAM(ref) UCanvasPanelSlot* Target,
+	void StartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref) UCanvasPanelSlot* Target,
 	                          EEasingFunc::Type Function, float Duration, bool bChangePosition,
 	                          FVector2D EndPosition, bool bChangeSize, FVector2D EndSize,
-	                          float BlendExp, int32 Steps, const FString& OwnerProcessName, bool& Success,
+	                          float BlendExp, int32 Steps, const FString& OwnerProcessName, bool& bSuccess,
 	                          FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Canvas Panel")
-	void IsCanvasPanelMoveCompleted(const FString& CanvasPanelName, bool& bResult) const;
+	bool IsCanvasPanelSlotMoveCompleted(const FString& CanvasPanelName) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Canvas Panel")
-	void FindCanvasPanelSlot(const FString& CanvasPanelName, UCanvasPanelSlot*& CanvasPanelSlot, bool& bResult) const;
+	void FindCanvasPanelSlot(const FString& CanvasPanelSlotName, UCanvasPanelSlot*& CanvasPanelSlot, bool& bSuccess) const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Animation")
-	void FindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation, bool& bResult) const;
+	void FindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation, bool& bSuccess) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Animation")
 	void ResetAllAnimations();
@@ -302,7 +302,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void InitTextInput(const FShidenTextInputProperties& Properties);
-	
+
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|TextInput")
+	bool IsTextSubmitted() const;
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Input")
 	FText GetTextInput();
 	
@@ -310,7 +313,7 @@ public:
 	static void SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Input")
-	void IsSkipPressed(bool& bPressed) const;
+	bool IsSkipPressed() const;
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Widget")
 	void GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const;

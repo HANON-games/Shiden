@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Variable/ShidenVariable.h"
 
@@ -25,7 +25,7 @@ SHIDENCORE_API bool FShidenVariable::CanUpdate(const FString& Name, const EShide
 		UE_LOG(LogTemp, Warning, TEXT("Variable %s is not defined."), *Name);
 		return false;
 	}
-	if (!bForceUpdateReadOnly && Definition.IsReadOnly)
+	if (!bForceUpdateReadOnly && Definition.bIsReadOnly)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Variable %s is read only."), *Name);
 		return false;
@@ -413,7 +413,7 @@ SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescr
 					break;
 				}
 			}
-			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Value, Definition.DefaultValue, Definition.IsReadOnly));
+			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Value, Definition.DefaultValue, Definition.bIsReadOnly));
 		}
 	}
 }

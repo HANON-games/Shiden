@@ -1,4 +1,4 @@
-// Copyright (c) 2024 HANON. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -37,4 +37,23 @@ struct FShidenSoundInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	float FadeDuration = 1.0f;
+
+	FShidenSoundInfo()
+	{
+	}
+
+	FShidenSoundInfo(const int32 InTrackId, const EShidenSoundType InType, const FString& InSoundPath,
+		const float InStartVolumeMultiplier, const float InEndVolumeMultiplier, const float InPitchMultiplier,
+		const float InStartTime, const EAudioFaderCurve InAudioFaderCurve, const float InFadeDuration)
+		: TrackId(InTrackId)
+		, Type(InType)
+		, SoundPath(InSoundPath)
+		, StartVolumeMultiplier(InStartVolumeMultiplier)
+		, EndVolumeMultiplier(InEndVolumeMultiplier)
+		, PitchMultiplier(InPitchMultiplier)
+		, StartTime(InStartTime)
+		, AudioFaderCurve(InAudioFaderCurve)
+		, FadeDuration(InFadeDuration)
+	{
+	}
 };
