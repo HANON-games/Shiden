@@ -143,13 +143,13 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 		ShidenManager->Execute_StopVoices(ShidenManager.GetObject());
 	}
 
-	if (UShidenScenarioBlueprintLibrary::CanSkipCommand())
+	if ((Args.SoundType == EShidenSoundType::SE || Args.SoundType == EShidenSoundType::Voice)
+		&& UShidenScenarioBlueprintLibrary::CanSkipCommand())
 	{
 		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
 		bool bValue, bSuccess;
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
-		const bool bSkipButtonPressed = Widget->IsSkipPressed() || (bSuccess && bValue);
-		if (bSkipButtonPressed && (Args.SoundType == EShidenSoundType::SE || Args.SoundType == EShidenSoundType::Voice))
+		if (Widget->IsSkipPressed() || (bSuccess && bValue))
 		{
 			SoundDuration = 0.f;
 			Args.FadeDuration = 0.f;

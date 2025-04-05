@@ -315,9 +315,6 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 		|| bTalkButtonPressStart
 		|| (UShidenBlueprintLibrary::IsAutoTextMode() && WaitTime <= 0.f && TotalElapsedTime > VoiceDuration))
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName,
-		                                                         FString::Printf(TEXT("%s%s"), *Args.TextWidgetName, *Args.TextType), CurrentText);
-
 		UShidenTextWidget* TextWidget;
 		bool bSuccess;
 		Widget->FindTextWidget(Args.TextWidgetName, TextWidget, bSuccess);
@@ -327,6 +324,9 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 			Status = EShidenProcessStatus::Error;
 			return;
 		}
+
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName,
+																 FString::Printf(TEXT("%s::%s"), *Args.TextWidgetName, *Args.TextType), CurrentText);
 
 		TMap<FString, FString> Texts;
 		TextWidget->GetAllFullTexts(Texts);
