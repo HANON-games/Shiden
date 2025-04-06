@@ -79,7 +79,7 @@ void UShidenChangeMaterialScalarParameterCommand::ProcessCommand_Implementation(
                                                                                 UShidenWidget* Widget,
                                                                                 const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                                 const float DeltaTime, UObject* CallerObject,
-																				EShidenProcessStatus& Status, FString& BreakReason,
+                                                                                EShidenProcessStatus& Status, FString& BreakReason,
                                                                                 FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (Args.bWaitForCompletion)
