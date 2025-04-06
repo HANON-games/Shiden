@@ -7,11 +7,11 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
                                                     FString& ErrorMessage)
 {
 	Args.AnimationName = Command.GetArg("AnimationName");
-	Args.StartTime = Command.GetArg("StartTime");
-	Args.NumLoopToPlay = Command.GetArg("NumLoopToPlay");
-	const FString PlayModeStr = Command.GetArg("PlayMode");
-	Args.PlaybackSpeed = Command.GetArg("PlaybackSpeed");
-	Args.RestoreState = Command.GetArg("RestoreState");
+	Args.StartTime = Command.GetArgAsFloat("StartTime");
+	Args.NumLoopToPlay = Command.GetArgAsInt("NumLoopToPlay");
+	Args.PlayModeStr = Command.GetArg("PlayMode");
+	Args.PlaybackSpeed = Command.GetArgAsFloat("PlaybackSpeed");
+	Args.bRestoreState = Command.GetArgAsBool("RestoreState");
 	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
 
 	bool bSuccess;
@@ -22,7 +22,7 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
 		return false;
 	}
 
-	return TryConvertToPlayMode(PlayModeStr, Args.PlayMode, ErrorMessage);
+	return TryConvertToPlayMode(Args.PlayModeStr, Args.PlayMode, ErrorMessage);
 }
 
 void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
@@ -43,8 +43,20 @@ void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMa
 			return;
 		}
 
+		EUMGSequencePlayMode::Type PlayMode;
+		if (!TryConvertToPlayMode(Property.Value, PlayMode, ErrorMessage))
+		{
+			Status = EShidenInitFromSaveDataStatus::Error;
+            return;
+		}
+
+		if (PlayMode == EUMGSequencePlayMode::PingPong)
+		{
+			PlayMode = EUMGSequencePlayMode::Reverse;
+		}
+		
 		const float EndTime = WidgetAnimation->GetEndTime();
-		Widget->PlayAnimation(WidgetAnimation, EndTime, 1, EUMGSequencePlayMode::Forward, 1.0f, false);
+		Widget->PlayAnimation(WidgetAnimation, EndTime, 1, PlayMode, 1.0f, false);
 	}
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
@@ -74,7 +86,10 @@ void UShidenWidgetAnimationCommand::ProcessCommand_Implementation(const FString&
 		return;
 	}
 
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Args.AnimationName, "");
+	if (!Args.bRestoreState)
+	{
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Args.AnimationName, Args.PlayModeStr);
+	}
 	Status = EShidenProcessStatus::Next;
 }
 
@@ -90,7 +105,12 @@ void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenC
 
 	if (!bIsCurrentCommand)
 	{
-		Args.StartTime = FString::SanitizeFloat(Args.WidgetAnimation->GetEndTime());
+		if (Args.PlayMode == EUMGSequencePlayMode::PingPong)
+        {
+            Args.PlayMode = EUMGSequencePlayMode::Reverse;
+        }
+		Args.StartTime = Args.WidgetAnimation->GetEndTime();
+		Args.NumLoopToPlay = 1;
 	}
 
 	StartAnimation(Widget);
@@ -113,8 +133,8 @@ void UShidenWidgetAnimationCommand::StartAnimation(UShidenWidget* Widget)
 		Widget->BindToAnimationFinished(Args.WidgetAnimation, WidgetAnimationDynamicEvent);
 	}
 
-	Widget->PlayAnimation(Args.WidgetAnimation, FCString::Atof(*Args.StartTime), FCString::Atoi(*Args.NumLoopToPlay),
-	                      Args.PlayMode, FCString::Atof(*Args.PlaybackSpeed), Args.RestoreState.ToBool());
+	Widget->PlayAnimation(Args.WidgetAnimation, Args.StartTime, Args.NumLoopToPlay,
+	                      Args.PlayMode, Args.PlaybackSpeed, Args.bRestoreState);
 }
 
 bool UShidenWidgetAnimationCommand::TryConvertToPlayMode(const FString& PlayModeStr, EUMGSequencePlayMode::Type& PlayMode, FString& ErrorMessage)

@@ -159,13 +159,24 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		return;
 	}
 
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *Args.SlotName),
-	                                                         Args.ImagePath);
+	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *Args.SlotName), Args.ImagePath);
 
 	const bool bImagePathIsEmpty = Args.ImagePath.IsEmpty() || Args.ImagePath == TEXT("None");
 	const FColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.SlotName),
-	                                                         ResultColor.ToString());
+	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.SlotName), ResultColor.ToString());
+
+	if (!Args.OverwritePosition.IsEmpty())
+	{
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Position"), *Args.SlotName), Args.OverwritePosition);
+	}
+	if (!Args.OverwriteSize.IsEmpty())
+	{
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Size"), *Args.SlotName), Args.OverwriteSize);
+	}
+	if (!Args.OverwriteSizeToContent.IsEmpty())
+	{
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::SizeToContent"), *Args.SlotName), Args.OverwriteSizeToContent);
+	}
 
 	Status = EShidenProcessStatus::Next;
 }

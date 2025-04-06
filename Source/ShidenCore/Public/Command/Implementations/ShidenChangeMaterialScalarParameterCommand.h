@@ -19,26 +19,23 @@ class SHIDENCORE_API UShidenChangeMaterialScalarParameterCommand : public UShide
 		EEasingFunc::Type EasingFunction;
 		float Duration;
 		FString ChangeType;
-		float OriginalEndValue;
+		float EndValue;
 		int32 Steps;
 		float BlendExp;
 		bool bWaitForCompletion;
 	};
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-	                                                UShidenWidget* Widget,
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
 	                                                FString& ErrorMessage) override;
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* Widget,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
 	                                              FString& ErrorMessage) override;
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
@@ -49,7 +46,7 @@ class SHIDENCORE_API UShidenChangeMaterialScalarParameterCommand : public UShide
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage) override;
 
-	static bool TryParseCommand(const FShidenCommand& Command, FChangeMaterialScalarParameterCommandArgs& Args, FString& ErrorMessage);
+	static bool TryParseCommand(const FShidenCommand& Command, UShidenWidget* Widget, FChangeMaterialScalarParameterCommandArgs& Args, FString& ErrorMessage);
 
 	static bool TryStartChangeParameter(const FChangeMaterialScalarParameterCommandArgs& Args, UShidenWidget* Widget, const FString& ProcessName, FString& ErrorMessage);
 
@@ -59,7 +56,7 @@ class SHIDENCORE_API UShidenChangeMaterialScalarParameterCommand : public UShide
 
 	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
 
-	static bool TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, UShidenWidget* Widget, float& ResultValue, FString& ErrorMessage);
+	static bool TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, float OriginalEndValue, UShidenWidget* Widget, float& ResultValue, FString& ErrorMessage);
 
 	FChangeMaterialScalarParameterCommandArgs Args;
 };

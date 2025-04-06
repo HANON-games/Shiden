@@ -109,7 +109,7 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 		const float Volume = FCString::Atof(**VolumeStr);
 		const float Pitch = FCString::Atof(**PitchStr);
 		const float StartTime = FCString::Atof(**StartTimeStr);
-		const FShidenSoundInfo SoundInfo = FShidenSoundInfo(TrackId, EShidenSoundType::BGM, Property.Key, 1.0f, Volume, Pitch, StartTime,
+		const FShidenSoundInfo SoundInfo = FShidenSoundInfo(TrackId, EShidenSoundType::BGM, Property.Value, 1.0f, Volume, Pitch, StartTime,
 		                                                    EAudioFaderCurve::Linear, 0.0f);
 
 		bool bSuccess = false;

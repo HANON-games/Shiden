@@ -15,11 +15,12 @@ class SHIDENCORE_API UShidenWidgetAnimationCommand : public UShidenCommandObject
     struct FWidgetAnimationCommandArgs
     {
         FString AnimationName;
-        FString StartTime;
-        FString NumLoopToPlay;
+        float StartTime;
+        int32 NumLoopToPlay;
+    	FString PlayModeStr;
         EUMGSequencePlayMode::Type PlayMode;
-        FString PlaybackSpeed;
-        FString RestoreState;
+        float PlaybackSpeed;
+        bool bRestoreState;
         bool bWaitForCompletion;
         UUserWidget* UserWidget;
         UWidgetAnimation* WidgetAnimation;
