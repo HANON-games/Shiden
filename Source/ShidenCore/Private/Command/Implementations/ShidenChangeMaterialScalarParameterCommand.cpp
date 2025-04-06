@@ -4,8 +4,8 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
-bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenCommand& Command, FChangeMaterialScalarParameterCommandArgs& Args,
-                                                                  FString& ErrorMessage)
+bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                  FChangeMaterialScalarParameterCommandArgs& Args, FString& ErrorMessage)
 {
 	Args.Target = Command.GetArg("Target");
 	Args.TargetName = Command.GetArg("TargetName");
@@ -13,16 +13,20 @@ bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenC
 	const FString EasingFuncStr = Command.GetArg("EasingFunction");
 	Args.Duration = Command.GetArgAsFloat("Duration");
 	Args.ChangeType = Command.GetArg("ChangeType");
-	Args.OriginalEndValue = Command.GetArgAsFloat("EndValue");
+	const float OriginalEndValue = Command.GetArgAsFloat("EndValue");
 	Args.Steps = Command.GetArgAsInt("Steps");
 	Args.BlendExp = Command.GetArgAsFloat("BlendExp");
 	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
 
+	if (!TryAddCurrentValue(Args, OriginalEndValue, Widget, Args.EndValue, ErrorMessage))
+	{
+		return false;
+	}
+
 	return TryConvertToEasingFunc(EasingFuncStr, Args.EasingFunction, ErrorMessage);
 }
 
-void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-                                                                                     UShidenWidget* Widget,
+void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
                                                                                      const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                                      UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                                      FString& ErrorMessage)
@@ -40,7 +44,7 @@ void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementa
 			.EasingFunction = EEasingFunc::Linear,
 			.Duration = 0,
 			.ChangeType = TEXT("AbsoluteValue"),
-			.OriginalEndValue = FCString::Atof(*Pair.Value),
+			.EndValue = FCString::Atof(*Pair.Value),
 			.Steps = 0,
 			.BlendExp = 0,
 			.bWaitForCompletion = true
@@ -56,13 +60,11 @@ void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementa
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenChangeMaterialScalarParameterCommand::PreProcessCommand_Implementation(const FString& ProcessName,
-                                                                                   const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenChangeMaterialScalarParameterCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
                                                                                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                                   UObject* CallerObject,
-                                                                                   EShidenPreProcessStatus& Status, FString& ErrorMessage)
+                                                                                   UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Args, ErrorMessage))
+	if (!TryParseCommand(Command, Widget, Args, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		return;
@@ -76,9 +78,8 @@ void UShidenChangeMaterialScalarParameterCommand::PreProcessCommand_Implementati
 void UShidenChangeMaterialScalarParameterCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                                                 UShidenWidget* Widget,
                                                                                 const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                                const float DeltaTime,
-                                                                                UObject* CallerObject, EShidenProcessStatus& Status,
-                                                                                FString& BreakReason,
+                                                                                const float DeltaTime, UObject* CallerObject,
+																				EShidenProcessStatus& Status, FString& BreakReason,
                                                                                 FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (Args.bWaitForCompletion)
@@ -95,7 +96,7 @@ void UShidenChangeMaterialScalarParameterCommand::ProcessCommand_Implementation(
 	}
 
 	const FString Key = MakeScenarioPropertyKey(Args.Target, Args.TargetName, Args.ParameterName);
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, FString::SanitizeFloat(Args.OriginalEndValue));
+	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, FString::SanitizeFloat(Args.EndValue));
 	Status = EShidenProcessStatus::Next;
 }
 
@@ -104,7 +105,7 @@ void UShidenChangeMaterialScalarParameterCommand::PreviewCommand_Implementation(
                                                                                 const bool bIsCurrentCommand, EShidenPreviewStatus& Status,
                                                                                 FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Args, ErrorMessage))
+	if (!TryParseCommand(Command, Widget, Args, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
@@ -120,12 +121,12 @@ void UShidenChangeMaterialScalarParameterCommand::PreviewCommand_Implementation(
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, UShidenWidget* Widget,
-                                                                     float& ResultValue, FString& ErrorMessage)
+bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, const float OriginalEndValue,
+                                                                     UShidenWidget* Widget, float& ResultValue, FString& ErrorMessage)
 {
 	if (Args.ChangeType != TEXT("AddToCurrent"))
 	{
-		ResultValue = Args.OriginalEndValue;
+		ResultValue = OriginalEndValue;
 		return true;
 	}
 
@@ -135,7 +136,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 	Widget->FindImageMaterialScalarParams(MaterialParamsKey, Params, bSuccess);
 	if (bSuccess)
 	{
-		ResultValue = Args.OriginalEndValue + Params.EndValue;
+		ResultValue = OriginalEndValue + Params.EndValue;
 		return true;
 	}
 
@@ -159,7 +160,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 
 		float CurrentEndValue;
 		DynamicMaterial->GetScalarParameterValue(FName(Args.ParameterName), CurrentEndValue);
-		ResultValue = Args.OriginalEndValue + CurrentEndValue;
+		ResultValue = OriginalEndValue + CurrentEndValue;
 		return true;
 	}
 
@@ -182,7 +183,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 
 		float CurrentEndValue;
 		DynamicMaterial->GetScalarParameterValue(FName(Args.ParameterName), CurrentEndValue);
-		ResultValue = Args.OriginalEndValue + CurrentEndValue;
+		ResultValue = OriginalEndValue + CurrentEndValue;
 		return true;
 	}
 
@@ -192,12 +193,6 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const FChangeMaterialScalarParameterCommandArgs& Args,
                                                                           UShidenWidget* Widget, const FString& ProcessName, FString& ErrorMessage)
 {
-	float EndValue;
-	if (!TryAddCurrentValue(Args, Widget, EndValue, ErrorMessage))
-	{
-		return false;
-	}
-
 	if (Args.Target == TEXT("Image"))
 	{
 		UImage* Image;
@@ -210,7 +205,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 		}
 
 		Widget->StartImageMaterialScalarChange(Args.TargetName, Image, FName(Args.ParameterName),
-		                                       Args.EasingFunction, Args.Duration, EndValue, Args.BlendExp, Args.Steps,
+		                                       Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
 		                                       ProcessName, bSuccess, ErrorMessage);
 		return bSuccess;
 	}
@@ -227,7 +222,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 		}
 
 		Widget->StartRetainerBoxMaterialScalarChange(Args.TargetName, RetainerBox, FName(Args.ParameterName),
-		                                             Args.EasingFunction, Args.Duration, Args.OriginalEndValue, Args.BlendExp, Args.Steps,
+		                                             Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
 		                                             ProcessName, bSuccess, ErrorMessage);
 		return bSuccess;
 	}
@@ -236,8 +231,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 	return false;
 }
 
-FString UShidenChangeMaterialScalarParameterCommand::MakeScenarioPropertyKey(const FString& TargetType,
-                                                                             const FString& TargetName, const FString& ParameterName)
+FString UShidenChangeMaterialScalarParameterCommand::MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName)
 {
 	return FString::Printf(TEXT("%s::%s::%s"),
 	                       *TargetType.Replace(TEXT(":"), TEXT("\\:")),
@@ -261,8 +255,7 @@ TTuple<FString, FString, FString> UShidenChangeMaterialScalarParameterCommand::P
 }
 
 
-bool UShidenChangeMaterialScalarParameterCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc,
-                                                                         FString& ErrorMessage)
+bool UShidenChangeMaterialScalarParameterCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
 {
 	static const TMap<FString, EEasingFunc::Type> CurveMap = {
 		{TEXT("Linear"), EEasingFunc::Linear},
