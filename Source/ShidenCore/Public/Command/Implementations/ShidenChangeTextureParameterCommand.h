@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
+#include "UObject/ConstructorHelpers.h"
 #include "ShidenChangeTextureParameterCommand.generated.h"
 
 UCLASS()
@@ -18,6 +19,15 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 		FString ParameterName;
 		FString TexturePath;
 	};
+	
+	UShidenChangeTextureParameterCommand() : Super()
+	{
+		static ConstructorHelpers::FObjectFinder<UTexture> ClearTextureFinder(TEXT("/Shiden/Misc/ClearTexture"));
+		if (ClearTextureFinder.Succeeded())
+		{
+			ClearTexture = ClearTextureFinder.Object;
+		}
+	}
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
@@ -37,15 +47,16 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 
 	static void ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args);
 
-	static bool TryLoadTexture(FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage);
+	static bool TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage);
 
 	static bool TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* Widget, UTexture* Texture, FString& ErrorMessage);
-
-	static UTexture* GetClearTexture();
-
+	
 	static FString MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName);
 
 	static TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key);
+
+	UPROPERTY()
+	TObjectPtr<UTexture> ClearTexture;
 
 	FChangeTextureParameterCommandArgs Args;
 };
