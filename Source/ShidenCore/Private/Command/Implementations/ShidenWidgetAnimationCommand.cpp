@@ -47,14 +47,14 @@ void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMa
 		if (!TryConvertToPlayMode(Property.Value, PlayMode, ErrorMessage))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
-            return;
+			return;
 		}
 
 		if (PlayMode == EUMGSequencePlayMode::PingPong)
 		{
 			PlayMode = EUMGSequencePlayMode::Reverse;
 		}
-		
+
 		const float EndTime = WidgetAnimation->GetEndTime();
 		Widget->PlayAnimation(WidgetAnimation, EndTime, 1, PlayMode, 1.0f, false);
 	}
@@ -106,9 +106,9 @@ void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenC
 	if (!bIsCurrentCommand)
 	{
 		if (Args.PlayMode == EUMGSequencePlayMode::PingPong)
-        {
-            Args.PlayMode = EUMGSequencePlayMode::Reverse;
-        }
+		{
+			Args.PlayMode = EUMGSequencePlayMode::Reverse;
+		}
 		Args.StartTime = Args.WidgetAnimation->GetEndTime();
 		Args.NumLoopToPlay = 1;
 	}

@@ -8,10 +8,10 @@
 #include "Variable/ShidenPredefinedSystemVariableDefinition.h"
 #include "Variable/ShidenVariableDescriptor.h"
 #include "ShidenCommandRedirector.h"
-#include "ShidenEditorFunctionLibrary.generated.h"
+#include "ShidenEditorBlueprintLibrary.generated.h"
 
 UCLASS()
-class SHIDENEDITOR_API UShidenEditorFunctionLibrary : public UBlueprintFunctionLibrary
+class SHIDENEDITOR_API UShidenEditorBlueprintLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

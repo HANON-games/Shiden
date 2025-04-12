@@ -16,7 +16,8 @@ Please note that there may be breaking changes in Version 1.0 release.
     - Includes an intuitive editor that allows for easy manipulation.
     - You can preview the current editing line and see the results in real-time (some commands are not supported in preview).
     - You can save combinations of frequently used commands and parameters as presets.
-    - Import/export functionality in CSV format.
+    - The macro function allows you to combine frequently used commands into a single command.
+    - Import/export functionality in CSV/JSON format.
 - Various features required for visual novel games
     - 37 types of basic commands
     - Basic save functionality
@@ -27,9 +28,9 @@ Please note that there may be breaking changes in Version 1.0 release.
     - Simple backlog functionality
     - Simple fade functionality
 - High extensibility
-    - All commands are written in Blueprint, making it easy to implement additional commands.
+    - Commands can be implemented in either C++ or Blueprint, allowing for easy addition of commands without modifying the main plugin.
     - It is also possible to distribute additional commands as plugins.
-    - The editor section is also implemented in Blueprint, allowing for easy extension.
+    - The editor section is implemented in Blueprint, allowing for easy extension.
 
 ## System Requirements
 

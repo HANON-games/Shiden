@@ -54,10 +54,7 @@ public:
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TSubclassOf<UShidenWidget> WidgetClass;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
-	int32 TargetFrameRate;
-
+	
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TArray<FShidenVariableDefinition> UserVariableDefinitions;
 

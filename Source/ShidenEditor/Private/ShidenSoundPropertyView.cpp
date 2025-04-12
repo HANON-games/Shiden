@@ -36,10 +36,10 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 				return true;
 			}
 			const FSoftObjectPath SoundClassObjectPath(SoundClassPath);
-			const USoundClass* SoundClass = Cast<USoundClass>(SoundClassObjectPath.TryLoad());
-			if (!SoundClass) { return true; }
+			const USoundClass* TempSoundClass = Cast<USoundClass>(SoundClassObjectPath.TryLoad());
+			if (!TempSoundClass) { return true; }
 			// Allow only if SoundClass is this->SoundClass or its subclass
-			return this->SoundClass != SoundClass && !this->SoundClass->ChildClasses.Contains(SoundClass);
+			return SoundClass != TempSoundClass && !SoundClass->ChildClasses.Contains(TempSoundClass);
 		}))
 		.AllowClear(true)
 		.ThumbnailPool(UThumbnailManager::Get().GetSharedThumbnailPool())

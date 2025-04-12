@@ -9,7 +9,6 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 		, PredefinedSystemVariable(FShidenPredefinedSystemVariable())
 		, ScenarioDirectoryPath("/Game/Shiden/Scenarios/")
 		, MacroDirectoryPath("/Game/Shiden/Macros/")
-		, TargetFrameRate(60)
 		, bAutoSaveOnMobileAppWillDeactivate(true)
 {
 	ScenarioPaths = TMap<FGuid, FString>();
