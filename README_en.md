@@ -1,5 +1,13 @@
 # Shiden Visual Novel Editor
 
+[Japanese](https://github.com/HANON-games/Shiden/blob/main/README.md) / English
+
+<br>
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/e1b16acb-e6e2-4f85-ae70-af718be2836d" width="60%" />
+</p>
+<br>
+
 ## Introduction
 
 Shiden Visual Novel Editor is a plugin that allows easy creation of visual novel games in UE5. <br>
@@ -7,8 +15,9 @@ It is designed to be simple and flexible, allowing for more than just visual nov
 
 ![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/3029cdc2-5460-45dd-8463-c78356569b76)
 
-This plugin is in beta version. <br>
-Please note that there may be breaking changes in Version 1.0 release.
+> [!Note]
+> This plugin is in beta version. <br>
+> Please note that there may be breaking changes in Version 1.0 release.
 
 ## Features
 
@@ -35,9 +44,9 @@ Please note that there may be breaking changes in Version 1.0 release.
 ## System Requirements
 
 - UE5.3 ～ 5.5
-- Windows, Android
+- Windows, Mac, Android
 
-It is highly likely to work on Mac and iOS as well, but editing of the uplugin file is required.
+It is highly likely to work on iOS as well, but editing of the uplugin file is required.
 
 ## Installation
 
@@ -45,7 +54,7 @@ Unzip the downloaded file from [Releases](https://github.com/HANON-games/Shiden/
 
 ## Usage
 
-Please refer to the [Wiki](https://github.com/HANON-games/Shiden/wiki).
+Please refer to the [Wiki](https://github.com/HANON-games/Shiden/wiki/Home-(en)).
 
 ## License
 
