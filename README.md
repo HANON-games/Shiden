@@ -1,6 +1,12 @@
 # Shiden Visual Novel Editor
 
-[English doc](https://github.com/HANON-games/Shiden/blob/main/README_en.md)
+Japanese / [English](https://github.com/HANON-games/Shiden/blob/main/README_en.md)
+
+<br>
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/e1b16acb-e6e2-4f85-ae70-af718be2836d" width="60%" />
+</p>
+<br>
 
 ## はじめに
 
@@ -9,8 +15,9 @@ Shiden Visual Novel Editor はUE5で簡単にノベルゲームを製作でき�
 
 ![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/3029cdc2-5460-45dd-8463-c78356569b76)
 
-本プラグインはベータ版です。<br>
-Version 1.0 リリース時に破壊的変更が入る可能性がありますので予めご了承ください。
+> [!NOTE]
+> 本プラグインはベータ版です。<br>
+> Version 1.0 リリース時に破壊的変更が入る可能性がありますので予めご了承ください。
 
 ## 特徴
 
@@ -37,9 +44,9 @@ Version 1.0 リリース時に破壊的変更が入る可能性があります�
 ## 動作環境
 
 - UE5.3 ～ 5.5
-- Windows, Android
+- Windows, Mac, Android
 
-Mac, iOS でも動く可能性が高いですが uplugin ファイルの編集が必要です。
+iOS でも動く可能性が高いですが uplugin ファイルの編集が必要です。
 
 ## 導入方法
 
