@@ -69,7 +69,7 @@ const FSoftObjectPath UShidenStandardCommandDefinitions::TextInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenTextInput.EUW_ShidenTextInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::TextTypeInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_ShidenTextTypeInput.EUW_ShidenTextTypeInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenTextTypeInput.EUW_ShidenTextTypeInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::MultilineTextInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenMultilineTextInput.EUW_ShidenMultilineTextInput"));
@@ -90,7 +90,7 @@ const FSoftObjectPath UShidenStandardCommandDefinitions::ColorInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenColorInput.EUW_ShidenColorInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::VariableKindInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_VariableKindInput.EUW_VariableKindInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_VariableKindInput.EUW_VariableKindInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::VariableNameInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenVariableNameInput.EUW_ShidenVariableNameInput"));
@@ -108,19 +108,19 @@ const FSoftObjectPath UShidenStandardCommandDefinitions::SoundInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenSoundInput.EUW_ShidenSoundInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::SoundTypeInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_SoundTypeInput.EUW_SoundTypeInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_SoundTypeInput.EUW_SoundTypeInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::BgmFadeFuncInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_BgmFadeFuncInput.EUW_BgmFadeFuncInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_BgmFadeFuncInput.EUW_BgmFadeFuncInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::EasingFuncInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_EasingFuncInput.EUW_EasingFuncInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_EasingFuncInput.EUW_EasingFuncInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::FlexCalculationOperatorInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenFlexCalculationOperatorInput.EUW_ShidenFlexCalculationOperatorInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::FadeTypeInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_FadeTypeInput.EUW_FadeTypeInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_FadeTypeInput.EUW_FadeTypeInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::FlexOperatorInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenFlexOperatorInput.EUW_ShidenFlexOperatorInput"));
@@ -132,7 +132,7 @@ const FSoftObjectPath UShidenStandardCommandDefinitions::ScenarioInputTemplate =
 	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_ShidenScenarioInput.EUW_ShidenScenarioInput"));
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::SlateVisibilityInputTemplate =
-	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/Advanced/EUW_SlateVisibilityInput.EUW_SlateVisibilityInput"));
+	FSoftObjectPath(TEXT("/Shiden/Editor/Templates/EUW_SlateVisibilityInput.EUW_SlateVisibilityInput"));
 
 UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 {
