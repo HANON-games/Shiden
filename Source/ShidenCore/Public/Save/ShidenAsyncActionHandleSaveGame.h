@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAsyncHandleSaveGame, bool, bSuccess);
 
 UENUM()
-enum class ESaveGameOperationName : uint8
+enum class EShidenSaveGameOperationName : uint8
 {
 	SaveUserData,
 	SaveSystemData,
@@ -37,7 +37,7 @@ public:
 
 protected:
 	UPROPERTY()
-	ESaveGameOperationName Operation;
+	EShidenSaveGameOperationName Operation;
 
 	UPROPERTY()
 	FString SlotName;

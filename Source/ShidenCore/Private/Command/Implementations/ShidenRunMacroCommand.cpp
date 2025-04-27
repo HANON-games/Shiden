@@ -5,46 +5,47 @@
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
 
-bool UShidenRunMacroCommand::TryParseCommand(const FShidenCommand& Command, FRunMacroCommandArgs& Args, FString& ErrorMessage)
-{
-	const FString MacroNameOrId = Command.GetArg("MacroName");
-
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroNameOrId, Args.ScenarioId, Args.Scenario, bSuccess);
-	if (!bSuccess)
-	{
-		ErrorMessage = FString::Printf(TEXT("Failed to get scenario \"%s\"."), *MacroNameOrId);
-		return false;
-	}
-
-	return true;
-}
-
 void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                            UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Args, ErrorMessage))
+	const FString MacroNameOrId = Command.GetArg("MacroName");
+
+	FGuid ScenarioId;
+	UShidenScenario* Scenario;
+	bool bSuccess;
+	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario, bSuccess);
+
+	if (!bSuccess)
 	{
 		Status = EShidenProcessStatus::Error;
+		ErrorMessage = FString::Printf(TEXT("Failed to get scenario \"%s\"."), *MacroNameOrId);
 		return;
 	}
 
-	UShidenScenarioBlueprintLibrary::PushScenario(ProcessName, Args.Scenario);
+	UShidenScenarioBlueprintLibrary::PushScenario(ProcessName, Scenario);
 	UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, -1);
-	UShidenVariableBlueprintLibrary::InitLocalVariable(ProcessName, Args.Scenario, Command.Args);
+	UShidenVariableBlueprintLibrary::InitLocalVariable(ProcessName, Scenario, Command.Args);
 
 	Status = EShidenProcessStatus::Next;
 }
 
 void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
+                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
                                                            EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Args, ErrorMessage))
+	const FString MacroNameOrId = Command.GetArg("MacroName");
+
+	FGuid ScenarioId;
+	UShidenScenario* Scenario;
+	bool bSuccess;
+	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario, bSuccess);
+
+	if (!bSuccess)
 	{
 		Status = EShidenPreviewStatus::Error;
+		ErrorMessage = FString::Printf(TEXT("Failed to get scenario \"%s\"."), *MacroNameOrId);
 		return;
 	}
 
@@ -58,14 +59,20 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 		return;
 	}
 
-	UShidenScenarioBlueprintLibrary::PushScenario("Default", Args.Scenario);
-	UShidenVariableBlueprintLibrary::InitLocalVariable("Default", Args.Scenario, Command.Args);
+	UShidenScenarioBlueprintLibrary::PushScenario("Default", Scenario);
+	UShidenVariableBlueprintLibrary::InitLocalVariable("Default", Scenario, Command.Args);
 
 	while (true)
 	{
 		const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack["Default"].Stack.Last().CurrentIndex;
 		FShidenCommand ShidenCommand;
-		UShidenScenarioBlueprintLibrary::ConstructCommand("Default", Args.Scenario->Commands[CurrentIndex], ShidenCommand);
+		if (!Scenario->Commands.IsValidIndex(CurrentIndex))
+		{
+			Status = EShidenPreviewStatus::Error;
+			ErrorMessage = FString::Printf(TEXT("Invalid command index %d."), CurrentIndex);
+			return;
+		}
+		UShidenScenarioBlueprintLibrary::ConstructCommand("Default", Scenario->Commands[CurrentIndex], ShidenCommand);
 		if (!ShidenCommand.bEnabled)
 		{
 			int32 NextIndex;
@@ -97,7 +104,6 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 		}
 
 		UShidenCommandObject* CommandObject;
-		bool bSuccess;
 		UShidenScenarioBlueprintLibrary::GetCommandFromCache(this, "Default", CommandDefinition->CommandSoftObjectPath, CommandObject, bSuccess);
 		if (!bSuccess)
 		{
@@ -112,7 +118,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 			FShidenScenarioProgress Progress;
 			bool bIsLastElement;
 			UShidenScenarioBlueprintLibrary::PopScenario("Default", Progress, bIsLastElement);
-			ErrorMessage = UShidenBlueprintLibrary::MakeErrorMessage(Args.ScenarioId, CurrentIndex, ShidenCommand.CommandName, ErrorMessage);
+			ErrorMessage = UShidenBlueprintLibrary::MakeErrorMessage(ScenarioId, CurrentIndex, ShidenCommand.CommandName, ErrorMessage);
 			return;
 		}
 

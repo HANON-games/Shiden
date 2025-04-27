@@ -11,7 +11,7 @@ struct FShidenMacroParameter: public FShidenVariableDefinition
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	bool IsEnum = false;
+	bool bIsEnumParameter = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TArray<FString> EnumValues;

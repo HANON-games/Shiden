@@ -318,7 +318,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		for (int EnumIndex = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Enum") + FString::FromInt(EnumIndex));
 		     EnumIndex++)
 		{
-			MacroParameterDefinition.IsEnum = true;
+			MacroParameterDefinition.bIsEnumParameter = true;
 			MacroParameterDefinition.EnumValues.Add(
 				Comments[TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Enum") + FString::FromInt(EnumIndex)]);
 		}
@@ -385,7 +385,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 		FText TypeText = StaticEnum<EShidenVariableType>()->GetDisplayValueAsText(Scenario->MacroParameterDefinitions[Index].Type);
 		CsvRows.Add(TEXT("#MacroParameter") + IndexStr + TEXT("Type ") + TypeText.ToString());
 		CsvRows.Add(TEXT("#MacroParameter") + IndexStr + TEXT("DefaultValue ") + Scenario->MacroParameterDefinitions[Index].DefaultValue);
-		if (Scenario->MacroParameterDefinitions[Index].IsEnum)
+		if (Scenario->MacroParameterDefinitions[Index].bIsEnumParameter)
 		{
 			for (int EnumIndex = 0; EnumIndex < Scenario->MacroParameterDefinitions[Index].EnumValues.Num(); EnumIndex++)
 			{

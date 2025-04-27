@@ -356,10 +356,6 @@ SHIDENCORE_API void UShidenScenarioBlueprintLibrary::GetScenarioFromCache(const 
 
 SHIDENCORE_API void UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(const FString& ScenarioIdOrObjectPath, FGuid& ScenarioId, UShidenScenario*& Scenario, bool& bSuccess)
 {
-	ScenarioId = FGuid();
-	Scenario = nullptr;
-	bSuccess = false;
-
 	if (FGuid::Parse(ScenarioIdOrObjectPath, ScenarioId))
 	{
 		GetScenarioFromCache(ScenarioId, Scenario, bSuccess);
