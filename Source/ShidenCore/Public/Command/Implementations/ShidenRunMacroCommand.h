@@ -11,13 +11,7 @@ UCLASS()
 class SHIDENCORE_API UShidenRunMacroCommand : public UShidenCommandObject
 {
     GENERATED_BODY()
-
-    struct FRunMacroCommandArgs
-    {
-        UShidenScenario* Scenario;
-        FGuid ScenarioId;
-    };
-
+	
     virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                UShidenWidget* Widget,
                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
@@ -29,8 +23,4 @@ class SHIDENCORE_API UShidenRunMacroCommand : public UShidenCommandObject
                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                bool bIsCurrentCommand, EShidenPreviewStatus& Status,
                                                FString& ErrorMessage) override;
-
-    static bool TryParseCommand(const FShidenCommand& Command, FRunMacroCommandArgs& Args, FString& ErrorMessage);
-    
-    FRunMacroCommandArgs Args;
 };

@@ -40,11 +40,29 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 			if (ObjectPath.StartsWith(TEXT("/Engine/"))) {
 				return true;
 			}
-			// Blueprint
 			if (!AssetData.GetTagValueRef<FString>("GeneratedClass").IsEmpty())
 			{
-				const FString ParentClassName = AssetData.GetTagValueRef<FString>("ParentClass");
-				return !ParentClassName.Contains(TEXT("ShidenCommandObject"));
+				const FString ParentClassName = AssetData.GetTagValueRef<FString>(FBlueprintTags::ParentClassPath);
+				if (ParentClassName == "/Script/CoreUObject.Class'/Script/ShidenCore.ShidenCommandObject'")
+				{
+					return false;
+				}
+				if (!ParentClassName.IsEmpty())
+				{
+					if (const UClass* ParentClass = FindObject<UClass>(nullptr, *ParentClassName))
+					{
+						ParentClass = ParentClass->GetSuperClass();
+						while (ParentClass)
+						{
+							if (ParentClass->GetName() == "ShidenCommandObject")
+							{
+								return false;
+							}
+							ParentClass = ParentClass->GetSuperClass();
+						}
+					}
+				}
+				return true;
 			}
 			return !GetDerivedClassNames().Contains(FTopLevelAssetPath(ObjectPath));
 		}))
