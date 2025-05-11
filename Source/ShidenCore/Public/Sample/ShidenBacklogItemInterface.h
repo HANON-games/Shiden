@@ -22,5 +22,6 @@ class SHIDENCORE_API IShidenBacklogItemInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "Name,Text,VoicePath"))
-	void InitBacklogItem(const TScriptInterface<UShidenManagerInterface>& ShidenManager, const FString& Name, const FString& Text, const FString& VoicePath);
+	void InitBacklogItem(const TScriptInterface<UShidenManagerInterface>& ShidenManager, const FString& Name, const FString& Text,
+	                     const FString& VoicePath);
 };

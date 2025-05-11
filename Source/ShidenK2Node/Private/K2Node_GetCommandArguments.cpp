@@ -46,7 +46,8 @@ UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitialize
 void UK2Node_GetCommandArguments::AllocateDefaultPins()
 {
 	// Add CommandDefinitions pin
-	UEdGraphPin* CommandDefinitionsPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UShidenCommandDefinitions::StaticClass(), CommandDefinitionsPinName);
+	UEdGraphPin* CommandDefinitionsPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UShidenCommandDefinitions::StaticClass(),
+	                                               CommandDefinitionsPinName);
 	CommandDefinitionsPin->bNotConnectable = true;
 	SetPinToolTip(*CommandDefinitionsPin, NSLOCTEXT("ShidenNamespace", "CommandDefinitionsPinDescription", "The CommandDefinitions"));
 
@@ -78,7 +79,8 @@ void UK2Node_GetCommandArguments::SetPinToolTip(UEdGraphPin& MutatablePin, const
 	MutatablePin.PinToolTip += FString(TEXT("\n")) + PinDescription.ToString();
 }
 
-bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName)
+bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, UShidenCommandDefinitions* Definitions,
+                                                     const FString& CommandName)
 {
 	TArray<FString> OldPinNames = TArray<FString>();
 	for (const UEdGraphPin* OldPin : OldPins)
@@ -244,7 +246,8 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 				CommandDefinitionsCache->OnCommandDefinitionsChanged.Remove(OnCommandDefinitionsChangedHandle);
 			}
 
-			OnCommandDefinitionsChangedHandle = Definitions->OnCommandDefinitionsChanged.AddUObject(this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
+			OnCommandDefinitionsChangedHandle = Definitions->OnCommandDefinitionsChanged.AddUObject(
+				this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
 			CommandDefinitionsCache = Definitions;
 			if (const UEdGraphPin* CommandNamePin = GetCommandNamePin(&OldPins))
 			{
@@ -285,51 +288,54 @@ FText UK2Node_GetCommandArguments::GetMenuCategory() const
 	return FText::FromString(TEXT("Shiden Visual Novel|Command"));
 }
 
-void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* ChangedPin)
+void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 {
-	if (ChangedPin)
+	if (!Pin)
 	{
-		if (ChangedPin->PinName == CommandDefinitionsPinName)
+		return;
+	}
+	
+	if (Pin->PinName == CommandDefinitionsPinName)
+	{
+		if (UEdGraphPin* CommandNamePin = GetCommandNamePin())
 		{
-			if (UEdGraphPin* CommandNamePin = GetCommandNamePin())
+			if (const TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(Pin->DefaultObject))
 			{
-				if (const TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(ChangedPin->DefaultObject))
+				TArray<FString> Keys;
+				CommandDefinitions->CommandDefinitions.GetKeys(Keys);
+				if (CommandNamePin->DefaultValue.IsEmpty() || !Keys.Contains(*CommandNamePin->DefaultValue))
 				{
-					TArray<FString> Keys;
-					CommandDefinitions->CommandDefinitions.GetKeys(Keys);
-					if (CommandNamePin->DefaultValue.IsEmpty() || !Keys.Contains(*CommandNamePin->DefaultValue))
-					{
-						CommandNamePin->DefaultValue = Keys.Num() > 0 ? Keys[0] : TEXT("");
-					}
-					CommandNamePin->bHidden = false;
-
-					if (CommandDefinitionsCache && OnCommandDefinitionsChangedHandle.IsValid())
-					{
-						CommandDefinitionsCache->OnCommandDefinitionsChanged.Remove(OnCommandDefinitionsChangedHandle);
-					}
-
-					OnCommandDefinitionsChangedHandle = CommandDefinitions->OnCommandDefinitionsChanged.AddUObject(this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
-					CommandDefinitionsCache = CommandDefinitions;
+					CommandNamePin->DefaultValue = Keys.Num() > 0 ? Keys[0] : TEXT("");
 				}
-				else
+				CommandNamePin->bHidden = false;
+
+				if (CommandDefinitionsCache && OnCommandDefinitionsChangedHandle.IsValid())
 				{
-					CommandNamePin->bHidden = true;
-					CommandNamePin->DefaultValue = TEXT("");
-
-					if (CommandDefinitionsCache && OnCommandDefinitionsChangedHandle.IsValid())
-					{
-						CommandDefinitionsCache->OnCommandDefinitionsChanged.Remove(OnCommandDefinitionsChangedHandle);
-					}
-
-					CommandDefinitionsCache = nullptr;
+					CommandDefinitionsCache->OnCommandDefinitionsChanged.Remove(OnCommandDefinitionsChangedHandle);
 				}
-				RefreshOutputPin();
+
+				OnCommandDefinitionsChangedHandle = CommandDefinitions->OnCommandDefinitionsChanged.AddUObject(
+					this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
+				CommandDefinitionsCache = CommandDefinitions;
 			}
-		}
-		else if (ChangedPin->PinName == CommandNamePinName)
-		{
+			else
+			{
+				CommandNamePin->bHidden = true;
+				CommandNamePin->DefaultValue = TEXT("");
+
+				if (CommandDefinitionsCache && OnCommandDefinitionsChangedHandle.IsValid())
+				{
+					CommandDefinitionsCache->OnCommandDefinitionsChanged.Remove(OnCommandDefinitionsChangedHandle);
+				}
+
+				CommandDefinitionsCache = nullptr;
+			}
 			RefreshOutputPin();
 		}
+	}
+	else if (Pin->PinName == CommandNamePinName)
+	{
+		RefreshOutputPin();
 	}
 }
 
@@ -405,13 +411,13 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
 	const UEdGraphPin* OriginalGetCommandDefinitionsInPin = GetCommandDefinitionsPin();
-	const TObjectPtr<UShidenCommandDefinitions> Definitions = (OriginalGetCommandDefinitionsInPin != nullptr)
+	const TObjectPtr<UShidenCommandDefinitions> Definitions = OriginalGetCommandDefinitionsInPin != nullptr
 		                                                          ? Cast<UShidenCommandDefinitions>(OriginalGetCommandDefinitionsInPin->DefaultObject)
 		                                                          : nullptr;
 	if (nullptr == OriginalGetCommandDefinitionsInPin || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
 		CompilerContext.MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "GetCommandArgumentsNoCommandDefinitions_Error",
-		                                          "GetCommandArguments must have a CommandDefinitions specified.").
+		                                            "GetCommandArguments must have a CommandDefinitions specified.").
 		                                 ToString(), this);
 		// we break exec links so this is the only error we get
 		BreakAllNodeLinks();
@@ -459,7 +465,7 @@ FSlateIcon UK2Node_GetCommandArguments::GetIconAndTint(FLinearColor& OutColor) c
 	return Icon;
 }
 
-void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& MessageLog) const
+void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLog) const
 {
 	Super::EarlyValidation(MessageLog);
 
@@ -484,7 +490,8 @@ void UK2Node_GetCommandArguments::EarlyValidation(class FCompilerResultsLog& Mes
 		CommandDefinitions->CommandDefinitions.GetKeys(Keys);
 		if (!Keys.Contains(CommandNamePin->DefaultValue))
 		{
-			MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(), this);
+			MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(),
+			                 this);
 		}
 		else
 		{

@@ -3,7 +3,8 @@
 #include "Command/Implementations/ShidenWidgetAnimationCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
-bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Command, const UShidenWidget* Widget, FWidgetAnimationCommandArgs& Args,
+bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Command, const UShidenWidget* ShidenWidget,
+                                                    FWidgetAnimationCommandArgs& Args,
                                                     FString& ErrorMessage)
 {
 	Args.AnimationName = Command.GetArg("AnimationName");
@@ -15,7 +16,7 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
 	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
 
 	bool bSuccess;
-	Widget->FindAnimation(Args.AnimationName, Args.UserWidget, Args.WidgetAnimation, bSuccess);
+	ShidenWidget->FindAnimation(Args.AnimationName, Args.UserWidget, Args.WidgetAnimation, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find animation %s."), *Args.AnimationName);
@@ -25,7 +26,7 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
 	return TryConvertToPlayMode(Args.PlayModeStr, Args.PlayMode, ErrorMessage);
 }
 
-void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                        UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                        FString& ErrorMessage)
@@ -35,7 +36,7 @@ void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMa
 		UUserWidget* UserWidget;
 		UWidgetAnimation* WidgetAnimation;
 		bool bSuccess;
-		Widget->FindAnimation(Property.Key, UserWidget, WidgetAnimation, bSuccess);
+		ShidenWidget->FindAnimation(Property.Key, UserWidget, WidgetAnimation, bSuccess);
 		if (!bSuccess)
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
@@ -56,26 +57,28 @@ void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMa
 		}
 
 		const float EndTime = WidgetAnimation->GetEndTime();
-		Widget->PlayAnimation(WidgetAnimation, EndTime, 1, PlayMode, 1.0f, false);
+		ShidenWidget->PlayAnimation(WidgetAnimation, EndTime, 1, PlayMode, 1.0f, false);
 	}
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenWidgetAnimationCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenWidgetAnimationCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                     UShidenWidget* ShidenWidget,
                                                                      const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                      UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Widget, Args, ErrorMessage))
+	if (!TryParseCommand(Command, ShidenWidget, Args, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		return;
 	}
 
-	StartAnimation(Widget);
+	StartAnimation(ShidenWidget);
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenWidgetAnimationCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenWidgetAnimationCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                  UShidenWidget* ShidenWidget,
                                                                   const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                   const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                   FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
@@ -93,11 +96,11 @@ void UShidenWidgetAnimationCommand::ProcessCommand_Implementation(const FString&
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                   const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                   const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	if (!TryParseCommand(Command, Widget, Args, ErrorMessage))
+	if (!TryParseCommand(Command, ShidenWidget, Args, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
@@ -113,7 +116,7 @@ void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenC
 		Args.NumLoopToPlay = 1;
 	}
 
-	StartAnimation(Widget);
+	StartAnimation(ShidenWidget);
 	Status = EShidenPreviewStatus::Complete;
 }
 
@@ -122,7 +125,7 @@ void UShidenWidgetAnimationCommand::OnAnimationFinished()
 	bIsAnimationEnd = true;
 }
 
-void UShidenWidgetAnimationCommand::StartAnimation(UShidenWidget* Widget)
+void UShidenWidgetAnimationCommand::StartAnimation(UShidenWidget* ShidenWidget)
 {
 	bIsAnimationEnd = !Args.bWaitForCompletion;
 
@@ -130,11 +133,11 @@ void UShidenWidgetAnimationCommand::StartAnimation(UShidenWidget* Widget)
 	{
 		FWidgetAnimationDynamicEvent WidgetAnimationDynamicEvent;
 		WidgetAnimationDynamicEvent.BindDynamic(this, &UShidenWidgetAnimationCommand::OnAnimationFinished);
-		Widget->BindToAnimationFinished(Args.WidgetAnimation, WidgetAnimationDynamicEvent);
+		ShidenWidget->BindToAnimationFinished(Args.WidgetAnimation, WidgetAnimationDynamicEvent);
 	}
 
-	Widget->PlayAnimation(Args.WidgetAnimation, Args.StartTime, Args.NumLoopToPlay,
-	                      Args.PlayMode, Args.PlaybackSpeed, Args.bRestoreState);
+	ShidenWidget->PlayAnimation(Args.WidgetAnimation, Args.StartTime, Args.NumLoopToPlay,
+	                            Args.PlayMode, Args.PlaybackSpeed, Args.bRestoreState);
 }
 
 bool UShidenWidgetAnimationCommand::TryConvertToPlayMode(const FString& PlayModeStr, EUMGSequencePlayMode::Type& PlayMode, FString& ErrorMessage)

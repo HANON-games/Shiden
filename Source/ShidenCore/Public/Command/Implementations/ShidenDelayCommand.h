@@ -15,25 +15,25 @@ class SHIDENCORE_API UShidenDelayCommand : public UShidenCommandObject
 	{
 		float Duration;
 	};
-	
+
 	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* Widget,
+	                                              UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
 	                                              FString& ErrorMessage) override;
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* Widget,
+	                                           UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
-	
+
 	static UInputAction* LoadInputActionFromPath(const FString& Path);
 
 	static void ParseFromCommand(const FShidenCommand& Command, FDelayCommandArgs& Args);
 
 	FDelayCommandArgs Args;
-	
+
 	float ElapsedTime = 0.0f;
 };

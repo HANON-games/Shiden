@@ -81,7 +81,8 @@ bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundC
 }
 
 void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-                                                             UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                             UShidenWidget* ShidenWidget,
+                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                              UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
 	for (const TPair<FString, FString>& Property : ScenarioProperties)
@@ -127,7 +128,8 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 }
 
 void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                           UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                           UShidenWidget* ShidenWidget,
+                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	ElapsedTime = 0.0f;
@@ -146,10 +148,11 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 	if ((Args.SoundType == EShidenSoundType::SE || Args.SoundType == EShidenSoundType::Voice)
 		&& UShidenScenarioBlueprintLibrary::CanSkipCommand())
 	{
-		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
+		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(
+			TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
 		bool bValue, bSuccess;
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
-		if (Widget->IsSkipPressed() || (bSuccess && bValue))
+		if (ShidenWidget->IsSkipPressed() || (bSuccess && bValue))
 		{
 			SoundDuration = 0.f;
 			Args.FadeDuration = 0.f;
@@ -157,7 +160,7 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 			return;
 		}
 	}
-	
+
 	const float ResultStartVolume = Args.FadeType == TEXT("FadeIn") ? 0.0f : Args.Volume;
 	const float ResultEndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
@@ -176,7 +179,7 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 }
 
 void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                        UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                        UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                         const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
@@ -207,21 +210,21 @@ void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		else
 		{
 			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *TrackIdStr),
-			                                                         Args.SoundSourcePath);
+			                                                          Args.SoundSourcePath);
 			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Volume"), *TrackIdStr),
-			                                                         FString::SanitizeFloat(Args.Volume));
+			                                                          FString::SanitizeFloat(Args.Volume));
 			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Pitch"), *TrackIdStr),
-			                                                         FString::SanitizeFloat(Args.Pitch));
+			                                                          FString::SanitizeFloat(Args.Pitch));
 			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::StartTime"), *TrackIdStr),
-			                                                         FString::SanitizeFloat(Args.StartTime));
+			                                                          FString::SanitizeFloat(Args.StartTime));
 		}
 	}
 
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
+void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
                                                         EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))

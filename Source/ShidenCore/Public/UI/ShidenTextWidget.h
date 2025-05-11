@@ -8,6 +8,7 @@
 #include "ShidenTextWidget.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE(FShidenOpenTextWindowDelegate);
+
 DECLARE_DYNAMIC_DELEGATE(FShidenCloseTextWindowDelegate);
 
 UCLASS(Abstract, Blueprintable)
@@ -41,12 +42,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void GetCurrentText(const FString& TextType, FString& Text, bool& bSuccess);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default", AutoCreateRefTerm = "OnOpened"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget",
+		meta = (TextType = "Default", AutoCreateRefTerm = "OnOpened"))
 	void OpenWindow(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default", AutoCreateRefTerm = "OnClosed"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget",
+		meta = (TextType = "Default", AutoCreateRefTerm = "OnClosed"))
 	void CloseWindow(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
 	void SetText(const FString& TextType, const FString& RawText, int Length);
 

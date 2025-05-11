@@ -14,9 +14,9 @@ struct SHIDENCORE_API FShidenLocalVariable
 	GENERATED_BODY()
 
 	bool TryGetDefinition(const FString& ScopeKey, const FString& Name, FShidenVariableDefinition& Definition);
-	
+
 	void InitLocalVariable(const FString& ScopeKey, const UShidenScenario* Scenario);
-	
+
 	bool TryUpdate(const FString& ScopeKey, const FString& Name, bool Value,
 	               bool bForceUpdateReadOnly = false);
 
@@ -36,7 +36,7 @@ struct SHIDENCORE_API FShidenLocalVariable
 	               bool bForceUpdateReadOnly = false);
 
 	bool Contains(const FString& ScopeKey, const FString& Name) const;
-	
+
 	bool TryGet(const FString& ScopeKey, const FString& Name, bool& Value);
 
 	bool TryGet(const FString& ScopeKey, const FString& Name, int32& Value);
@@ -48,7 +48,7 @@ struct SHIDENCORE_API FShidenLocalVariable
 	bool TryGet(const FString& ScopeKey, const FString& Name, FVector& Value);
 
 	bool TryGet(const FString& ScopeKey, const FString& Name, FVector2d& Value);
-	
+
 	bool TryGetAsString(const FString& ScopeKey, const FString& Name, EShidenVariableType& Type, FString& Value);
 
 	void ResetAll();
@@ -64,7 +64,7 @@ struct SHIDENCORE_API FShidenLocalVariable
 	void RemoveVariablesInProcess(const FString& ProcessName);
 
 	void ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors);
-	
+
 	void UpdateVariableDefinitions();
 
 	FShidenLocalVariable()

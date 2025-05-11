@@ -2,7 +2,7 @@
 
 #include "ShidenRichTextBlockWaitDecorator.h"
 
-class FRichTextWaitDecorator : public FRichTextDecorator
+class FRichTextWaitDecorator final : public FRichTextDecorator
 {
 public:
 	explicit FRichTextWaitDecorator(URichTextBlock* InOwner) : FRichTextDecorator(InOwner)

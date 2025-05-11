@@ -70,7 +70,7 @@ struct FShidenCommandStyle
 	{
 	}
 
-	FShidenCommandStyle(FLinearColor InFontColor, FLinearColor InItemNormalColor, FLinearColor InItemHoveredColor, FLinearColor InItemPressedColor)
+	FShidenCommandStyle(const FLinearColor InFontColor, const FLinearColor InItemNormalColor, const FLinearColor InItemHoveredColor, const FLinearColor InItemPressedColor)
 		: FontColor(InFontColor)
 		  , ItemNormalColor(InItemNormalColor)
 		  , ItemHoveredColor(InItemHoveredColor)

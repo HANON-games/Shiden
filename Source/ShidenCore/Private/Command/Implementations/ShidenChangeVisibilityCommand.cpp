@@ -9,7 +9,7 @@ bool UShidenChangeVisibilityCommand::TryParseCommand(const FShidenCommand& Comma
 	return TryConvertToVisibility(VisibilityStr, Args.Visibility, ErrorMessage);
 }
 
-void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                         UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                         FString& ErrorMessage)
@@ -24,7 +24,7 @@ void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TM
 			Status = EShidenInitFromSaveDataStatus::Error;
 		}
 
-		if (!TryChangeVisibility(Args, Widget, false, ErrorMessage))
+		if (!TryChangeVisibility(Args, ShidenWidget, false, ErrorMessage))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
@@ -34,7 +34,8 @@ void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TM
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenChangeVisibilityCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenChangeVisibilityCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                   UShidenWidget* ShidenWidget,
                                                                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                    const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                    FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
@@ -45,12 +46,12 @@ void UShidenChangeVisibilityCommand::ProcessCommand_Implementation(const FString
 		return;
 	}
 
-	Status = TryChangeVisibility(Args, Widget, true, ErrorMessage)
+	Status = TryChangeVisibility(Args, ShidenWidget, true, ErrorMessage)
 		         ? EShidenProcessStatus::Next
 		         : EShidenProcessStatus::Error;
 }
 
-void UShidenChangeVisibilityCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenChangeVisibilityCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -60,16 +61,16 @@ void UShidenChangeVisibilityCommand::PreviewCommand_Implementation(const FShiden
 		return;
 	}
 
-	Status = TryChangeVisibility(Args, Widget, false, ErrorMessage)
+	Status = TryChangeVisibility(Args, ShidenWidget, false, ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenChangeVisibilityCommand::TryChangeVisibility(const FChangeVisibilityCommandArgs& Args, UShidenWidget* Widget,
-														 const bool bRegisterProperty, FString& ErrorMessage)
+bool UShidenChangeVisibilityCommand::TryChangeVisibility(const FChangeVisibilityCommandArgs& Args, UShidenWidget* ShidenWidget,
+                                                         const bool bRegisterProperty, FString& ErrorMessage)
 {
 	bool bSuccess;
-	Widget->SetVisibilityByName(Args.Name, Args.Visibility, bRegisterProperty, bSuccess);
+	ShidenWidget->SetVisibilityByName(Args.Name, Args.Visibility, bRegisterProperty, bSuccess);
 
 	if (!bSuccess)
 	{

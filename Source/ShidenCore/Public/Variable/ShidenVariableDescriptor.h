@@ -20,6 +20,9 @@ struct SHIDENCORE_API FShidenVariableDescriptor
 	EShidenVariableType Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal|Variables")
+	EShidenAssetPathType AssetPathType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal|Variables")
 	FString Value;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
@@ -27,24 +30,28 @@ struct SHIDENCORE_API FShidenVariableDescriptor
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	bool bIsReadOnly = false;
-	
+
 	FShidenVariableDescriptor()
 	{
 		ScenarioKey = "";
 		Name = "";
 		Type = EShidenVariableType::Boolean;
+		AssetPathType = EShidenAssetPathType::None;
 		Value = "";
 		DefaultValue = "";
 		bIsReadOnly = false;
 	}
 
-	FShidenVariableDescriptor(const FString& Name, const EShidenVariableType VariableType, const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
-		: Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), bIsReadOnly(bIsReadOnly)
+	FShidenVariableDescriptor(const FString& Name, const EShidenVariableType VariableType, const EShidenAssetPathType AssetPathType,
+	                          const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
+		: Name(Name), Type(VariableType), AssetPathType(AssetPathType), Value(Value), DefaultValue(DefaultValue), bIsReadOnly(bIsReadOnly)
 	{
 	}
 
-	FShidenVariableDescriptor(const FString& ScenarioKey, const FString& Name, const EShidenVariableType VariableType, const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
-		: ScenarioKey(ScenarioKey), Name(Name), Type(VariableType), Value(Value), DefaultValue(DefaultValue), bIsReadOnly(bIsReadOnly)
+	FShidenVariableDescriptor(const FString& ScenarioKey, const FString& Name, const EShidenVariableType VariableType,
+	                          const EShidenAssetPathType AssetPathType, const FString& Value, const FString& DefaultValue, const bool bIsReadOnly)
+		: ScenarioKey(ScenarioKey), Name(Name), Type(VariableType), AssetPathType(AssetPathType), Value(Value), DefaultValue(DefaultValue),
+		  bIsReadOnly(bIsReadOnly)
 	{
 	}
 };

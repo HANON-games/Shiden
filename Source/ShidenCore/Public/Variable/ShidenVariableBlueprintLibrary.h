@@ -82,7 +82,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
 	static void UpdateUserVector3(const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
-	
+
 	/**
 	 * Gets all user variable names.
 	 * 
@@ -296,7 +296,8 @@ public:
 	 * @param Scenario The scenario containing variable definitions
 	 * @param Arguments Initial values for the variables
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Arguments"))
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Arguments"))
 	static void InitLocalVariable(const FString& ProcessName, const UShidenScenario* Scenario, const TMap<FString, FString>& Arguments);
 
 	/**
@@ -344,7 +345,8 @@ public:
 	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
 	static void UpdateLocalString(const FString& ProcessName, const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
 
 	/**
@@ -356,7 +358,8 @@ public:
 	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
 	static void UpdateLocalVector2(const FString& ProcessName, const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
 
 	/**
@@ -413,7 +416,8 @@ public:
 	 * @param bSuccess [out] True if the variable was found
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariableAsString(const FString& ProcessName, const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bSuccess);
+	static void FindLocalVariableAsString(const FString& ProcessName, const FString& Name, EShidenVariableType& OriginalType, FString& Result,
+	                                      bool& bSuccess);
 
 	/**
 	 * Resets a local variable to its default value.
@@ -483,8 +487,9 @@ public:
 	 * @param WorldContextObject Object that provides context for the world
 	 * @param InValue The new volume rate value (0.0-1.0)
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void SetBgmVolume(const UObject* WorldContextObject, float InValue);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"),
+		DisplayName = "Set BGM Volume")
+	static void SetBGMVolume(const UObject* WorldContextObject, float InValue);
 
 	/**
 	 * Sets the SE (Sound Effect) volume.
@@ -492,8 +497,9 @@ public:
 	 * @param WorldContextObject Object that provides context for the world
 	 * @param InValue The new volume rate value (0.0-1.0)
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void SetSeVolume(const UObject* WorldContextObject, float InValue);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"),
+		DisplayName = "Set SE Volume")
+	static void SetSEVolume(const UObject* WorldContextObject, float InValue);
 
 	/**
 	 * Sets the voice volume.
@@ -503,7 +509,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
 	static void SetVoiceVolume(const UObject* WorldContextObject, float InValue);
-	
+
 	/**
 	 * Initializes all predefined system variables with their default values.
 	 * 
@@ -519,7 +525,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
 	static FShidenPredefinedSystemVariable GetPredefinedSystemVariable();
-	
+
 	/**
 	 * Finds a predefined system variable definition by name.
 	 * 
@@ -546,11 +552,15 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
 	static void ConvertToVariableType(const FString& VariableType, EShidenVariableType& Result, bool& bSuccess);
 
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
+	static void ConvertToAssetPathType(const FString& AssetPathType, EShidenAssetPathType& Result, bool& bSuccess);
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
 	static void FindVariableDefinition(const FString& ProcessName, EShidenVariableKind Kind, const FString& Name,
-	                                  FShidenVariableDefinition& Definition, bool& bSuccess, FString& ErrorMessage);
+	                                   FShidenVariableDefinition& Definition, bool& bSuccess, FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value"))
 	static void UpdateVariable(const FString& ProcessName, EShidenVariableKind Kind, EShidenVariableType Type,
 	                           const FString& Name, bool bBooleanValue, const FString& StringValue,
 	                           int32 IntegerValue, float FloatValue, const FVector2D& Vector2Value,
@@ -562,25 +572,35 @@ public:
 	                         FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value,
 	                         FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
 
-	static void EvaluateBoolean(const FString& Operator, bool bABooleanValue, bool bBBooleanValue, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	static void EvaluateBoolean(const FString& Operator, bool bABooleanValue, bool bBBooleanValue, bool& bResult, bool& bSuccess,
+	                            FString& ErrorMessage);
 
-	static void EvaluateString(const FString& Operator, const FString& AStringValue, const FString& BStringValue, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	static void EvaluateString(const FString& Operator, const FString& AStringValue, const FString& BStringValue, bool& bResult, bool& bSuccess,
+	                           FString& ErrorMessage);
 
-	static void EvaluateInteger(const FString& Operator, int32 AIntegerValue, int32 BIntegerValue, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	static void EvaluateInteger(const FString& Operator, int32 AIntegerValue, int32 BIntegerValue, bool& bResult, bool& bSuccess,
+	                            FString& ErrorMessage);
 
 	static void EvaluateFloat(const FString& Operator, float AFloatValue, float BFloatValue, bool& bResult, bool& bSuccess, FString& ErrorMessage);
 
-	static void EvaluateVector2(const FString& Operator, const FVector2D& AVector2Value, const FVector2D& BVector2Value, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	static void EvaluateVector2(const FString& Operator, const FVector2D& AVector2Value, const FVector2D& BVector2Value, bool& bResult,
+	                            bool& bSuccess, FString& ErrorMessage);
 
-	static void EvaluateVector3(const FString& Operator, const FVector& AVector3Value, const FVector& BVector3Value, bool& bResult, bool& bSuccess, FString& ErrorMessage);
+	static void EvaluateVector3(const FString& Operator, const FVector& AVector3Value, const FVector& BVector3Value, bool& bResult, bool& bSuccess,
+	                            FString& ErrorMessage);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (AutoCreateRefTerm = "AStringValue,AVector2Value,AVector3Value,BStringValue,BVector2Value,BVector3Value"))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
+		meta = (AutoCreateRefTerm = "AStringValue,AVector2Value,AVector3Value,BStringValue,BVector2Value,BVector3Value"))
 	static void EvaluateCondition(EShidenVariableType Type, const FString& Operator, bool bABooleanValue,
 	                              const FString& AStringValue, int32 AIntegerValue, float AFloatValue,
 	                              const FVector2D& AVector2Value, const FVector& AVector3Value,
 	                              bool bBBooleanValue, const FString& BStringValue, int32 BIntegerValue,
 	                              float BFloatValue, const FVector2D& BVector2Value, const FVector& BVector3Value,
 	                              bool& bResult, bool& bSuccess, FString& ErrorMessage);
+
+	static FRegexPattern& GetReplaceTextPattern();
+
+	static FRegexPattern& GetVariablePattern();
 
 private:
 	static FString ReplaceVariables(const FString& ProcessName, const FString& Text);
@@ -590,8 +610,4 @@ private:
 	static FString MakeUpdateErrorMessage(TObjectPtr<UShidenSubsystem> ShidenSubsystem, const FString& Name, const EShidenVariableType& Type);
 
 	static void ApplyVolumeRate(const UObject* WorldContextObject, USoundMix* TargetSoundMix, USoundClass* TargetSoundClass, float TargetVolumeRate);
-
-	static FRegexPattern& GetReplaceTextPattern();
-
-	static FRegexPattern& GetVariablePattern();
 };

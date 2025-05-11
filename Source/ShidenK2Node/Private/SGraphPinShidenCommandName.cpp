@@ -10,7 +10,8 @@
 
 class UEdGraphPin;
 
-void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions)
+void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj,
+                                           const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions)
 {
 	RefreshNameList(InCommandDefinitions);
 	SGraphPinNameList::Construct(SGraphPinNameList::FArguments(), InGraphPinObj, NameList);

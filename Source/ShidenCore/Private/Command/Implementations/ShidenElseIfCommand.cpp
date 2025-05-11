@@ -4,19 +4,20 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 
-void UShidenElseIfCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
-                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                  const float DeltaTime, UObject* CallerObject,
-                                                                  EShidenProcessStatus& Status, FString& BreakReason,
-                                                                  FString& NextScenarioName, FString& ErrorMessage)
+void UShidenElseIfCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                         const float DeltaTime, UObject* CallerObject,
+                                                         EShidenProcessStatus& Status, FString& BreakReason,
+                                                         FString& NextScenarioName, FString& ErrorMessage)
 {
 	bool bSuccess;
 	FindEndIfIndex(ProcessName, bSuccess, ErrorMessage);
 	Status = bSuccess ? EShidenProcessStatus::Next : EShidenProcessStatus::Error;
 }
 
-void UShidenElseIfCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-																 const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
+void UShidenElseIfCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
+                                                         EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	bool bSuccess;
 	FindEndIfIndex("Default", bSuccess, ErrorMessage);
@@ -55,7 +56,7 @@ void UShidenElseIfCommand::FindEndIfIndex(const FString& ProcessName, bool& bSuc
 		{
 			continue;
 		}
-		
+
 		if (Command.CommandName == TEXT("If"))
 		{
 			Depth++;
@@ -71,7 +72,7 @@ void UShidenElseIfCommand::FindEndIfIndex(const FString& ProcessName, bool& bSuc
 			Depth--;
 		}
 	}
-	
+
 	bSuccess = false;
 	ErrorMessage = TEXT("Failed to find EndIf command.");
 }

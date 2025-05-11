@@ -17,7 +17,7 @@ UShidenSoundPropertyView::UShidenSoundPropertyView(const FObjectInitializer& Obj
 	SetVisibilityInternal(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UShidenSoundPropertyView::ReleaseSlateResources(bool bReleaseChildren)
+void UShidenSoundPropertyView::ReleaseSlateResources(const bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
 	EntryBox.Reset();
@@ -27,7 +27,8 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 {
 	EntryBox = SNew(SObjectPropertyEntryBox)
 		.AllowedClass(USoundBase::StaticClass())
-		.OnShouldFilterAsset(FOnShouldFilterAsset::CreateLambda([this](const FAssetData& AssetData) {
+		.OnShouldFilterAsset(FOnShouldFilterAsset::CreateLambda([this](const FAssetData& AssetData)
+		{
 			if (this->SoundClass == nullptr) { return false; }
 			FString SoundClassPath;
 			if (!AssetData.GetTagValue("SoundClassObject", SoundClassPath) || SoundClassPath.IsEmpty())
@@ -45,7 +46,7 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 		.ThumbnailPool(UThumbnailManager::Get().GetSharedThumbnailPool())
 		.ObjectPath_UObject(this, &UShidenSoundPropertyView::GetCurrentAssetPath)
 		.OnObjectChanged_UObject(this, &UShidenSoundPropertyView::OnObjectChanged);
-	
+
 	TSharedRef<SHorizontalBox> HorizontalBox = SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
 		.Padding(4.0f, 0.0f)
@@ -53,14 +54,14 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 		.VAlign(VAlign_Center)
 		[
 			SNew(SHorizontalBox)
-				+SHorizontalBox::Slot()
-				.Padding(FMargin(0.0f, 1.0f, 0.0f, 1.0f))
-				.FillWidth(1)
-				[
-					SNew(STextBlock)
-						.Text(FText::FromString(TEXT("Sound")))
-						.Font(FAppStyle::GetFontStyle("PropertyWindow.NormalFont"))
-				]
+			+ SHorizontalBox::Slot()
+			.Padding(FMargin(0.0f, 1.0f, 0.0f, 1.0f))
+			.FillWidth(1)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString(TEXT("Sound")))
+				.Font(FAppStyle::GetFontStyle("PropertyWindow.NormalFont"))
+			]
 		]
 		+ SHorizontalBox::Slot()
 		.Padding(4.0f, 0.0f)
@@ -72,22 +73,22 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 		+ SHorizontalBox::Slot()
 		.Padding(2.0f)
 		.AutoWidth()
-		.VAlign( VAlign_Center )
+		.VAlign(VAlign_Center)
 		[
 			SNew(SButton)
-				.IsFocusable(false)
-				.ButtonStyle(FAppStyle::Get(), "SimpleButton")
-				.ContentPadding(0) 
-				.Visibility_UObject(this, &UShidenSoundPropertyView::GetResetVisibility)
-				.OnClicked_UObject(this, &UShidenSoundPropertyView::OnResetToDefault)
-				.Content()
-				[
-					SNew(SImage)
-					.Image(FAppStyle::GetBrush("PropertyWindow.DiffersFromDefault"))
-					.ColorAndOpacity(FSlateColor::UseForeground())
-				]
+			.IsFocusable(false)
+			.ButtonStyle(FAppStyle::Get(), "SimpleButton")
+			.ContentPadding(0)
+			.Visibility_UObject(this, &UShidenSoundPropertyView::GetResetVisibility)
+			.OnClicked_UObject(this, &UShidenSoundPropertyView::OnResetToDefault)
+			.Content()
+			[
+				SNew(SImage)
+				.Image(FAppStyle::GetBrush("PropertyWindow.DiffersFromDefault"))
+				.ColorAndOpacity(FSlateColor::UseForeground())
+			]
 		];
-	
+
 	return HorizontalBox;
 }
 
@@ -141,7 +142,10 @@ void UShidenSoundPropertyView::SetSelectedAsset(USoundBase* InAsset, bool& bSucc
 	{
 		SelectedAsset = InAsset;
 		OnAssetChanged.Broadcast(InAsset);
+		bSuccess = true;
+		return;
 	}
+	bSuccess = false;
 }
 
 USoundBase* UShidenSoundPropertyView::GetSelectedAsset() const

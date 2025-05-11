@@ -16,7 +16,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Co
 	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
 	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
 	const FString OverwriteZOrderStr = Command.GetArg(TEXT("OverwriteZOrder"));
-	
+
 	Args.bChangePosition = !Command.GetArg(TEXT("OverwritePosition")).IsEmpty();
 	Args.bChangeSize = !Command.GetArg(TEXT("OverwriteSize")).IsEmpty();
 	Args.bWaitForCompletion = Command.GetArg(TEXT("WaitForComplete")).ToBool();
@@ -28,7 +28,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Co
 }
 
 void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-                                                                           UShidenWidget* Widget,
+                                                                           UShidenWidget* ShidenWidget,
                                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                            UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                            FString& ErrorMessage)
@@ -41,7 +41,7 @@ void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const
 
 		UCanvasPanelSlot* Slot;
 		bool bSuccess;
-		Widget->FindCanvasPanelSlot(SlotName, Slot, bSuccess);
+		ShidenWidget->FindCanvasPanelSlot(SlotName, Slot, bSuccess);
 		if (!bSuccess)
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
@@ -78,7 +78,7 @@ void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const
 }
 
 void UShidenMoveCanvasPanelSlotCommand::PreProcessCommand_Implementation(const FString& ProcessName,
-                                                                         const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                         const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                          UObject* CallerObject,
                                                                          EShidenPreProcessStatus& Status, FString& ErrorMessage)
@@ -89,25 +89,25 @@ void UShidenMoveCanvasPanelSlotCommand::PreProcessCommand_Implementation(const F
 		return;
 	}
 
-	if (!TryOverwriteZOrder(Args, Widget, true, ErrorMessage))
+	if (!TryOverwriteZOrder(Args, ShidenWidget, true, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		return;
 	}
 
-	Status = TryStartMoveSlot(Args, Widget, ProcessName, ErrorMessage)
+	Status = TryStartMoveSlot(Args, ShidenWidget, ProcessName, ErrorMessage)
 		         ? EShidenPreProcessStatus::Complete
 		         : EShidenPreProcessStatus::Error;
 }
 
 void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                                      const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                      const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                       const float DeltaTime,
                                                                       UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
                                                                       FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (Args.bWaitForCompletion && !Widget->IsCanvasPanelSlotMoveCompleted(Args.SlotName))
+	if (Args.bWaitForCompletion && !ShidenWidget->IsCanvasPanelSlotMoveCompleted(Args.SlotName))
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
@@ -116,20 +116,20 @@ void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FStr
 	if (Args.bChangePosition)
 	{
 		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName,
-		                                                         Args.SlotName + TEXT("::Position"), Command.GetArg(TEXT("OverwritePosition")));
+		                                                          Args.SlotName + TEXT("::Position"), Command.GetArg(TEXT("OverwritePosition")));
 	}
 
 	if (Args.bChangeSize)
 	{
 		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName,
-		                                                         Args.SlotName + TEXT("::Size"), Command.GetArg(TEXT("OverwriteSize")));
+		                                                          Args.SlotName + TEXT("::Size"), Command.GetArg(TEXT("OverwriteSize")));
 	}
 
 	Status = EShidenProcessStatus::Next;
 }
 
 void UShidenMoveCanvasPanelSlotCommand::PreviewCommand_Implementation(const FShidenCommand& Command,
-                                                                      UShidenWidget* Widget,
+                                                                      UShidenWidget* ShidenWidget,
                                                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                       const bool bIsCurrentCommand, EShidenPreviewStatus& Status,
                                                                       FString& ErrorMessage)
@@ -145,24 +145,24 @@ void UShidenMoveCanvasPanelSlotCommand::PreviewCommand_Implementation(const FShi
 		Args.Duration = 0;
 	}
 
-	if (!TryOverwriteZOrder(Args, Widget, false, ErrorMessage))
+	if (!TryOverwriteZOrder(Args, ShidenWidget, false, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
 	}
 
-	Status = TryStartMoveSlot(Args, Widget, TEXT("Default"), ErrorMessage)
+	Status = TryStartMoveSlot(Args, ShidenWidget, TEXT("Default"), ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
 
 
-bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* Widget,
+bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget,
                                                          const FString& ProcessName, FString& ErrorMessage)
 {
 	bool bSuccess;
 	UCanvasPanelSlot* Slot;
-	Widget->FindCanvasPanelSlot(Args.SlotName, Slot, bSuccess);
+	ShidenWidget->FindCanvasPanelSlot(Args.SlotName, Slot, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("CanvasPanelSlot %s not found."), *Args.SlotName);
@@ -175,7 +175,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelS
 	if (Args.ChangeType.Compare(TEXT("AddToCurrent"), ESearchCase::IgnoreCase) == 0)
 	{
 		FShidenCanvasPanelSlotMoveParams Params;
-		Widget->FindCanvasPanelMoveParams(Args.SlotName, Params, bSuccess);
+		ShidenWidget->FindCanvasPanelMoveParams(Args.SlotName, Params, bSuccess);
 
 		Position += bSuccess && Params.bChangePosition
 			            ? Params.EndPosition
@@ -186,14 +186,14 @@ bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelS
 			        : Slot->GetSize();
 	}
 
-	Widget->StartCanvasPanelSlotMove(Args.SlotName, Slot, Args.EasingFunction, Args.Duration,
-	                                 Args.bChangePosition, Position, Args.bChangeSize, Size,
-	                                 Args.BlendExp, Args.Steps, ProcessName, bSuccess, ErrorMessage);
+	ShidenWidget->StartCanvasPanelSlotMove(Args.SlotName, Slot, Args.EasingFunction, Args.Duration,
+	                                       Args.bChangePosition, Position, Args.bChangeSize, Size,
+	                                       Args.BlendExp, Args.Steps, ProcessName, bSuccess, ErrorMessage);
 
 	return bSuccess;
 }
 
-bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPanelSlotCommandArgs& Args, const UShidenWidget* Widget,
+bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPanelSlotCommandArgs& Args, const UShidenWidget* ShidenWidget,
                                                            const bool bRegisterCurrentProperty, FString& ErrorMessage)
 {
 	if (!Args.bOverwriteZOrder)
@@ -203,7 +203,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 
 	bool bSuccess;
 	UCanvasPanelSlot* Slot;
-	Widget->FindCanvasPanelSlot(Args.SlotName, Slot, bSuccess);
+	ShidenWidget->FindCanvasPanelSlot(Args.SlotName, Slot, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("CanvasPanelSlot %s not found."), *Args.SlotName);
@@ -215,8 +215,8 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 	if (bRegisterCurrentProperty)
 	{
 		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(TEXT("MoveCanvasPanelSlot"),
-		                                                         FString::Printf(TEXT("%s::ZOrder"), *Args.SlotName),
-		                                                         FString::FromInt(Args.OverwriteZOrder));
+		                                                          FString::Printf(TEXT("%s::ZOrder"), *Args.SlotName),
+		                                                          FString::FromInt(Args.OverwriteZOrder));
 	}
 
 	return true;

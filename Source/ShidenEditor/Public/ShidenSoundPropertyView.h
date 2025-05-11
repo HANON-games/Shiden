@@ -13,13 +13,12 @@ UCLASS()
 class UShidenSoundPropertyView : public UContentWidget
 {
 	GENERATED_UCLASS_BODY()
-
 	// UVisual interface
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	// End of UVisual interface
-	
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAssetChanged, UObject*, Asset);
-	
+
 	UPROPERTY(BlueprintAssignable, Category = "View|Event")
 	FOnAssetChanged OnAssetChanged;
 
@@ -41,7 +40,7 @@ class UShidenSoundPropertyView : public UContentWidget
 
 protected:
 	TSharedPtr<SObjectPropertyEntryBox> EntryBox;
-	
+
 	// UWidget interface
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	// End of UWidget interface
@@ -49,13 +48,15 @@ protected:
 	FReply OnResetToDefault();
 
 private:
+	UPROPERTY()
 	TObjectPtr<USoundClass> SoundClass = nullptr;
 
+	UPROPERTY()
 	TSoftObjectPtr<USoundBase> SelectedAsset = nullptr;
-
+	
 	EVisibility GetResetVisibility() const;
-
+	
 	FString GetCurrentAssetPath() const;
-
+	
 	void OnObjectChanged(const FAssetData& AssetData);
 };

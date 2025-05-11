@@ -25,7 +25,7 @@ public class ShidenEditor : ModuleRules
 
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"Core",
 				"ApplicationCore",
@@ -38,7 +38,7 @@ public class ShidenEditor : ModuleRules
 
 
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"CoreUObject",
 				"Engine",
@@ -53,6 +53,7 @@ public class ShidenEditor : ModuleRules
 				"ContentBrowserData",
 				"ToolWidgets",
 				"PropertyEditor",
+				"AssetTools"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

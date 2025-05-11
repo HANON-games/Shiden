@@ -8,7 +8,7 @@ void UShidenDelayCommand::ParseFromCommand(const FShidenCommand& Command, FDelay
 	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
 }
 
-void UShidenDelayCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenDelayCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
                                                            EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -17,7 +17,7 @@ void UShidenDelayCommand::PreProcessCommand_Implementation(const FString& Proces
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenDelayCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenDelayCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                         const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)

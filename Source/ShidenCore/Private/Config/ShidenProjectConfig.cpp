@@ -6,16 +6,16 @@
 
 SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-		, PredefinedSystemVariable(FShidenPredefinedSystemVariable())
-		, ScenarioDirectoryPath("/Game/Shiden/Scenarios/")
-		, MacroDirectoryPath("/Game/Shiden/Macros/")
-		, bAutoSaveOnMobileAppWillDeactivate(true)
+	  , PredefinedSystemVariable(FShidenPredefinedSystemVariable())
+	  , ScenarioDirectoryPath("/Game/Shiden/Scenarios/")
+	  , MacroDirectoryPath("/Game/Shiden/Macros/")
+	  , bAutoSaveOnMobileAppWillDeactivate(true)
 {
 	ScenarioPaths = TMap<FGuid, FString>();
 	WidgetClass = Cast<UClass>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")).TryLoad());
 	MasterSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenMaster.SC_ShidenMaster"));
-	BgmSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenBgm.SC_ShidenBgm"));
-	SeSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenSe.SC_ShidenSe"));
+	BGMSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenBgm.SC_ShidenBgm"));
+	SESoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenSe.SC_ShidenSe"));
 	VoiceSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenVoice.SC_ShidenVoice"));
 	SoundClassMix = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SCM_ShidenSoundClassMix.SCM_ShidenSoundClassMix"));
 	Presets = TMap<FString, FShidenPreset>();
@@ -117,24 +117,24 @@ USoundClass* UShidenProjectConfig::GetMasterSoundClass()
 	return ShidenProjectConfig->MasterSoundClass.LoadSynchronous();
 }
 
-USoundClass* UShidenProjectConfig::GetBgmSoundClass()
+USoundClass* UShidenProjectConfig::GetBGMSoundClass()
 {
 	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->BgmSoundClass.IsValid())
+	if (ShidenProjectConfig->BGMSoundClass.IsValid())
 	{
-		return ShidenProjectConfig->BgmSoundClass.Get();
+		return ShidenProjectConfig->BGMSoundClass.Get();
 	}
-	return ShidenProjectConfig->BgmSoundClass.LoadSynchronous();
+	return ShidenProjectConfig->BGMSoundClass.LoadSynchronous();
 }
 
-USoundClass* UShidenProjectConfig::GetSeSoundClass()
+USoundClass* UShidenProjectConfig::GetSESoundClass()
 {
 	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->SeSoundClass.IsValid())
+	if (ShidenProjectConfig->SESoundClass.IsValid())
 	{
-		return ShidenProjectConfig->SeSoundClass.Get();
+		return ShidenProjectConfig->SESoundClass.Get();
 	}
-	return ShidenProjectConfig->SeSoundClass.LoadSynchronous();
+	return ShidenProjectConfig->SESoundClass.LoadSynchronous();
 }
 
 USoundClass* UShidenProjectConfig::GetVoiceSoundClass()

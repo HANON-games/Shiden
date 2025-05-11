@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class SHIDENEDITOR_API FShidenEditorModule : public IModuleInterface
+class SHIDENEDITOR_API FShidenEditorModule final : public IModuleInterface
 {
 public:
 	/** IModuleInterface implementation */

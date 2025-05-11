@@ -6,7 +6,9 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ShidenAsyncActionHandleSaveGame)
 
-UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName,
+                                                                                      UTexture2D* Thumbnail,
+                                                                                      const TMap<FString, FString>& SlotMetadata)
 {
 	UShidenAsyncActionHandleSaveGame* Action = NewObject<UShidenAsyncActionHandleSaveGame>();
 	Action->Operation = EShidenSaveGameOperationName::SaveUserData;
@@ -30,10 +32,13 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	switch (Operation)
 	{
 	case EShidenSaveGameOperationName::SaveUserData:
-		UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata, FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata,
+		                                               FAsyncSaveDataDelegate::CreateUObject(
+			                                               this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	case EShidenSaveGameOperationName::SaveSystemData:
-		UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+		UShidenSaveBlueprintLibrary::AsyncSaveSystemData(
+			FAsyncSaveDataDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	default:
 		UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));

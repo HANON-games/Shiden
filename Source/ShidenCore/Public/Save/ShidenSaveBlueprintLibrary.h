@@ -137,7 +137,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static bool DoesSystemDataExist();
-	
+
 	/**
 	 * Clears all loaded system data from memory.
 	 * 

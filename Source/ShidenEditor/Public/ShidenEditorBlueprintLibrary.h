@@ -8,6 +8,8 @@
 #include "Variable/ShidenPredefinedSystemVariableDefinition.h"
 #include "Variable/ShidenVariableDescriptor.h"
 #include "ShidenCommandRedirector.h"
+#include "ShidenPluginVersion.h"
+#include "Variable/ShidenVariableKind.h"
 #include "ShidenEditorBlueprintLibrary.generated.h"
 
 UCLASS()
@@ -17,7 +19,8 @@ class SHIDENEDITOR_API UShidenEditorBlueprintLibrary : public UBlueprintFunction
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility")
-	static void CreateModalForSave(UClass* AssetClass, const FString& DefaultPath, const FString& DefaultAssetName, FString& SavePackagePath, FString& SaveAssetName, bool& bSuccess);
+	static void CreateModalForSave(UClass* AssetClass, const FString& DefaultPath, const FString& DefaultAssetName, FString& SavePackagePath,
+	                               FString& SaveAssetName, bool& bSuccess);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|EditorUtility")
 	static bool CanCreateFolder(FName InPath);
@@ -57,19 +60,22 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Variables")
 	static void ListLocalVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Utility")
+	static void ForceGC();
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void AddUserVariableDefinition(const FShidenVariableDefinition& VariableDefinition);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
-    static void UpdateUserVariableDefinition(const FString& OldName, const FShidenVariableDefinition& VariableDefinition);
+	static void UpdateUserVariableDefinition(const FString& OldName, const FShidenVariableDefinition& VariableDefinition);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void RemoveUserVariableDefinition(const FString& Name);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void AddSystemVariableDefinition(const FShidenVariableDefinition& VariableDefinition);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void UpdateSystemVariableDefinition(const FString& OldName, const FShidenVariableDefinition& VariableDefinition);
 
@@ -79,8 +85,26 @@ public:
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|EditorUtility|Config")
 	static void GetPredefinedSystemVariableDefinitions(TArray<FShidenVariableDefinition>& VariableDefinitions);
 
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
+	static void GetCurrentPluginVersion(FShidenPluginVersion& PluginVersion, bool& bSuccess);
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
 	static void RedirectCommands(UShidenScenario* Scenario, bool& bAnyCommandUpdated);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static void RedirectLocalVariables(UShidenScenario* Scenario, const FString& OldVariableName, const FString& NewVariableName,
+	                                   bool& bAnyCommandUpdated);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static void RedirectAllMacroParameters(const UShidenScenario* TargetMacro, const FString& TargetMacroPath, const FString& OldParameterName,
+	                                       const FString& NewParameterName, bool
+	                                       bNeedTransaction, TArray<UShidenScenario*>& AssetToBeSaved);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static void RedirectAllVariables(EShidenVariableKind VariableKind, const FString& OldVariableName, const FString& NewVariableName);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
+	static void MigratePlugin(bool& bSuccess);
 
 	static TArray<FShidenCommandRedirector> GetRedirectDefinitions();
 

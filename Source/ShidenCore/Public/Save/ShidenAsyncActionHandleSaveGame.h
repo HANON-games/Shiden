@@ -24,10 +24,13 @@ class SHIDENCORE_API UShidenAsyncActionHandleSaveGame : public UBlueprintAsyncAc
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
-	static UShidenAsyncActionHandleSaveGame* AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata);
+	UFUNCTION(BlueprintCallable,
+		meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
+	static UShidenAsyncActionHandleSaveGame* AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail,
+	                                                           const TMap<FString, FString>& SlotMetadata);
 
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintCallable,
+		meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
 	static UShidenAsyncActionHandleSaveGame* AsyncSaveSystemData(UObject* WorldContextObject);
 
 	virtual void Activate() override;

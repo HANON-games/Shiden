@@ -49,7 +49,7 @@ struct FShidenScenarioProgressStack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenCancelInfo CancelInfo;
-	
+
 	void SetCurrentIndex(const int32 NewIndex)
 	{
 		if (Stack.Num() > 0)

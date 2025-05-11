@@ -24,7 +24,7 @@ void FShidenEditorModule::StartupModule()
 			GetMutableDefault<UShidenEditorConfig>()
 		);
 	}
-	
+
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 		"ShidenCommandDefinition",

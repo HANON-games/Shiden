@@ -25,7 +25,7 @@ public class ShidenCore : ModuleRules
 
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"Core",
 				"ApplicationCore",
@@ -52,15 +52,16 @@ public class ShidenCore : ModuleRules
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
-		
+
 		if (Target.Type == TargetType.Editor)
 		{
-			PrivateDependencyModuleNames.AddRange(new string[] {
+			PrivateDependencyModuleNames.AddRange(new[]
+			{
 				"Settings",
-				"UnrealEd",
+				"UnrealEd"
 			});
 		}
-		
+
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{

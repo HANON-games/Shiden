@@ -7,7 +7,7 @@ void UShidenBreakCommand::ParseFromCommand(const FShidenCommand& Command, FBreak
 	Args.ReasonForInterruption = Command.GetArg("ReasonForInterruption");
 }
 
-void UShidenBreakCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenBreakCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                         const float DeltaTime, UObject* CallerObject,
                                                         EShidenProcessStatus& Status, FString& BreakReason,

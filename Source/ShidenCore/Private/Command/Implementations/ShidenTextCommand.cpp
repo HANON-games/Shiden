@@ -2,21 +2,22 @@
 
 #include "Command/Implementations/ShidenTextCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
-#include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "System/ShidenSubsystem.h"
 
-bool UShidenTextCommand::TryParseCommand(const FShidenCommand& Command, FTextCommandArgs& Args, FString& ErrorMessage)
+bool UShidenTextCommand::TryParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs, FString& ErrorMessage)
 {
-	Args.TextWidgetName = Command.GetArg("TextWidgetName");
-	Args.TextType = Command.GetArg("TextType");
-	Args.bWaitForInput = Command.GetArgAsBool("WaitForInput");
-	Args.bInstantTextDisplay = Command.GetArgAsBool("InstantTextDisplay");
-	Args.VoicePath = Command.GetArg("Voice");
-	Args.VoiceTrackId = Command.GetArgAsInt("VoiceTrackId");
-	Args.bDisableAutoStopPreviousVoices = Command.GetArgAsBool("DisableAutoStopPreviousVoices");
-	Args.bContinueFromThePreviousText = Command.GetArgAsBool("ContinueFromThePreviousText");
+	OutArgs.TextWidgetName = Command.GetArg("TextWidgetName");
+	OutArgs.TextType = Command.GetArg("TextType");
+	OutArgs.bWaitForInput = Command.GetArgAsBool("WaitForInput");
+	OutArgs.bInstantTextDisplay = Command.GetArgAsBool("InstantTextDisplay");
+	OutArgs.VoicePath = Command.GetArg("Voice");
+	OutArgs.TextBlipPath = Command.GetArg("TextBlip");
+	OutArgs.VoiceTrackId = Command.GetArgAsInt("VoiceTrackId");
+	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool("DisableAutoStopPreviousVoices");
+	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool("ContinueFromThePreviousText");
 
-	return TryGetLanguageSpecificText(Command, Args.Text, ErrorMessage);
+	return TryGetLanguageSpecificText(Command, OutArgs.Text, ErrorMessage);
 }
 
 bool UShidenTextCommand::TryGetLanguageSpecificText(const FShidenCommand& Command, FString& Text, FString& ErrorMessage)
@@ -48,7 +49,7 @@ bool UShidenTextCommand::TryGetLanguageSpecificText(const FShidenCommand& Comman
 	return false;
 }
 
-void UShidenTextCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+void UShidenTextCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
@@ -66,7 +67,7 @@ void UShidenTextCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 			return;
 		}
 
-		if (!TryRestoreTextWidget(Widget, TextWidgetName, TextType, Property.Value, ErrorMessage))
+		if (!TryRestoreTextWidget(ShidenWidget, TextWidgetName, TextType, Property.Value, ErrorMessage))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
@@ -77,7 +78,7 @@ void UShidenTextCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 }
 
 void UShidenTextCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                          UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                          UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                           UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
@@ -86,7 +87,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 		return;
 	}
 
-	HandleInputState(Widget, ShidenManager);
+	HandleInputState(ShidenWidget, ShidenManager);
 
 	CurrentState = EShidenTextCommandState::WaitingForAnimation;
 	CurrentVoiceState = EShidenTextCommandVoiceState::None;
@@ -96,7 +97,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 	bIsWaitingForAnimation = true;
 
 	UShidenTextWidget* TextWidget;
-	if (!FindTextWidget(Widget, Args.TextWidgetName, TextWidget, ErrorMessage))
+	if (!FindTextWidget(ShidenWidget, Args.TextWidgetName, TextWidget, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 	}
@@ -119,7 +120,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 
 	TextLength = UShidenBlueprintLibrary::GetParsedLength(CurrentText);
 
-	if (!TrySetTextWindowVisible(Widget, ErrorMessage))
+	if (!TrySetTextWindowVisible(ShidenWidget, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		return;
@@ -155,16 +156,16 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 			return;
 		}
 	}
-	
+
 	Status = EShidenPreProcessStatus::Complete;
 }
 
 void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                       UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                       UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                        const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                        FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	HandleInputState(Widget, ShidenManager);
+	HandleInputState(ShidenWidget, ShidenManager);
 	UpdateTime(DeltaTime);
 	UpdateVoiceState();
 
@@ -174,7 +175,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 		{
 			if (!bIsWaitingForAnimation)
 			{
-				CurrentState = ShouldPauseTextProcess(Widget)
+				CurrentState = ShouldPauseTextProcess(ShidenWidget)
 					               ? EShidenTextCommandState::PausingText
 					               : IsTextDisplayComplete()
 					               ? EShidenTextCommandState::WaitingForInput
@@ -185,7 +186,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 		}
 	case EShidenTextCommandState::PausingText:
 		{
-			if (!ShouldPauseTextProcess(Widget))
+			if (!ShouldPauseTextProcess(ShidenWidget))
 			{
 				CurrentState = bIsWaitingForAnimation
 					               ? EShidenTextCommandState::WaitingForAnimation
@@ -198,7 +199,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 		}
 	case EShidenTextCommandState::ProcessingText:
 		{
-			if (ShouldPauseTextProcess(Widget))
+			if (ShouldPauseTextProcess(ShidenWidget))
 			{
 				CurrentState = EShidenTextCommandState::PausingText;
 				Status = EShidenProcessStatus::DelayUntilNextTick;
@@ -212,10 +213,19 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 					return;
 				}
 			}
-			if (!TryUpdateTextProgress(Args.TextWidgetName, Args.TextType, Args.bInstantTextDisplay, Widget, DeltaTime, ErrorMessage))
+			bool bTextUpdated;
+			if (!TryUpdateTextProgress(Args.TextWidgetName, Args.TextType, Args.bInstantTextDisplay, ShidenWidget, DeltaTime, bTextUpdated, ErrorMessage))
 			{
 				Status = EShidenProcessStatus::Error;
 				return;
+			}
+			if (bTextUpdated && ShouldPlayTextBlip(Args.TextBlipPath, Args.VoicePath))
+			{
+				if (!TryProcessTextBlipPlayback(Args.TextBlipPath, ShidenManager, ErrorMessage))
+				{
+					Status = EShidenProcessStatus::Error;
+					return;
+				}
 			}
 			if (IsTextDisplayComplete())
 			{
@@ -226,7 +236,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 		}
 	case EShidenTextCommandState::WaitingForInput:
 		{
-			if (ShouldPauseTextProcess(Widget))
+			if (ShouldPauseTextProcess(ShidenWidget))
 			{
 				CurrentState = EShidenTextCommandState::PausingText;
 				Status = EShidenProcessStatus::DelayUntilNextTick;
@@ -241,7 +251,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 			                                                          FString::Printf(TEXT("%s::%s"), *Args.TextWidgetName, *Args.TextType),
 			                                                          CurrentText);
 			UShidenTextWidget* TextWidget;
-			if (!FindTextWidget(Widget, Args.TextWidgetName, TextWidget, ErrorMessage))
+			if (!FindTextWidget(ShidenWidget, Args.TextWidgetName, TextWidget, ErrorMessage))
 			{
 				Status = EShidenProcessStatus::Error;
 				return;
@@ -255,7 +265,7 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	}
 }
 
-void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
                                                        EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -265,7 +275,7 @@ void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 		return;
 	}
 
-	if (!TrySetTextWindowVisible(Widget, ErrorMessage))
+	if (!TrySetTextWindowVisible(ShidenWidget, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
@@ -280,7 +290,7 @@ void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 		}
 	}
 
-	Status = TryPreviewText(Widget, Args.TextWidgetName, Args.TextType, Args.Text, Args.bContinueFromThePreviousText, ErrorMessage)
+	Status = TryPreviewText(ShidenWidget, Args.TextWidgetName, Args.TextType, Args.Text, Args.bContinueFromThePreviousText, ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
@@ -288,6 +298,7 @@ void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 void UShidenTextCommand::UpdateTime(const float DeltaTime)
 {
 	TotalElapsedTime += DeltaTime;
+	TextBlipWaitTime -= DeltaTime;
 	if (bSkipButtonPressStart)
 	{
 		WaitTime = 0;
@@ -300,10 +311,30 @@ void UShidenTextCommand::UpdateTime(const float DeltaTime)
 
 bool UShidenTextCommand::ShouldPlayVoice(const FString& VoicePath, const EShidenTextCommandVoiceState VoiceState)
 {
-	return !IsVoicePathEmpty(VoicePath) && VoiceState == EShidenTextCommandVoiceState::None;
+	return !IsAssetPathEmpty(VoicePath) && VoiceState == EShidenTextCommandVoiceState::None;
 }
 
-bool UShidenTextCommand::IsVoicePathEmpty(const FString& VoicePath)
+bool UShidenTextCommand::ShouldPlayTextBlip(const FString& TextBlipPath, const FString& VoicePath) const
+{
+	if (CurrentTextIndex <= 0)
+	{
+		return false;
+	}
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	if (IsAssetPathEmpty(VoicePath) && !IsAssetPathEmpty(TextBlipPath))
+	{
+		switch (ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode) {
+		case EShidenTextBlipTriggerMode::TimeInterval:
+			return TextBlipWaitTime <= 0.f;
+		case EShidenTextBlipTriggerMode::CharacterInterval:
+			return TextBlipCharacterCount <= 0;
+		}
+	}
+	return false;
+}
+
+bool UShidenTextCommand::IsAssetPathEmpty(const FString& VoicePath)
 {
 	return VoicePath.IsEmpty() || VoicePath == TEXT("None");
 }
@@ -339,11 +370,11 @@ bool UShidenTextCommand::TryOpenTextWindow(UShidenTextWidget* TextWidget, const 
 	return bSuccess;
 }
 
-bool UShidenTextCommand::FindTextWidget(const UShidenWidget* Widget, const FString& TextWidgetName, UShidenTextWidget*& TextWidget,
+bool UShidenTextCommand::FindTextWidget(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, UShidenTextWidget*& TextWidget,
                                         FString& ErrorMessage)
 {
 	bool bSuccess;
-	Widget->FindTextWidget(TextWidgetName, TextWidget, bSuccess);
+	ShidenWidget->FindTextWidget(TextWidgetName, TextWidget, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find text widget %s."), *TextWidgetName);
@@ -361,11 +392,11 @@ bool UShidenTextCommand::TryParsePropertyKey(const FString& PropertyKey, FString
 	return bSuccess;
 }
 
-bool UShidenTextCommand::TryRestoreTextWidget(UShidenWidget* Widget, const FString& TextWidgetName, const FString& TextType,
+bool UShidenTextCommand::TryRestoreTextWidget(UShidenWidget* ShidenWidget, const FString& TextWidgetName, const FString& TextType,
                                               const FString& TextValue, FString& ErrorMessage)
 {
 	UShidenTextWidget* TextWidget;
-	if (!FindTextWidget(Widget, TextWidgetName, TextWidget, ErrorMessage))
+	if (!FindTextWidget(ShidenWidget, TextWidgetName, TextWidget, ErrorMessage))
 	{
 		return false;
 	}
@@ -382,12 +413,12 @@ bool UShidenTextCommand::TryRestoreTextWidget(UShidenWidget* Widget, const FStri
 	return true;
 }
 
-bool UShidenTextCommand::ShouldPauseTextProcess(const UShidenWidget* Widget)
+bool UShidenTextCommand::ShouldPauseTextProcess(const UShidenWidget* ShidenWidget)
 {
-	return Widget->IsMenuOpen() || !Widget->TextBaseLayer->IsVisible();
+	return ShidenWidget->IsMenuOpen() || !ShidenWidget->TextBaseLayer->IsVisible();
 }
 
-bool UShidenTextCommand::ShouldStopVoice(const FString& VoicePath, const bool& bDisableAutoStopPreviousVoices)
+bool UShidenTextCommand::ShouldStopVoice(const FString& VoicePath, const bool bDisableAutoStopPreviousVoices)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
@@ -399,7 +430,7 @@ bool UShidenTextCommand::ShouldStopVoice(const FString& VoicePath, const bool& b
 	case EShidenVoiceStopCondition::NextTextOrVoice:
 		return !bDisableAutoStopPreviousVoices;
 	case EShidenVoiceStopCondition::NextVoice:
-		return !bDisableAutoStopPreviousVoices && !IsVoicePathEmpty(VoicePath);
+		return !bDisableAutoStopPreviousVoices && !IsAssetPathEmpty(VoicePath);
 	default:
 		return false;
 	}
@@ -411,31 +442,31 @@ void UShidenTextCommand::UpdateVoiceState()
 	{
 		return;
 	}
-	
+
 	if (TotalElapsedTime > VoiceDuration)
 	{
 		CurrentVoiceState = EShidenTextCommandVoiceState::Completed;
 	}
 }
 
-void UShidenTextCommand::HandleInputState(const UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager)
+void UShidenTextCommand::HandleInputState(const UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager)
 {
 	UpdateTalkState(ShidenManager);
-	UpdateSkipState(ShidenManager, Widget);
+	UpdateSkipState(ShidenManager, ShidenWidget);
 }
 
-bool UShidenTextCommand::TrySetTextWindowVisible(UShidenWidget* Widget, FString& ErrorMessage)
+bool UShidenTextCommand::TrySetTextWindowVisible(UShidenWidget* ShidenWidget, FString& ErrorMessage)
 {
 	bool bSuccess;
 
-	Widget->SetVisibilityByName(TEXT("TextBaseLayer"), ESlateVisibility::SelfHitTestInvisible, true, bSuccess);
+	ShidenWidget->SetVisibilityByName(TEXT("TextBaseLayer"), ESlateVisibility::SelfHitTestInvisible, true, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = TEXT("Failed to set visibility of TextBaseLayer.");
 		return false;
 	}
 
-	Widget->SetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::SelfHitTestInvisible, true, bSuccess);
+	ShidenWidget->SetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::SelfHitTestInvisible, true, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = TEXT("Failed to set visibility of TextLayer.");
@@ -469,15 +500,40 @@ bool UShidenTextCommand::TryProcessVoicePlayback(const int32 VoiceTrackId, const
 	return true;
 }
 
+bool UShidenTextCommand::TryProcessTextBlipPlayback(const FString& TextBlipPath, const TScriptInterface<IShidenManagerInterface>& ShidenManager, FString& ErrorMessage)
+{
+	const FShidenSoundInfo SoundInfo(-1, EShidenSoundType::Voice, TextBlipPath, 1.f, 1.f, 1.f, 0.f, EAudioFaderCurve::Linear, 0.f);
+	bool bSuccess;
+	float TextBlipDuration;
+	ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, false, TextBlipDuration, bSuccess);
+	if (!bSuccess)
+	{
+		ErrorMessage = TEXT("Failed to play text blip.");
+		return false;
+	}
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	if (ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode == EShidenTextBlipTriggerMode::TimeInterval)
+	{
+		TextBlipWaitTime = ShidenSubsystem->PredefinedSystemVariable.BlipIntervalSeconds;
+	}
+	else
+	{
+		TextBlipCharacterCount = ShidenSubsystem->PredefinedSystemVariable.BlipIntervalCharacters;
+	}
+	return true;
+}
+
 bool UShidenTextCommand::TryUpdateTextProgress(const FString& TextWidgetName, const FString& TextType, const bool bInstantTextDisplay,
-                                               UShidenWidget* Widget, const float DeltaTime, FString& ErrorMessage)
+                                               UShidenWidget* ShidenWidget, const float DeltaTime, bool& bTextUpdated, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	UShidenTextWidget* TextWidget;;
-	if (!FindTextWidget(Widget, TextWidgetName, TextWidget, ErrorMessage))
+	UShidenTextWidget* TextWidget;
+	if (!FindTextWidget(ShidenWidget, TextWidgetName, TextWidget, ErrorMessage))
 	{
+		bTextUpdated = false;
 		return false;
 	}
 
@@ -492,6 +548,7 @@ bool UShidenTextCommand::TryUpdateTextProgress(const FString& TextWidgetName, co
 	{
 		if (WaitTime > 0.f)
 		{
+			bTextUpdated = false;
 			return true;
 		}
 
@@ -499,14 +556,15 @@ bool UShidenTextCommand::TryUpdateTextProgress(const FString& TextWidgetName, co
 			                                ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.
 			                                SkipSpeedRate
 			                                : ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime;
+		const int32 NextIndex = FMath::Min(CurrentTextIndex + FMath::CeilToInt32(DeltaTime / CharacterWaitTime), TextLength);
+		TextBlipCharacterCount -= NextIndex - CurrentTextIndex;
+		CurrentTextIndex = NextIndex;
 
-		CurrentTextIndex = FMath::Min(CurrentTextIndex + FMath::CeilToInt32(DeltaTime / CharacterWaitTime), TextLength);
 	}
-
+	
 	TextWidget->SetText(TextType, CurrentText, CurrentTextIndex);
-
 	WaitTime = CalculateWaitTime(CurrentTextIndex);
-
+	bTextUpdated = true;
 	return true;
 }
 
@@ -519,11 +577,11 @@ bool UShidenTextCommand::CanTransitionToComplete(const bool bWaitForInput) const
 		|| (UShidenBlueprintLibrary::IsAutoTextMode() && WaitTime <= 0.f && CurrentVoiceState != EShidenTextCommandVoiceState::Playing);
 }
 
-bool UShidenTextCommand::TryPreviewText(const UShidenWidget* Widget, const FString& TextWidgetName, const FString& TextType,
+bool UShidenTextCommand::TryPreviewText(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, const FString& TextType,
                                         const FString& Text, const bool bContinueFromThePreviousText, FString& ErrorMessage)
 {
 	UShidenTextWidget* TextWidget;
-	if (!FindTextWidget(Widget, TextWidgetName, TextWidget, ErrorMessage))
+	if (!FindTextWidget(ShidenWidget, TextWidgetName, TextWidget, ErrorMessage))
 	{
 		return false;
 	}
@@ -570,13 +628,13 @@ void UShidenTextCommand::OnTextWindowOpenedOrClosed_Implementation()
 	bIsWaitingForAnimation = false;
 }
 
-void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* Widget)
+void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* ShidenWidget)
 {
 	bool bValue, bSuccess;
 	static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
 
-	if (Widget->IsSkipPressed() || (bSuccess && bValue))
+	if (ShidenWidget->IsSkipPressed() || (bSuccess && bValue))
 	{
 		bSkipButtonPressStart = !bSkipButtonPressed;
 		bSkipButtonPressed = true;
@@ -606,7 +664,7 @@ void UShidenTextCommand::UpdateTalkState(const TScriptInterface<IShidenManagerIn
 	}
 }
 
-float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex) const
+float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
@@ -621,7 +679,15 @@ float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex) const
 		                           SkipSpeedRate
 		                           : ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime;
 
-	return FMath::Max(BaseWaitTime, UShidenBlueprintLibrary::ParseWaitTimeFromLastTag(CurrentText, CurrentIndex));
+	float WaitTimeFromTag;
+	const bool bFound = UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(CurrentText, CurrentIndex, WaitTimeFromTag);
+	if (bFound)
+	{
+		TextBlipCharacterCount = 0;
+		TextBlipWaitTime = 0.f;
+	}
+	
+	return bFound ? FMath::Max(BaseWaitTime, WaitTimeFromTag) : BaseWaitTime;
 }
 
 UInputAction* UShidenTextCommand::LoadInputActionFromPath(const FString& Path)

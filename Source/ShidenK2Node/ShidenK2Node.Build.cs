@@ -25,7 +25,7 @@ public class ShidenK2Node : ModuleRules
 
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"Core",
 				"ApplicationCore"
@@ -35,7 +35,7 @@ public class ShidenK2Node : ModuleRules
 
 
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"CoreUObject",
 				"Engine",

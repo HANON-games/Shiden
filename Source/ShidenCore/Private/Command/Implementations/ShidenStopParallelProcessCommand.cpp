@@ -22,7 +22,7 @@ bool UShidenStopParallelProcessCommand::TryParseCommand(const FShidenCommand& Co
 }
 
 void UShidenStopParallelProcessCommand::PreProcessCommand_Implementation(const FString& ProcessName,
-                                                                         const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                         const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                          UObject* CallerObject,
                                                                          EShidenPreProcessStatus& Status, FString& ErrorMessage)
@@ -42,7 +42,7 @@ void UShidenStopParallelProcessCommand::PreProcessCommand_Implementation(const F
 }
 
 void UShidenStopParallelProcessCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                                      const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                      const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                       const float DeltaTime,
                                                                       UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,

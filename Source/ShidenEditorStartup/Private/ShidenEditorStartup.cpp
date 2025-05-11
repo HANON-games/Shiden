@@ -22,7 +22,7 @@ SHIDENEDITORSTARTUP_API void FShidenEditorStartupModule::StartupModule()
 
 SHIDENEDITORSTARTUP_API void FShidenEditorStartupModule::ShutdownModule()
 {
-    if (GEditor)
+	if (GEditor)
 	{
 		FEditorDelegates::OnEditorInitialized.RemoveAll(this);
 	}

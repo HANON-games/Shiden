@@ -23,10 +23,10 @@ bool UShidenLoopWhileCommand::TryParseCommand(const FShidenCommand& Command, FLo
 	return true;
 }
 
-void UShidenLoopWhileCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
-															const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
-															UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
-															FString& NextScenarioName, FString& ErrorMessage)
+void UShidenLoopWhileCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
+                                                            UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
+                                                            FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -35,8 +35,8 @@ void UShidenLoopWhileCommand::ProcessCommand_Implementation(const FString& Proce
 	}
 
 	Status = TryEvaluateCondition(Args, ProcessName, ErrorMessage)
-				 ? EShidenProcessStatus::Next
-				 : EShidenProcessStatus::Error;
+		         ? EShidenProcessStatus::Next
+		         : EShidenProcessStatus::Error;
 }
 
 bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage)
@@ -50,7 +50,7 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 	FVector2d Vector2Value;
 	FVector Vector3Value;
 	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType, bBooleanValue,
-	                                             StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	                                              StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 	if (!bSuccess)
 	{
 		return false;
@@ -139,7 +139,8 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 	return true;
 }
 
-bool UShidenLoopWhileCommand::TryFindEndLoopWhileIndex(const UShidenScenario* Scenario, const int32 StartIndex, int32& ResultIndex, FString& ErrorMessage)
+bool UShidenLoopWhileCommand::TryFindEndLoopWhileIndex(const UShidenScenario* Scenario, const int32 StartIndex, int32& ResultIndex,
+                                                       FString& ErrorMessage)
 {
 	for (int32 Index = StartIndex; Index < Scenario->Commands.Num(); Index++)
 	{

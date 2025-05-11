@@ -28,11 +28,12 @@ bool UShidenAdjustVolumeCommand::TryParseCommand(const FShidenCommand& Command, 
 		ErrorMessage = FString::Printf(TEXT("Invalid FadeDuration: %f. Must be non-negative."), Args.FadeDuration);
 		return false;
 	}
-	
+
 	return TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
-void UShidenAdjustVolumeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenAdjustVolumeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                  UShidenWidget* ShidenWidget,
                                                                   const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                   UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -41,13 +42,13 @@ void UShidenAdjustVolumeCommand::PreProcessCommand_Implementation(const FString&
 		Status = EShidenPreProcessStatus::Error;
 		return;
 	}
-	
+
 	ElapsedTime = 0.0f;
-	ShidenManager->Execute_AdjustBgmVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
@@ -61,13 +62,13 @@ void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& Pr
 			return;
 		}
 	}
-	
+
 	const FString Key = FString::Printf(TEXT("%s::Volume"), *FString::FromInt(Args.TrackId));
 	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, FString::SanitizeFloat(Args.Volume));
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenAdjustVolumeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenAdjustVolumeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -76,17 +77,18 @@ void UShidenAdjustVolumeCommand::PreviewCommand_Implementation(const FShidenComm
 		Status = EShidenPreviewStatus::Error;
 		return;
 	}
-	
+
 	if (!bIsCurrentCommand)
 	{
 		Args.FadeDuration = 0.0f;
 	}
-	
-	ShidenManager->Execute_AdjustBgmVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+
+	ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
 	Status = EShidenPreviewStatus::Complete;
 }
 
-bool UShidenAdjustVolumeCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage)
+bool UShidenAdjustVolumeCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve,
+                                                             FString& ErrorMessage)
 {
 	static const TMap<FString, EAudioFaderCurve> CurveMap = {
 		{TEXT("Linear"), EAudioFaderCurve::Linear},

@@ -2,7 +2,7 @@
 
 #include "Command/Implementations/ShidenEndLoopWhileCommand.h"
 
-void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                const float DeltaTime, UObject* CallerObject,
                                                                EShidenProcessStatus& Status, FString& BreakReason,
@@ -29,17 +29,18 @@ void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& Pr
 		ErrorMessage = FString::Printf(TEXT("Failed to get scenario from cache for %s."), *ProcessName);
 		return;
 	}
-	
+
 	FindLoopWhileIndex(ProcessName, ScenarioProgress.CurrentIndex, Scenario->Commands, bSuccess, ErrorMessage);
 
 	Status = bSuccess
-		? EShidenProcessStatus::Next
-		: EShidenProcessStatus::Error;
+		         ? EShidenProcessStatus::Next
+		         : EShidenProcessStatus::Error;
 }
 
-void UShidenEndLoopWhileCommand::FindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands, bool& bSuccess, FString& ErrorMessage)
+void UShidenEndLoopWhileCommand::FindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands,
+                                                    bool& bSuccess, FString& ErrorMessage)
 {
-	for (int32 Index = CurrentIndex - 1; Index >= 0 ; Index--)
+	for (int32 Index = CurrentIndex - 1; Index >= 0; Index--)
 	{
 		const FShidenCommand& Command = Commands[Index];
 		if (!Command.bEnabled)
@@ -69,9 +70,11 @@ void UShidenEndLoopWhileCommand::FindLoopWhileIndex(const FString& ProcessName, 
 	ErrorMessage = TEXT("Failed to find LoopWhile command.");
 }
 
-void UShidenEndLoopWhileCommand::FindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands, int32& ResultIndex, bool& bSuccess, FString& ErrorMessage)
+void UShidenEndLoopWhileCommand::FindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex,
+                                                                         const TArray<FShidenCommand>& Commands, int32& ResultIndex, bool& bSuccess,
+                                                                         FString& ErrorMessage)
 {
-	for (int32 Index = CurrentIndex - 1; Index >= 0 ; Index--)
+	for (int32 Index = CurrentIndex - 1; Index >= 0; Index--)
 	{
 		const FShidenCommand& Command = Commands[Index];
 		if (!Command.bEnabled)
