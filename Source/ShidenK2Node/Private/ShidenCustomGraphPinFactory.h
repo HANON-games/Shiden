@@ -33,7 +33,8 @@ class FShidenCustomGraphPanelPinFactory final : public FGraphPanelPinFactory
 				{
 					if (CommandDefinitionsPin->DefaultObject != nullptr && CommandDefinitionsPin->LinkedTo.Num() == 0)
 					{
-						if (TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
+						if (TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(
+							CommandDefinitionsPin->DefaultObject))
 						{
 							return SNew(SGraphPinShidenCommandName, InPin, CommandDefinitions);
 						}

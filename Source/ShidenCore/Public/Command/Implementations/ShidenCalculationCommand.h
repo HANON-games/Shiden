@@ -20,21 +20,22 @@ class SHIDENCORE_API UShidenCalculationCommand : public UShidenCommandObject
 		FString Value;
 	};
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage) override;
 
 	static bool TryParseCommand(const FShidenCommand& Command, FCalculationCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TryCalculateAndUpdateVariable(const FCalculationCommandArgs& Args, const UObject* WorldContextObject, const FString& ProcessName, FString& ErrorMessage);
-	
+	static bool TryCalculateAndUpdateVariable(const FCalculationCommandArgs& Args, const UObject* WorldContextObject, const FString& ProcessName,
+	                                          FString& ErrorMessage);
+
 	static bool CalculateFloat(const FString& Operator, const float& A, const float& B, float& Result, FString& ErrorMessage);
 
 	static bool CalculateInteger(const FString& Operator, const int32& A, const int32& B, int32& Result, FString& ErrorMessage);

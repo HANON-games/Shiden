@@ -21,7 +21,7 @@ bool UShidenRandomCommand::TryParseCommand(const FString& ProcessName, const FSh
 
 	FShidenVariableDefinition Definition;
 	UShidenVariableBlueprintLibrary::FindVariableDefinition(ProcessName, Args.VariableKind, Args.DestinationVariableName, Definition, bSuccess,
-	                                                      ErrorMessage);
+	                                                        ErrorMessage);
 	if (!bSuccess)
 	{
 		return false;
@@ -45,7 +45,7 @@ bool UShidenRandomCommand::TryParseCommand(const FString& ProcessName, const FSh
 }
 
 void UShidenRandomCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                         UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                         UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                          const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                          FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
@@ -60,7 +60,7 @@ void UShidenRandomCommand::ProcessCommand_Implementation(const FString& ProcessN
 		         : EShidenProcessStatus::Error;
 }
 
-void UShidenRandomCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenRandomCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
                                                          EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -91,8 +91,8 @@ bool UShidenRandomCommand::TrySetRandomValue(const FRandomCommandArgs& Args, con
 			}
 			const int32 RandomValue = FMath::RandRange(Min, Max);
 			UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.VariableKind, Args.VariableType,
-														   Args.DestinationVariableName, false, TEXT(""), RandomValue, 0.0f,
-														   FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
+			                                                Args.DestinationVariableName, false, TEXT(""), RandomValue, 0.0f,
+			                                                FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
 			break;
 		}
 	case EShidenVariableType::Float:
@@ -101,13 +101,13 @@ bool UShidenRandomCommand::TrySetRandomValue(const FRandomCommandArgs& Args, con
 			const float Max = FCString::Atof(*Args.MaxValue);
 			if (Min > Max)
 			{
-				ErrorMessage = FString::Printf(TEXT("Min value %d is greater than Max value %d."), Min, Max);
+				ErrorMessage = FString::Printf(TEXT("Min value %f is greater than Max value %f."), Min, Max);
 				return false;
 			}
 			const float RandomValue = FMath::RandRange(Min, Max);
 			UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.VariableKind, Args.VariableType,
-														   Args.DestinationVariableName, false, TEXT(""), 0, RandomValue,
-														   FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
+			                                                Args.DestinationVariableName, false, TEXT(""), 0, RandomValue,
+			                                                FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
 			break;
 		}
 	default:

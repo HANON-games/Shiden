@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ShidenAssetPathType.h"
 #include "ShidenVariableType.h"
 #include "ShidenVariableDefinition.generated.h"
 
@@ -16,6 +17,9 @@ struct FShidenVariableDefinition
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	EShidenVariableType Type = EShidenVariableType::Boolean;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (EditCondition = "Type == EShidenVariableType::AssetPath"))
+	EShidenAssetPathType AssetPathType = EShidenAssetPathType::None;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	FString DefaultValue;
 
@@ -23,7 +27,7 @@ struct FShidenVariableDefinition
 	bool bIsReadOnly = false;
 
 	static const FShidenVariableDefinition Empty;
-	
+
 	bool operator==(const FShidenVariableDefinition& That) const noexcept
 	{
 		return Name == That.Name;

@@ -7,10 +7,10 @@
 #include "ShidenPredefinedSystemVariableDefinition.generated.h"
 
 USTRUCT(BlueprintType)
-struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition: public FShidenVariableDefinition
+struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition : public FShidenVariableDefinition
 {
 	GENERATED_BODY()
-	
+
 	FString GetVariable() const
 	{
 		if (Getter)
@@ -27,13 +27,14 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition: public FShidenV
 			Setter(InValue);
 		}
 	}
-	
+
 	FShidenPredefinedSystemVariableDefinition()
 		: FShidenVariableDefinition(), Getter(nullptr), Setter(nullptr)
 	{
 	}
 
-	FShidenPredefinedSystemVariableDefinition(FString InName, const EShidenVariableType InType, FString InDefaultValue, const bool InIsReadOnly, const TFunction<FString()>& InGetter, const TFunction<void(FString)>& InSetter)
+	FShidenPredefinedSystemVariableDefinition(FString InName, const EShidenVariableType InType, FString InDefaultValue, const bool InIsReadOnly,
+	                                          const TFunction<FString()>& InGetter, const TFunction<void(FString)>& InSetter)
 	{
 		Name = InName;
 		Type = InType;

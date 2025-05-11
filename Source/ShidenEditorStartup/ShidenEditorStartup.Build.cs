@@ -25,7 +25,7 @@ public class ShidenEditorStartup : ModuleRules
 
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"Core",
 				"ApplicationCore"
@@ -35,7 +35,7 @@ public class ShidenEditorStartup : ModuleRules
 
 
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"CoreUObject",
 				"Engine",

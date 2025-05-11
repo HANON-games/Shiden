@@ -7,7 +7,8 @@ void UShidenForceFeedbackCommand::ParseFromCommand(const FShidenCommand& Command
 	Args.FeedbackEffectPath = Command.GetArg(TEXT("FeedbackEffect"));
 }
 
-void UShidenForceFeedbackCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenForceFeedbackCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                UShidenWidget* ShidenWidget,
                                                                 const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
                                                                 UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
                                                                 FString& NextScenarioName, FString& ErrorMessage)
@@ -20,7 +21,7 @@ void UShidenForceFeedbackCommand::ProcessCommand_Implementation(const FString& P
 
 
 bool UShidenForceFeedbackCommand::TryPlayForceFeedback(const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-													   const FForceFeedbackCommandArgs& Args, FString& ErrorMessage)
+                                                       const FForceFeedbackCommandArgs& Args, FString& ErrorMessage)
 {
 	bool bSuccess;
 	ShidenManager->Execute_PlayForceFeedback(ShidenManager.GetObject(), Args.FeedbackEffectPath, bSuccess);

@@ -10,6 +10,7 @@ class SHIDENCORE_API UShidenStandardCommandDefinitions : public UShidenCommandDe
 {
 	GENERATED_BODY()
 
+public:
 	// Styles
 	static const FShidenCommandStyle TextStyle;
 	static const FShidenCommandStyle MediaStyle;
@@ -20,10 +21,10 @@ class SHIDENCORE_API UShidenStandardCommandDefinitions : public UShidenCommandDe
 	static const FShidenCommandStyle CommentStyle;
 	static const FShidenCommandStyle TagStyle;
 	static const FShidenCommandStyle InteractionStyle;
-	
+
 	// Templates
 	static const FSoftObjectPath TextInputTemplate;
-	static const FSoftObjectPath TextTypeInputTemplate;;
+	static const FSoftObjectPath TextTypeInputTemplate;
 	static const FSoftObjectPath MultilineTextInputTemplate;
 	static const FSoftObjectPath BooleanInputTemplate;
 	static const FSoftObjectPath IntegerInputTemplate;
@@ -37,7 +38,7 @@ class SHIDENCORE_API UShidenStandardCommandDefinitions : public UShidenCommandDe
 	static const FSoftObjectPath AssetInputTemplate;
 	static const FSoftObjectPath SoundInputTemplate;
 	static const FSoftObjectPath SoundTypeInputTemplate;
-	static const FSoftObjectPath BgmFadeFuncInputTemplate;
+	static const FSoftObjectPath BGMFadeFuncInputTemplate;
 	static const FSoftObjectPath EasingFuncInputTemplate;
 	static const FSoftObjectPath FlexCalculationOperatorInputTemplate;
 	static const FSoftObjectPath FadeTypeInputTemplate;
@@ -46,6 +47,5 @@ class SHIDENCORE_API UShidenStandardCommandDefinitions : public UShidenCommandDe
 	static const FSoftObjectPath ScenarioInputTemplate;
 	static const FSoftObjectPath SlateVisibilityInputTemplate;
 
-public:
 	UShidenStandardCommandDefinitions();
 };

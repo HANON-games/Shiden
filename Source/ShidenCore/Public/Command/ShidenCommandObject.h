@@ -45,40 +45,40 @@ class SHIDENCORE_API UShidenCommandObject : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+	void RestoreFromSaveData(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                         UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
 	                                                EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
-	void PreviewCommand(const FShidenCommand& Command, UShidenWidget* Widget,
+	void PreviewCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
-	void PreProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	void PreProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                       UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage);
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
 	                                              EShidenPreProcessStatus& Status, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
-	void ProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	void ProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager, float DeltaTime,
 	                    UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                    FString& NextScenarioName, FString& ErrorMessage);
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,

@@ -43,7 +43,8 @@ SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
 	}
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const bool Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const bool Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -52,7 +53,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const int32 Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const int32 Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -61,7 +63,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const float Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const float Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -70,7 +73,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FString& Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FString& Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -79,7 +83,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector& Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector& Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -88,7 +93,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector2D& Value, const bool bForceUpdateReadOnly /*= false*/)
+SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector2D& Value,
+                                                    const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -220,7 +226,7 @@ SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInProcess(const FString
 
 	TArray<FString> Keys;
 	Variables.GetKeys(Keys);
-	
+
 	for (const FString& Key : Keys)
 	{
 		if (Key.StartsWith(ProcessName, ESearchCase::CaseSensitive))
@@ -289,7 +295,8 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 						break;
 					}
 				}
-				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Value, Definition.DefaultValue, Definition.bIsReadOnly));
+				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Definition.AssetPathType, Value,
+				                                                  Definition.DefaultValue, Definition.bIsReadOnly));
 			}
 		}
 	}

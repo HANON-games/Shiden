@@ -22,10 +22,10 @@ bool UShidenIfCommand::TryParseCommand(const FShidenCommand& Command, FIfCommand
 	return true;
 }
 
-void UShidenIfCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
-													 const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
-													 UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
-													 FString& NextScenarioName, FString& ErrorMessage)
+void UShidenIfCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                     const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
+                                                     UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
+                                                     FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -34,13 +34,13 @@ void UShidenIfCommand::ProcessCommand_Implementation(const FString& ProcessName,
 	}
 
 	Status = TryExecuteCommand(Args, ProcessName, ErrorMessage)
-				 ? EShidenProcessStatus::Next
-				 : EShidenProcessStatus::Error;
+		         ? EShidenProcessStatus::Next
+		         : EShidenProcessStatus::Error;
 }
 
-void UShidenIfCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-													 const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-													 bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
+void UShidenIfCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                     const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                     bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -49,8 +49,8 @@ void UShidenIfCommand::PreviewCommand_Implementation(const FShidenCommand& Comma
 	}
 
 	Status = TryExecuteCommand(Args, TEXT("Default"), ErrorMessage)
-				 ? EShidenPreviewStatus::Complete
-				 : EShidenPreviewStatus::Error;
+		         ? EShidenPreviewStatus::Complete
+		         : EShidenPreviewStatus::Error;
 }
 
 bool UShidenIfCommand::TryEvaluateCondition(const FIfCommandArgs& Args, const FString& ProcessName, bool& bResult, FString& ErrorMessage)
@@ -65,13 +65,13 @@ bool UShidenIfCommand::TryEvaluateCondition(const FIfCommandArgs& Args, const FS
 
 	bool bSuccess;
 	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType, bBooleanValue,
-	                                             StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	                                              StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 
 	if (!bSuccess)
 	{
 		return false;
 	}
-	
+
 	switch (VariableType)
 	{
 	case EShidenVariableType::Boolean:

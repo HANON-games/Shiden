@@ -61,13 +61,13 @@ public:
 	 * Creates a formatted error message for command errors.
 	 * 
 	 * @param ScenarioId The ID of the scenario where the error occurred
-	 * @param Index The index in the scenario where the error occurred
+	 * @param ScenarioIndex The index in the scenario where the error occurred
 	 * @param CommandName The name of the command that caused the error
 	 * @param ErrorMessage The original error message
 	 * @return A formatted error message string
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Utility")
-	static FString MakeErrorMessage(const FGuid& ScenarioId, const int32 Index, const FString& CommandName, const FString& ErrorMessage);
+	static FString MakeErrorMessage(const FGuid& ScenarioId, const int32 ScenarioIndex, const FString& CommandName, const FString& ErrorMessage);
 
 	/**
 	 * Adds a new item to the backlog.
@@ -81,12 +81,12 @@ public:
 	/**
 	 * Updates an existing backlog item.
 	 * 
-	 * @param Index The index of the backlog item to update
+	 * @param ScenarioIndex The index of the backlog item to update
 	 * @param Command The new command to update the backlog item with
 	 * @param AdditionalProperties Additional properties to store with the backlog item
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Backlog", meta = (AutoCreateRefTerm = "AdditionalProperties"))
-	static void UpdateBacklogItem(const int32 Index, const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties);
+	static void UpdateBacklogItem(const int32 ScenarioIndex, const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties);
 
 	/**
 	 * Gets all backlog items.
@@ -109,7 +109,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	static TMap<FString, FShidenTextType> GetShidenTextTypes();
-	
+
 	/**
 	 * Clears all cached data.
 	 */
@@ -128,9 +128,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static FString GetCharactersWithParsedLength(const FString& Text, int32 Len);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static float ParseWaitTimeFromLastTag(const FString& RawText, int32 Length);
+	static bool TryParseWaitTimeFromLastTag(const FString& RawText, int32 Length, float& OutWaitTime);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility",
 		meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))

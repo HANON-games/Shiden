@@ -22,7 +22,7 @@ class SHIDENCORE_API UShidenWaitUntilCommand : public UShidenCommandObject
 	};
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* Widget,
+	                                           UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,

@@ -43,17 +43,17 @@ struct FShidenSoundInfo
 	}
 
 	FShidenSoundInfo(const int32 InTrackId, const EShidenSoundType InType, const FString& InSoundPath,
-		const float InStartVolumeMultiplier, const float InEndVolumeMultiplier, const float InPitchMultiplier,
-		const float InStartTime, const EAudioFaderCurve InAudioFaderCurve, const float InFadeDuration)
+	                 const float InStartVolumeMultiplier, const float InEndVolumeMultiplier, const float InPitchMultiplier,
+	                 const float InStartTime, const EAudioFaderCurve InAudioFaderCurve, const float InFadeDuration)
 		: TrackId(InTrackId)
-		, Type(InType)
-		, SoundPath(InSoundPath)
-		, StartVolumeMultiplier(InStartVolumeMultiplier)
-		, EndVolumeMultiplier(InEndVolumeMultiplier)
-		, PitchMultiplier(InPitchMultiplier)
-		, StartTime(InStartTime)
-		, AudioFaderCurve(InAudioFaderCurve)
-		, FadeDuration(InFadeDuration)
+		  , Type(InType)
+		  , SoundPath(InSoundPath)
+		  , StartVolumeMultiplier(InStartVolumeMultiplier)
+		  , EndVolumeMultiplier(InEndVolumeMultiplier)
+		  , PitchMultiplier(InPitchMultiplier)
+		  , StartTime(InStartTime)
+		  , AudioFaderCurve(InAudioFaderCurve)
+		  , FadeDuration(InFadeDuration)
 	{
 	}
 };

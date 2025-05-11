@@ -52,7 +52,8 @@ TObjectPtr<UShidenUserSaveGame> UpdateUserSaveGameInstance(const FString& SlotNa
 
 	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenSaveBlueprintLibrary::DoesUserDataExist(SlotName)
 		                                                         ? Cast<UShidenUserSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0))
-		                                                         : Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenUserSaveGame::StaticClass()));
+		                                                         : Cast<UShidenUserSaveGame>(
+			                                                         UGameplayStatics::CreateSaveGameObject(UShidenUserSaveGame::StaticClass()));
 	SaveGameInstance->ScenarioProperties = ShidenSubsystem->ScenarioProperties;
 	SaveGameInstance->UserVariable = ShidenSubsystem->UserVariable;
 	SaveGameInstance->LocalVariable = ShidenSubsystem->LocalVariable;
@@ -66,12 +67,14 @@ TObjectPtr<UShidenUserSaveGame> UpdateUserSaveGameInstance(const FString& SlotNa
 	return SaveGameInstance;
 }
 
-TObjectPtr<UShidenSaveSlotsSaveGame> UpdateSaveSlotsSaveGameInstance(const FString& SlotName, const FShidenSaveTexture& SaveTexture, const TMap<FString, FString>& SaveSlotMetadata)
+TObjectPtr<UShidenSaveSlotsSaveGame> UpdateSaveSlotsSaveGameInstance(const FString& SlotName, const FShidenSaveTexture& SaveTexture,
+                                                                     const TMap<FString, FString>& SaveSlotMetadata)
 {
 	TMap<FString, FShidenSaveSlot> SaveSlots = UShidenSaveBlueprintLibrary::AcquireSaveSlots();
 	const FDateTime CreatedAt = SaveSlots.Contains(SlotName) ? SaveSlots[SlotName].CreatedAt : FDateTime::UtcNow();
 	SaveSlots.Add(SlotName, FShidenSaveSlot{SlotName, SaveSlotMetadata, SaveTexture, CreatedAt, FDateTime::UtcNow()});
-	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()));
+	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()));
 	SaveSlotsInstance->SaveSlots = SaveSlots;
 	return SaveSlotsInstance;
 }
@@ -88,7 +91,8 @@ void UShidenSaveBlueprintLibrary::WaitUntilEmpty()
 	}
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::SaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, bool& bSuccess)
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::SaveUserData(const FString& SlotName, UTexture2D* Thumbnail,
+                                                              const TMap<FString, FString>& SlotMetadata, bool& bSuccess)
 {
 	if (SlotName == TEXT("ShidenSystemData"))
 	{
@@ -117,7 +121,8 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::SaveUserData(const FString& Slo
 	bSuccess = UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail,const TMap<FString, FString>& SlotMetadata, FAsyncSaveDataDelegate SavedDelegate)
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail,
+                                                                   const TMap<FString, FString>& SlotMetadata, FAsyncSaveDataDelegate SavedDelegate)
 {
 	if (SlotName == TEXT("ShidenSystemData"))
 	{
@@ -163,7 +168,8 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString
 
 TObjectPtr<UShidenSystemSaveGame> UpdateSystemSaveGameInstance()
 {
-	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSystemSaveGame::StaticClass()));
+	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UShidenSystemSaveGame::StaticClass()));
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -282,7 +288,8 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::LoadSystemData(const UObject* W
 		return;
 	}
 
-	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSystemData"), 0));
+	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSystemData"), 0));
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -309,10 +316,14 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::LoadSystemData(const UObject* W
 
 	if (FAudioDeviceHandle AudioDevice = ThisWorld->GetAudioDevice())
 	{
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(), ShidenSubsystem->PredefinedSystemVariable.MasterVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBgmSoundClass(), ShidenSubsystem->PredefinedSystemVariable.BgmVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSeSoundClass(), ShidenSubsystem->PredefinedSystemVariable.SeVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(), ShidenSubsystem->PredefinedSystemVariable.VoiceVolume, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
+		                                      ShidenSubsystem->PredefinedSystemVariable.MasterVolume, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
+		                                      ShidenSubsystem->PredefinedSystemVariable.BGMVolume, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
+		                                      ShidenSubsystem->PredefinedSystemVariable.SEVolume, 1.0, 0.0, true);
+		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
+		                                      ShidenSubsystem->PredefinedSystemVariable.VoiceVolume, 1.0, 0.0, true);
 		AudioDevice->PushSoundMixModifier(ShidenProjectConfig->GetSoundClassMix());
 	}
 }
@@ -328,7 +339,8 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::DeleteUserData(const FString& S
 
 	if (DoesUserDataExist(TEXT("ShidenSaveSlots")))
 	{
-		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0));
+		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(
+			UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0));
 		SaveSlotsInstance->SaveSlots.Remove(SlotName);
 		UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
 	}

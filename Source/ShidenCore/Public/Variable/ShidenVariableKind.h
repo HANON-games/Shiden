@@ -7,8 +7,8 @@
 UENUM(BlueprintType)
 enum class EShidenVariableKind : uint8
 {
-	UserVariable,
-	LocalVariable,
-	SystemVariable,
-	PredefinedSystemVariable
+	UserVariable UMETA(DisplayName = "UserVariable"),
+	LocalVariable UMETA(DisplayName = "LocalVariable"),
+	SystemVariable UMETA(DisplayName = "SystemVariable"),
+	PredefinedSystemVariable UMETA(DisplayName = "PredefinedSystemVariable"),
 };

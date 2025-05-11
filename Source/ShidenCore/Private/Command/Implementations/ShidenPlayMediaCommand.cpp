@@ -10,13 +10,14 @@ void UShidenPlayMediaCommand::ParseFromCommand(const FShidenCommand& Command, FP
 }
 
 void UShidenPlayMediaCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                               UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                               UShidenWidget* ShidenWidget,
+                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	ParseFromCommand(Command, Args);
 
 	bool bSuccess;
-	Widget->PlayMedia(Args.MediaSourcePath, Args.bCanOpenPauseMenu, Args.MediaZOrder, bSuccess);
+	ShidenWidget->PlayMedia(Args.MediaSourcePath, Args.bCanOpenPauseMenu, Args.MediaZOrder, bSuccess);
 	if (!bSuccess)
 	{
 		Status = EShidenPreProcessStatus::Error;
@@ -28,16 +29,17 @@ void UShidenPlayMediaCommand::PreProcessCommand_Implementation(const FString& Pr
 }
 
 void UShidenPlayMediaCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                            UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                            UShidenWidget* ShidenWidget,
+                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                             FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (!Widget->IsMediaCompleted())
+	if (!ShidenWidget->IsMediaCompleted())
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
 	}
 
-	Widget->CollapseMedia();
+	ShidenWidget->CollapseMedia();
 	Status = EShidenProcessStatus::Next;
 }

@@ -8,7 +8,8 @@ void UShidenEndScenarioCommand::ParseFromCommand(const FShidenCommand& Command, 
 }
 
 void UShidenEndScenarioCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                              UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                              UShidenWidget* ShidenWidget,
+                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                               const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                               FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {

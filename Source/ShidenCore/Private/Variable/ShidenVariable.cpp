@@ -413,7 +413,8 @@ SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescr
 					break;
 				}
 			}
-			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Value, Definition.DefaultValue, Definition.bIsReadOnly));
+			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Definition.AssetPathType, Value, Definition.DefaultValue,
+			                                                  Definition.bIsReadOnly));
 		}
 	}
 }

@@ -18,12 +18,13 @@ bool UShidenImageCommand::TryParseCommand(const FShidenCommand& Command, FImageC
 	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
 	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
 	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
-	
+
 	return TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
 void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-                                                             UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                             UShidenWidget* ShidenWidget,
+                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                              UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
 	for (const TPair<FString, FString>& Property : ScenarioProperties)
@@ -39,7 +40,7 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 		}
 
 		UImage* Image;
-		Widget->FindImage(SlotName, Image, bSuccess);
+		ShidenWidget->FindImage(SlotName, Image, bSuccess);
 		if (!bSuccess)
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *SlotName);
@@ -49,7 +50,7 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 
 		if (PropertyName == TEXT("Path"))
 		{
-			bool bImagePathIsEmpty = Property.Value.IsEmpty() || Property.Value == TEXT("None");
+			const bool bImagePathIsEmpty = Property.Value.IsEmpty() || Property.Value == TEXT("None");
 			if (!bImagePathIsEmpty)
 			{
 				UObject* Asset;
@@ -134,7 +135,8 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 }
 
 void UShidenImageCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                           UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                           UShidenWidget* ShidenWidget,
+                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
@@ -143,17 +145,17 @@ void UShidenImageCommand::PreProcessCommand_Implementation(const FString& Proces
 		return;
 	}
 
-	Status = TryShowImage(Args, Widget, true, ProcessName, ErrorMessage)
+	Status = TryShowImage(Args, ShidenWidget, true, ProcessName, ErrorMessage)
 		         ? EShidenPreProcessStatus::Complete
 		         : EShidenPreProcessStatus::Error;
 }
 
 void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                        UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                        UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                         const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (Args.bWaitForCompletion && !Widget->IsImageFadeCompleted(Args.SlotName))
+	if (Args.bWaitForCompletion && !ShidenWidget->IsImageFadeCompleted(Args.SlotName))
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
@@ -163,25 +165,29 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 
 	const bool bImagePathIsEmpty = Args.ImagePath.IsEmpty() || Args.ImagePath == TEXT("None");
 	const FColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.SlotName), ResultColor.ToString());
+	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.SlotName),
+	                                                          ResultColor.ToString());
 
 	if (!Args.OverwritePosition.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Position"), *Args.SlotName), Args.OverwritePosition);
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Position"), *Args.SlotName),
+		                                                          Args.OverwritePosition);
 	}
 	if (!Args.OverwriteSize.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Size"), *Args.SlotName), Args.OverwriteSize);
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Size"), *Args.SlotName),
+		                                                          Args.OverwriteSize);
 	}
 	if (!Args.OverwriteSizeToContent.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::SizeToContent"), *Args.SlotName), Args.OverwriteSizeToContent);
+		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::SizeToContent"), *Args.SlotName),
+		                                                          Args.OverwriteSizeToContent);
 	}
 
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenImageCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenImageCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
                                                         EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -191,17 +197,18 @@ void UShidenImageCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 		return;
 	}
 
-	Status = TryShowImage(Args, Widget, bIsCurrentCommand, TEXT("Default"), ErrorMessage)
+	Status = TryShowImage(Args, ShidenWidget, bIsCurrentCommand, TEXT("Default"), ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWidget* Widget, const bool& Animate, const FString& OwnerProcessName,
+bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWidget* ShidenWidget, const bool Animate,
+                                       const FString& OwnerProcessName,
                                        FString& ErrorMessage)
 {
 	UImage* Image;
 	bool bSuccess;
-	Widget->FindImage(Args.SlotName, Image, bSuccess);
+	ShidenWidget->FindImage(Args.SlotName, Image, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *Args.SlotName);
@@ -259,9 +266,9 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 		Image->SetBrushFromAsset(SlateBrushAsset);
 	}
 
-	Widget->StartImageFade(Args.SlotName, Image, Args.FadeFunction, Animate ? Args.FadeDuration : 0.0f,
-	                       true, bImagePathIsEmpty, Args.BlendExp, Args.Steps, OwnerProcessName, bImagePathIsEmpty,
-	                       bSuccess, ErrorMessage);
+	ShidenWidget->StartImageFade(Args.SlotName, Image, Args.FadeFunction, Animate ? Args.FadeDuration : 0.0f,
+	                             true, bImagePathIsEmpty, Args.BlendExp, Args.Steps, OwnerProcessName, bImagePathIsEmpty,
+	                             bSuccess, ErrorMessage);
 	return true;
 }
 

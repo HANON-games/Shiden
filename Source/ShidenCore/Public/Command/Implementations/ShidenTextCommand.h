@@ -38,6 +38,8 @@ class SHIDENCORE_API UShidenTextCommand : public UShidenCommandObject
 
 		FString VoicePath;
 
+		FString TextBlipPath;
+
 		int32 VoiceTrackId;
 
 		bool bDisableAutoStopPreviousVoices;
@@ -50,22 +52,22 @@ class SHIDENCORE_API UShidenTextCommand : public UShidenCommandObject
 	GENERATED_BODY()
 
 public:
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage) override;
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                              UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage) override;
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                           UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
 	                                           FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage) override;
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
+	                                           const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
@@ -83,6 +85,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float WaitTime;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	float TextBlipWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	int32 TextBlipCharacterCount;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float TotalElapsedTime;
 
@@ -112,9 +120,12 @@ protected:
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	static bool ShouldPlayVoice(const FString& VoicePath, EShidenTextCommandVoiceState VoiceState);
+	
+	UFUNCTION(BlueprintPure, Category = "Default")
+	bool ShouldPlayTextBlip(const FString& TextBlipPath, const FString& VoicePath) const;
 
 	UFUNCTION(BlueprintPure, Category = "Default")
-	static bool IsVoicePathEmpty(const FString& VoicePath);
+	static bool IsAssetPathEmpty(const FString& VoicePath);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	bool IsTextDisplayComplete() const;
@@ -129,43 +140,49 @@ protected:
 	bool TryOpenTextWindow(UShidenTextWidget* TextWidget, const FString& TextType, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
-	static bool FindTextWidget(const UShidenWidget* Widget, const FString& TextWidgetName, UShidenTextWidget*& TextWidget, FString& ErrorMessage);
+	static bool FindTextWidget(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, UShidenTextWidget*& TextWidget,
+	                           FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	static bool TryParsePropertyKey(const FString& PropertyKey, FString& TextWidgetName, FString& TextType, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	static bool TryRestoreTextWidget(UShidenWidget* Widget, const FString& TextWidgetName, const FString& TextType, const FString& TextValue,
+	static bool TryRestoreTextWidget(UShidenWidget* ShidenWidget, const FString& TextWidgetName, const FString& TextType, const FString& TextValue,
 	                                 FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
-	static bool ShouldPauseTextProcess(const UShidenWidget* Widget);
+	static bool ShouldPauseTextProcess(const UShidenWidget* ShidenWidget);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
-	static bool ShouldStopVoice(const FString& VoicePath, const bool& bDisableAutoStopPreviousVoices);
+	static bool ShouldStopVoice(const FString& VoicePath, const bool bDisableAutoStopPreviousVoices);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	void UpdateVoiceState();
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	void HandleInputState(const UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager);
+	void HandleInputState(const UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	static bool TrySetTextWindowVisible(UShidenWidget* Widget, FString& ErrorMessage);
+	static bool TrySetTextWindowVisible(UShidenWidget* ShidenWidget, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	bool TryProcessVoicePlayback(int32 VoiceTrackId, const FString& VoicePath, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                             FString& ErrorMessage);
+	
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	bool TryProcessTextBlipPlayback(const FString& TextBlipPath,
+	                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                       FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	bool TryUpdateTextProgress(const FString& TextWidgetName, const FString& TextType, bool bInstantTextDisplay, UShidenWidget* Widget,
-	                           float DeltaTime, FString& ErrorMessage);
+	bool TryUpdateTextProgress(const FString& TextWidgetName, const FString& TextType, bool bInstantTextDisplay, UShidenWidget* ShidenWidget,
+	                           float DeltaTime, bool& bTextUpdated, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Default")
 	bool CanTransitionToComplete(bool bWaitForInput) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	static bool TryPreviewText(const UShidenWidget* Widget, const FString& TextWidgetName, const FString& TextType,
+	static bool TryPreviewText(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, const FString& TextType,
 	                           const FString& Text, bool bContinueFromThePreviousText, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
@@ -179,11 +196,11 @@ private:
 
 	static bool TryParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs, FString& ErrorMessage);
 
-	void UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* Widget);
+	void UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* ShidenWidget);
 
 	void UpdateTalkState(const TScriptInterface<IShidenManagerInterface>& ShidenManager);
 
-	float CalculateWaitTime(const int32 CurrentIndex) const;
+	float CalculateWaitTime(const int32 CurrentIndex);
 
 	static UInputAction* LoadInputActionFromPath(const FString& Path);
 };

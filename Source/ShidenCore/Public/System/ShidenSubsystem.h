@@ -65,7 +65,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	bool bAutoTextMode = false;
-	
+
 	UFUNCTION()
 	void SetDefaultPredefinedSystemVariables()
 	{
@@ -74,7 +74,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	void BeginPlay(bool bInBool)
+	void BeginPlay(bool _)
 	{
 		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);

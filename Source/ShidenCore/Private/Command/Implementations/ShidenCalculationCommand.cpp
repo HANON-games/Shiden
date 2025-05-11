@@ -24,9 +24,10 @@ bool UShidenCalculationCommand::TryParseCommand(const FShidenCommand& Command, F
 
 
 void UShidenCalculationCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-															  UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-															  const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
-															  FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
+                                                              UShidenWidget* ShidenWidget,
+                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                              const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
+                                                              FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -35,13 +36,13 @@ void UShidenCalculationCommand::ProcessCommand_Implementation(const FString& Pro
 	}
 
 	Status = TryCalculateAndUpdateVariable(Args, CallerObject, ProcessName, ErrorMessage)
-				 ? EShidenProcessStatus::Next
-				 : EShidenProcessStatus::Error;
+		         ? EShidenProcessStatus::Next
+		         : EShidenProcessStatus::Error;
 }
 
-void UShidenCalculationCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-															  const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
-															  EShidenPreviewStatus& Status, FString& ErrorMessage)
+void UShidenCalculationCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
+                                                              EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -49,9 +50,9 @@ void UShidenCalculationCommand::PreviewCommand_Implementation(const FShidenComma
 		return;
 	}
 
-	Status = TryCalculateAndUpdateVariable(Args, Widget, TEXT("Default"), ErrorMessage)
-				 ? EShidenPreviewStatus::Complete
-				 : EShidenPreviewStatus::Error;
+	Status = TryCalculateAndUpdateVariable(Args, ShidenWidget, TEXT("Default"), ErrorMessage)
+		         ? EShidenPreviewStatus::Complete
+		         : EShidenPreviewStatus::Error;
 }
 
 bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculationCommandArgs& Args, const UObject* WorldContextObject,
@@ -69,8 +70,8 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	EShidenVariableType VariableType;
 	bool bSuccess;
 	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
-	                                             bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess,
-	                                             ErrorMessage);
+	                                              bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess,
+	                                              ErrorMessage);
 	if (!bSuccess)
 	{
 		return false;
@@ -122,7 +123,7 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return true;
 			case EShidenVariableKind::PredefinedSystemVariable:
 				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName,
-				                                                                       FString::FromInt(ResultValue), bSuccess);
+				                                                                        FString::FromInt(ResultValue), bSuccess);
 				return true;
 			}
 			return false;
@@ -147,7 +148,7 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return true;
 			case EShidenVariableKind::PredefinedSystemVariable:
 				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName,
-				                                                                       FString::SanitizeFloat(ResultValue), bSuccess);
+				                                                                        FString::SanitizeFloat(ResultValue), bSuccess);
 				return true;
 			}
 			return false;
@@ -173,7 +174,7 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return true;
 			case EShidenVariableKind::PredefinedSystemVariable:
 				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString(),
-				                                                                       bSuccess);
+				                                                                        bSuccess);
 				return true;
 			}
 			return false;
@@ -199,7 +200,7 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return true;
 			case EShidenVariableKind::PredefinedSystemVariable:
 				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString(),
-				                                                                       bSuccess);
+				                                                                        bSuccess);
 				return true;
 			}
 			return false;

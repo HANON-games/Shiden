@@ -9,7 +9,7 @@ void UShidenPrintCommand::ParseFromCommand(const FShidenCommand& Command, FPrint
 }
 
 void UShidenPrintCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                        UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                        UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                         const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
@@ -18,7 +18,7 @@ void UShidenPrintCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenPrintCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenPrintCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
                                                         EShidenPreviewStatus& Status, FString& ErrorMessage)
 {

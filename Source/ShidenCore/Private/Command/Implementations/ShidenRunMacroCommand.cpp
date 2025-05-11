@@ -6,7 +6,8 @@
 #include "System/ShidenBlueprintLibrary.h"
 
 void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                           UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                           UShidenWidget* ShidenWidget,
+                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
@@ -31,8 +32,9 @@ void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& Proces
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
-                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
+void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                           const bool bIsCurrentCommand,
                                                            EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	const FString MacroNameOrId = Command.GetArg("MacroName");
@@ -112,7 +114,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 			return;
 		}
 
-		CommandObject->PreviewCommand(ShidenCommand, Widget, ShidenManager, bIsCurrentCommand, Status, ErrorMessage);
+		CommandObject->PreviewCommand(ShidenCommand, ShidenWidget, ShidenManager, bIsCurrentCommand, Status, ErrorMessage);
 		if (Status == EShidenPreviewStatus::Error)
 		{
 			FShidenScenarioProgress Progress;

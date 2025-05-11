@@ -19,7 +19,7 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 		FString ParameterName;
 		FString TexturePath;
 	};
-	
+
 	UShidenChangeTextureParameterCommand() : Super()
 	{
 		static ConstructorHelpers::FObjectFinder<UTexture> ClearTextureFinder(TEXT("/Shiden/Misc/ClearTexture"));
@@ -29,18 +29,18 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 		}
 	}
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
 	                                                FString& ErrorMessage) override;
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage) override;
@@ -49,8 +49,9 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 
 	static bool TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage);
 
-	static bool TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* Widget, UTexture* Texture, FString& ErrorMessage);
-	
+	static bool TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* ShidenWidget, UTexture* Texture,
+	                                      FString& ErrorMessage);
+
 	static FString MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName);
 
 	static TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key);

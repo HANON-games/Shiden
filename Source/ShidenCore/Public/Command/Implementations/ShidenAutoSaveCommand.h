@@ -18,7 +18,7 @@ class SHIDENCORE_API UShidenAutoSaveCommand : public UShidenCommandObject
 		FString OverwriteThumbnail;
 	};
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
@@ -26,9 +26,9 @@ class SHIDENCORE_API UShidenAutoSaveCommand : public UShidenCommandObject
 
 	static void ParseFromCommand(const FShidenCommand& Command, FAutoSaveCommandArgs& Args);
 
-	static bool TryExecuteAutoSave(const FAutoSaveCommandArgs& Args, const FString& ProcessName, UShidenWidget* Widget, FString& ErrorMessage);
+	static bool TryExecuteAutoSave(const FAutoSaveCommandArgs& Args, const FString& ProcessName, UShidenWidget* ShidenWidget, FString& ErrorMessage);
 
-	static bool IsWidgetInitialized(const UShidenWidget* Widget);
+	static bool IsWidgetInitialized(const UShidenWidget* ShidenWidget);
 
 	FAutoSaveCommandArgs Args;
 };

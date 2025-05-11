@@ -18,7 +18,7 @@ bool UShidenFadeCommand::TryParseCommand(const FShidenCommand& Command, FFadeCom
 	return TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
-void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* Widget,
+void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
@@ -46,7 +46,7 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 		}
 
 		const FString ZOrderStr = ScenarioProperties.FindRef(FString::Printf(TEXT("%s::ZOrder"), *SlotName));
-		
+
 		Args = FFadeCommandArgs
 		{
 			.LayerName = SlotName,
@@ -61,7 +61,7 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 		};
 
 		bool bSuccess = false;
-		StartFade(Args, Widget, TEXT("Default"), bSuccess, ErrorMessage);
+		StartFade(Args, ShidenWidget, TEXT("Default"), bSuccess, ErrorMessage);
 		if (!bSuccess)
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
@@ -73,7 +73,7 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 }
 
 void UShidenFadeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                          UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                          UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                           UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
@@ -83,16 +83,16 @@ void UShidenFadeCommand::PreProcessCommand_Implementation(const FString& Process
 	}
 
 	bool bSuccess = false;
-	StartFade(Args, Widget, ProcessName, bSuccess, ErrorMessage);
+	StartFade(Args, ShidenWidget, ProcessName, bSuccess, ErrorMessage);
 	Status = bSuccess ? EShidenPreProcessStatus::Complete : EShidenPreProcessStatus::Error;
 }
 
 void UShidenFadeCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                       UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                       UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                        const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                        FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (Args.bWaitForCompletion && !Widget->IsFadeCompleted(Args.LayerName))
+	if (Args.bWaitForCompletion && !ShidenWidget->IsFadeCompleted(Args.LayerName))
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
@@ -102,14 +102,14 @@ void UShidenFadeCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	const FLinearColor TargetColor(Args.TargetColor.X, Args.TargetColor.Y, Args.TargetColor.Z, bIsFadeOut ? 1 : 0);
 
 	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.LayerName),
-	                                                         TargetColor.ToString());
+	                                                          TargetColor.ToString());
 	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::ZOrder"), *Args.LayerName),
-	                                                         FString::FromInt(Args.ZOrder));
+	                                                          FString::FromInt(Args.ZOrder));
 
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenFadeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenFadeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager, const bool bIsCurrentCommand,
                                                        EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -126,15 +126,17 @@ void UShidenFadeCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 	}
 
 	bool bSuccess = false;
-	StartFade(Args, Widget, TEXT("Default"), bSuccess, ErrorMessage);
+	StartFade(Args, ShidenWidget, TEXT("Default"), bSuccess, ErrorMessage);
 	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }
 
-void UShidenFadeCommand::StartFade(const FFadeCommandArgs& Args, UShidenWidget* Widget, const FString& OwnerProcessName, bool& bSuccess, FString& ErrorMessage)
+void UShidenFadeCommand::StartFade(const FFadeCommandArgs& Args, UShidenWidget* ShidenWidget, const FString& OwnerProcessName, bool& bSuccess,
+                                   FString& ErrorMessage)
 {
 	const bool bIsFadeOut = IsFadeOut(Args.FadeType);
-	Widget->StartFade(Args.LayerName, Args.FadeFunction, Args.FadeDuration, FLinearColor(Args.TargetColor), bIsFadeOut, Args.BlendExp, Args.Steps,
-	                  OwnerProcessName, Args.ZOrder, bSuccess, ErrorMessage);
+	ShidenWidget->StartFade(Args.LayerName, Args.FadeFunction, Args.FadeDuration, FLinearColor(Args.TargetColor), bIsFadeOut, Args.BlendExp,
+	                        Args.Steps,
+	                        OwnerProcessName, Args.ZOrder, bSuccess, ErrorMessage);
 }
 
 bool UShidenFadeCommand::IsFadeOut(const FString& FadeTypeStr)

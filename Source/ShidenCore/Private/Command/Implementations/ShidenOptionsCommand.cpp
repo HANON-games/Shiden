@@ -30,7 +30,7 @@ bool UShidenOptionsCommand::TryParseCommand(const FShidenCommand& Command, FOpti
 }
 
 void UShidenOptionsCommand::PreProcessCommand_Implementation(const FString& ProcessName,
-                                                             const FShidenCommand& Command, UShidenWidget* Widget,
+                                                             const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
                                                              EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -40,29 +40,29 @@ void UShidenOptionsCommand::PreProcessCommand_Implementation(const FString& Proc
 		return;
 	}
 
-	if (!TrySetupOptions(Args, Widget, true, ErrorMessage))
+	if (!TrySetupOptions(Args, ShidenWidget, true, ErrorMessage))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		return;
 	}
 
-	Widget->SetInputModeOptionSelection();
+	ShidenWidget->SetInputModeOptionSelection();
 	Status = EShidenPreProcessStatus::Complete;
 }
 
 void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                          const FShidenCommand& Command, UShidenWidget* Widget,
+                                                          const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
                                                           UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
                                                           FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (!Widget->IsOptionSelected())
+	if (!ShidenWidget->IsOptionSelected())
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
 	}
 
-	const int32 SelectedOption = Widget->GetSelectedOption();
+	const int32 SelectedOption = ShidenWidget->GetSelectedOption();
 	if (!TryUpdateVariable(Args.DestinationVariableName, Args.DestinationVariableKind, SelectedOption, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
@@ -70,7 +70,7 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 	}
 
 	bool bSuccess;
-	Widget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::Collapsed, true, bSuccess);
+	ShidenWidget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::Collapsed, true, bSuccess);
 	if (!bSuccess)
 	{
 		Status = EShidenProcessStatus::Error;
@@ -78,7 +78,7 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 		return;
 	}
 
-	Widget->SetInputModeGameAndUI();
+	ShidenWidget->SetInputModeGameAndUI();
 
 	const TMap<FString, FString> AdditionalProperties = {{TEXT("SelectedOption"), FString::FromInt(SelectedOption)}};
 	UShidenBlueprintLibrary::AddBacklogItem(Command, AdditionalProperties);
@@ -87,7 +87,7 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 }
 
 void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& Command,
-                                                          UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                          UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
@@ -96,7 +96,7 @@ void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& 
 		return;
 	}
 
-	if (!TrySetupOptions(Args, Widget, false, ErrorMessage))
+	if (!TrySetupOptions(Args, ShidenWidget, false, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
@@ -107,12 +107,13 @@ void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& 
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, UShidenWidget* Widget, const bool bRegisterProperty, FString& ErrorMessage)
+bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, UShidenWidget* ShidenWidget, const bool bRegisterProperty,
+                                            FString& ErrorMessage)
 {
-	Widget->SetOptions(Args.Options);
+	ShidenWidget->SetOptions(Args.Options);
 
 	bool bSuccess;
-	Widget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::SelfHitTestInvisible, bRegisterProperty, bSuccess);
+	ShidenWidget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::SelfHitTestInvisible, bRegisterProperty, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = TEXT("Failed to set OptionLayer visibility.");
@@ -121,7 +122,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 
 	if (Args.bHideTextLayer)
 	{
-		Widget->SetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::Collapsed, bRegisterProperty, bSuccess);
+		ShidenWidget->SetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::Collapsed, bRegisterProperty, bSuccess);
 		if (!bSuccess)
 		{
 			ErrorMessage = TEXT("Failed to set TextLayer visibility.");
@@ -132,7 +133,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 	return true;
 }
 
-bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, EShidenVariableKind VariableKind, int32 Value, FString& ErrorMessage)
+bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const EShidenVariableKind VariableKind, const int32 Value, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);

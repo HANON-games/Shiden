@@ -9,6 +9,7 @@ SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializ
 	  , ShidenDebuggerRefreshInterval(0.1f)
 	  , bAutoSaveScenario(false)
 	  , DefaultCommand("Text")
+	  , PluginVersion(FShidenPluginVersion())
 {
 }
 

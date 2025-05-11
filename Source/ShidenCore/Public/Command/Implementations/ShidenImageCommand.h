@@ -26,25 +26,25 @@ class SHIDENCORE_API UShidenImageCommand : public UShidenCommandObject
 	};
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-	                                                UShidenWidget* Widget,
+	                                                UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
 	                                                FString& ErrorMessage) override;
 
 	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* Widget,
+	                                              UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
 	                                              FString& ErrorMessage) override;
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* Widget,
+	                                           UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
 	                                           FString& ErrorMessage) override;
@@ -53,7 +53,8 @@ class SHIDENCORE_API UShidenImageCommand : public UShidenCommandObject
 
 	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
 
-	static bool TryShowImage(const FImageCommandArgs& Args, UShidenWidget* Widget, const bool& Animate, const FString& OwnerProcessName, FString& ErrorMessage);
+	static bool TryShowImage(const FImageCommandArgs& Args, UShidenWidget* ShidenWidget, const bool Animate, const FString& OwnerProcessName,
+	                         FString& ErrorMessage);
 
 	FImageCommandArgs Args;
 };

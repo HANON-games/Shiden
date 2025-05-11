@@ -19,7 +19,7 @@ void UShidenCallWidgetFunctionCommand::ParseFromCommand(const FShidenCommand& Co
 }
 
 void UShidenCallWidgetFunctionCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                                     const FShidenCommand& Command, UShidenWidget* Widget,
+                                                                     const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                      const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                      const float DeltaTime, UObject* CallerObject,
                                                                      EShidenProcessStatus& Status, FString& BreakReason,
@@ -33,7 +33,7 @@ void UShidenCallWidgetFunctionCommand::ProcessCommand_Implementation(const FStri
 		                    : FString::Printf(TEXT("%s %s"), *Args.FunctionName, *Parameters);
 
 	FOutputDeviceNull Null;
-	Widget->CallFunctionByNameWithArguments(*Cmd, Null, nullptr, true);
+	ShidenWidget->CallFunctionByNameWithArguments(*Cmd, Null, nullptr, true);
 
 	Status = EShidenProcessStatus::Next;
 }

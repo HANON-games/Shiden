@@ -34,14 +34,16 @@ SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FStri
 	Text = UShidenBlueprintLibrary::GetCharactersWithParsedLength(Original, CurrentLength);
 }
 
-SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess)
+SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened,
+                                                                 bool& bSuccess)
 {
 	bSuccess = true;
 	// ReSharper disable once CppExpressionWithoutSideEffects
 	OnOpened.ExecuteIfBound();
 }
 
-SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess)
+SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed,
+                                                                  bool& bSuccess)
 {
 	bSuccess = true;
 	// ReSharper disable once CppExpressionWithoutSideEffects
@@ -128,13 +130,13 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 	bSuccess = false;
 	const TMap<FString, FShidenTextType> TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
 	FString ResultText = Text;
-	
+
 	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 		check(ShidenSubsystem);
-		
+
 		ResultText = ResultText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
 	}
 

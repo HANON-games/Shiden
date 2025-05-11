@@ -22,7 +22,8 @@ bool UShidenWaitUntilCommand::TryParseCommand(const FShidenCommand& Command, FWa
 }
 
 void UShidenWaitUntilCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                            UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                            UShidenWidget* ShidenWidget,
+                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                             FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
@@ -31,7 +32,7 @@ void UShidenWaitUntilCommand::ProcessCommand_Implementation(const FString& Proce
 		Status = EShidenProcessStatus::Error;
 		return;
 	}
-	
+
 	bool bResult;
 	if (!TryEvaluateCondition(Args, ProcessName, bResult, ErrorMessage))
 	{
@@ -42,7 +43,8 @@ void UShidenWaitUntilCommand::ProcessCommand_Implementation(const FString& Proce
 	Status = bResult ? EShidenProcessStatus::Next : EShidenProcessStatus::DelayUntilNextTick;
 }
 
-bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& Args, const FString& ProcessName, bool& bResult, FString& ErrorMessage)
+bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& Args, const FString& ProcessName, bool& bResult,
+                                                   FString& ErrorMessage)
 {
 	EShidenVariableType VariableType = EShidenVariableType::Boolean;
 	bool bBooleanValue;
@@ -52,10 +54,10 @@ bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& 
 	FVector2d Vector2Value;
 	FVector Vector3Value;
 	bool bSuccess;
-	
+
 	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
-	                                                      bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value,
-	                                                      bSuccess, ErrorMessage);
+	                                              bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value,
+	                                              bSuccess, ErrorMessage);
 	if (!bSuccess)
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find variable %s."), *Args.VariableName);

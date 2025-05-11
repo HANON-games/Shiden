@@ -19,17 +19,17 @@ private:
 	TSoftObjectPtr<USoundClass> MasterSoundClass;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
-	TSoftObjectPtr<USoundClass> BgmSoundClass;
+	TSoftObjectPtr<USoundClass> BGMSoundClass;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
-	TSoftObjectPtr<USoundClass> SeSoundClass;
+	TSoftObjectPtr<USoundClass> SESoundClass;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
 	TSoftObjectPtr<USoundClass> VoiceSoundClass;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config")
 	TSoftObjectPtr<USoundMix> SoundClassMix;
-	
+
 public:
 	UPROPERTY(VisibleAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TMap<FGuid, FString> ScenarioPaths;
@@ -46,7 +46,8 @@ public:
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ConfigRestartRequired = true))
 	TMap<FString, FShidenPreset> Presets;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Meta = (AllowedClasses = "/Script/ShidenCore.ShidenCommandDefinitions"), Category = "Shiden Visual Novel|Config", Meta = (ConfigRestartRequired = true))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Meta = (AllowedClasses = "/Script/ShidenCore.ShidenCommandDefinitions"),
+		Category = "Shiden Visual Novel|Config", Meta = (ConfigRestartRequired = true))
 	TArray<FSoftObjectPath> CommandDefinitions;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
@@ -54,7 +55,7 @@ public:
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TSubclassOf<UShidenWidget> WidgetClass;
-	
+
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TArray<FShidenVariableDefinition> UserVariableDefinitions;
 
@@ -78,7 +79,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void AddPreset(const FString& Name, const FShidenPreset& Preset);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void GetPreset(const FString& Name, FShidenPreset& Preset, bool& bSuccess);
 
@@ -87,18 +88,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void SetUserVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Config")
 	static void SetSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
 	static USoundClass* GetMasterSoundClass();
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
-	static USoundClass* GetBgmSoundClass();
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config", DisplayName = "Get BGM Sound Class")
+	static USoundClass* GetBGMSoundClass();
 
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
-	static USoundClass* GetSeSoundClass();
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config", DisplayName = "Get SE Sound Class")
+	static USoundClass* GetSESoundClass();
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
 	static USoundClass* GetVoiceSoundClass();

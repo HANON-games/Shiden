@@ -161,6 +161,6 @@ public:
 	static void LoadScenarioAssets(UObject* Outer, bool& bSuccess, FString& ErrorMessage, FGuid& ErrorScenarioId, int32& ErrorIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
-	static void InitFromSaveData(UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
+	static void InitFromSaveData(UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
 	                             bool& bSuccess, FString& ErrorMessage);
 };

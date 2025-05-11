@@ -13,15 +13,15 @@ struct SHIDENCORE_API FShidenVariable
 	GENERATED_BODY()
 
 	bool TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition);
-	
+
 	bool TryUpdate(const FString& Name, bool Value, bool bForceUpdateReadOnly = false);
 
 	bool TryUpdate(const FString& Name, const FString& Value, bool bForceUpdateReadOnly = false);
 
 	bool TryUpdate(const FString& Name, int32 Value, bool bForceUpdateReadOnly = false);
-	
+
 	bool TryUpdate(const FString& Name, float Value, bool bForceUpdateReadOnly = false);
-	
+
 	bool TryUpdate(const FString& Name, const FVector2D& Value, bool bForceUpdateReadOnly = false);
 
 	bool TryUpdate(const FString& Name, const FVector& Value, bool bForceUpdateReadOnly = false);
@@ -39,7 +39,7 @@ struct SHIDENCORE_API FShidenVariable
 	bool TryGet(const FString& Name, FVector& Value);
 
 	bool TryGet(const FString& Name, FVector2d& Value);
-	
+
 	bool TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value);
 
 	void ResetAll();
@@ -73,7 +73,7 @@ private:
 	bool CanUpdate(const FString& Name, const EShidenVariableType& Type, bool bForceUpdateReadOnly);
 
 	static bool CanGet(const FShidenVariableDefinition* Definition, const FString& Name, const EShidenVariableType& Type);
-	
+
 	UPROPERTY()
 	TMap<FString, bool> BooleanVariables;
 

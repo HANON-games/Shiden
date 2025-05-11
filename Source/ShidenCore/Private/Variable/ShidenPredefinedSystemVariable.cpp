@@ -4,7 +4,8 @@
 #include "Config/ShidenProjectConfig.h"
 #include "Variable/ShidenVariableDescriptor.h"
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name, FShidenPredefinedSystemVariableDefinition& Definition) const
+SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name,
+                                                                      FShidenPredefinedSystemVariableDefinition& Definition) const
 {
 	const FShidenPredefinedSystemVariableDefinition* Temp = Definitions.FindByKey(Name);
 	if (!Temp)
@@ -15,7 +16,8 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FStr
 	return true;
 }
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value, const bool bForceUpdateReadOnly /*= false*/) const
+SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value,
+                                                                       const bool bForceUpdateReadOnly /*= false*/) const
 {
 	const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name);
 	if (Definition && (bForceUpdateReadOnly || !Definition->bIsReadOnly))
@@ -80,6 +82,7 @@ SHIDENCORE_API void FShidenPredefinedSystemVariable::ListDescriptors(TArray<FShi
 	VariableDescriptors.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)
 	{
-		VariableDescriptors.Add(FShidenVariableDescriptor(Definition.Name, Definition.Type, Definition.GetVariable(), Definition.DefaultValue, Definition.bIsReadOnly));
+		VariableDescriptors.Add(FShidenVariableDescriptor(Definition.Name, Definition.Type, Definition.AssetPathType, Definition.GetVariable(),
+		                                                  Definition.DefaultValue, Definition.bIsReadOnly));
 	}
 }

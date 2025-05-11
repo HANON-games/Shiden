@@ -19,10 +19,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	FShidenPredefinedSystemVariable PredefinedSystemVariable;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FGuid, FShidenReadLines> ScenarioReadLines;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	FDateTime CreatedAt;
 

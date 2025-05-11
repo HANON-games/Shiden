@@ -5,7 +5,7 @@
 #include "System/ShidenBlueprintLibrary.h"
 
 bool UShidenTextInputCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FTextInputCommandArgs& Args,
-                                                  FString& ErrorMessage)
+                                              FString& ErrorMessage)
 {
 	const FString MaxLengthStr = Command.GetArg("MaxLength");
 	const FString MaxLineCountStr = Command.GetArg("MaxLineCount");
@@ -29,7 +29,7 @@ bool UShidenTextInputCommand::TryParseCommand(const FString& ProcessName, const 
 
 	FShidenVariableDefinition Definition;
 	UShidenVariableBlueprintLibrary::FindVariableDefinition(ProcessName, Args.DestinationVariableKind, Args.DestinationVariableName, Definition,
-	                                                      bSuccess, ErrorMessage);
+	                                                        bSuccess, ErrorMessage);
 	if (!bSuccess)
 	{
 		return false;
@@ -46,7 +46,8 @@ bool UShidenTextInputCommand::TryParseCommand(const FString& ProcessName, const 
 }
 
 void UShidenTextInputCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                               UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                               UShidenWidget* ShidenWidget,
+                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(ProcessName, Command, Args, ErrorMessage))
@@ -55,24 +56,25 @@ void UShidenTextInputCommand::PreProcessCommand_Implementation(const FString& Pr
 		return;
 	}
 
-	Status = TryInitializeTextInput(Args, Widget, ErrorMessage)
+	Status = TryInitializeTextInput(Args, ShidenWidget, ErrorMessage)
 		         ? EShidenPreProcessStatus::Complete
 		         : EShidenPreProcessStatus::Error;
 }
 
 void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                            UShidenWidget* Widget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                            UShidenWidget* ShidenWidget,
+                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                             FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (!Widget->IsTextSubmitted())
+	if (!ShidenWidget->IsTextSubmitted())
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
 	}
 
 	bool bSuccess;
-	Widget->SetVisibilityByName("TextInputLayer", ESlateVisibility::Collapsed, true, bSuccess);
+	ShidenWidget->SetVisibilityByName("TextInputLayer", ESlateVisibility::Collapsed, true, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = TEXT("Failed to set TextInputLayer visibility.");
@@ -80,7 +82,7 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 		return;
 	}
 
-	const FString ResultText = Widget->GetTextInput().ToString();
+	const FString ResultText = ShidenWidget->GetTextInput().ToString();
 
 	FVector2d Vector2Value;
 	Vector2Value.InitFromString(*ResultText);
@@ -88,23 +90,23 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 	Vector3Value.InitFromString(*ResultText);
 
 	UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.DestinationVariableKind, Args.DestinationType,
-	                                               Args.DestinationVariableName, ResultText.ToBool(), ResultText,
-	                                               FCString::Atoi(*ResultText), FCString::Atof(*ResultText),
-	                                               Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	                                                Args.DestinationVariableName, ResultText.ToBool(), ResultText,
+	                                                FCString::Atoi(*ResultText), FCString::Atof(*ResultText),
+	                                                Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 	if (!bSuccess)
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
 	}
 
-	Widget->SetInputModeGameAndUI();
+	ShidenWidget->SetInputModeGameAndUI();
 
 	UShidenBlueprintLibrary::AddBacklogItem(Command, {{"InputText", ResultText}});
 
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* Widget,
+void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                             const bool bIsCurrentCommand,
                                                             EShidenPreviewStatus& Status, FString& ErrorMessage)
@@ -117,7 +119,7 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 
 	if (bIsCurrentCommand)
 	{
-		if (!TryInitializeTextInput(Args, Widget, ErrorMessage))
+		if (!TryInitializeTextInput(Args, ShidenWidget, ErrorMessage))
 		{
 			Status = EShidenPreviewStatus::Error;
 			return;
@@ -133,17 +135,17 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 
 	bool bSuccess;
 	UShidenVariableBlueprintLibrary::UpdateVariable("Default", Args.DestinationVariableKind, Args.DestinationType,
-	                                               Args.DestinationVariableName, SampleText.ToBool(), SampleText,
-	                                               FCString::Atoi(*SampleText), FCString::Atof(*SampleText),
-	                                               Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	                                                Args.DestinationVariableName, SampleText.ToBool(), SampleText,
+	                                                FCString::Atoi(*SampleText), FCString::Atof(*SampleText),
+	                                                Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 
 	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }
 
-bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs& Args, UShidenWidget* Widget, FString& ErrorMessage)
+bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs& Args, UShidenWidget* ShidenWidget, FString& ErrorMessage)
 {
 	bool bSuccess;
-	Widget->SetVisibilityByName("TextInputLayer", ESlateVisibility::Visible, true, bSuccess);
+	ShidenWidget->SetVisibilityByName("TextInputLayer", ESlateVisibility::Visible, true, bSuccess);
 	if (!bSuccess)
 	{
 		ErrorMessage = TEXT("Failed to show TextInputLayer.");
@@ -152,7 +154,7 @@ bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs
 
 	if (Args.bHideTextLayer)
 	{
-		Widget->SetVisibilityByName("TextLayer", ESlateVisibility::Collapsed, true, bSuccess);
+		ShidenWidget->SetVisibilityByName("TextLayer", ESlateVisibility::Collapsed, true, bSuccess);
 		if (!bSuccess)
 		{
 			ErrorMessage = TEXT("Failed to hide TextLayer.");
@@ -160,8 +162,10 @@ bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs
 		}
 	}
 
-	Widget->InitTextInput(FShidenTextInputProperties{Args.MaxLength, Args.AllowedCharacterRegex, Args.DefaultText, Args.HintText, Args.MaxLineCount});
-	Widget->SetInputModeTextInput();
+	ShidenWidget->InitTextInput(FShidenTextInputProperties{
+		Args.MaxLength, Args.AllowedCharacterRegex, Args.DefaultText, Args.HintText, Args.MaxLineCount
+	});
+	ShidenWidget->SetInputModeTextInput();
 
 	return true;
 }

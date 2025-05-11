@@ -63,7 +63,7 @@ USTRUCT(Blueprintable)
 struct FShidenAnimation
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TObjectPtr<UUserWidget> TargetWidget;
 
@@ -98,7 +98,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	bool bIsTextSubmitted = false;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, FShidenCanvasPanelSlotMoveParams> CanvasPanelMoveParams;
 
@@ -217,8 +217,8 @@ public:
 	void ClearAllImages();
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Image", meta = (OwnerProcessName = "Default"))
-	void StartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target, EEasingFunc::Type Function,
-	                    float Duration, bool bIsWhiteFade, bool bShouldBeTransparent,
+	void StartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target,
+	                    EEasingFunc::Type Function, float Duration, bool bIsWhiteFade, bool bShouldBeTransparent,
 	                    float BlendExp, int32 Steps, const FString& OwnerProcessName, bool ClearImageOnCompleted,
 	                    bool& bSuccess, FString& ErrorMessage);
 
@@ -227,7 +227,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Option")
 	void SetOptions(const TArray<FString>& Options);
-	
+
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Option")
 	int32 GetSelectedOption() const;
 
@@ -274,10 +274,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Canvas Panel", meta = (OwnerProcessName = "Default"))
 	void StartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref) UCanvasPanelSlot* Target,
-	                          EEasingFunc::Type Function, float Duration, bool bChangePosition,
-	                          FVector2D EndPosition, bool bChangeSize, FVector2D EndSize,
-	                          float BlendExp, int32 Steps, const FString& OwnerProcessName, bool& bSuccess,
-	                          FString& ErrorMessage);
+	                              EEasingFunc::Type Function, float Duration, bool bChangePosition,
+	                              FVector2D EndPosition, bool bChangeSize, FVector2D EndSize,
+	                              float BlendExp, int32 Steps, const FString& OwnerProcessName, bool& bSuccess,
+	                              FString& ErrorMessage);
 
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Canvas Panel")
 	bool IsCanvasPanelSlotMoveCompleted(const FString& CanvasPanelName) const;
@@ -293,7 +293,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void SetInputModeTextInput();
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void SetInputModeOptionSelection();
 
@@ -308,7 +308,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Input")
 	FText GetTextInput();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result);
 

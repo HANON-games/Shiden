@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class SHIDENCORE_API FShidenCoreModule : public IModuleInterface
+class SHIDENCORE_API FShidenCoreModule final : public IModuleInterface
 {
 public:
 	/** IModuleInterface implementation */
