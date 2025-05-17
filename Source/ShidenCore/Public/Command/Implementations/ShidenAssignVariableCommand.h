@@ -34,7 +34,7 @@ class SHIDENCORE_API UShidenAssignVariableCommand : public UShidenCommandObject
 
 	static bool TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FAssignVariableCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TrySetVariable(const FAssignVariableCommandArgs& Args, const FString& ProcessName, bool& bSuccess, FString& ErrorMessage);
+	static bool TrySetVariable(const UObject* WorldContextObject, const FAssignVariableCommandArgs& Args, const FString& ProcessName, bool& bSuccess, FString& ErrorMessage);
 
 	FAssignVariableCommandArgs Args;
 };

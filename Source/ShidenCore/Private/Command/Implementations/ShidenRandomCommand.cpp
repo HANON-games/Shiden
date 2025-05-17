@@ -55,7 +55,7 @@ void UShidenRandomCommand::ProcessCommand_Implementation(const FString& ProcessN
 		return;
 	}
 
-	Status = TrySetRandomValue(Args, ProcessName, ErrorMessage)
+	Status = TrySetRandomValue(ShidenWidget, Args, ProcessName, ErrorMessage)
 		         ? EShidenProcessStatus::Next
 		         : EShidenProcessStatus::Error;
 }
@@ -70,12 +70,12 @@ void UShidenRandomCommand::PreviewCommand_Implementation(const FShidenCommand& C
 		return;
 	}
 
-	Status = TrySetRandomValue(Args, TEXT("Default"), ErrorMessage)
+	Status = TrySetRandomValue(ShidenWidget, Args, TEXT("Default"), ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenRandomCommand::TrySetRandomValue(const FRandomCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage)
+bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, const FRandomCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage)
 {
 	bool bSuccess;
 	switch (Args.VariableType)
@@ -90,9 +90,9 @@ bool UShidenRandomCommand::TrySetRandomValue(const FRandomCommandArgs& Args, con
 				return false;
 			}
 			const int32 RandomValue = FMath::RandRange(Min, Max);
-			UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.VariableKind, Args.VariableType,
-			                                                Args.DestinationVariableName, false, TEXT(""), RandomValue, 0.0f,
-			                                                FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
+			UShidenVariableBlueprintLibrary::UpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
+			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), RandomValue,
+			                                                0.0f, FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
 			break;
 		}
 	case EShidenVariableType::Float:
@@ -105,9 +105,9 @@ bool UShidenRandomCommand::TrySetRandomValue(const FRandomCommandArgs& Args, con
 				return false;
 			}
 			const float RandomValue = FMath::RandRange(Min, Max);
-			UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.VariableKind, Args.VariableType,
-			                                                Args.DestinationVariableName, false, TEXT(""), 0, RandomValue,
-			                                                FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
+			UShidenVariableBlueprintLibrary::UpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
+			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), 0,
+			                                                RandomValue, FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
 			break;
 		}
 	default:

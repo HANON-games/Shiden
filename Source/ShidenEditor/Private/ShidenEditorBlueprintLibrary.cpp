@@ -68,43 +68,47 @@ SHIDENEDITOR_API void UShidenEditorBlueprintLibrary::LoadTextFile(const FString&
 		}
 	}
 
+	if (!WindowHandle)
+	{
+		bSuccess = false;
+		return;
+	}
+	
 	TArray<FString> FilePath = {};
 
-	if (WindowHandle)
+	if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
 	{
-		if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
+		bSuccess = DesktopPlatform->OpenFileDialog(
+			WindowHandle,
+			TEXT("Open File Dialog"),
+			TEXT(""),
+			TEXT(""),
+			TEXT("Scenario ") + Extension + TEXT(" (*.") + Extension + TEXT(")|*.") + Extension,
+			EFileDialogFlags::Type::None,
+			FilePath
+		);
+
+		if (!bSuccess)
 		{
-			bSuccess = DesktopPlatform->OpenFileDialog(
-				WindowHandle,
-				TEXT("Open File Dialog"),
-				TEXT(""),
-				TEXT(""),
-				TEXT("Scenario ") + Extension + TEXT(" (*.") + Extension + TEXT(")|*.") + Extension,
-				EFileDialogFlags::Type::None,
-				FilePath
-			);
+			return;
+		}
 
-			if (!bSuccess)
+		if (GEngine)
+		{
+			const FString LoadFilePath = FPaths::ConvertRelativePathToFull(FilePath[0]);
+
+			if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*LoadFilePath))
 			{
+				bSuccess = false;
 				return;
 			}
-
-			if (GEngine)
-			{
-				const FString LoadFilePath = FPaths::ConvertRelativePathToFull(FilePath[0]);
-
-				if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*LoadFilePath))
-				{
-					bSuccess = false;
-					return;
-				}
-				FileName = FPaths::GetCleanFilename(LoadFilePath);
-				FFileHelper::LoadFileToString(FileData, *LoadFilePath);
-				bSuccess = true;
-				return;
-			}
+			FileName = FPaths::GetCleanFilename(LoadFilePath);
+			FFileHelper::LoadFileToString(FileData, *LoadFilePath);
+			bSuccess = true;
+			return;
 		}
 	}
+	
 	bSuccess = false;
 }
 
@@ -123,30 +127,33 @@ SHIDENEDITOR_API void UShidenEditorBlueprintLibrary::SaveTextFile(const FString&
 		}
 	}
 
-	if (WindowHandle)
+	if (!WindowHandle)
 	{
-		if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
+		bSuccess = false;
+		return;
+	}
+
+	if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
+	{
+		TArray<FString> FilePath = {};
+
+		bSuccess = DesktopPlatform->SaveFileDialog(
+			WindowHandle,
+			TEXT("Save File Dialog"),
+			TEXT(""),
+			DefaultFileName + TEXT("." + Extension),
+			TEXT("Scenario ") + Extension + TEXT(" (*.") + Extension + TEXT(")|*.") + Extension,
+			EFileDialogFlags::Type::None,
+			FilePath
+		);
+
+		if (!bSuccess)
 		{
-			TArray<FString> FilePath = {};
-
-			bSuccess = DesktopPlatform->SaveFileDialog(
-				WindowHandle,
-				TEXT("Save File Dialog"),
-				TEXT(""),
-				DefaultFileName + TEXT("." + Extension),
-				TEXT("Scenario ") + Extension + TEXT(" (*.") + Extension + TEXT(")|*.") + Extension,
-				EFileDialogFlags::Type::None,
-				FilePath
-			);
-
-			if (!bSuccess)
-			{
-				return;
-			}
-
-			bSuccess = FFileHelper::SaveStringToFile(SaveText, *FPaths::ConvertRelativePathToFull(FilePath[0]),
-			                                         FFileHelper::EEncodingOptions::ForceUTF8);
+			return;
 		}
+
+		bSuccess = FFileHelper::SaveStringToFile(SaveText, *FPaths::ConvertRelativePathToFull(FilePath[0]),
+		                                         FFileHelper::EEncodingOptions::ForceUTF8);
 	}
 
 	bSuccess = false;
@@ -450,8 +457,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 				Row += TEXT(",") + EscapeCsvItem(Arg);
 
 				// If the HasAdditionalArgs Property of CommandArguments[Index] is true, add MacroArguments
-				if (!Arg.IsEmpty() && CommandArguments[Index].TemplateParameters.Contains("HasAdditionalArgs")
-					&& CommandArguments[Index].TemplateParameters["HasAdditionalArgs"] == TEXT("true"))
+				if (!Arg.IsEmpty() && CommandArguments[Index].TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 				{
 					if (!MacroScenarioCache.Contains(Arg))
 					{
@@ -465,11 +471,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 							MacroScenarioCache.Add(Arg, MacroScenario);
 						}
 					}
-					if (!MacroScenarioCache.Contains(Arg))
-					{
-						continue;
-					}
-					const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache[Arg];
+					const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache.FindRef(Arg);
 					if (!MacroScenario)
 					{
 						continue;
@@ -904,7 +906,6 @@ void UShidenEditorBlueprintLibrary::RedirectAllMacroParameters(const UShidenScen
 		for (const FShidenCommandArgument& Arg : CommandDefinition.Args)
 		{
 			if (Arg.TemplateWidget == UShidenStandardCommandDefinitions::ScenarioInputTemplate
-				&& Arg.TemplateParameters.Contains(TEXT("HasAdditionalArgs"))
 				&& Arg.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 			{
 				TargetCommand.Add(CommandName, Arg.ArgName.ToString());
