@@ -128,7 +128,7 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 			[this](const FString& InValue) { MasterVolume = FCString::Atof(*InValue); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
-			"BgmVolume",
+			"BGMVolume",
 			EShidenVariableType::Float,
 			"1.0",
 			false,
@@ -136,7 +136,7 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 			[this](const FString& InValue) { BGMVolume = FCString::Atof(*InValue); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
-			"SeVolume",
+			"SEVolume",
 			EShidenVariableType::Float,
 			"1.0",
 			false,

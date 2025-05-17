@@ -143,10 +143,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void GetScenarioByIdOrObjectPath(const FString& ScenarioIdOrObjectPath, FGuid& ScenarioId, UShidenScenario*& Scenario, bool& bSuccess);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (bReplaceOnlyReadOnlyVariable = false))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void ConstructCommand(const FString& ProcessName, const FShidenCommand& OriginalCommand, FShidenCommand& Command);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (bReplaceOnlyReadOnlyVariable = false))
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario")
 	static void ConstructCommandForLoad(const FShidenVariable& TempLocalVariables, const FShidenCommand& OriginalCommand, FShidenCommand& Command);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
