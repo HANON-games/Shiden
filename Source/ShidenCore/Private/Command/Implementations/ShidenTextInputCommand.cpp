@@ -89,10 +89,10 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 	FVector Vector3Value;
 	Vector3Value.InitFromString(*ResultText);
 
-	UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.DestinationVariableKind, Args.DestinationType,
-	                                                Args.DestinationVariableName, ResultText.ToBool(), ResultText,
-	                                                FCString::Atoi(*ResultText), FCString::Atof(*ResultText),
-	                                                Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	UShidenVariableBlueprintLibrary::UpdateVariable(ShidenWidget, ProcessName, Args.DestinationVariableKind,
+	                                                Args.DestinationType, Args.DestinationVariableName, ResultText.ToBool(),
+	                                                ResultText, FCString::Atoi(*ResultText),
+	                                                FCString::Atof(*ResultText), Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 	if (!bSuccess)
 	{
 		Status = EShidenProcessStatus::Error;
@@ -134,10 +134,10 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 	Vector3Value.InitFromString(*SampleText);
 
 	bool bSuccess;
-	UShidenVariableBlueprintLibrary::UpdateVariable("Default", Args.DestinationVariableKind, Args.DestinationType,
-	                                                Args.DestinationVariableName, SampleText.ToBool(), SampleText,
-	                                                FCString::Atoi(*SampleText), FCString::Atof(*SampleText),
-	                                                Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	UShidenVariableBlueprintLibrary::UpdateVariable(ShidenWidget, TEXT("Default"), Args.DestinationVariableKind,
+	                                                Args.DestinationType, Args.DestinationVariableName, SampleText.ToBool(),
+	                                                SampleText, FCString::Atoi(*SampleText),
+	                                                FCString::Atof(*SampleText), Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 
 	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }

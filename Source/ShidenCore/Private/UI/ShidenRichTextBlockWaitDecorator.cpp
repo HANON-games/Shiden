@@ -1,6 +1,6 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
-#include "ShidenRichTextBlockWaitDecorator.h"
+#include "UI/ShidenRichTextBlockWaitDecorator.h"
 
 class FRichTextWaitDecorator final : public FRichTextDecorator
 {

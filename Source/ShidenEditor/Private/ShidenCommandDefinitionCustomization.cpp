@@ -45,31 +45,32 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 				{
 					return true;
 				}
-				if (!AssetData.GetTagValueRef<FString>("GeneratedClass").IsEmpty())
+				if (AssetData.GetTagValueRef<FString>("GeneratedClass").IsEmpty())
 				{
-					const FString ParentClassName = AssetData.GetTagValueRef<FString>(FBlueprintTags::ParentClassPath);
-					if (ParentClassName == "/Script/CoreUObject.Class'/Script/ShidenCore.ShidenCommandObject'")
-					{
-						return false;
-					}
-					if (!ParentClassName.IsEmpty())
-					{
-						if (const UClass* ParentClass = FindObject<UClass>(nullptr, *ParentClassName))
-						{
-							ParentClass = ParentClass->GetSuperClass();
-							while (ParentClass)
-							{
-								if (ParentClass->GetName() == "ShidenCommandObject")
-								{
-									return false;
-								}
-								ParentClass = ParentClass->GetSuperClass();
-							}
-						}
-					}
+					return !GetDerivedClassNames().Contains(FTopLevelAssetPath(ObjectPath));
+				}
+				const FString ParentClassName = AssetData.GetTagValueRef<FString>(FBlueprintTags::ParentClassPath);
+				if (ParentClassName == TEXT("/Script/CoreUObject.Class'/Script/ShidenCore.ShidenCommandObject'"))
+				{
+					return false;
+				}
+				if (ParentClassName.IsEmpty())
+				{
 					return true;
 				}
-				return !GetDerivedClassNames().Contains(FTopLevelAssetPath(ObjectPath));
+				if (const UClass* ParentClass = FindObject<UClass>(nullptr, *ParentClassName))
+				{
+					ParentClass = ParentClass->GetSuperClass();
+					while (ParentClass)
+					{
+						if (ParentClass->GetName() == TEXT("ShidenCommandObject"))
+						{
+							return false;
+						}
+						ParentClass = ParentClass->GetSuperClass();
+					}
+				}
+				return true;
 			}))
 		];
 

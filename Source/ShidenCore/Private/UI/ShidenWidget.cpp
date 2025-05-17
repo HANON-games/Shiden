@@ -96,49 +96,51 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 
 SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
 {
-	if (FSlateApplication::IsInitialized())
+	if (!FSlateApplication::IsInitialized())
 	{
-		TArray<FColor> Bitmap;
-		FIntVector OutSize;
+		return;
+	}
 
-		const ESlateVisibility TextBaseLayerVisibilityBeforeCapture = TextBaseLayer->GetVisibility();
-		const ESlateVisibility MenuBaseLayerVisibilityBeforeCapture = MenuBaseLayer->GetVisibility();
+	TArray<FColor> Bitmap;
+	FIntVector OutSize;
 
-		MenuBaseLayer->SetVisibility(ESlateVisibility::Hidden);
-		if (!bShowTextBaseLayer)
+	const ESlateVisibility TextBaseLayerVisibilityBeforeCapture = TextBaseLayer->GetVisibility();
+	const ESlateVisibility MenuBaseLayerVisibilityBeforeCapture = MenuBaseLayer->GetVisibility();
+
+	MenuBaseLayer->SetVisibility(ESlateVisibility::Hidden);
+	if (!bShowTextBaseLayer)
+	{
+		TextBaseLayer->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	FlushRenderingCommands();
+
+	const bool bScreenshotSuccessful = FSlateApplication::Get().TakeScreenshot(TakeWidget(), Bitmap, OutSize);
+
+	MenuBaseLayer->SetVisibility(MenuBaseLayerVisibilityBeforeCapture);
+	if (!bShowTextBaseLayer)
+	{
+		TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
+	}
+
+	Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
+
+	if (bScreenshotSuccessful)
+	{
+		for (FColor& Color : Bitmap)
 		{
-			TextBaseLayer->SetVisibility(ESlateVisibility::Hidden);
+			Color.A = 255;
 		}
 
-		FlushRenderingCommands();
-
-		const bool bScreenshotSuccessful = FSlateApplication::Get().TakeScreenshot(TakeWidget(), Bitmap, OutSize);
-
-		MenuBaseLayer->SetVisibility(MenuBaseLayerVisibilityBeforeCapture);
-		if (!bShowTextBaseLayer)
-		{
-			TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
-		}
-
-		Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
-
-		if (bScreenshotSuccessful)
-		{
-			for (FColor& Color : Bitmap)
-			{
-				Color.A = 255;
-			}
-
-			ResultTexture =
-				UTexture2D::CreateTransient(OutSize.X * CaptureScale, OutSize.Y * CaptureScale, PF_B8G8R8A8);
-			ResultTexture->AddToRoot();
-			FTexture2DMipMap& Mip = ResultTexture->GetPlatformData()->Mips[0];
-			void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
-			FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
-			Mip.BulkData.Unlock();
-			ResultTexture->SRGB = true;
-			ResultTexture->UpdateResource();
-		}
+		ResultTexture =
+			UTexture2D::CreateTransient(OutSize.X * CaptureScale, OutSize.Y * CaptureScale, PF_B8G8R8A8);
+		ResultTexture->AddToRoot();
+		FTexture2DMipMap& Mip = ResultTexture->GetPlatformData()->Mips[0];
+		void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
+		FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
+		Mip.BulkData.Unlock();
+		ResultTexture->SRGB = true;
+		ResultTexture->UpdateResource();
 	}
 }
 

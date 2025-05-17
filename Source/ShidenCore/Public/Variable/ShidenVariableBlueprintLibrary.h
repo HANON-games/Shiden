@@ -560,11 +560,11 @@ public:
 	                                   FShidenVariableDefinition& Definition, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
-		meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value"))
-	static void UpdateVariable(const FString& ProcessName, EShidenVariableKind Kind, EShidenVariableType Type,
-	                           const FString& Name, bool bBooleanValue, const FString& StringValue,
-	                           int32 IntegerValue, float FloatValue, const FVector2D& Vector2Value,
-	                           const FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value", WorldContext="WorldContextObject"))
+	static void UpdateVariable(const UObject* WorldContextObject, const FString& ProcessName, EShidenVariableKind Kind,
+	                           EShidenVariableType Type, const FString& Name, bool bBooleanValue,
+	                           const FString& StringValue, int32 IntegerValue, float FloatValue,
+	                           const FVector2D& Vector2Value, const FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
 	static void FindVariable(const FString& ProcessName, EShidenVariableKind Kind,
@@ -603,6 +603,10 @@ public:
 	static FRegexPattern& GetVariablePattern();
 
 private:
+	static void UpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type, const FString& Name,
+	                                     const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue, const float FloatValue,
+	                                     bool& bSuccess, FString& ErrorMessage);
+
 	static FString ReplaceVariables(const FString& ProcessName, const FString& Text);
 
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);

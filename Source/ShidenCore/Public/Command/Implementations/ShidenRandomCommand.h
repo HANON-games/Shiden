@@ -36,7 +36,7 @@ class SHIDENCORE_API UShidenRandomCommand : public UShidenCommandObject
 
 	static bool TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FRandomCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TrySetRandomValue(const FRandomCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage);
+	static bool TrySetRandomValue(const UObject* WorldContextObject, const FRandomCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage);
 
 	FRandomCommandArgs Args;
 };

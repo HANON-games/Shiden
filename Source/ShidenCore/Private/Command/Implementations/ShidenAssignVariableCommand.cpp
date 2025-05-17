@@ -49,14 +49,13 @@ void UShidenAssignVariableCommand::ProcessCommand_Implementation(const FString& 
 	}
 
 	bool bSuccess = false;
-	TrySetVariable(Args, ProcessName, bSuccess, ErrorMessage);
+	TrySetVariable(ShidenWidget, Args, ProcessName, bSuccess, ErrorMessage);
 	Status = bSuccess ? EShidenProcessStatus::Next : EShidenProcessStatus::Error;
 }
 
 void UShidenAssignVariableCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                 bool bIsCurrentCommand,
-                                                                 EShidenPreviewStatus& Status, FString& ErrorMessage)
+                                                                 bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(TEXT("Default"), Command, Args, ErrorMessage))
 	{
@@ -65,22 +64,22 @@ void UShidenAssignVariableCommand::PreviewCommand_Implementation(const FShidenCo
 	}
 
 	bool bSuccess = false;
-	TrySetVariable(Args, TEXT("Default"), bSuccess, ErrorMessage);
+	TrySetVariable(ShidenWidget, Args, TEXT("Default"), bSuccess, ErrorMessage);
 	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }
 
-bool UShidenAssignVariableCommand::TrySetVariable(const FAssignVariableCommandArgs& Args, const FString& ProcessName, bool& bSuccess,
-                                                  FString& ErrorMessage)
+bool UShidenAssignVariableCommand::TrySetVariable(const UObject* WorldContextObject, const FAssignVariableCommandArgs& Args,
+                                                  const FString& ProcessName, bool& bSuccess, FString& ErrorMessage)
 {
 	FVector2d Vector2Value;
 	Vector2Value.InitFromString(*Args.Value);
 	FVector Vector3Value;
 	Vector3Value.InitFromString(*Args.Value);
 
-	UShidenVariableBlueprintLibrary::UpdateVariable(ProcessName, Args.VariableKind, Args.VariableType,
-	                                                Args.VariableName, Args.Value.ToBool(), Args.Value,
-	                                                FCString::Atoi(*Args.Value), FCString::Atof(*Args.Value),
-	                                                Vector2Value, Vector3Value, bSuccess, ErrorMessage);
+	UShidenVariableBlueprintLibrary::UpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
+	                                                Args.VariableType, Args.VariableName, Args.Value.ToBool(),
+	                                                Args.Value, FCString::Atoi(*Args.Value),
+	                                                FCString::Atof(*Args.Value), Vector2Value, Vector3Value, bSuccess, ErrorMessage);
 
 	return bSuccess;
 }
