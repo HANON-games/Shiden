@@ -24,6 +24,11 @@ class SHIDENCORE_API IShidenTitleInterface
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Initializes the title screen widget with callback delegates for new game and load game actions.
+	 * @param OnNewGame Delegate called when starting a new game
+	 * @param OnLoadGame Delegate called when loading an existing game with the specified slot name
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "OnNewGame,OnLoadGame"))
 	void InitTitle(const FOnNewGameDelegate& OnNewGame, const FOnLoadGameDelegate& OnLoadGame);
 };

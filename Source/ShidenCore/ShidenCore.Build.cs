@@ -48,7 +48,9 @@ public class ShidenCore : ModuleRules
 				"MediaAssets",
 				"RenderCore",
 				"RHI",
-				"Projects"
+				"Projects",
+				"JsonUtilities",
+				"Json"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

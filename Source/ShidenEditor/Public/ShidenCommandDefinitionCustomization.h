@@ -1,3 +1,5 @@
+// Copyright (c) 2025 HANON. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -16,6 +18,7 @@ public:
 	/** IPropertyTypeCustomization interface */
 	virtual void CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow,
 	                             IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
+	
 	virtual void CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder,
 	                               IPropertyTypeCustomizationUtils& StructCustomizationUtils) override;
 
@@ -26,5 +29,5 @@ private:
 	TSharedPtr<IPropertyHandle> CommandSoftObjectPathHandle;
 	TSharedPtr<IPropertyHandle> ArgsHandle;
 
-	static TSet<FTopLevelAssetPath> GetDerivedClassNames();
+	static TSet<FTopLevelAssetPath> GetCachedDerivedClassNames();
 };

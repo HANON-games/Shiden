@@ -8,19 +8,26 @@
 
 bool UShidenOptionsCommand::TryParseCommand(const FShidenCommand& Command, FOptionsCommandArgs& Args, FString& ErrorMessage)
 {
-	const FString Choice1 = Command.GetArg(TEXT("Choice 1"));
-	const FString Choice2 = Command.GetArg(TEXT("Choice 2"));
-	const FString Choice3 = Command.GetArg(TEXT("Choice 3"));
-	const FString Choice4 = Command.GetArg(TEXT("Choice 4"));
-	const FString Choice5 = Command.GetArg(TEXT("Choice 5"));
-	Args.Options = {Choice1, Choice2, Choice3, Choice4, Choice5};
+	Args.LocalizedOptions.Empty();
+	for (int32 i = 0; i < 10; i++)
+	{
+		const FString Prefix = i == 0 ? TEXT("") : FString::Printf(TEXT("Language %d "), i + 1);
+		Args.LocalizedOptions.Add(FOptions{
+			{
+				Command.GetArg(Prefix + TEXT("Option 1")),
+				Command.GetArg(Prefix + TEXT("Option 2")),
+				Command.GetArg(Prefix + TEXT("Option 3")),
+				Command.GetArg(Prefix + TEXT("Option 4")),
+				Command.GetArg(Prefix + TEXT("Option 5"))
+			}
+		});
+	}
+
 	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind"));
 	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName"));
 	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer"));
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::ConvertToVariableKind(DestinationVariableKindStr, Args.DestinationVariableKind, bSuccess);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(DestinationVariableKindStr, Args.DestinationVariableKind))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenVariableKind."), *DestinationVariableKindStr);
 		return false;
@@ -69,9 +76,7 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 		return;
 	}
 
-	bool bSuccess;
-	ShidenWidget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::Collapsed, true, bSuccess);
-	if (!bSuccess)
+	if (!ShidenWidget->TrySetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::Collapsed, true))
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = TEXT("Failed to set OptionLayer visibility.");
@@ -86,9 +91,9 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& Command,
-                                                          UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                          bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
+void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                          const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -96,10 +101,13 @@ void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& 
 		return;
 	}
 
-	if (!TrySetupOptions(Args, ShidenWidget, false, ErrorMessage))
+	if (bIsCurrentCommand)
 	{
-		Status = EShidenPreviewStatus::Error;
-		return;
+		if (!TrySetupOptions(Args, ShidenWidget, false, ErrorMessage))
+		{
+			Status = EShidenPreviewStatus::Error;
+			return;
+		}
 	}
 
 	Status = TryUpdateVariable(Args.DestinationVariableName, Args.DestinationVariableKind, 0, ErrorMessage)
@@ -110,11 +118,20 @@ void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& 
 bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, UShidenWidget* ShidenWidget, const bool bRegisterProperty,
                                             FString& ErrorMessage)
 {
-	ShidenWidget->SetOptions(Args.Options);
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
 
-	bool bSuccess;
-	ShidenWidget->SetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::SelfHitTestInvisible, bRegisterProperty, bSuccess);
-	if (!bSuccess)
+	const int32 LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
+
+	if (LanguageIndex < 0 || LanguageIndex >= Args.LocalizedOptions.Num())
+	{
+		ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, Args.LocalizedOptions.Num() - 1);
+		return false;
+	}
+	
+	ShidenWidget->SetOptions(Args.LocalizedOptions[LanguageIndex].Options);
+
+	if (!ShidenWidget->TrySetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::SelfHitTestInvisible, bRegisterProperty))
 	{
 		ErrorMessage = TEXT("Failed to set OptionLayer visibility.");
 		return false;
@@ -122,8 +139,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 
 	if (Args.bHideTextLayer)
 	{
-		ShidenWidget->SetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::Collapsed, bRegisterProperty, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TrySetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::Collapsed, bRegisterProperty))
 		{
 			ErrorMessage = TEXT("Failed to set TextLayer visibility.");
 			return false;
@@ -133,7 +149,8 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 	return true;
 }
 
-bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const EShidenVariableKind VariableKind, const int32 Value, FString& ErrorMessage)
+bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const EShidenVariableKind VariableKind, const int32 Value,
+                                              FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
@@ -146,15 +163,11 @@ bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const
 		return ShidenSubsystem->SystemVariable.TryUpdate(VariableName, Value);
 	case EShidenVariableKind::LocalVariable:
 		{
-			bool bSuccess;
-			UShidenVariableBlueprintLibrary::UpdateLocalInteger(TEXT("Default"), VariableName, Value, bSuccess, ErrorMessage);
-			return bSuccess;
+			return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(TEXT("Default"), VariableName, Value, ErrorMessage);
 		}
 	case EShidenVariableKind::PredefinedSystemVariable:
 		{
-			bool bSuccess;
-			UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(nullptr, VariableName, FString::FromInt(Value), bSuccess);
-			return bSuccess;
+			return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(nullptr, VariableName, FString::FromInt(Value));
 		}
 	default:
 		ErrorMessage = FString::Printf(TEXT("Invalid variable kind for %s."), *VariableName);

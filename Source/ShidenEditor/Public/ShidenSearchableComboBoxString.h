@@ -100,7 +100,7 @@ public:
 	int32 GetSelectedIndex() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
-	int32 GetOptionCount() const;
+	int32 OptionNum() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox", Meta = (ReturnDisplayName = "bOpen"))
 	bool IsOpen() const;

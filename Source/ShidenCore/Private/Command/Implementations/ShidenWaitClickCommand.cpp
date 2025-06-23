@@ -15,7 +15,7 @@ void UShidenWaitClickCommand::PreProcessCommand_Implementation(const FString& Pr
                                                                UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	ParseFromCommand(Command, Args);
-	PressNext = true;
+	bPressNext = true;
 	Status = EShidenPreProcessStatus::Complete;
 }
 
@@ -30,10 +30,8 @@ void UShidenWaitClickCommand::ProcessCommand_Implementation(const FString& Proce
 	if (Args.bCanSkip && bCanSkipCommand)
 	{
 		static const UInputAction* SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
-		bool bValue = false;
-		bool bSuccess = false;
+		bool bValue, bSuccess;
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
-
 		if (bValue && bSuccess)
 		{
 			Status = EShidenProcessStatus::Next;
@@ -42,23 +40,21 @@ void UShidenWaitClickCommand::ProcessCommand_Implementation(const FString& Proce
 	}
 
 	static const UInputAction* NextInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext"));
-	bool bValue = false;
-	bool bSuccess = false;
+	bool bValue, bSuccess;
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), NextInputAction, bValue, bSuccess);
-
 	if (!bSuccess)
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
 	}
 
-	if (bValue && !PressNext)
+	if (bValue && !bPressNext)
 	{
 		Status = EShidenProcessStatus::Next;
 	}
 	else
 	{
-		PressNext = bValue;
+		bPressNext = bValue;
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 	}
 }

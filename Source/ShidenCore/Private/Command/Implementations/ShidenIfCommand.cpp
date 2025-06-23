@@ -11,9 +11,7 @@ bool UShidenIfCommand::TryParseCommand(const FShidenCommand& Command, FIfCommand
 	Args.Operator = Command.GetArg(TEXT("Operator"));
 	Args.RightHandValue = Command.GetArg(TEXT("RightHandValue"));
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::ConvertToVariableKind(VariableKindStr, Args.VariableKind, bSuccess);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenVariableKind."), *VariableKindStr);
 		return false;
@@ -63,11 +61,8 @@ bool UShidenIfCommand::TryEvaluateCondition(const FIfCommandArgs& Args, const FS
 	FVector2d Vector2Value;
 	FVector Vector3Value;
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType, bBooleanValue,
-	                                              StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess, ErrorMessage);
-
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType, bBooleanValue,
+												  StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -77,44 +72,38 @@ bool UShidenIfCommand::TryEvaluateCondition(const FIfCommandArgs& Args, const FS
 	case EShidenVariableType::Boolean:
 		{
 			const bool bRightHandValue = Args.RightHandValue.ToBool();
-			UShidenVariableBlueprintLibrary::EvaluateBoolean(Args.Operator, bBooleanValue, bRightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateBoolean(Args.Operator, bBooleanValue, bRightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::String:
 	case EShidenVariableType::AssetPath:
 		{
-			UShidenVariableBlueprintLibrary::EvaluateString(Args.Operator, StringValue, Args.RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateString(Args.Operator, StringValue, Args.RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Integer:
 		{
 			const int32 RightHandValue = FCString::Atoi(*Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateInteger(Args.Operator, IntegerValue, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateInteger(Args.Operator, IntegerValue, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Float:
 		{
 			const float RightHandValue = FCString::Atof(*Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateFloat(Args.Operator, FloatValue, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateFloat(Args.Operator, FloatValue, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Vector2:
 		{
 			FVector2d RightHandValue;
 			RightHandValue.InitFromString(Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Vector3:
 		{
 			FVector RightHandValue;
 			RightHandValue.InitFromString(Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, ErrorMessage);
 		}
 	}
 
-	return bSuccess;
+	return false;
 }
 
 bool UShidenIfCommand::TryExecuteCommand(const FIfCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage)
@@ -137,7 +126,7 @@ bool UShidenIfCommand::TryExecuteCommand(const FIfCommandArgs& Args, const FStri
 	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
 	{
 		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
 		return false;
@@ -145,19 +134,16 @@ bool UShidenIfCommand::TryExecuteCommand(const FIfCommandArgs& Args, const FStri
 
 	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
 
-	bool bSuccess;
 	UShidenScenario* Scenario = nullptr;
-	UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
 	{
-		ErrorMessage = TEXT("GetScenarioFromCache failed.");
+		ErrorMessage = TEXT("GetScenario failed.");
 		return false;
 	}
 
 	FString CommandName;
 	int32 ResultIndex;
-	FindNextElseIfOrElseOrEndIf(ScenarioProgress.CurrentIndex, Scenario, CommandName, ResultIndex, bSuccess, ErrorMessage);
-	if (!bSuccess)
+	if (!TryFindNextElseIfOrElseOrEndIf(ScenarioProgress.CurrentIndex, Scenario, CommandName, ResultIndex, ErrorMessage))
 	{
 		return false;
 	}
@@ -181,8 +167,8 @@ bool UShidenIfCommand::TryExecuteCommand(const FIfCommandArgs& Args, const FStri
 	return true;
 }
 
-void UShidenIfCommand::FindNextElseIfOrElseOrEndIf(const int32 StartIndex, const UShidenScenario* Scenario, FString& CommandName,
-                                                   int32& ResultIndex, bool& bSuccess, FString& ErrorMessage)
+bool UShidenIfCommand::TryFindNextElseIfOrElseOrEndIf(const int32 StartIndex, const UShidenScenario* Scenario, FString& CommandName, int32& ResultIndex,
+	                                                  FString& ErrorMessage)
 {
 	int32 Depth = 0;
 	for (int32 Index = StartIndex; Index < Scenario->Commands.Num(); Index++)
@@ -203,8 +189,7 @@ void UShidenIfCommand::FindNextElseIfOrElseOrEndIf(const int32 StartIndex, const
 			{
 				CommandName = Command.CommandName;
 				ResultIndex = Index;
-				bSuccess = true;
-				return;
+				return true;
 			}
 		}
 		else if (Command.CommandName == TEXT("EndIf"))
@@ -213,13 +198,12 @@ void UShidenIfCommand::FindNextElseIfOrElseOrEndIf(const int32 StartIndex, const
 			{
 				CommandName = Command.CommandName;
 				ResultIndex = Index;
-				bSuccess = true;
-				return;
+				return true;
 			}
 			Depth--;
 		}
 	}
 
-	bSuccess = false;
 	ErrorMessage = TEXT("Failed to find ElseIf or Else or EndIf command.");
+	return false;
 }

@@ -10,42 +10,34 @@ void UShidenElseIfCommand::ProcessCommand_Implementation(const FString& ProcessN
                                                          EShidenProcessStatus& Status, FString& BreakReason,
                                                          FString& NextScenarioName, FString& ErrorMessage)
 {
-	bool bSuccess;
-	FindEndIfIndex(ProcessName, bSuccess, ErrorMessage);
-	Status = bSuccess ? EShidenProcessStatus::Next : EShidenProcessStatus::Error;
+	Status = TryFindEndIfIndex(ProcessName, ErrorMessage) ? EShidenProcessStatus::Next : EShidenProcessStatus::Error;
 }
 
 void UShidenElseIfCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
                                                          EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	bool bSuccess;
-	FindEndIfIndex("Default", bSuccess, ErrorMessage);
-	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
+	Status = TryFindEndIfIndex("Default", ErrorMessage) ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }
 
-void UShidenElseIfCommand::FindEndIfIndex(const FString& ProcessName, bool& bSuccess, FString& ErrorMessage)
+bool UShidenElseIfCommand::TryFindEndIfIndex(const FString& ProcessName, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
 	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
 	{
-		bSuccess = false;
 		ErrorMessage = TEXT("Failed to find EndIf command.");
-		return;
+		return false;
 	}
 
 	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
 	UShidenScenario* Scenario = nullptr;
-	UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
-
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
 	{
-		ErrorMessage = FString::Printf(TEXT("Failed to get scenario from cache for %s."), *ProcessName);
-		return;
+		ErrorMessage = FString::Printf(TEXT("Failed to get scenario for %s."), *ProcessName);
+		return false;
 	}
 
 	int32 Depth = 0;
@@ -66,13 +58,12 @@ void UShidenElseIfCommand::FindEndIfIndex(const FString& ProcessName, bool& bSuc
 			if (Depth == 0)
 			{
 				UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, Index);
-				bSuccess = true;
-				return;
+				return true;
 			}
 			Depth--;
 		}
 	}
 
-	bSuccess = false;
 	ErrorMessage = TEXT("Failed to find EndIf command.");
+	return false;
 }

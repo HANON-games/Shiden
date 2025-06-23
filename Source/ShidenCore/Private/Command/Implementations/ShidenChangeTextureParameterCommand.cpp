@@ -14,13 +14,13 @@ void UShidenChangeTextureParameterCommand::ParseFromCommand(const FShidenCommand
 	Args.TexturePath = Command.GetArg("Texture");
 }
 
-void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
+void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
                                                                               UShidenWidget* ShidenWidget,
                                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                               UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                               FString& ErrorMessage)
 {
-	for (const TPair<FString, FString>& Pair : ScenarioProperties)
+	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
 		FString TargetType, TargetName, ParameterName;
 		Tie(TargetType, TargetName, ParameterName) = ParseScenarioPropertyKey(Pair.Key);
@@ -30,7 +30,7 @@ void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(co
 			.Target = TargetType,
 			.TargetName = TargetName,
 			.ParameterName = ParameterName,
-			.TexturePath = Pair.Value
+			.TexturePath = Pair.Value.GetValueAsString()
 		};
 
 		UTexture* Texture;
@@ -117,10 +117,8 @@ void UShidenChangeTextureParameterCommand::PreviewCommand_Implementation(const F
 
 bool UShidenChangeTextureParameterCommand::TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage)
 {
-	bool bSuccess;
 	UObject* Object;
-	UShidenBlueprintLibrary::GetOrLoadAsset(Args.TexturePath, Object, bSuccess);
-	if (!bSuccess)
+	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.TexturePath, Object))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Failed to load texture asset %s."), *Args.TexturePath);
 		return false;
@@ -144,33 +142,18 @@ bool UShidenChangeTextureParameterCommand::TryChangeTextureParameter(const FChan
 
 	if (Args.Target == TEXT("Image"))
 	{
-		bool bSuccess;
 		UImage* Image;
-		ShidenWidget->FindImage(Args.TargetName, Image, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindImage(Args.TargetName, Image))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not found."), *Args.TargetName);
 			return false;
 		}
-		FSlateBrush Brush = Image->GetBrush();
-		const TObjectPtr<UObject> Resource = Brush.GetResourceObject();
-		DynamicMaterial = Cast<UMaterialInstanceDynamic>(Resource);
-		if (!DynamicMaterial)
-		{
-			if (UMaterialInterface* Material = Cast<UMaterialInterface>(Resource))
-			{
-				DynamicMaterial = UMaterialInstanceDynamic::Create(Material, nullptr);
-				Brush.SetResourceObject(DynamicMaterial);
-				Image->SetBrush(Brush);
-			}
-		}
+		DynamicMaterial = Image->GetDynamicMaterial();
 	}
 	else if (Args.Target == TEXT("RetainerBox"))
 	{
-		bool bSuccess;
 		URetainerBox* RetainerBox;
-		ShidenWidget->FindRetainerBox(Args.TargetName, RetainerBox, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not found."), *Args.TargetName);
 			return false;

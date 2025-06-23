@@ -22,113 +22,102 @@ bool UShidenImageCommand::TryParseCommand(const FShidenCommand& Command, FImageC
 	return TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
-void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
+void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
                                                              UShidenWidget* ShidenWidget,
                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                              UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
-	for (const TPair<FString, FString>& Property : ScenarioProperties)
+	for (const TPair<FString, FShidenScenarioProperty>& Property : ScenarioProperties)
 	{
-		FString SlotName;
-		FString PropertyName;
-		bool bSuccess = Property.Key.Split(TEXT("::"), &SlotName, &PropertyName, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
-		if (!bSuccess)
+		FString SlotName = Property.Key;
+
+		TMap<FString, FString> PropertyMap;
+		if (!Property.Value.TryConvertToStringMap(PropertyMap))
 		{
-			ErrorMessage = FString::Printf(TEXT("Failed to split %s."), *Property.Key);
-			Status = EShidenInitFromSaveDataStatus::Error;
-			return;
+			continue;
 		}
 
 		UImage* Image;
-		ShidenWidget->FindImage(SlotName, Image, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindImage(SlotName, Image))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *SlotName);
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
 		}
 
-		if (PropertyName == TEXT("Path"))
+		const FString* PathStr = PropertyMap.Find(TEXT("Path"));
+		if (!PathStr)
 		{
-			const bool bImagePathIsEmpty = Property.Value.IsEmpty() || Property.Value == TEXT("None");
-			if (!bImagePathIsEmpty)
+			ErrorMessage = FString::Printf(TEXT("Failed to find Path for image %s."), *SlotName);
+			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
+		}
+		const FString ImagePath = PropertyMap[TEXT("Path")];
+		const bool bImagePathIsEmpty = ImagePath.IsEmpty() || ImagePath == TEXT("None");
+		if (!bImagePathIsEmpty)
+		{
+			UObject* Asset;
+			if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(ImagePath, Asset))
 			{
-				UObject* Asset;
-				UShidenBlueprintLibrary::GetOrLoadAsset(Property.Value, Asset, bSuccess);
-				if (!bSuccess)
-				{
-					ErrorMessage = FString::Printf(TEXT("Failed to load asset %s."), *Property.Value);
-					Status = EShidenInitFromSaveDataStatus::Error;
-					return;
-				}
-
-				USlateBrushAsset* SlateBrushAsset = Cast<USlateBrushAsset>(Asset);
-				if (!SlateBrushAsset)
-				{
-					ErrorMessage = FString::Printf(TEXT("Asset %s is not USlateBrushAsset."), *Property.Value);
-					Status = EShidenInitFromSaveDataStatus::Error;
-					return;
-				}
-				Image->SetBrushFromAsset(SlateBrushAsset);
+				ErrorMessage = FString::Printf(TEXT("Failed to load asset %s."), *ImagePath);
+				Status = EShidenInitFromSaveDataStatus::Error;
+				return;
 			}
-			continue;
+
+			TObjectPtr<USlateBrushAsset> SlateBrushAsset = Cast<USlateBrushAsset>(Asset);
+			if (!SlateBrushAsset)
+			{
+				ErrorMessage = FString::Printf(TEXT("Asset %s is not USlateBrushAsset."), *ImagePath);
+				Status = EShidenInitFromSaveDataStatus::Error;
+				return;
+			}
+			Image->SetBrushFromAsset(SlateBrushAsset);
 		}
 
-		if (PropertyName == TEXT("Color"))
+		if (const FString* ColorStr = PropertyMap.Find(TEXT("Color")))
 		{
 			FLinearColor Color;
-			bSuccess = Color.InitFromString(Property.Value);
-			if (!bSuccess)
+			if (!Color.InitFromString(*ColorStr))
 			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FLinearColor."), *Property.Value);
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FLinearColor."), **ColorStr);
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
 			Image->SetColorAndOpacity(Color);
-			continue;
 		}
 
-		if (PropertyName == TEXT("Position"))
+		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 		{
 			FVector2D Position;
-			bSuccess = Position.InitFromString(Property.Value);
-			if (!bSuccess)
+			if (!Position.InitFromString(*PositionStr))
 			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Property.Value);
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **PositionStr);
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
-			UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetPosition(Position);
-			continue;
 		}
 
-		if (PropertyName == TEXT("Size"))
+		if (const FString* SizeStr = PropertyMap.Find(TEXT("Size")))
 		{
 			FVector2D Size;
-			bSuccess = Size.InitFromString(Property.Value);
-			if (!bSuccess)
+			if (!Size.InitFromString(*SizeStr))
 			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Property.Value);
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **SizeStr);
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
-			UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetSize(Size);
-			continue;
 		}
 
-		if (PropertyName == TEXT("SizeToContent"))
+		if (const FString* SizeToContentStr = PropertyMap.Find(TEXT("SizeToContent")))
 		{
-			const bool bOverwriteSizeToContent = Property.Value.Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
-			UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+			const bool bOverwriteSizeToContent = SizeToContentStr->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
+			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetAutoSize(bOverwriteSizeToContent);
-			continue;
 		}
-
-		Status = EShidenInitFromSaveDataStatus::Error;
-		ErrorMessage = FString::Printf(TEXT("Unknown property %s."), *PropertyName);
-		return;
 	}
 
 	Status = EShidenInitFromSaveDataStatus::Complete;
@@ -161,28 +150,31 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		return;
 	}
 
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *Args.SlotName), Args.ImagePath);
-
+	FShidenScenarioProperty ScenarioProperty;
+	UShidenScenarioBlueprintLibrary::FindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
+	TMap<FString, FString> ScenarioProperties;
+	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
+	
+	ScenarioProperties.Add(TEXT("Path"), Args.ImagePath);
+	
 	const bool bImagePathIsEmpty = Args.ImagePath.IsEmpty() || Args.ImagePath == TEXT("None");
 	const FColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Color"), *Args.SlotName),
-	                                                          ResultColor.ToString());
+	ScenarioProperties.Add(TEXT("Color"), ResultColor.ToString());
 
 	if (!Args.OverwritePosition.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Position"), *Args.SlotName),
-		                                                          Args.OverwritePosition);
+		ScenarioProperties.Add(TEXT("Position"), Args.OverwritePosition);
 	}
 	if (!Args.OverwriteSize.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Size"), *Args.SlotName),
-		                                                          Args.OverwriteSize);
+		ScenarioProperties.Add(TEXT("Size"), Args.OverwriteSize);
 	}
 	if (!Args.OverwriteSizeToContent.IsEmpty())
 	{
-		UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::SizeToContent"), *Args.SlotName),
-		                                                          Args.OverwriteSizeToContent);
+		ScenarioProperties.Add(TEXT("SizeToContent"), Args.OverwriteSizeToContent);
 	}
+
+	UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, Args.SlotName, ScenarioProperties);
 
 	Status = EShidenProcessStatus::Next;
 }
@@ -207,9 +199,7 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
                                        FString& ErrorMessage)
 {
 	UImage* Image;
-	bool bSuccess;
-	ShidenWidget->FindImage(Args.SlotName, Image, bSuccess);
-	if (!bSuccess)
+	if (!ShidenWidget->TryFindImage(Args.SlotName, Image))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *Args.SlotName);
 		return false;
@@ -219,26 +209,24 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 	if (!bImagePathIsEmpty)
 	{
 		UObject* Asset;
-		UShidenBlueprintLibrary::GetOrLoadAsset(Args.ImagePath, Asset, bSuccess);
-		if (!bSuccess)
+		if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.ImagePath, Asset))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to load asset %s."), *Args.ImagePath);
 			return false;
 		}
 
-		USlateBrushAsset* SlateBrushAsset = Cast<USlateBrushAsset>(Asset);
+		const TObjectPtr<USlateBrushAsset> SlateBrushAsset = Cast<USlateBrushAsset>(Asset);
 		if (!SlateBrushAsset)
 		{
 			ErrorMessage = FString::Printf(TEXT("Asset %s is not USlateBrushAsset."), *Args.ImagePath);
 			return false;
 		}
 
-		UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 		if (!Args.OverwritePosition.IsEmpty())
 		{
 			FVector2D Position;
-			bSuccess = Position.InitFromString(Args.OverwritePosition);
-			if (!bSuccess)
+			if (!Position.InitFromString(Args.OverwritePosition))
 			{
 				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.OverwritePosition);
 				return false;
@@ -249,8 +237,7 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 		if (!Args.OverwriteSize.IsEmpty())
 		{
 			FVector2D Size;
-			bSuccess = Size.InitFromString(Args.OverwriteSize);
-			if (!bSuccess)
+			if (!Size.InitFromString(Args.OverwriteSize))
 			{
 				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.OverwriteSize);
 				return false;
@@ -266,10 +253,9 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 		Image->SetBrushFromAsset(SlateBrushAsset);
 	}
 
-	ShidenWidget->StartImageFade(Args.SlotName, Image, Args.FadeFunction, Animate ? Args.FadeDuration : 0.0f,
+	return ShidenWidget->TryStartImageFade(Args.SlotName, Image, Args.FadeFunction, Animate ? Args.FadeDuration : 0.0f,
 	                             true, bImagePathIsEmpty, Args.BlendExp, Args.Steps, OwnerProcessName, bImagePathIsEmpty,
-	                             bSuccess, ErrorMessage);
-	return true;
+	                             ErrorMessage);
 }
 
 bool UShidenImageCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)

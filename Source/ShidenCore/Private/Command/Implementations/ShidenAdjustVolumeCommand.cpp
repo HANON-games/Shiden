@@ -17,9 +17,9 @@ bool UShidenAdjustVolumeCommand::TryParseCommand(const FShidenCommand& Command, 
 		return false;
 	}
 
-	if (Args.Volume < 0.0f || Args.Volume > 1.0f)
+	if (Args.Volume < 0.0f)
 	{
-		ErrorMessage = FString::Printf(TEXT("Invalid Volume: %f. Must be between 0.0 and 1.0."), Args.Volume);
+		ErrorMessage = FString::Printf(TEXT("Invalid Volume: %f.  non-negative."), Args.Volume);
 		return false;
 	}
 
@@ -63,8 +63,22 @@ void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& Pr
 		}
 	}
 
-	const FString Key = FString::Printf(TEXT("%s::Volume"), *FString::FromInt(Args.TrackId));
-	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, FString::SanitizeFloat(Args.Volume));
+	// Update the volume property in the scenario
+	const FString PropertyKey = FString::FromInt(Args.TrackId);
+	if (Args.Volume == 0.0f)
+	{
+		UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(TEXT("Sound"), PropertyKey);
+	}
+	else
+	{
+		FShidenScenarioProperty ScenarioProperty;
+		UShidenScenarioBlueprintLibrary::FindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty);
+		TMap<FString, FString> ScenarioProperties;
+		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
+		ScenarioProperties.Add(TEXT("Volume"), FString::SanitizeFloat(Args.Volume));
+		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("Sound"), PropertyKey, ScenarioProperties);
+	}
+
 	Status = EShidenProcessStatus::Next;
 }
 

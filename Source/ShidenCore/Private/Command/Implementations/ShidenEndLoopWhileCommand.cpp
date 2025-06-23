@@ -12,7 +12,7 @@ void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& Pr
 	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = TEXT("Failed to find EndLoopWhile command.");
@@ -21,24 +21,19 @@ void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& Pr
 
 	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
 	UShidenScenario* Scenario = nullptr;
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioProgress.ScenarioId, Scenario, bSuccess);
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = FString::Printf(TEXT("Failed to get scenario from cache for %s."), *ProcessName);
 		return;
 	}
 
-	FindLoopWhileIndex(ProcessName, ScenarioProgress.CurrentIndex, Scenario->Commands, bSuccess, ErrorMessage);
-
-	Status = bSuccess
+	Status = TryFindLoopWhileIndex(ProcessName, ScenarioProgress.CurrentIndex, Scenario->Commands, ErrorMessage)
 		         ? EShidenProcessStatus::Next
 		         : EShidenProcessStatus::Error;
 }
 
-void UShidenEndLoopWhileCommand::FindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands,
-                                                    bool& bSuccess, FString& ErrorMessage)
+bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands, FString& ErrorMessage)
 {
 	for (int32 Index = CurrentIndex - 1; Index >= 0; Index--)
 	{
@@ -49,30 +44,26 @@ void UShidenEndLoopWhileCommand::FindLoopWhileIndex(const FString& ProcessName, 
 		}
 		if (Command.CommandName == TEXT("LoopWhile"))
 		{
-			bSuccess = true;
 			UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, Index - 1);
-			return;
+			return true;
 		}
 		if (Command.CommandName == TEXT("EndLoopWhile"))
 		{
 			int32 ResultIndex;
-			FindLoopWhileIndexWithoutCheckCondition(ProcessName, Index, Commands, ResultIndex, bSuccess, ErrorMessage);
-			if (!bSuccess)
+			if (!TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, Index, Commands, ResultIndex, ErrorMessage))
 			{
-				return;
+				return false;
 			}
-			FindLoopWhileIndex(ProcessName, ResultIndex, Commands, bSuccess, ErrorMessage);
-			return;
+			return TryFindLoopWhileIndex(ProcessName, ResultIndex, Commands, ErrorMessage);
 		}
 	}
 
-	bSuccess = false;
 	ErrorMessage = TEXT("Failed to find LoopWhile command.");
+	return false;
 }
 
-void UShidenEndLoopWhileCommand::FindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex,
-                                                                         const TArray<FShidenCommand>& Commands, int32& ResultIndex, bool& bSuccess,
-                                                                         FString& ErrorMessage)
+bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex,
+                                                                            const TArray<FShidenCommand>& Commands, int32& ResultIndex, FString& ErrorMessage)
 {
 	for (int32 Index = CurrentIndex - 1; Index >= 0; Index--)
 	{
@@ -84,22 +75,19 @@ void UShidenEndLoopWhileCommand::FindLoopWhileIndexWithoutCheckCondition(const F
 		if (Command.CommandName == TEXT("LoopWhile"))
 		{
 			ResultIndex = Index;
-			bSuccess = true;
-			return;
+			return true;
 		}
 		if (Command.CommandName == TEXT("EndLoopWhile"))
 		{
-			FindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, bSuccess, ErrorMessage);
-			if (!bSuccess)
+			if (!TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, ErrorMessage))
 			{
 				ResultIndex = 0;
-				return;
+				return false;
 			}
-			FindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, bSuccess, ErrorMessage);
-			return;
+			return TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, ErrorMessage);
 		}
 	}
 
-	bSuccess = false;
 	ErrorMessage = TEXT("Failed to find LoopWhile command.");
+	return false;
 }

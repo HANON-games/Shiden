@@ -20,23 +20,18 @@ class SHIDENCORE_API UShidenAdjustVolumeCommand : public UShidenCommandObject
 		bool bWaitForCompletion;
 	};
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* ShidenWidget,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
-	                                              FString& ErrorMessage) override;
+	                                              UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage) override;
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* ShidenWidget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, UObject* CallerObject,
-	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
-	                                           FString& ErrorMessage) override;
+	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
 	static bool TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage);
 

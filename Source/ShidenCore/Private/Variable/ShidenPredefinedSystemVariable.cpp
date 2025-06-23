@@ -7,13 +7,12 @@
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name,
                                                                       FShidenPredefinedSystemVariableDefinition& Definition) const
 {
-	const FShidenPredefinedSystemVariableDefinition* Temp = Definitions.FindByKey(Name);
-	if (!Temp)
+	if (const FShidenPredefinedSystemVariableDefinition* Temp = Definitions.FindByKey(Name))
 	{
-		return false;
+		Definition = *Temp;
+		return true;
 	}
-	Definition = *Temp;
-	return true;
+	return false;
 }
 
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value,
@@ -35,14 +34,13 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::Contains(const FString& Nam
 
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const
 {
-	const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name);
-	if (!Definition)
+	if (const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name))
 	{
-		return false;
+		Type = Definition->Type;
+		Value = Definition->GetVariable();
+		return true;
 	}
-	Type = Definition->Type;
-	Value = Definition->GetVariable();
-	return true;
+	return false;
 }
 
 SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll() const

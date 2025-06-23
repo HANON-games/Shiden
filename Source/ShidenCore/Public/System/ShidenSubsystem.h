@@ -74,7 +74,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	void BeginPlay(bool _)
+	void BeginPlay(bool)
 	{
 		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);

@@ -5,7 +5,7 @@
 #include "ShidenPreset.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenPreset
+struct SHIDENCORE_API FShidenPreset
 {
 	GENERATED_BODY()
 

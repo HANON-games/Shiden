@@ -13,6 +13,7 @@ UCLASS()
 class UShidenSoundPropertyView : public UContentWidget
 {
 	GENERATED_UCLASS_BODY()
+	
 	// UVisual interface
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	// End of UVisual interface
@@ -23,13 +24,13 @@ class UShidenSoundPropertyView : public UContentWidget
 	FOnAssetChanged OnAssetChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "View")
-	void SetSoundClass(USoundClass* InSoundClass);
+	void SetSoundClass(USoundClass* NewSoundClass);
 
 	UFUNCTION(BlueprintPure, Category = "View")
 	USoundClass* GetSoundClass() const;
 
-	UFUNCTION(BlueprintCallable, Category = "View")
-	void SetSelectedAsset(USoundBase* InAsset, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "View", meta = (DisplayName = "Set Selected Asset"))
+	UPARAM(DisplayName = "Success") bool TrySetSelectedAsset(USoundBase* NewAsset);
 
 	UFUNCTION(BlueprintPure, Category = "View")
 	USoundBase* GetSelectedAsset() const;

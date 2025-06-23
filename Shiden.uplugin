@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "0.17.2",
+	"VersionName": "1.0.0",
 	"FriendlyName": "Shiden Visual Novel Editor",
 	"Description": "A simple visual novel editor",
 	"Category": "Visual Novel",
@@ -11,7 +11,7 @@
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": true,
-	"IsBetaVersion": true,
+	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [

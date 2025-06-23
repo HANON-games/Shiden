@@ -7,7 +7,7 @@
 #include "ShidenVariableDefinition.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenVariableDefinition
+struct SHIDENCORE_API FShidenVariableDefinition
 {
 	GENERATED_BODY()
 
@@ -28,13 +28,13 @@ struct FShidenVariableDefinition
 
 	static const FShidenVariableDefinition Empty;
 
-	bool operator==(const FShidenVariableDefinition& That) const noexcept
+	bool operator==(const FShidenVariableDefinition& Other) const noexcept
 	{
-		return Name == That.Name;
+		return Name == Other.Name;
 	}
 
-	bool operator==(const FString& That) const noexcept
+	bool operator==(const FString& Other) const noexcept
 	{
-		return Name == That;
+		return Name == Other;
 	}
 };

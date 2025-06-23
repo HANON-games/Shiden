@@ -1,16 +1,16 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "SGraphPinShidenCommandName.h"
-
 #include "Containers/Array.h"
 #include "Command/ShidenCommandDefinitions.h"
 #include "HAL/PlatformCrt.h"
 #include "Templates/SharedPointer.h"
 #include "UObject/NameTypes.h"
 
+// ReSharper disable once CppUE4CodingStandardNamingViolationWarning
 class UEdGraphPin;
 
-void SGraphPinShidenCommandName::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj,
+void SGraphPinShidenCommandName::Construct(const FArguments& _, UEdGraphPin* InGraphPinObj,
                                            const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions)
 {
 	RefreshNameList(InCommandDefinitions);

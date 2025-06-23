@@ -17,38 +17,39 @@ SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& Pa
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
 	ShidenEditorConfig->EditScenarioPath = Path;
-	ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	ShidenEditorConfig->TryUpdateDefaultConfigFile();
+	UpdateConfig(ShidenEditorConfig);
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSound(const bool bBool)
+SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSound(const bool bEnabled)
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
-	ShidenEditorConfig->bPreviewSound = bBool;
-	ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	ShidenEditorConfig->TryUpdateDefaultConfigFile();
+	ShidenEditorConfig->bPreviewSound = bEnabled;
+	UpdateConfig(ShidenEditorConfig);
 }
 
 SHIDENEDITOR_API void UShidenEditorConfig::SetShidenDebuggerRefreshInterval(const float Interval)
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
 	ShidenEditorConfig->ShidenDebuggerRefreshInterval = Interval;
-	ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	ShidenEditorConfig->TryUpdateDefaultConfigFile();
+	UpdateConfig(ShidenEditorConfig);
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetAutoSaveScenario(const bool bBool)
+SHIDENEDITOR_API void UShidenEditorConfig::SetAutoSaveScenario(const bool bEnabled)
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
-	ShidenEditorConfig->bAutoSaveScenario = bBool;
-	ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	ShidenEditorConfig->TryUpdateDefaultConfigFile();
+	ShidenEditorConfig->bAutoSaveScenario = bEnabled;
+	UpdateConfig(ShidenEditorConfig);
 }
 
 SHIDENEDITOR_API void UShidenEditorConfig::SetDefaultCommand(const FString& CommandName)
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
 	ShidenEditorConfig->DefaultCommand = CommandName;
-	ShidenEditorConfig->SaveConfig(CPF_Config, *ShidenEditorConfig->GetDefaultConfigFilename());
-	ShidenEditorConfig->TryUpdateDefaultConfigFile();
+	UpdateConfig(ShidenEditorConfig);
+}
+
+SHIDENEDITOR_API void UShidenEditorConfig::UpdateConfig(const TObjectPtr<UShidenEditorConfig> Config)
+{
+	Config->SaveConfig(CPF_Config, *Config->GetDefaultConfigFilename());
+	Config->TryUpdateDefaultConfigFile();
 }

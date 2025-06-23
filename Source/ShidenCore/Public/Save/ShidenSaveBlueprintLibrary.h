@@ -8,7 +8,7 @@
 
 using namespace UE::Tasks;
 
-DECLARE_DELEGATE_OneParam(FAsyncSaveDataDelegate, bool)
+DECLARE_DELEGATE_OneParam(FOnSaveCompletedDelegate, bool)
 
 UCLASS()
 class SHIDENCORE_API UShidenSaveBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -18,6 +18,8 @@ class SHIDENCORE_API UShidenSaveBlueprintLibrary : public UBlueprintFunctionLibr
 	static FPipe SaveGamePipe;
 
 	static void WaitUntilEmpty();
+
+	static bool DoesSaveSlotsExist();
 
 public:
 	/**
@@ -35,19 +37,27 @@ public:
 	 * @param SlotName The name of the save slot to save to
 	 * @param Thumbnail The thumbnail image to save with the data
 	 * @param SlotMetadata Additional metadata to store with the save
-	 * @param bSuccess [out] True if the save operation was successful
+	 * @return True if the save operation was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (AutoCreateRefTerm = "SlotMetadata"))
-	static void SaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (AutoCreateRefTerm = "SlotMetadata", DisplayName = "Save User Data"))
+	static UPARAM(DisplayName = "Success") bool TrySaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata);
 
 	/**
 	 * Saves system data.
 	 * 
-	 * @param bSuccess [out] True if the save operation was successful
+	 * @return True if the save operation was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
-	static void SaveSystemData(bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (DisplayName = "Save System Data"))
+	static UPARAM(DisplayName = "Success") bool TrySaveSystemData();
 
+	/**
+	 * Saves predefined system data.
+	 * 
+	 * @return True if the save operation was successful
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (DisplayName = "Save Predefined System Data"))
+	static UPARAM(DisplayName = "Success") bool TrySavePredefinedSystemData();
+	
 	/**
 	 * Asynchronously saves user data to a specified save slot.
 	 * 
@@ -57,17 +67,24 @@ public:
 	 * @param SavedDelegate Delegate called when the save operation completes
 	 */
 	static void AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata,
-	                              FAsyncSaveDataDelegate SavedDelegate = FAsyncSaveDataDelegate());
+	                              FOnSaveCompletedDelegate SavedDelegate = FOnSaveCompletedDelegate());
 
 	/**
-	 * Asynchronously saves system-wide settings and configuration data.
+	 * Asynchronously saves system data.
 	 * 
 	 * @param SavedDelegate Delegate called when the save operation completes
 	 */
-	static void AsyncSaveSystemData(FAsyncSaveDataDelegate SavedDelegate = FAsyncSaveDataDelegate());
+	static void AsyncSaveSystemData(FOnSaveCompletedDelegate SavedDelegate = FOnSaveCompletedDelegate());
 
 	/**
-	 * Returns a reference to all available save slots.
+	 * Asynchronously saves predefined system data.
+	 * 
+	 * @param SavedDelegate Delegate called when the save operation completes
+	 */
+	static void AsyncSavePredefinedSystemData(FOnSaveCompletedDelegate SavedDelegate = FOnSaveCompletedDelegate());
+
+	/**
+	 * Gets a reference to all available save slots.
 	 * 
 	 * @return Reference to a map of save slots, where the key is the slot name
 	 */
@@ -86,18 +103,24 @@ public:
 	 * Gets the name of the most recently used save slot.
 	 * 
 	 * @param SlotName [out] The name of the most recent save slot
-	 * @param bSuccess [out] True if a save slot was found
+	 * @return True if a save slot was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
-	static void GetLatestUserSaveSlotName(FString& SlotName, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (DisplayName = "Get Latest User Save Slot Name"))
+	static UPARAM(DisplayName = "Success") bool TryGetLatestUserSaveSlotName(FString& SlotName);
 
 	/**
 	 * Loads system data.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
+	static void LoadSystemData();
+
+	/**
+	 * Loads predefined system data.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (WorldContext = "WorldContextObject"))
-	static void LoadSystemData(const UObject* WorldContextObject);
+	static void LoadPredefinedSystemData(const UObject* WorldContextObject);
 
 	/**
 	 * Deletes user data from a specified save slot.
@@ -112,6 +135,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static void DeleteSystemData();
+
+	/**
+	 * Deletes predefined system data.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
+	static void DeletePredefinedSystemData();
 
 	/**
 	 * Checks if any user save data exists.
@@ -139,12 +168,26 @@ public:
 	static bool DoesSystemDataExist();
 
 	/**
+	 * Checks if predefined system data exists.
+	 * 
+	 * @return True if predefined system data exists
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
+	static bool DoesPredefinedSystemDataExist();
+	
+	/**
 	 * Clears all loaded system data from memory.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
+	static void ClearLoadedSystemData();
+
+	/**
+	 * Clears all loaded predefined system data from memory.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (WorldContext = "WorldContextObject"))
-	static void ClearLoadedSystemData(const UObject* WorldContextObject);
+	static void ClearLoadedPredefinedSystemData(const UObject* WorldContextObject);
 
 	/**
 	 * Clears all loaded user data from memory.

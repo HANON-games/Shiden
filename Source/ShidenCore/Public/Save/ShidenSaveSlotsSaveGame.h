@@ -7,7 +7,7 @@
 #include "ShidenSaveSlotsSaveGame.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenSaveSlot
+struct SHIDENCORE_API FShidenSaveSlot
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,7 @@ struct FShidenSaveSlot
 	}
 };
 
-UCLASS(Category = "Shiden Visual Novel|Save Game")
+UCLASS()
 class SHIDENCORE_API UShidenSaveSlotsSaveGame : public USaveGame
 {
 	GENERATED_BODY()

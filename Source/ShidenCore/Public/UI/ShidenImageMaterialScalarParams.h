@@ -7,7 +7,7 @@
 #include "ShidenImageMaterialScalarParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenImageMaterialScalarParams
+struct SHIDENCORE_API FShidenImageMaterialScalarParams
 {
 	GENERATED_BODY()
 

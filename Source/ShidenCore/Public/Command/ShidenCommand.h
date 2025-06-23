@@ -5,7 +5,7 @@
 #include "ShidenCommand.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenCommand
+struct SHIDENCORE_API FShidenCommand
 {
 	GENERATED_BODY()
 

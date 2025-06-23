@@ -7,7 +7,7 @@
 #include "ShidenImageFadeParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenImageFadeParams
+struct SHIDENCORE_API FShidenImageFadeParams
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ struct FShidenImageFadeParams
 	bool bIsWhiteFade = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	bool bToBeTransparent = false;
+	bool bShouldBeTransparent = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	TEnumAsByte<EEasingFunc::Type> FadeFunction = EEasingFunc::Linear;
@@ -39,5 +39,5 @@ struct FShidenImageFadeParams
 	FString OwnerProcessName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	bool ClearImageOnCompleted = false;
+	bool bShouldClearImageOnCompleted = false;
 };

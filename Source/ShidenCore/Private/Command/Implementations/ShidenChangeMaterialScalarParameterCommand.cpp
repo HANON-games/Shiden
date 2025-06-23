@@ -26,13 +26,13 @@ bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenC
 	return TryConvertToEasingFunc(EasingFuncStr, Args.EasingFunction, ErrorMessage);
 }
 
-void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
+void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
                                                                                      UShidenWidget* ShidenWidget,
                                                                                      const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                                      UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                                      FString& ErrorMessage)
 {
-	for (const TPair<FString, FString>& Pair : ScenarioProperties)
+	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
 		FString TargetType, TargetName, ParameterName;
 		Tie(TargetType, TargetName, ParameterName) = ParseScenarioPropertyKey(Pair.Key);
@@ -45,7 +45,7 @@ void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementa
 			.EasingFunction = EEasingFunc::Linear,
 			.Duration = 0,
 			.ChangeType = TEXT("AbsoluteValue"),
-			.EndValue = FCString::Atof(*Pair.Value),
+			.EndValue = FCString::Atof(*Pair.Value.GetValueAsString()),
 			.Steps = 0,
 			.BlendExp = 0,
 			.bWaitForCompletion = true
@@ -125,8 +125,8 @@ void UShidenChangeMaterialScalarParameterCommand::PreviewCommand_Implementation(
 }
 
 bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args,
-                                                                     const float OriginalEndValue,
-                                                                     UShidenWidget* ShidenWidget, float& ResultValue, FString& ErrorMessage)
+                                                                     const float OriginalEndValue, UShidenWidget* ShidenWidget,
+                                                                     float& ResultValue, FString& ErrorMessage)
 {
 	if (Args.ChangeType != TEXT("AddToCurrent"))
 	{
@@ -136,9 +136,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 
 	const FString MaterialParamsKey = ShidenWidget->MakeMaterialParamsKey(Args.TargetName, Args.ParameterName);
 	FShidenImageMaterialScalarParams Params;
-	bool bSuccess;
-	ShidenWidget->FindImageMaterialScalarParams(MaterialParamsKey, Params, bSuccess);
-	if (bSuccess)
+	if (ShidenWidget->TryFindImageMaterialScalarParams(MaterialParamsKey, Params))
 	{
 		ResultValue = OriginalEndValue + Params.EndValue;
 		return true;
@@ -147,15 +145,13 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 	if (Args.Target == TEXT("Image"))
 	{
 		UImage* Image;
-		ShidenWidget->FindImage(Args.TargetName, Image, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindImage(Args.TargetName, Image))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *Args.TargetName);
 			return false;
 		}
 
-		const TObjectPtr<UObject> Resource = Image->GetBrush().GetResourceObject();
-		const TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial = Cast<UMaterialInstanceDynamic>(Resource);
+		const TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial = Image->GetDynamicMaterial();
 		if (!DynamicMaterial)
 		{
 			ErrorMessage = FString::Printf(TEXT("Material of image \"%s\" is not found."), *Args.TargetName);
@@ -171,8 +167,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 	if (Args.Target == TEXT("RetainerBox"))
 	{
 		URetainerBox* RetainerBox;
-		ShidenWidget->FindRetainerBox(Args.TargetName, RetainerBox, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find retainer box %s."), *Args.TargetName);
 			return false;
@@ -201,35 +196,29 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 	if (Args.Target == TEXT("Image"))
 	{
 		UImage* Image;
-		bool bSuccess;
-		ShidenWidget->FindImage(Args.TargetName, Image, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindImage(Args.TargetName, Image))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find image %s."), *Args.TargetName);
 			return false;
 		}
 
-		ShidenWidget->StartImageMaterialScalarChange(Args.TargetName, Image, FName(Args.ParameterName),
+		return ShidenWidget->TryStartImageMaterialScalarChange(Args.TargetName, Image, FName(Args.ParameterName),
 		                                             Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
-		                                             ProcessName, bSuccess, ErrorMessage);
-		return bSuccess;
+		                                             ProcessName, ErrorMessage);
 	}
 
 	if (Args.Target == TEXT("RetainerBox"))
 	{
 		URetainerBox* RetainerBox;
-		bool bSuccess;
-		ShidenWidget->FindRetainerBox(Args.TargetName, RetainerBox, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to find retainer box %s."), *Args.TargetName);
 			return false;
 		}
 
-		ShidenWidget->StartRetainerBoxMaterialScalarChange(Args.TargetName, RetainerBox, FName(Args.ParameterName),
+		return ShidenWidget->TryStartRetainerBoxMaterialScalarChange(Args.TargetName, RetainerBox, FName(Args.ParameterName),
 		                                                   Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
-		                                                   ProcessName, bSuccess, ErrorMessage);
-		return bSuccess;
+		                                                   ProcessName, ErrorMessage);
 	}
 
 	ErrorMessage = FString::Printf(TEXT("Invalid target type %s."), *Args.Target);

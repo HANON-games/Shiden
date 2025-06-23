@@ -34,20 +34,20 @@ public:
 	/**
 	 * Sets the auto text mode state.
 	 * 
-	 * @param bMode True to enable auto text mode, false to disable
+	 * @param bEnabled True to enable auto text mode, false to disable
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|System")
-	static void SetAutoTextMode(const bool bMode);
+	static void SetAutoTextMode(const bool bEnabled);
 
 	/**
 	 * Gets an asset by path, loading it if necessary.
 	 * 
 	 * @param ObjectPath The path to the asset
 	 * @param Asset [out] The loaded asset object
-	 * @param bSuccess [out] True if the asset was successfully retrieved or loaded
+	 * @return True if the asset was successfully retrieved or loaded
 	 */
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Utility")
-	static void GetOrLoadAsset(const FString& ObjectPath, UObject*& Asset, bool& bSuccess);
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Utility", meta = (DisplayName = "Get or Load Asset"))
+	static UPARAM(DisplayName = "Success") bool TryGetOrLoadAsset(const FString& ObjectPath, UObject*& Asset);
 
 	/**
 	 * Unloads unused assets from memory.
@@ -118,32 +118,32 @@ public:
 
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static void CopyToClipboard(const FString& Str);
+	static void CopyToClipboard(const FString& Text);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static void GetClipboardContent(FString& Dest);
+	static void GetClipboardContent(FString& ClipboardText);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static int32 GetParsedLength(const FString& Text);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static FString GetCharactersWithParsedLength(const FString& Text, int32 Len);
-	
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static bool TryParseWaitTimeFromLastTag(const FString& RawText, int32 Length, float& OutWaitTime);
+	static FString GetCharactersWithParsedLength(const FString& Text, int32 Length);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility", meta = (DisplayName = "Parse Wait Time from Last Tag"))
+	static UPARAM(DisplayName = "Success") bool TryParseWaitTimeFromLastTag(const FString& RawText, const int32 Length, float& WaitTime);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility",
 		meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", Duration = "0.2", Keywords = "sleep"))
-	static void MultiThreadDelay(UObject* WorldContextObject, float Duration, FLatentActionInfo LatentInfo);
+	static void MultiThreadDelay(UObject* WorldContextObject, const float Duration, FLatentActionInfo LatentInfo);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static UClass* ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Utility")
-	static FString GetObjectPathFromClass(const UClass* InClass);
+	static FString GetObjectPathFromClass(const UClass* Class);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
-	static void GetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility", meta = (DisplayName = "Get Sound Type from Sound Base"))
+	static UPARAM(DisplayName = "Success") bool TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType);
 
 	UFUNCTION()
 	static void InitCommandDefinitions();
@@ -153,6 +153,9 @@ public:
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintInternalUseOnly = "true"))
 	static FString GetCommandArgument(const FShidenCommand& Command, const FString& ArgName);
+
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Utility")
+	static bool IsValidSoftObjectPath(const FString& ObjectPath);
 
 private:
 	static FRegexPattern& GetSelfClosingTagPattern();

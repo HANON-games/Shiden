@@ -13,14 +13,12 @@ class SHIDENCORE_API UShidenElseIfCommand : public UShidenCommandObject
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, UObject* CallerObject,
-	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
-	                                           FString& ErrorMessage) override;
+	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
-	static void FindEndIfIndex(const FString& ProcessName, bool& bSuccess, FString& ErrorMessage);
+	static bool TryFindEndIfIndex(const FString& ProcessName, FString& ErrorMessage);
 };

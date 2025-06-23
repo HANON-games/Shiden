@@ -1,11 +1,13 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/ShidenCommandObject.h"
+#include "Serialization/JsonSerializer.h"
 
-SHIDENCORE_API void UShidenCommandObject::RestoreFromSaveData_Implementation(
-	const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
-	const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
-	EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
+SHIDENCORE_API void UShidenCommandObject::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
+                                                                             UShidenWidget* ShidenWidget,
+                                                                             const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                             UObject* CallerObject,
+                                                                             EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
 	Status = EShidenInitFromSaveDataStatus::Complete;
 	ErrorMessage = FString();

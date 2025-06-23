@@ -7,7 +7,7 @@
 #include "ShidenSoundInfo.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenSoundInfo
+struct SHIDENCORE_API FShidenSoundInfo
 {
 	GENERATED_BODY()
 
@@ -42,18 +42,18 @@ struct FShidenSoundInfo
 	{
 	}
 
-	FShidenSoundInfo(const int32 InTrackId, const EShidenSoundType InType, const FString& InSoundPath,
-	                 const float InStartVolumeMultiplier, const float InEndVolumeMultiplier, const float InPitchMultiplier,
-	                 const float InStartTime, const EAudioFaderCurve InAudioFaderCurve, const float InFadeDuration)
-		: TrackId(InTrackId)
-		  , Type(InType)
-		  , SoundPath(InSoundPath)
-		  , StartVolumeMultiplier(InStartVolumeMultiplier)
-		  , EndVolumeMultiplier(InEndVolumeMultiplier)
-		  , PitchMultiplier(InPitchMultiplier)
-		  , StartTime(InStartTime)
-		  , AudioFaderCurve(InAudioFaderCurve)
-		  , FadeDuration(InFadeDuration)
+	FShidenSoundInfo(const int32 TrackId, const EShidenSoundType Type, const FString& SoundPath,
+	                 const float StartVolumeMultiplier, const float EndVolumeMultiplier, const float PitchMultiplier,
+	                 const float StartTime, const EAudioFaderCurve AudioFaderCurve, const float FadeDuration)
+		: TrackId(TrackId)
+		  , Type(Type)
+		  , SoundPath(SoundPath)
+		  , StartVolumeMultiplier(StartVolumeMultiplier)
+		  , EndVolumeMultiplier(EndVolumeMultiplier)
+		  , PitchMultiplier(PitchMultiplier)
+		  , StartTime(StartTime)
+		  , AudioFaderCurve(AudioFaderCurve)
+		  , FadeDuration(FadeDuration)
 	{
 	}
 };

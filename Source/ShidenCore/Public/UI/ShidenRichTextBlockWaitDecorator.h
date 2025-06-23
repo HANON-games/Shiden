@@ -19,5 +19,5 @@ class UShidenRichTextBlockWaitDecorator : public URichTextBlockDecorator
 public:
 	SHIDENCORE_API explicit UShidenRichTextBlockWaitDecorator(const FObjectInitializer& ObjectInitializer);
 
-	SHIDENCORE_API virtual TSharedPtr<ITextDecorator> CreateDecorator(URichTextBlock* InOwner) override;
+	SHIDENCORE_API virtual TSharedPtr<ITextDecorator> CreateDecorator(URichTextBlock* Owner) override;
 };

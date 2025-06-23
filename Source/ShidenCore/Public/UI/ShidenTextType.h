@@ -5,7 +5,7 @@
 #include "ShidenTextType.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenTextType
+struct SHIDENCORE_API FShidenTextType
 {
 	GENERATED_BODY()
 

@@ -9,6 +9,7 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
 class UShidenCommandDefinitions;
+// ReSharper disable once CppUE4CodingStandardNamingViolationWarning
 class UEdGraphPin;
 
 class SHIDENK2NODE_API SGraphPinShidenCommandName final : public SGraphPinNameList
@@ -20,7 +21,7 @@ public:
 
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions);
+	void Construct(const FArguments& _, UEdGraphPin* InGraphPinObj, const TObjectPtr<UShidenCommandDefinitions> InCommandDefinitions);
 
 	SGraphPinShidenCommandName();
 	virtual ~SGraphPinShidenCommandName() override;

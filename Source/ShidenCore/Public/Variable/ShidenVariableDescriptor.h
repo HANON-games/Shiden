@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ShidenVariableType.h"
+#include "ShidenAssetPathType.h"
 #include "ShidenVariableDescriptor.generated.h"
 
 USTRUCT(BlueprintType)
@@ -25,10 +26,10 @@ struct SHIDENCORE_API FShidenVariableDescriptor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal|Variables")
 	FString Value;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal|Variables")
 	FString DefaultValue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal|Variables")
 	bool bIsReadOnly = false;
 
 	FShidenVariableDescriptor()

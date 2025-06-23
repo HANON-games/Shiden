@@ -11,9 +11,7 @@ bool UShidenCalculationCommand::TryParseCommand(const FShidenCommand& Command, F
 	Args.Operator = Command.GetArg(TEXT("Operator"));
 	Args.Value = Command.GetArg(TEXT("Value"));
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::ConvertToVariableKind(VariableKindStr, Args.VariableKind, bSuccess);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenVariableKind."), *VariableKindStr);
 		return false;
@@ -68,11 +66,8 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	FVector2d Vector2Value;
 	FVector Vector3Value;
 	EShidenVariableType VariableType;
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
-	                                              bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, bSuccess,
-	                                              ErrorMessage);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
+												  bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -95,11 +90,9 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 			case EShidenVariableKind::SystemVariable:
 				return ShidenSubsystem->SystemVariable.TryUpdate(Args.VariableName, ResultValue);
 			case EShidenVariableKind::LocalVariable:
-				UShidenVariableBlueprintLibrary::UpdateLocalString(ProcessName, Args.VariableName, ResultValue, bSuccess, ErrorMessage);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdateLocalString(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
-				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue, bSuccess);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue);
 			}
 			return false;
 		}
@@ -119,12 +112,9 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 			case EShidenVariableKind::SystemVariable:
 				return ShidenSubsystem->SystemVariable.TryUpdate(Args.VariableName, ResultValue);
 			case EShidenVariableKind::LocalVariable:
-				UShidenVariableBlueprintLibrary::UpdateLocalInteger(ProcessName, Args.VariableName, ResultValue, bSuccess, ErrorMessage);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
-				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName,
-				                                                                        FString::FromInt(ResultValue), bSuccess);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::FromInt(ResultValue));
 			}
 			return false;
 		}
@@ -144,12 +134,9 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 			case EShidenVariableKind::SystemVariable:
 				return ShidenSubsystem->SystemVariable.TryUpdate(Args.VariableName, ResultValue);
 			case EShidenVariableKind::LocalVariable:
-				UShidenVariableBlueprintLibrary::UpdateLocalFloat(ProcessName, Args.VariableName, ResultValue, bSuccess, ErrorMessage);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdateLocalFloat(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
-				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName,
-				                                                                        FString::SanitizeFloat(ResultValue), bSuccess);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::SanitizeFloat(ResultValue));
 			}
 			return false;
 		}
@@ -170,12 +157,9 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 			case EShidenVariableKind::SystemVariable:
 				return ShidenSubsystem->SystemVariable.TryUpdate(Args.VariableName, ResultValue);
 			case EShidenVariableKind::LocalVariable:
-				UShidenVariableBlueprintLibrary::UpdateLocalVector2(ProcessName, Args.VariableName, ResultValue, bSuccess, ErrorMessage);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector2(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
-				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString(),
-				                                                                        bSuccess);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString());
 			}
 			return false;
 		}
@@ -196,12 +180,9 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 			case EShidenVariableKind::SystemVariable:
 				return ShidenSubsystem->SystemVariable.TryUpdate(Args.VariableName, ResultValue);
 			case EShidenVariableKind::LocalVariable:
-				UShidenVariableBlueprintLibrary::UpdateLocalVector3(ProcessName, Args.VariableName, ResultValue, bSuccess, ErrorMessage);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector3(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
-				UShidenVariableBlueprintLibrary::UpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString(),
-				                                                                        bSuccess);
-				return true;
+				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString());
 			}
 			return false;
 		}

@@ -12,7 +12,7 @@ struct SHIDENEDITOR_API FShidenPreviewCommand
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	int32 Index = -1;
+	int32 Index = INDEX_NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenCommand Command;

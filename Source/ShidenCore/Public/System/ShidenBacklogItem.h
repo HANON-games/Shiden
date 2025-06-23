@@ -3,11 +3,10 @@
 #pragma once
 
 #include "Command/ShidenCommand.h"
-
 #include "ShidenBacklogItem.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenBacklogItem
+struct SHIDENCORE_API FShidenBacklogItem
 {
 	GENERATED_BODY()
 

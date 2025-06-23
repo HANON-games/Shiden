@@ -29,130 +29,130 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 
 SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid& ScenarioId, const FString& ScenarioPath)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioPaths.Add(ScenarioId, ScenarioPath);
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->ScenarioPaths.Add(ScenarioId, ScenarioPath);
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FString>& Paths)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioPaths = Paths;
-	ShidenProjectConfig->ScenarioPaths.KeySort([](const FGuid& A, const FGuid& B)
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->ScenarioPaths = Paths;
+	ProjectConfig->ScenarioPaths.KeySort([](const FGuid& A, const FGuid& B)
 	{
 		return A < B;
 	});
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::SetScenarioDirectoryPath(const FString& Path)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->ScenarioDirectoryPath = Path;
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->ScenarioDirectoryPath = Path;
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::SetMacroDirectoryPath(const FString& Path)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->MacroDirectoryPath = Path;
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->MacroDirectoryPath = Path;
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::AddPreset(const FString& Name, const FShidenPreset& Preset)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->Presets.Add(Name, Preset);
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->Presets.Add(Name, Preset);
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
-SHIDENCORE_API void UShidenProjectConfig::GetPreset(const FString& Name, FShidenPreset& Preset, bool& bSuccess)
+SHIDENCORE_API bool UShidenProjectConfig::TryGetPreset(const FString& Name, FShidenPreset& Preset)
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->Presets.Contains(Name))
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (const FShidenPreset* FoundPreset = ProjectConfig->Presets.Find(Name))
 	{
-		Preset = ShidenProjectConfig->Presets[Name];
-		bSuccess = true;
-		return;
+		Preset = *FoundPreset;
+		return true;
 	}
-	bSuccess = false;
+	return false;
 }
 
 SHIDENCORE_API void UShidenProjectConfig::RemovePreset(const FString& Name)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->Presets.Remove(Name);
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->Presets.Remove(Name);
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::SetUserVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->UserVariableDefinitions = Definitions;
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->UserVariableDefinitions = Definitions;
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 SHIDENCORE_API void UShidenProjectConfig::SetSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
 {
-	const TObjectPtr<UShidenProjectConfig> ShidenProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	ShidenProjectConfig->SystemVariableDefinitions = Definitions;
-	ShidenProjectConfig->SaveConfig(CPF_Config, *ShidenProjectConfig->GetDefaultConfigFilename());
-	ShidenProjectConfig->TryUpdateDefaultConfigFile();
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	ProjectConfig->SystemVariableDefinitions = Definitions;
+	SaveProjectConfigChanges(ProjectConfig);
 }
 
 USoundClass* UShidenProjectConfig::GetMasterSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->MasterSoundClass.IsValid())
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (ProjectConfig->MasterSoundClass.IsValid())
 	{
-		return ShidenProjectConfig->MasterSoundClass.Get();
+		return ProjectConfig->MasterSoundClass.Get();
 	}
-	return ShidenProjectConfig->MasterSoundClass.LoadSynchronous();
+	return ProjectConfig->MasterSoundClass.LoadSynchronous();
 }
 
 USoundClass* UShidenProjectConfig::GetBGMSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->BGMSoundClass.IsValid())
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (ProjectConfig->BGMSoundClass.IsValid())
 	{
-		return ShidenProjectConfig->BGMSoundClass.Get();
+		return ProjectConfig->BGMSoundClass.Get();
 	}
-	return ShidenProjectConfig->BGMSoundClass.LoadSynchronous();
+	return ProjectConfig->BGMSoundClass.LoadSynchronous();
 }
 
 USoundClass* UShidenProjectConfig::GetSESoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->SESoundClass.IsValid())
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (ProjectConfig->SESoundClass.IsValid())
 	{
-		return ShidenProjectConfig->SESoundClass.Get();
+		return ProjectConfig->SESoundClass.Get();
 	}
-	return ShidenProjectConfig->SESoundClass.LoadSynchronous();
+	return ProjectConfig->SESoundClass.LoadSynchronous();
 }
 
 USoundClass* UShidenProjectConfig::GetVoiceSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->VoiceSoundClass.IsValid())
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (ProjectConfig->VoiceSoundClass.IsValid())
 	{
-		return ShidenProjectConfig->VoiceSoundClass.Get();
+		return ProjectConfig->VoiceSoundClass.Get();
 	}
-	return ShidenProjectConfig->VoiceSoundClass.LoadSynchronous();
+	return ProjectConfig->VoiceSoundClass.LoadSynchronous();
 }
 
 USoundMix* UShidenProjectConfig::GetSoundClassMix()
 {
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ShidenProjectConfig->SoundClassMix.IsValid())
+	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (ProjectConfig->SoundClassMix.IsValid())
 	{
-		return ShidenProjectConfig->SoundClassMix.Get();
+		return ProjectConfig->SoundClassMix.Get();
 	}
-	return ShidenProjectConfig->SoundClassMix.LoadSynchronous();
+	return ProjectConfig->SoundClassMix.LoadSynchronous();
+}
+
+void UShidenProjectConfig::SaveProjectConfigChanges(const TObjectPtr<UShidenProjectConfig> Config)
+{
+	if (Config)
+	{
+		Config->SaveConfig(CPF_Config, *Config->GetDefaultConfigFilename());
+		Config->TryUpdateDefaultConfigFile();
+	}
 }

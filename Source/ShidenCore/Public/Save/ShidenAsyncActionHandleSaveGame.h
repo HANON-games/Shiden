@@ -12,10 +12,11 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAsyncHandleSaveGame, bool, bSuccess);
 
 UENUM()
-enum class EShidenSaveGameOperationName : uint8
+enum class EShidenSaveOperation : uint8
 {
-	SaveUserData,
-	SaveSystemData,
+	User,
+	System,
+	PredefinedSystem,
 };
 
 UCLASS()
@@ -24,14 +25,33 @@ class SHIDENCORE_API UShidenAsyncActionHandleSaveGame : public UBlueprintAsyncAc
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable,
-		meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
+	/**
+	 * Asynchronously saves user data to a specified save slot.
+	 * @param WorldContextObject Object that provides context for the world
+	 * @param SlotName The name of the save slot to save to
+	 * @param Thumbnail The thumbnail image to save with the data
+	 * @param SlotMetadata Additional metadata to store with the save
+	 * @return The async action object that can be used to track completion
+	 */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
 	static UShidenAsyncActionHandleSaveGame* AsyncSaveUserData(UObject* WorldContextObject, const FString& SlotName, UTexture2D* Thumbnail,
 	                                                           const TMap<FString, FString>& SlotMetadata);
 
-	UFUNCTION(BlueprintCallable,
-		meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
+	/**
+	 * Asynchronously saves system data.
+	 * @param WorldContextObject Object that provides context for the world
+	 * @return The async action object that can be used to track completion
+	 */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
 	static UShidenAsyncActionHandleSaveGame* AsyncSaveSystemData(UObject* WorldContextObject);
+
+	/**
+	 * Asynchronously saves predefined system data.
+	 * @param WorldContextObject Object that provides context for the world
+	 * @return The async action object that can be used to track completion
+	 */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
+	static UShidenAsyncActionHandleSaveGame* AsyncPredefinedSaveSystemData(UObject* WorldContextObject);
 
 	virtual void Activate() override;
 
@@ -40,7 +60,7 @@ public:
 
 protected:
 	UPROPERTY()
-	EShidenSaveGameOperationName Operation;
+	EShidenSaveOperation Operation;
 
 	UPROPERTY()
 	FString SlotName;

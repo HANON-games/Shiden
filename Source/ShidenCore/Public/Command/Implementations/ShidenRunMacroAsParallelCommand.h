@@ -19,11 +19,9 @@ class SHIDENCORE_API UShidenRunMacroAsParallelCommand : public UShidenCommandObj
 		FGuid ScenarioId;
 	};
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* ShidenWidget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, UObject* CallerObject,
-	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
 	static bool TryParseCommand(const FShidenCommand& Command, FRunMacroAsParallelCommandArgs& Args, FString& ErrorMessage);

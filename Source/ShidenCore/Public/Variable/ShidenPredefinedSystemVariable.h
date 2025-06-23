@@ -114,89 +114,99 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 		FShidenPredefinedSystemVariableDefinition(
 			"SkipSpeedRate",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"30.0",
 			false,
 			[this] { return FString::SanitizeFloat(SkipSpeedRate); },
-			[this](const FString& InValue) { SkipSpeedRate = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { SkipSpeedRate = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"MasterVolume",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"1.0",
 			false,
 			[this] { return FString::SanitizeFloat(MasterVolume); },
-			[this](const FString& InValue) { MasterVolume = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { MasterVolume = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"BGMVolume",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"1.0",
 			false,
 			[this] { return FString::SanitizeFloat(BGMVolume); },
-			[this](const FString& InValue) { BGMVolume = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { BGMVolume = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"SEVolume",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"1.0",
 			false,
 			[this] { return FString::SanitizeFloat(SEVolume); },
-			[this](const FString& InValue) { SEVolume = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { SEVolume = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"VoiceVolume",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"1.0",
 			false,
 			[this] { return FString::SanitizeFloat(VoiceVolume); },
-			[this](const FString& InValue) { VoiceVolume = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { VoiceVolume = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"LanguageIndex",
 			EShidenVariableType::Integer,
+			EShidenAssetPathType::None,
 			"0",
 			false,
 			[this] { return FString::FromInt(LanguageIndex); },
-			[this](const FString& InValue) { LanguageIndex = FCString::Atoi(*InValue); }
+			[this](const FString&  Value) { LanguageIndex = FCString::Atoi(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"CharacterWaitTime",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"0.05",
 			false,
 			[this] { return FString::SanitizeFloat(CharacterWaitTime); },
-			[this](const FString& InValue) { CharacterWaitTime = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { CharacterWaitTime = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"AutoModeWaitTime",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"3.0",
 			false,
 			[this] { return FString::SanitizeFloat(AutoModeWaitTime); },
-			[this](const FString& InValue) { AutoModeWaitTime = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { AutoModeWaitTime = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"ShouldWaitForVoiceInAutoMode",
 			EShidenVariableType::Boolean,
+			EShidenAssetPathType::None,
 			"true",
 			false,
 			[this] { return bShouldWaitForVoiceInAutoMode ? TEXT("true") : TEXT("false"); },
-			[this](const FString& InValue) { bShouldWaitForVoiceInAutoMode = InValue.Compare("true", ESearchCase::IgnoreCase) == 0; }
+			[this](const FString&  Value) { bShouldWaitForVoiceInAutoMode =  Value.Compare("true", ESearchCase::IgnoreCase) == 0; }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"VoiceStopCondition",
 			EShidenVariableType::String,
+			EShidenAssetPathType::None,
 			"Never",
 			false,
 			[this] { return StaticEnum<EShidenVoiceStopCondition>()->GetDisplayValueAsText(VoiceStopCondition).ToString(); },
-			[this](const FString& InValue)
+			[this](const FString&  Value)
 			{
-				if (InValue.Compare("NextVoice", ESearchCase::IgnoreCase) == 0)
+				if ( Value.Compare("NextVoice", ESearchCase::IgnoreCase) == 0)
 				{
 					VoiceStopCondition = EShidenVoiceStopCondition::NextVoice;
 					return;
 				}
-				if (InValue.Compare("NextTextOrVoice", ESearchCase::IgnoreCase) == 0)
+				if ( Value.Compare("NextTextOrVoice", ESearchCase::IgnoreCase) == 0)
 				{
 					VoiceStopCondition = EShidenVoiceStopCondition::NextTextOrVoice;
 					return;
@@ -207,12 +217,13 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 		FShidenPredefinedSystemVariableDefinition(
 			"TextBlipTriggerMode",
 			EShidenVariableType::String,
+			EShidenAssetPathType::None,
 			"TimeInterval",
 			false,
 			[this] { return StaticEnum<EShidenTextBlipTriggerMode>()->GetDisplayValueAsText(TextBlipTriggerMode).ToString(); },
-			[this](const FString& InValue)
+			[this](const FString&  Value)
 			{
-				if (InValue.Compare("TimeInterval", ESearchCase::IgnoreCase) == 0)
+				if ( Value.Compare("TimeInterval", ESearchCase::IgnoreCase) == 0)
 				{
 					TextBlipTriggerMode = EShidenTextBlipTriggerMode::TimeInterval;
 					return;
@@ -224,33 +235,36 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 		FShidenPredefinedSystemVariableDefinition(
 			"BlipIntervalSeconds",
 			EShidenVariableType::Float,
+			EShidenAssetPathType::None,
 			"0.1",
 			false,
 			[this] { return FString::SanitizeFloat(BlipIntervalSeconds); },
-			[this](const FString& InValue) { BlipIntervalSeconds = FCString::Atof(*InValue); }
+			[this](const FString&  Value) { BlipIntervalSeconds = FCString::Atof(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"BlipIntervalCharacters",
 			EShidenVariableType::Integer,
+			EShidenAssetPathType::None,
 			"2",
 			false,
 			[this] { return FString::FromInt(BlipIntervalCharacters); },
-			[this](const FString& InValue) { BlipIntervalCharacters = FCString::Atoi(*InValue); }
+			[this](const FString&  Value) { BlipIntervalCharacters = FCString::Atoi(* Value); }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"SkipCondition",
 			EShidenVariableType::String,
+			EShidenAssetPathType::None,
 			"ReadOnly",
 			false,
 			[this] { return StaticEnum<EShidenSkipCondition>()->GetDisplayValueAsText(SkipCondition).ToString(); },
-			[this](const FString& InValue)
+			[this](const FString&  Value)
 			{
-				if (InValue.Compare("ReadOnly", ESearchCase::IgnoreCase) == 0)
+				if ( Value.Compare("ReadOnly", ESearchCase::IgnoreCase) == 0)
 				{
 					SkipCondition = EShidenSkipCondition::ReadOnly;
 					return;
 				}
-				if (InValue.Compare("All", ESearchCase::IgnoreCase) == 0)
+				if ( Value.Compare("All", ESearchCase::IgnoreCase) == 0)
 				{
 					SkipCondition = EShidenSkipCondition::All;
 					return;
@@ -261,14 +275,16 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 		FShidenPredefinedSystemVariableDefinition(
 			"ClickWaitingGlyph",
 			EShidenVariableType::String,
+			EShidenAssetPathType::None,
 			"",
 			false,
 			[this] { return ClickWaitingGlyph; },
-			[this](const FString& InValue) { ClickWaitingGlyph = InValue; }
+			[this](const FString&  Value) { ClickWaitingGlyph =  Value; }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"PlatformName",
 			EShidenVariableType::String,
+			EShidenAssetPathType::None,
 			"Windows",
 			true,
 			[this] { return PlatformName; },

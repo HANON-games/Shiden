@@ -13,41 +13,41 @@ SHIDENCORE_API void UShidenTextWidget::GetAllFullTexts_Implementation(TMap<FStri
 
 SHIDENCORE_API void UShidenTextWidget::GetFullText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
-	bSuccess = OriginalTexts.Contains(TextType);
-	if (!bSuccess)
+	if (!OriginalTexts.Contains(TextType))
 	{
 		Text = TEXT("");
+		bSuccess = false;
 		return;
 	}
 	Text = OriginalTexts.FindRef(TextType);
+	bSuccess = true;
 }
 
 SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
-	bSuccess = OriginalTexts.Contains(TextType);
-	if (!bSuccess)
+	if (!OriginalTexts.Contains(TextType))
 	{
 		Text = TEXT("");
+		bSuccess = false;
 		return;
 	}
 	const FString& Original = OriginalTexts.FindRef(TextType);
 	Text = UShidenBlueprintLibrary::GetCharactersWithParsedLength(Original, CurrentLength);
+	bSuccess = true;
 }
 
-SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened,
-                                                                 bool& bSuccess)
+SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess)
 {
-	bSuccess = true;
 	// ReSharper disable once CppExpressionWithoutSideEffects
 	OnOpened.ExecuteIfBound();
+	bSuccess = true;
 }
 
-SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed,
-                                                                  bool& bSuccess)
+SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess)
 {
-	bSuccess = true;
 	// ReSharper disable once CppExpressionWithoutSideEffects
 	OnClosed.ExecuteIfBound();
+	bSuccess = true;
 }
 
 SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int Length)
@@ -127,14 +127,12 @@ SHIDENCORE_API void UShidenTextWidget::NativeConstruct()
 
 void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, const FString& Text, bool& bSuccess)
 {
-	bSuccess = false;
 	const TMap<FString, FShidenTextType> TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
 	FString ResultText = Text;
 
 	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
 		check(ShidenSubsystem);
 
 		ResultText = ResultText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
@@ -153,8 +151,10 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 		CurrentLength = Text.Len();
 		RichTextBlock->SetText(FText::FromString(ResultText));
 		bSuccess = true;
+		return;
 	}
-	else if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
+
+	if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
 	{
 		if (Text.IsEmpty())
 		{
@@ -167,5 +167,8 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 		CurrentLength = Text.Len();
 		TextBlock->SetText(FText::FromString(ResultText));
 		bSuccess = true;
+		return;
 	}
+
+	bSuccess = false;
 }

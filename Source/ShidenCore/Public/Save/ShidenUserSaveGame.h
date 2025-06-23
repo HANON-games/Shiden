@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "GameFramework/SaveGame.h"
+#include "Save/ShidenBaseSaveGame.h"
 #include "Variable/ShidenVariable.h"
 #include "Scenario/ShidenScenarioProgressStack.h"
 #include "Scenario/ShidenScenarioProperties.h"
 #include "Variable/ShidenLocalVariable.h"
 #include "ShidenUserSaveGame.generated.h"
 
-UCLASS(Category = "Shiden Visual Novel|Save Game")
-class SHIDENCORE_API UShidenUserSaveGame : public USaveGame
+UCLASS()
+class SHIDENCORE_API UShidenUserSaveGame : public UShidenBaseSaveGame
 {
 	GENERATED_BODY()
 
@@ -26,10 +26,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FString, FShidenScenarioProperties> ScenarioProperties;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
-	FDateTime CreatedAt;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
-	FDateTime UpdatedAt;
 };
