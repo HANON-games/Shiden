@@ -51,7 +51,7 @@ public:
 	 * @return The async action object that can be used to track completion
 	 */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", Category = "Shiden Visual Novel|Save Game", WorldContext = "WorldContextObject"))
-	static UShidenAsyncActionHandleSaveGame* AsyncPredefinedSaveSystemData(UObject* WorldContextObject);
+	static UShidenAsyncActionHandleSaveGame* AsyncSavePredefinedSystemData(UObject* WorldContextObject);
 
 	virtual void Activate() override;
 

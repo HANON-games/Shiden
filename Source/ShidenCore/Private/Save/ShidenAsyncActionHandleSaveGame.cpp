@@ -27,7 +27,7 @@ UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveSys
 	return Action;
 }
 
-UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncPredefinedSaveSystemData(UObject* WorldContextObject)
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSavePredefinedSystemData(UObject* WorldContextObject)
 {
 	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
 	Action->Operation = EShidenSaveOperation::PredefinedSystem;
