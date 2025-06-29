@@ -25,9 +25,7 @@ bool UShidenRunMacroAsParallelCommand::TryParseCommand(const FShidenCommand& Com
 		return false;
 	}
 
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroIdOrPath, Args.ScenarioId, Args.Scenario, bSuccess);
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(MacroIdOrPath, Args.ScenarioId, Args.Scenario))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to get scenario %s."), *MacroIdOrPath);
 		return false;

@@ -7,7 +7,7 @@
 #include "ShidenRetainerBoxMaterialScalarParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenRetainerBoxMaterialScalarParams
+struct SHIDENCORE_API FShidenRetainerBoxMaterialScalarParams
 {
 	GENERATED_BODY()
 

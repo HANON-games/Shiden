@@ -15,10 +15,6 @@ It is designed to be simple and flexible, allowing for more than just visual nov
 
 ![Shiden Visual Novel Editor](https://github.com/user-attachments/assets/3029cdc2-5460-45dd-8463-c78356569b76)
 
-> [!Note]
-> This plugin is in beta version. <br>
-> Please note that there may be breaking changes in Version 1.0 release.
-
 ## Features
 
 - Editor with built-in preview
@@ -43,7 +39,7 @@ It is designed to be simple and flexible, allowing for more than just visual nov
 
 ## System Requirements
 
-- UE5.3 ～ 5.5
+- UE5.3 ～ 5.6
 - Windows, Mac, Android
 
 It is highly likely to work on iOS as well, but editing of the uplugin file is required.

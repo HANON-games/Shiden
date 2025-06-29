@@ -24,36 +24,28 @@ class SHIDENCORE_API UShidenFadeCommand : public UShidenCommandObject
 		int32 ZOrder;
 	};
 
-	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
-	                                                UShidenWidget* ShidenWidget,
-	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
-	                                                FString& ErrorMessage) override;
+	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
+	                                                UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage) override;
 
 	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* ShidenWidget,
-	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
-	                                              FString& ErrorMessage) override;
+	                                              UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                              UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage) override;
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* ShidenWidget,
-	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, UObject* CallerObject,
-	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status,
-	                                           FString& ErrorMessage) override;
+	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
 	static bool TryParseCommand(const FShidenCommand& Command, FFadeCommandArgs& Args, FString& ErrorMessage);
 
 	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
 
-	static void StartFade(const FFadeCommandArgs& Args, UShidenWidget* ShidenWidget, const FString& OwnerProcessName, bool& bSuccess,
-	                      FString& ErrorMessage);
+	static bool TryStartFade(const FFadeCommandArgs& Args, UShidenWidget* ShidenWidget, const FString& OwnerProcessName, FString& ErrorMessage);
 
 	static bool IsFadeOut(const FString& FadeTypeStr);
 

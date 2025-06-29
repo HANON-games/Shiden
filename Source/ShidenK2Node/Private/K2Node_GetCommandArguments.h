@@ -19,6 +19,7 @@ class FBlueprintActionDatabaseRegistrar;
 class FString;
 class UDataTable;
 class UEdGraph;
+// ReSharper disable once CppUE4CodingStandardNamingViolationWarning
 class UEdGraphPin;
 class UObject;
 class UScriptStruct;
@@ -47,13 +48,13 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual bool IsNodePure() const override { return true; }
 	//~ End UK2Node Interface
 
-	UEdGraphPin* GetCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
+	UEdGraphPin* FindCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	UEdGraphPin* GetCommandDefinitionsPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
+	UEdGraphPin* FindCommandDefinitionsPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	UEdGraphPin* GetCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
+	UEdGraphPin* FindCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
-	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& CommandName);
+	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName);
 
 	void OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const;
 
@@ -62,18 +63,18 @@ private:
 	 * Takes the specified "MutatablePin" and sets its 'PinToolTip' field (according
 	 * to the specified description)
 	 *
-	 * @param   MutatablePin	The pin you want to set tool-tip text on
-	 * @param   PinDescription	A string describing the pin's purpose
+	 * @param MutatablePin	 The pin you want to set tool-tip text on
+	 * @param PinDescription A string describing the pin's purpose
 	 */
 	void SetPinToolTip(UEdGraphPin& MutatablePin, const FText& PinDescription) const;
 
-	void RefreshOutputPin();
+	void RefreshOutputPins();
 
-	void OnDataAssetChanged();
+	void OnCommandDefinitionsChanged();
 
 	void ChangeAdvancedView();
 
-	static bool IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, UShidenCommandDefinitions* Definitions, const FString& CommandName);
+	static bool IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName);
 
 	FText NodeTooltip;
 

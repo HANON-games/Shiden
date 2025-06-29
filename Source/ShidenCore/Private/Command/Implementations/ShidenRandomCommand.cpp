@@ -11,18 +11,14 @@ bool UShidenRandomCommand::TryParseCommand(const FString& ProcessName, const FSh
 	Args.MinValue = Command.GetArg("Min");
 	Args.MaxValue = Command.GetArg("Max");
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::ConvertToVariableKind(VariableKindStr, Args.VariableKind, bSuccess);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenVariableKind."), *VariableKindStr);
 		return false;
 	}
 
 	FShidenVariableDefinition Definition;
-	UShidenVariableBlueprintLibrary::FindVariableDefinition(ProcessName, Args.VariableKind, Args.DestinationVariableName, Definition, bSuccess,
-	                                                        ErrorMessage);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryFindVariableDefinition(ProcessName, Args.VariableKind, Args.DestinationVariableName, Definition, ErrorMessage))
 	{
 		return false;
 	}
@@ -77,7 +73,6 @@ void UShidenRandomCommand::PreviewCommand_Implementation(const FShidenCommand& C
 
 bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, const FRandomCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage)
 {
-	bool bSuccess;
 	switch (Args.VariableType)
 	{
 	case EShidenVariableType::Integer:
@@ -90,10 +85,9 @@ bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, 
 				return false;
 			}
 			const int32 RandomValue = FMath::RandRange(Min, Max);
-			UShidenVariableBlueprintLibrary::UpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
+			return UShidenVariableBlueprintLibrary::TryUpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
 			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), RandomValue,
-			                                                0.0f, FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
-			break;
+			                                                0.0f, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
 		}
 	case EShidenVariableType::Float:
 		{
@@ -105,15 +99,12 @@ bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, 
 				return false;
 			}
 			const float RandomValue = FMath::RandRange(Min, Max);
-			UShidenVariableBlueprintLibrary::UpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
+			return UShidenVariableBlueprintLibrary::TryUpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
 			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), 0,
-			                                                RandomValue, FVector2D::ZeroVector, FVector::ZeroVector, bSuccess, ErrorMessage);
-			break;
+			                                                RandomValue, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
 		}
 	default:
 		ErrorMessage = FString::Printf(TEXT("Variable %s is not Integer or Float."), *Args.DestinationVariableName);
 		return false;
 	}
-
-	return bSuccess;
 }

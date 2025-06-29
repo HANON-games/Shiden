@@ -15,9 +15,7 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
 	Args.bRestoreState = Command.GetArgAsBool("RestoreState");
 	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
 
-	bool bSuccess;
-	ShidenWidget->FindAnimation(Args.AnimationName, Args.UserWidget, Args.WidgetAnimation, bSuccess);
-	if (!bSuccess)
+	if (!ShidenWidget->TryFindAnimation(Args.AnimationName, Args.UserWidget, Args.WidgetAnimation))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find animation %s."), *Args.AnimationName);
 		return false;
@@ -26,18 +24,16 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
 	return TryConvertToPlayMode(Args.PlayModeStr, Args.PlayMode, ErrorMessage);
 }
 
-void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
+void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                                        const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                        UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                        FString& ErrorMessage)
 {
-	for (const TTuple<FString, FString>& Property : ScenarioProperties)
+	for (const TTuple<FString, FShidenScenarioProperty>& Property : ScenarioProperties)
 	{
 		UUserWidget* UserWidget;
 		UWidgetAnimation* WidgetAnimation;
-		bool bSuccess;
-		ShidenWidget->FindAnimation(Property.Key, UserWidget, WidgetAnimation, bSuccess);
-		if (!bSuccess)
+		if (!ShidenWidget->TryFindAnimation(Property.Key, UserWidget, WidgetAnimation))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
 			ErrorMessage = FString::Printf(TEXT("Failed to find animation %s."), *Property.Key);
@@ -45,7 +41,7 @@ void UShidenWidgetAnimationCommand::RestoreFromSaveData_Implementation(const TMa
 		}
 
 		EUMGSequencePlayMode::Type PlayMode;
-		if (!TryConvertToPlayMode(Property.Value, PlayMode, ErrorMessage))
+		if (!TryConvertToPlayMode(Property.Value.GetValueAsString(), PlayMode, ErrorMessage))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
@@ -114,6 +110,7 @@ void UShidenWidgetAnimationCommand::PreviewCommand_Implementation(const FShidenC
 		}
 		Args.StartTime = Args.WidgetAnimation->GetEndTime();
 		Args.NumLoopToPlay = 1;
+		Args.bWaitForCompletion = false;
 	}
 
 	StartAnimation(ShidenWidget);

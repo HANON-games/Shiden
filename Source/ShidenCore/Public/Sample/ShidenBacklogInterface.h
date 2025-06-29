@@ -21,6 +21,10 @@ class SHIDENCORE_API IShidenBacklogInterface
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Initializes the backlog widget with the Shiden manager interface.
+	 * @param ShidenManager The Shiden manager interface
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void InitBacklog(const TScriptInterface<UShidenManagerInterface>& ShidenManager);
 };

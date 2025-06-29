@@ -1,4 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenSearchableComboBoxString.h"
 #include "Widgets/SNullWidget.h"
@@ -85,7 +86,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::PostLoad()
 SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWidget()
 {
 	const int32 InitialIndex = FindOptionIndex(SelectedOption);
-	if (InitialIndex != -1)
+	if (InitialIndex != INDEX_NONE)
 	{
 		CurrentOptionPtr = Options[InitialIndex];
 	}
@@ -107,7 +108,7 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWid
 			SAssignNew(ComboBoxContent, SBox)
 		];
 	PRAGMA_ENABLE_DEPRECATION_WARNINGS
-	if (InitialIndex != -1)
+	if (InitialIndex != INDEX_NONE)
 	{
 		// Generate the widget for the initially selected widget if needed
 		UpdateOrGenerateWidget(CurrentOptionPtr);
@@ -127,7 +128,7 @@ SHIDENEDITOR_API bool UShidenSearchableComboBoxString::RemoveOption(const FStrin
 {
 	const int32 OptionIndex = FindOptionIndex(Option);
 
-	if (OptionIndex != -1)
+	if (OptionIndex != INDEX_NONE)
 	{
 		if (Options[OptionIndex] == CurrentOptionPtr)
 		{
@@ -156,7 +157,7 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::FindOptionIndex(const FS
 		}
 	}
 
-	return -1;
+	return INDEX_NONE;
 }
 
 SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetOptionAtIndex(const int32 Index) const
@@ -256,10 +257,10 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::GetSelectedIndex() const
 		}
 	}
 
-	return -1;
+	return INDEX_NONE;
 }
 
-SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::GetOptionCount() const
+SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::OptionNum() const
 {
 	return Options.Num();
 }

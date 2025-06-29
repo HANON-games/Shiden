@@ -6,7 +6,7 @@
 #include "ShidenFadeParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenFadeParams
+struct SHIDENCORE_API FShidenFadeParams
 {
 	GENERATED_BODY()
 

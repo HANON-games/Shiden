@@ -32,9 +32,7 @@ SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
 	for (const FString& ScopeKey : ScopeKeys)
 	{
 		UShidenScenario* Scenario = nullptr;
-		bool bSuccess;
-		UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioIds[ScopeKey], Scenario, bSuccess);
-		if (bSuccess)
+		if (UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioIds[ScopeKey], Scenario))
 		{
 			TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
 			Definitions.Append(Scenario->LocalVariableDefinitions);

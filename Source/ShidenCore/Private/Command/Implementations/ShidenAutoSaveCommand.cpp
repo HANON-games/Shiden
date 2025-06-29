@@ -3,6 +3,7 @@
 #include "Command/Implementations/ShidenAutoSaveCommand.h"
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "Engine/Texture2D.h"
 
 void UShidenAutoSaveCommand::ParseFromCommand(const FShidenCommand& Command, FAutoSaveCommandArgs& Args)
 {
@@ -42,16 +43,16 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName) ||
-		ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
+		ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to peek scenario %s."), *ProcessName);
 		return false;
 	}
 
-	const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last().CurrentIndex;
+	const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack[ProcessName].GetCurrentScenarioIndex();
 
 	// Temporarily advance the scenario index so that the game does not resume from the AutoSave command
-	ShidenSubsystem->ScenarioProgressStack[ProcessName].SetCurrentIndex(CurrentIndex + 1);
+	ShidenSubsystem->ScenarioProgressStack[ProcessName].UpdateCurrentScenarioIndex(CurrentIndex + 1);
 
 	if (Args.OverwriteThumbnail.IsEmpty())
 	{
@@ -64,9 +65,7 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 	else
 	{
 		UObject* Thumbnail = nullptr;
-		bool bSuccess;
-		UShidenBlueprintLibrary::GetOrLoadAsset(Args.OverwriteThumbnail, Thumbnail, bSuccess);
-		if (!bSuccess)
+		if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.OverwriteThumbnail, Thumbnail))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to load thumbnail asset %s."), *Args.OverwriteThumbnail);
 			return false;
@@ -74,6 +73,6 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 		ShidenWidget->SaveGame(Args.SlotName, Cast<UTexture2D>(Thumbnail));
 	}
 
-	ShidenSubsystem->ScenarioProgressStack[ProcessName].SetCurrentIndex(CurrentIndex);
+	ShidenSubsystem->ScenarioProgressStack[ProcessName].UpdateCurrentScenarioIndex(CurrentIndex);
 	return true;
 }

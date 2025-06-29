@@ -5,7 +5,7 @@
 #include "ShidenImageInfo.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenImageInfo
+struct SHIDENCORE_API FShidenImageInfo
 {
 	GENERATED_BODY()
 

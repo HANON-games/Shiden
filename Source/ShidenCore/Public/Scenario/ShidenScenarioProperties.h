@@ -2,13 +2,14 @@
 
 #pragma once
 
+#include "ShidenScenarioProperty.h"
 #include "ShidenScenarioProperties.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenScenarioProperties
+struct SHIDENCORE_API FShidenScenarioProperties
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TMap<FString, FString> ScenarioProperties;
+	TMap<FString, FShidenScenarioProperty> ScenarioProperties;
 };

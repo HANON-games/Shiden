@@ -31,7 +31,7 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 
 	UShidenScenario* ToShidenScenario()
 	{
-		UShidenScenario* Scenario = NewObject<UShidenScenario>();
+		const TObjectPtr<UShidenScenario> Scenario = NewObject<UShidenScenario>();
 		Scenario->ScenarioId = ScenarioId;
 		Scenario->Note = Note;
 		Scenario->Commands = Commands;

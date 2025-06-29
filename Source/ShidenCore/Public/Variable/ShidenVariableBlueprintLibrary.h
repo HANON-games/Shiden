@@ -22,66 +22,66 @@ public:
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param bValue The new boolean value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void UpdateUserBoolean(const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Update User Boolean"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserBoolean(const FString& Name, const bool bValue, FString& ErrorMessage);
 
 	/**
 	 * Updates an integer user variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new integer value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void UpdateUserInteger(const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Update User Integer"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserInteger(const FString& Name, const int32 Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a float user variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new float value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void UpdateUserFloat(const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Update User Float"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserFloat(const FString& Name, const float Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a string user variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new string value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateUserString(const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update User String"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserString(const FString& Name, const FString& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector2D user variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector2D value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateUserVector2(const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update User Vector2"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserVector2(const FString& Name, const FVector2D& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector3 user variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector3 value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateUserVector3(const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update User Vector3"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateUserVector3(const FString& Name, const FVector& Value, FString& ErrorMessage);
 
 	/**
 	 * Gets all user variable names.
@@ -104,10 +104,10 @@ public:
 	 * 
 	 * @param Name The name of the variable
 	 * @param Definition [out] The variable definition
-	 * @param bSuccess [out] True if the variable exists
+	 * @return True if the variable exists
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindUserVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Find User Variable Definition"))
+	static UPARAM(DisplayName = "Success") bool TryFindUserVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition);
 
 	/**
 	 * Resets a user variable to its default value.
@@ -128,13 +128,13 @@ public:
 	 * @param FloatValue [out] The float value (if type is float)
 	 * @param Vector2Value [out] The Vector2D value (if type is vector2)
 	 * @param Vector3Value [out] The Vector3 value (if type is vector3)
-	 * @param bSuccess [out] True if the variable was found
 	 * @param ErrorMessage [out] Error message if the operation failed
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindUserVariable(const FString& Name, EShidenVariableType& VariableType, bool& bBooleanValue,
-	                             FString& StringValue, int32& IntegerValue, float& FloatValue,
-	                             FVector2D& Vector2Value, FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Find User Variable"))
+	static UPARAM(DisplayName = "Success") bool TryFindUserVariable(const FString& Name, EShidenVariableType& VariableType, bool& bBooleanValue,
+	                                                                FString& StringValue, int32& IntegerValue, float& FloatValue,
+	                                                                FVector2D& Vector2Value, FVector& Vector3Value, FString& ErrorMessage);
 
 	/**
 	 * Resets all user variables to their default values.
@@ -148,86 +148,86 @@ public:
 	 * @param Name The name of the variable to find
 	 * @param OriginalType [out] The original type of the variable
 	 * @param Result [out] The variable value as a string
-	 * @param bSuccess [out] True if the variable was found
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindUserVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (DisplayName = "Find User Variable as String"))
+	static UPARAM(DisplayName = "Success") bool TryFindUserVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result);
 
 	/**
 	 * Updates a boolean system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param bValue The new boolean value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void UpdateSystemBoolean(const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Update System Boolean"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemBoolean(const FString& Name, const bool bValue, FString& ErrorMessage);
 
 	/**
 	 * Updates an integer system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new integer value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void UpdateSystemInteger(const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Update System Integer"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemInteger(const FString& Name, const int32 Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a float system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new float value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void UpdateSystemFloat(const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Update System Float"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemFloat(const FString& Name, const float Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a string system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new string value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateSystemString(const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update System String"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemString(const FString& Name, const FString& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector2D system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector2D value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateSystemVector2(const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update System Vector2"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemVector2(const FString& Name, const FVector2D& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector3 system variable.
 	 * 
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector3 value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value"))
-	static void UpdateSystemVector3(const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (AutoCreateRefTerm = "Value", DisplayName = "Update System Vector3"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateSystemVector3(const FString& Name, const FVector& Value, FString& ErrorMessage);
 
 	/**
 	 * Finds a system variable definition by name.
 	 * 
 	 * @param Name The name of the variable
 	 * @param Definition [out] The variable definition
-	 * @param bSuccess [out] True if the variable exists
+	 * @return True if the variable exists
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindSystemVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Find System Variable Definition"))
+	static UPARAM(DisplayName = "Success") bool TryFindSystemVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition);
 
 	/**
 	 * Resets a system variable to its default value.
@@ -264,13 +264,13 @@ public:
 	 * @param FloatValue [out] The float value (if type is float)
 	 * @param Vector2Value [out] The Vector2D value (if type is vector2)
 	 * @param Vector3Value [out] The Vector3 value (if type is vector3)
-	 * @param bSuccess [out] True if the variable was found
 	 * @param ErrorMessage [out] Error message if the operation failed
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void FindSystemVariable(const FString& Name, EShidenVariableType& VariableType,
-	                               bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
-	                               float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Find System Variable"))
+	static UPARAM(DisplayName = "Success") bool TryFindSystemVariable(const FString& Name, EShidenVariableType& VariableType,
+	                                                                  bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+	                                                                  float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, FString& ErrorMessage);
 
 	/**
 	 * Resets all system variables to their default values.
@@ -284,10 +284,10 @@ public:
 	 * @param Name The name of the variable to find
 	 * @param OriginalType [out] The original type of the variable
 	 * @param Result [out] The variable value as a string
-	 * @param bSuccess [out] True if the variable was found
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables")
-	static void FindSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|System Variables", meta = (DisplayName = "Find System Variable as String"))
+	static UPARAM(DisplayName = "Success") bool TryFindSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result);
 
 	/**
 	 * Initializes local variables for a specific process from a scenario.
@@ -306,11 +306,11 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param bValue The new boolean value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void UpdateLocalBoolean(const FString& ProcessName, const FString& Name, bool bValue, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Update Local Boolean"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalBoolean(const FString& ProcessName, const FString& Name, const bool bValue, FString& ErrorMessage);
 
 	/**
 	 * Updates an integer local variable.
@@ -318,11 +318,11 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param Value The new integer value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void UpdateLocalInteger(const FString& ProcessName, const FString& Name, int32 Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Update Local Integer"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalInteger(const FString& ProcessName, const FString& Name, const int32 Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a float local variable.
@@ -330,11 +330,11 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param Value The new float value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void UpdateLocalFloat(const FString& ProcessName, const FString& Name, float Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Update Local Float"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalFloat(const FString& ProcessName, const FString& Name, const float Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a string local variable.
@@ -342,12 +342,12 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param Value The new string value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
-		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
-	static void UpdateLocalString(const FString& ProcessName, const FString& Name, const FString& Value, bool& bSuccess, FString& ErrorMessage);
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value", DisplayName = "Update Local String"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalString(const FString& ProcessName, const FString& Name, const FString& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector2D local variable.
@@ -355,12 +355,12 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector2D value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
-		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
-	static void UpdateLocalVector2(const FString& ProcessName, const FString& Name, const FVector2D& Value, bool& bSuccess, FString& ErrorMessage);
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value", DisplayName = "Update Local Vector2"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalVector2(const FString& ProcessName, const FString& Name, const FVector2D& Value, FString& ErrorMessage);
 
 	/**
 	 * Updates a Vector3 local variable.
@@ -368,12 +368,12 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable to update
 	 * @param Value The new Vector3 value
-	 * @param bSuccess [out] True if the update was successful
 	 * @param ErrorMessage [out] Error message if the update failed
+	 * @return True if the update was successful
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables",
-		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value"))
-	static void UpdateLocalVector3(const FString& ProcessName, const FString& Name, const FVector& Value, bool& bSuccess, FString& ErrorMessage);
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "Value", DisplayName = "Update Local Vector3"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateLocalVector3(const FString& ProcessName, const FString& Name, const FVector& Value, FString& ErrorMessage);
 
 	/**
 	 * Finds a local variable definition by name.
@@ -381,10 +381,10 @@ public:
 	 * @param ProcessName The name of the process
 	 * @param Name The name of the variable
 	 * @param Definition [out] The variable definition
-	 * @param bSuccess [out] True if the variable exists
+	 * @return True if the variable exists
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariableDefinition(const FString& ProcessName, const FString& Name, FShidenVariableDefinition& Definition, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Find Local Variable Definition"))
+	static UPARAM(DisplayName = "Success") bool TryFindLocalVariableDefinition(const FString& ProcessName, const FString& Name, FShidenVariableDefinition& Definition);
 
 	/**
 	 * Finds a local variable and gets its value.
@@ -398,13 +398,13 @@ public:
 	 * @param FloatValue [out] The float value (if type is float)
 	 * @param Vector2Value [out] The Vector2D value (if type is vector2)
 	 * @param Vector3Value [out] The Vector3 value (if type is vector3)
-	 * @param bSuccess [out] True if the variable was found
 	 * @param ErrorMessage [out] Error message if the operation failed
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariable(const FString& ProcessName, const FString& Name,
-	                              EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
-	                              float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Find Local Variable"))
+	static UPARAM(DisplayName = "Success") bool TryFindLocalVariable(const FString& ProcessName, const FString& Name,
+	                                                                 EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+	                                                                 float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, FString& ErrorMessage);
 
 	/**
 	 * Finds a local variable and converts its value to a string.
@@ -413,11 +413,11 @@ public:
 	 * @param Name The name of the variable to find
 	 * @param OriginalType [out] The original type of the variable
 	 * @param Result [out] The variable value as a string
-	 * @param bSuccess [out] True if the variable was found
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default"))
-	static void FindLocalVariableAsString(const FString& ProcessName, const FString& Name, EShidenVariableType& OriginalType, FString& Result,
-	                                      bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Local Variables", meta = (ProcessName = "Default", DisplayName = "Find Local Variable as String"))
+	static UPARAM(DisplayName = "Success") bool TryFindLocalVariableAsString(const FString& ProcessName, const FString& Name,
+		                                                                     EShidenVariableType& OriginalType, FString& Result);
 
 	/**
 	 * Resets a local variable to its default value.
@@ -456,10 +456,11 @@ public:
 	 * @param WorldContextObject Object that provides context for the world
 	 * @param Name The name of the variable to update
 	 * @param Value The new value as a string
-	 * @param bSuccess [out] True if the update was successful
+	 * @return True if the update was successful
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void UpdatePredefinedSystemVariableByString(const UObject* WorldContextObject, const FString& Name, const FString& Value, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables",
+		meta = (WorldContext="WorldContextObject", DisplayName = "Update Predefined System Variable by String"))
+	static UPARAM(DisplayName = "Success") bool TryUpdatePredefinedSystemVariableByString(const UObject* WorldContextObject, const FString& Name, const FString& Value);
 
 	/**
 	 * Finds a predefined system variable and converts its value to a string.
@@ -467,48 +468,48 @@ public:
 	 * @param Name The name of the variable to find
 	 * @param OriginalType [out] The original type of the variable
 	 * @param Result [out] The variable value as a string
-	 * @param bSuccess [out] True if the variable was found
+	 * @return True if the variable was found
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables")
-	static void FindPredefinedSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (DisplayName = "Find Predefined System Variable as String"))
+	static UPARAM(DisplayName = "Success") bool TryFindPredefinedSystemVariableAsString(const FString& Name, EShidenVariableType& OriginalType, FString& Result);
 
 	/**
 	 * Sets the master volume.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
-	 * @param InValue The new volume rate value (0.0-1.0)
+	 * @param Value The new volume rate value (0.0-1.0)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void SetMasterVolume(const UObject* WorldContextObject, float InValue);
+	static void SetMasterVolume(const UObject* WorldContextObject, float Value);
 
 	/**
 	 * Sets the BGM volume.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
-	 * @param InValue The new volume rate value (0.0-1.0)
+	 * @param Value The new volume rate value (0.0-1.0)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"),
 		DisplayName = "Set BGM Volume")
-	static void SetBGMVolume(const UObject* WorldContextObject, float InValue);
+	static void SetBGMVolume(const UObject* WorldContextObject, float Value);
 
 	/**
 	 * Sets the SE (Sound Effect) volume.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
-	 * @param InValue The new volume rate value (0.0-1.0)
+	 * @param Value The new volume rate value (0.0-1.0)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"),
 		DisplayName = "Set SE Volume")
-	static void SetSEVolume(const UObject* WorldContextObject, float InValue);
+	static void SetSEVolume(const UObject* WorldContextObject, float Value);
 
 	/**
 	 * Sets the voice volume.
 	 * 
 	 * @param WorldContextObject Object that provides context for the world
-	 * @param InValue The new volume rate value (0.0-1.0)
+	 * @param Value The new volume rate value (0.0-1.0)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void SetVoiceVolume(const UObject* WorldContextObject, float InValue);
+	static void SetVoiceVolume(const UObject* WorldContextObject, float Value);
 
 	/**
 	 * Initializes all predefined system variables with their default values.
@@ -516,7 +517,7 @@ public:
 	 * @param WorldContextObject Object that provides context for the world
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (WorldContext="WorldContextObject"))
-	static void InitPredefinedSystemVariables(const UObject* WorldContextObject);
+	static void ResetPredefinedSystemVariables(const UObject* WorldContextObject);
 
 	/**
 	 * Gets all predefined system variables.
@@ -531,10 +532,10 @@ public:
 	 * 
 	 * @param Name The name of the variable
 	 * @param Definition [out] The variable definition
-	 * @param bSuccess [out] True if the variable exists
+	 * @return True if the variable exists
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|User Variables")
-	static void FindPredefinedSystemVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition, bool& bSuccess);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Variables|Predefined System Variables", meta = (DisplayName = "Find Predefined System Variable Definition"))
+	static UPARAM(DisplayName = "Success") bool TryFindPredefinedSystemVariableDefinition(const FString& Name, FShidenVariableDefinition& Definition);
 
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables")
@@ -546,66 +547,62 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
 	static FShidenCommand ReplaceAllVariable(const FString& ProcessName, const FShidenCommand& Command);
 
-	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
-	static void ConvertToVariableKind(const FString& VariableKind, EShidenVariableKind& Result, bool& bSuccess);
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables", meta = (DisplayName = "Convert to Variable Kind"))
+	static UPARAM(DisplayName = "Success") bool TryConvertToVariableKind(const FString& VariableKind, EShidenVariableKind& Result);
 
-	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
-	static void ConvertToVariableType(const FString& VariableType, EShidenVariableType& Result, bool& bSuccess);
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables", meta = (DisplayName = "Convert to Variable Type"))
+	static UPARAM(DisplayName = "Success") bool TryConvertToVariableType(const FString& VariableType, EShidenVariableType& Result);
 
-	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables")
-	static void ConvertToAssetPathType(const FString& AssetPathType, EShidenAssetPathType& Result, bool& bSuccess);
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables", meta = (DisplayName = "Convert to Asset Path Type"))
+	static UPARAM(DisplayName = "Success") bool TryConvertToAssetPathType(const FString& AssetPathType, EShidenAssetPathType& Result);
 
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
-	static void FindVariableDefinition(const FString& ProcessName, EShidenVariableKind Kind, const FString& Name,
-	                                   FShidenVariableDefinition& Definition, bool& bSuccess, FString& ErrorMessage);
-
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
-		meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value", WorldContext="WorldContextObject"))
-	static void UpdateVariable(const UObject* WorldContextObject, const FString& ProcessName, EShidenVariableKind Kind,
-	                           EShidenVariableType Type, const FString& Name, bool bBooleanValue,
-	                           const FString& StringValue, int32 IntegerValue, float FloatValue,
-	                           const FVector2D& Vector2Value, const FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
-
-	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
-	static void FindVariable(const FString& ProcessName, EShidenVariableKind Kind,
-	                         const FString& Name, EShidenVariableType& VariableType, bool& bBooleanValue,
-	                         FString& StringValue, int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value,
-	                         FVector& Vector3Value, bool& bSuccess, FString& ErrorMessage);
-
-	static void EvaluateBoolean(const FString& Operator, bool bABooleanValue, bool bBBooleanValue, bool& bResult, bool& bSuccess,
-	                            FString& ErrorMessage);
-
-	static void EvaluateString(const FString& Operator, const FString& AStringValue, const FString& BStringValue, bool& bResult, bool& bSuccess,
-	                           FString& ErrorMessage);
-
-	static void EvaluateInteger(const FString& Operator, int32 AIntegerValue, int32 BIntegerValue, bool& bResult, bool& bSuccess,
-	                            FString& ErrorMessage);
-
-	static void EvaluateFloat(const FString& Operator, float AFloatValue, float BFloatValue, bool& bResult, bool& bSuccess, FString& ErrorMessage);
-
-	static void EvaluateVector2(const FString& Operator, const FVector2D& AVector2Value, const FVector2D& BVector2Value, bool& bResult,
-	                            bool& bSuccess, FString& ErrorMessage);
-
-	static void EvaluateVector3(const FString& Operator, const FVector& AVector3Value, const FVector& BVector3Value, bool& bResult, bool& bSuccess,
-	                            FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default", DisplayName = "Find Variable Definition"))
+	static UPARAM(DisplayName = "Success") bool TryFindVariableDefinition(const FString& ProcessName, EShidenVariableKind Kind, const FString& Name,
+	                                                                      FShidenVariableDefinition& Definition, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
-		meta = (AutoCreateRefTerm = "AStringValue,AVector2Value,AVector3Value,BStringValue,BVector2Value,BVector3Value"))
-	static void EvaluateCondition(EShidenVariableType Type, const FString& Operator, bool bABooleanValue,
-	                              const FString& AStringValue, int32 AIntegerValue, float AFloatValue,
-	                              const FVector2D& AVector2Value, const FVector& AVector3Value,
-	                              bool bBBooleanValue, const FString& BStringValue, int32 BIntegerValue,
-	                              float BFloatValue, const FVector2D& BVector2Value, const FVector& BVector3Value,
-	                              bool& bResult, bool& bSuccess, FString& ErrorMessage);
+		meta = (ProcessName = "Default", AutoCreateRefTerm = "StringValue,Vector2Value,Vector3Value",
+				WorldContext="WorldContextObject", DisplayName = "Update Variable"))
+	static UPARAM(DisplayName = "Success") bool TryUpdateVariable(const UObject* WorldContextObject, const FString& ProcessName, EShidenVariableKind Kind,
+	                                                              EShidenVariableType Type, const FString& Name, bool bBooleanValue, const FString& StringValue,
+	                                                              int32 IntegerValue, float FloatValue, const FVector2D& Vector2Value, const FVector& Vector3Value, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default", DisplayName = "Find Variable"))
+	static UPARAM(DisplayName = "Success") bool TryFindVariable(const FString& ProcessName, EShidenVariableKind Kind, const FString& Name,
+		                                                        EShidenVariableType& VariableType, bool& bBooleanValue, FString& StringValue,
+		                                                        int32& IntegerValue, float& FloatValue, FVector2D& Vector2Value,
+		                                                        FVector& Vector3Value, FString& ErrorMessage);
+
+	static bool TryEvaluateBoolean(const FString& Operator, const bool bABooleanValue, const bool bBBooleanValue, bool& bResult, FString& ErrorMessage);
+
+	static bool TryEvaluateString(const FString& Operator, const FString& AStringValue, const FString& BStringValue, bool& bResult, FString& ErrorMessage);
+
+	static bool TryEvaluateInteger(const FString& Operator, const int32 AIntegerValue, const int32 BIntegerValue, bool& bResult, FString& ErrorMessage);
+
+	static bool TryEvaluateFloat(const FString& Operator, const float AFloatValue, const float BFloatValue, bool& bResult, FString& ErrorMessage);
+
+	static bool TryEvaluateVector2(const FString& Operator, const FVector2D& AVector2Value, const FVector2D& BVector2Value, bool& bResult, FString& ErrorMessage);
+
+	static bool TryEvaluateVector3(const FString& Operator, const FVector& AVector3Value, const FVector& BVector3Value, bool& bResult, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables",
+		meta = (AutoCreateRefTerm = "AStringValue,AVector2Value,AVector3Value,BStringValue,BVector2Value,BVector3Value",
+				DisplayName = "Evaluate Condition"))
+	static UPARAM(DisplayName = "Success") bool TryEvaluateCondition(EShidenVariableType Type, const FString& Operator, bool bABooleanValue,
+	                                                                 const FString& AStringValue, int32 AIntegerValue, float AFloatValue,
+	                                                                 const FVector2D& AVector2Value, const FVector& AVector3Value,
+                                                                     bool bBBooleanValue, const FString& BStringValue, int32 BIntegerValue,
+	                                                                 float BFloatValue, const FVector2D& BVector2Value, const FVector& BVector3Value,
+	                                                                 bool& bResult, FString& ErrorMessage);
 
 	static FRegexPattern& GetReplaceTextPattern();
 
 	static FRegexPattern& GetVariablePattern();
 
 private:
-	static void UpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type, const FString& Name,
-	                                     const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue, const float FloatValue,
-	                                     bool& bSuccess, FString& ErrorMessage);
+	static bool TryUpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type, const FString& Name,
+	                                        const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue, const float FloatValue,
+	                                        FString& ErrorMessage);
 
 	static FString ReplaceVariables(const FString& ProcessName, const FString& Text);
 

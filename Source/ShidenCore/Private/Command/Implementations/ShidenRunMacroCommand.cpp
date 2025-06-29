@@ -15,10 +15,7 @@ void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& Proces
 
 	FGuid ScenarioId;
 	UShidenScenario* Scenario;
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario, bSuccess);
-
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario))
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = FString::Printf(TEXT("Failed to get scenario \"%s\"."), *MacroNameOrId);
@@ -41,10 +38,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 
 	FGuid ScenarioId;
 	UShidenScenario* Scenario;
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario, bSuccess);
-
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario))
 	{
 		Status = EShidenPreviewStatus::Error;
 		ErrorMessage = FString::Printf(TEXT("Failed to get scenario \"%s\"."), *MacroNameOrId);
@@ -66,7 +60,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 
 	while (true)
 	{
-		const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack["Default"].Stack.Last().CurrentIndex;
+		const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack["Default"].GetCurrentScenarioIndex();
 		FShidenCommand ShidenCommand;
 		if (!Scenario->Commands.IsValidIndex(CurrentIndex))
 		{
@@ -106,8 +100,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 		}
 
 		UShidenCommandObject* CommandObject;
-		UShidenScenarioBlueprintLibrary::GetCommandFromCache(this, "Default", CommandDefinition->CommandSoftObjectPath, CommandObject, bSuccess);
-		if (!bSuccess)
+		if (!UShidenScenarioBlueprintLibrary::TryGetCommand(this, "Default", CommandDefinition->CommandSoftObjectPath, CommandObject))
 		{
 			Status = EShidenPreviewStatus::Error;
 			ErrorMessage = FString::Printf(TEXT("Failed to get command object \"%s\"."), *CommandDefinition->CommandSoftObjectPath.ToString());

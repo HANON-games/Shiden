@@ -38,67 +38,65 @@ bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundC
 		return false;
 	}
 
-	if (!Args.SoundSourcePath.IsEmpty() && Args.SoundSourcePath != TEXT("None"))
+	if (Args.SoundSourcePath.IsEmpty() || Args.SoundSourcePath == TEXT("None"))
 	{
-		bool bSuccess = false;
-		UObject* SoundObject;
-		UShidenBlueprintLibrary::GetOrLoadAsset(Args.SoundSourcePath, SoundObject, bSuccess);
-		if (!bSuccess)
-		{
-			ErrorMessage = FString::Printf(TEXT("Failed to get or load asset from %s."), *Args.SoundSourcePath);
-			return false;
-		}
+		return true;
+	}
+	
+	UObject* SoundObject;
+	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.SoundSourcePath, SoundObject))
+	{
+		ErrorMessage = FString::Printf(TEXT("Failed to get or load asset from %s."), *Args.SoundSourcePath);
+		return false;
+	}
 
-		const TObjectPtr<USoundBase> SoundBase = Cast<USoundBase>(SoundObject);
-		if (!SoundBase)
-		{
-			ErrorMessage = FString::Printf(TEXT("Failed to cast %s to USoundBase."), *Args.SoundSourcePath);
-			return false;
-		}
+	const TObjectPtr<USoundBase> SoundBase = Cast<USoundBase>(SoundObject);
+	if (!SoundBase)
+	{
+		ErrorMessage = FString::Printf(TEXT("Failed to cast %s to USoundBase."), *Args.SoundSourcePath);
+		return false;
+	}
 
-		if (Args.bWaitForSoundCompletion && !SoundBase->IsOneShot())
-		{
-			ErrorMessage = TEXT("Cannot wait for sound completion of looping sound.");
-			return false;
-		}
+	if (Args.bWaitForSoundCompletion && !SoundBase->IsOneShot())
+	{
+		ErrorMessage = TEXT("Cannot wait for sound completion of looping sound.");
+		return false;
+	}
 
-		EShidenSoundType ObjectSoundType;
-		UShidenBlueprintLibrary::GetSoundTypeFromSoundBase(SoundBase, ObjectSoundType, bSuccess);
-		if (!bSuccess)
-		{
-			ErrorMessage = FString::Printf(TEXT("Failed to get sound type from %s."), *Args.SoundSourcePath);
-			return false;
-		}
+	EShidenSoundType ObjectSoundType;
+	if (!UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(SoundBase, ObjectSoundType))
+	{
+		ErrorMessage = FString::Printf(TEXT("Failed to get sound type from %s."), *Args.SoundSourcePath);
+		return false;
+	}
 
-		if (Args.SoundType != ObjectSoundType)
-		{
-			ErrorMessage = FString::Printf(TEXT("Sound type %s is not matched with %s."), *Args.SoundTypeStr, *Args.SoundSourcePath);
-			return false;
-		}
+	if (Args.SoundType != ObjectSoundType)
+	{
+		ErrorMessage = FString::Printf(TEXT("Sound type %s is not matched with %s."), *Args.SoundTypeStr, *Args.SoundSourcePath);
+		return false;
 	}
 
 	return true;
 }
 
-void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties,
+void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
                                                              UShidenWidget* ShidenWidget,
                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                              UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage)
 {
-	for (const TPair<FString, FString>& Property : ScenarioProperties)
+	for (const TPair<FString, FShidenScenarioProperty>& Property : ScenarioProperties)
 	{
-		FString SoundTrackStr;
-		FString PropertyName;
-		Property.Key.Split(TEXT("::"), &SoundTrackStr, &PropertyName, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+		FString SoundTrackStr = Property.Key;
 
-		if (PropertyName != TEXT("Path"))
+		TMap<FString, FString> Values;
+		if (!Property.Value.TryConvertToStringMap(Values))
 		{
 			continue;
 		}
 
-		const FString* VolumeStr = ScenarioProperties.Find(FString::Printf(TEXT("%s::Volume"), *SoundTrackStr));
-		const FString* PitchStr = ScenarioProperties.Find(FString::Printf(TEXT("%s::Pitch"), *SoundTrackStr));
-		const FString* StartTimeStr = ScenarioProperties.Find(FString::Printf(TEXT("%s::StartTime"), *SoundTrackStr));
+		const FString* VolumeStr = Values.Find(TEXT("Volume"));
+		const FString* PitchStr = Values.Find(TEXT("Pitch"));
+		const FString* StartTimeStr = Values.Find(TEXT("StartTime"));
 		if (!VolumeStr || !PitchStr || !StartTimeStr)
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
@@ -106,15 +104,16 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			return;
 		}
 
+		const FString* Path = Values.Find(TEXT("Path"));
 		const int32 TrackId = FCString::Atoi(*SoundTrackStr);
 		const float Volume = FCString::Atof(**VolumeStr);
 		const float Pitch = FCString::Atof(**PitchStr);
 		const float StartTime = FCString::Atof(**StartTimeStr);
-		const FShidenSoundInfo SoundInfo = FShidenSoundInfo(TrackId, EShidenSoundType::BGM, Property.Value, 1.0f, Volume, Pitch, StartTime,
-		                                                    EAudioFaderCurve::Linear, 0.0f);
+		const FShidenSoundInfo SoundInfo = FShidenSoundInfo(TrackId, EShidenSoundType::BGM, *Path, 0.0f, Volume, Pitch, StartTime,
+															EAudioFaderCurve::Linear, 0.0f);
 
-		bool bSuccess = false;
 		float ResultDuration = 0.0f;
+		bool bSuccess;
 		ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
 		if (!bSuccess)
 		{
@@ -166,7 +165,7 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
 
-	bool bSuccess = false;
+	bool bSuccess;
 	ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, SoundDuration, bSuccess);
 	if (!bSuccess)
 	{
@@ -202,21 +201,17 @@ void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		const FString TrackIdStr = FString::FromInt(Args.TrackId);
 		if (Args.SoundSourcePath.IsEmpty() || Args.SoundSourcePath == TEXT("None"))
 		{
-			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *TrackIdStr));
-			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Volume"), *TrackIdStr));
-			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Pitch"), *TrackIdStr));
-			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::StartTime"), *TrackIdStr));
+			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, TrackIdStr);
 		}
 		else
 		{
-			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Path"), *TrackIdStr),
-			                                                          Args.SoundSourcePath);
-			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Volume"), *TrackIdStr),
-			                                                          FString::SanitizeFloat(Args.Volume));
-			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::Pitch"), *TrackIdStr),
-			                                                          FString::SanitizeFloat(Args.Pitch));
-			UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, FString::Printf(TEXT("%s::StartTime"), *TrackIdStr),
-			                                                          FString::SanitizeFloat(Args.StartTime));
+				const float EndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
+				UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackIdStr, {
+				{TEXT("Path"), Args.SoundSourcePath},
+				{TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
+				{TEXT("Pitch"), FString::SanitizeFloat(Args.Pitch)},
+				{TEXT("StartTime"), FString::SanitizeFloat(Args.StartTime)}
+			});
 		}
 	}
 
@@ -245,12 +240,11 @@ void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 	}
 
 	float ResultDuration = 0.f;
-	bool bSuccess = false;
 	const float ResultStartVolume = Args.FadeType == TEXT("FadeIn") ? 0.0f : Args.Volume;
 	const float ResultEndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
-
+	bool bSuccess;
 	ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
 	if (!bSuccess)
 	{

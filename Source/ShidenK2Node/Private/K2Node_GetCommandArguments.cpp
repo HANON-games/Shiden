@@ -36,6 +36,22 @@ static const FName CommandPinName(TEXT("Command"));
 static const FName CommandDefinitionsPinName(TEXT("CommandDefinitions"));
 static const FName CommandNamePinName(TEXT("CommandName"));
 
+static constexpr int32 MaxVisibleOutputPins = 7;
+static constexpr int32 AdvancedPinStartIndex = 8;
+static constexpr int32 MinInputPinCount = 4;
+
+UEdGraphPin* FindPinByName(const TArray<UEdGraphPin*>& PinsToSearch, const FName& PinName)
+{
+	for (UEdGraphPin* TestPin : PinsToSearch)
+	{
+		if (TestPin && TestPin->PinName == PinName)
+		{
+			return TestPin;
+		}
+	}
+	return nullptr;
+}
+
 UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), CommandDefinitionsCache(nullptr)
 {
@@ -79,8 +95,8 @@ void UK2Node_GetCommandArguments::SetPinToolTip(UEdGraphPin& MutatablePin, const
 	MutatablePin.PinToolTip += FString(TEXT("\n")) + PinDescription.ToString();
 }
 
-bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, UShidenCommandDefinitions* Definitions,
-                                                     const FString& CommandName)
+bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, const UShidenCommandDefinitions* InDefinitions,
+                                                     const FString& InCommandName)
 {
 	TArray<FString> OldPinNames = TArray<FString>();
 	for (const UEdGraphPin* OldPin : OldPins)
@@ -91,17 +107,19 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 		}
 	}
 
-	if (Definitions)
+	if (InDefinitions)
 	{
-		if (!Definitions->CommandDefinitions.Contains(CommandName))
+		if (!InDefinitions->CommandDefinitions.Contains(InCommandName))
 		{
 			return true;
 		}
+		
 		TArray<FString> Keys;
-		for (const FShidenCommandArgument& Arg : Definitions->CommandDefinitions[CommandName].Args)
+		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
 			Keys.Add(Arg.ArgName.ToString());
 		}
+		
 		for (FString Key : Keys)
 		{
 			if (!OldPinNames.Contains(Key))
@@ -109,6 +127,7 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 				return true;
 			}
 		}
+		
 		for (FString OldPinName : OldPinNames)
 		{
 			if (!Keys.Contains(OldPinName))
@@ -122,12 +141,13 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 	return OldPinNames.Num() > 0;
 }
 
-void UK2Node_GetCommandArguments::RefreshOutputPin()
+void UK2Node_GetCommandArguments::RefreshOutputPins()
 {
 	TArray<UEdGraphPin*> OldPins = Pins;
 	TArray<UEdGraphPin*> OldOutputPins = TArray<UEdGraphPin*>();
-	const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
-	const UEdGraphPin* CommandNamePin = GetCommandNamePin();
+	const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin();
+	const UEdGraphPin* CommandNamePin = FindCommandNamePin();
+	
 	const FString CommandName = CommandNamePin->DefaultValue;
 	const TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject);
 
@@ -178,14 +198,14 @@ void UK2Node_GetCommandArguments::ChangeAdvancedView()
 		}
 	}
 
-	if (NewOutputPinCount > 7 && Pins.Num() - NewOutputPinCount < 4)
+	if (NewOutputPinCount > MaxVisibleOutputPins && Pins.Num() - NewOutputPinCount < MinInputPinCount)
 	{
 		if (ENodeAdvancedPins::NoPins == AdvancedPinDisplay)
 		{
 			AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
 		}
 
-		for (int32 PinIndex = 8; PinIndex < Pins.Num(); ++PinIndex)
+		for (int32 PinIndex = AdvancedPinStartIndex; PinIndex < Pins.Num(); ++PinIndex)
 		{
 			if (UEdGraphPin* EdGraphPin = Pins[PinIndex])
 			{
@@ -201,10 +221,10 @@ void UK2Node_GetCommandArguments::ChangeAdvancedView()
 
 void UK2Node_GetCommandArguments::OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const
 {
-	const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
+	const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin();
 	if (CommandDefinitions && CommandDefinitionsPin && CommandDefinitions == CommandDefinitionsPin->DefaultObject)
 	{
-		const UEdGraphPin* CommandNamePin = GetCommandNamePin();
+		const UEdGraphPin* CommandNamePin = FindCommandNamePin();
 		const bool TryRefresh = CommandNamePin && !CommandNamePin->LinkedTo.Num();
 		const FString CurrentName = CommandNamePin ? *CommandNamePin->GetDefaultAsString() : TEXT("");
 		TArray<FString> Keys = TArray<FString>();
@@ -216,15 +236,15 @@ void UK2Node_GetCommandArguments::OnCommandDefinitionsRowListChanged(const UShid
 	}
 }
 
-void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& CommandName)
+void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName)
 {
 	check(InDefinitions != NULL);
 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
-	if (InDefinitions->CommandDefinitions.Contains(CommandName))
+	if (InDefinitions->CommandDefinitions.Contains(InCommandName))
 	{
-		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[CommandName].Args)
+		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
 			UEdGraphPin* OutputPin = CreatePin(EGPD_Output, K2Schema->PC_String, Arg.ArgName);
 			SetPinToolTip(*OutputPin, FText::FromString(Arg.ArgName.ToString()));
@@ -236,7 +256,7 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 {
 	Super::ReallocatePinsDuringReconstruction(OldPins);
 
-	if (const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin(&OldPins))
+	if (const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin(&OldPins))
 	{
 		if (const TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 		{
@@ -247,16 +267,16 @@ void UK2Node_GetCommandArguments::ReallocatePinsDuringReconstruction(TArray<UEdG
 			}
 
 			OnCommandDefinitionsChangedHandle = Definitions->OnCommandDefinitionsChanged.AddUObject(
-				this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
+				this, &UK2Node_GetCommandArguments::OnCommandDefinitionsChanged);
 			CommandDefinitionsCache = Definitions;
-			if (const UEdGraphPin* CommandNamePin = GetCommandNamePin(&OldPins))
+			if (const UEdGraphPin* CommandNamePin = FindCommandNamePin(&OldPins))
 			{
 				CreateOutputPins(Definitions, CommandNamePin->DefaultValue);
 				ChangeAdvancedView();
 			}
 		}
 
-		if (UEdGraphPin* CommandNamePin = GetCommandNamePin())
+		if (UEdGraphPin* CommandNamePin = FindCommandNamePin())
 		{
 			CommandNamePin->bHidden = !CommandDefinitionsPin->DefaultObject;
 		}
@@ -297,7 +317,7 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 	
 	if (Pin->PinName == CommandDefinitionsPinName)
 	{
-		if (UEdGraphPin* CommandNamePin = GetCommandNamePin())
+		if (UEdGraphPin* CommandNamePin = FindCommandNamePin())
 		{
 			if (const TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(Pin->DefaultObject))
 			{
@@ -315,7 +335,7 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 				}
 
 				OnCommandDefinitionsChangedHandle = CommandDefinitions->OnCommandDefinitionsChanged.AddUObject(
-					this, &UK2Node_GetCommandArguments::OnDataAssetChanged);
+					this, &UK2Node_GetCommandArguments::OnCommandDefinitionsChanged);
 				CommandDefinitionsCache = CommandDefinitions;
 			}
 			else
@@ -330,18 +350,18 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 
 				CommandDefinitionsCache = nullptr;
 			}
-			RefreshOutputPin();
+			RefreshOutputPins();
 		}
 	}
 	else if (Pin->PinName == CommandNamePinName)
 	{
-		RefreshOutputPin();
+		RefreshOutputPins();
 	}
 }
 
-void UK2Node_GetCommandArguments::OnDataAssetChanged()
+void UK2Node_GetCommandArguments::OnCommandDefinitionsChanged()
 {
-	RefreshOutputPin();
+	RefreshOutputPins();
 }
 
 FText UK2Node_GetCommandArguments::GetTooltipText() const
@@ -349,54 +369,27 @@ FText UK2Node_GetCommandArguments::GetTooltipText() const
 	return NodeTooltip;
 }
 
-UEdGraphPin* UK2Node_GetCommandArguments::GetCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch /*= NULL*/) const
+UEdGraphPin* UK2Node_GetCommandArguments::FindCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch /*= NULL*/) const
 {
 	const TArray<UEdGraphPin*>* PinsToSearch = InPinsToSearch ? InPinsToSearch : &Pins;
-
-	UEdGraphPin* Pin = nullptr;
-	for (UEdGraphPin* TestPin : *PinsToSearch)
-	{
-		if (TestPin && TestPin->PinName == CommandPinName)
-		{
-			Pin = TestPin;
-			break;
-		}
-	}
+	UEdGraphPin* Pin = FindPinByName(*PinsToSearch, CommandPinName);
 	check(Pin == nullptr || Pin->Direction == EGPD_Input);
 	return Pin;
 }
 
-UEdGraphPin* UK2Node_GetCommandArguments::GetCommandDefinitionsPin(
+UEdGraphPin* UK2Node_GetCommandArguments::FindCommandDefinitionsPin(
 	const TArray<UEdGraphPin*>* InPinsToSearch /*= NULL*/) const
 {
 	const TArray<UEdGraphPin*>* PinsToSearch = InPinsToSearch ? InPinsToSearch : &Pins;
-
-	UEdGraphPin* Pin = nullptr;
-	for (UEdGraphPin* TestPin : *PinsToSearch)
-	{
-		if (TestPin && TestPin->PinName == CommandDefinitionsPinName)
-		{
-			Pin = TestPin;
-			break;
-		}
-	}
+	UEdGraphPin* Pin = FindPinByName(*PinsToSearch, CommandDefinitionsPinName);
 	check(Pin == nullptr || Pin->Direction == EGPD_Input);
 	return Pin;
 }
 
-UEdGraphPin* UK2Node_GetCommandArguments::GetCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch /*= NULL*/) const
+UEdGraphPin* UK2Node_GetCommandArguments::FindCommandNamePin(const TArray<UEdGraphPin*>* InPinsToSearch /*= NULL*/) const
 {
 	const TArray<UEdGraphPin*>* PinsToSearch = InPinsToSearch ? InPinsToSearch : &Pins;
-
-	UEdGraphPin* Pin = nullptr;
-	for (UEdGraphPin* TestPin : *PinsToSearch)
-	{
-		if (TestPin && TestPin->PinName == CommandNamePinName)
-		{
-			Pin = TestPin;
-			break;
-		}
-	}
+	UEdGraphPin* Pin = FindPinByName(*PinsToSearch, CommandNamePinName);
 	check(Pin == nullptr || Pin->Direction == EGPD_Input);
 	return Pin;
 }
@@ -410,7 +403,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
-	const UEdGraphPin* OriginalGetCommandDefinitionsInPin = GetCommandDefinitionsPin();
+	const UEdGraphPin* OriginalGetCommandDefinitionsInPin = FindCommandDefinitionsPin();
 	const TObjectPtr<UShidenCommandDefinitions> Definitions = OriginalGetCommandDefinitionsInPin != nullptr
 		                                                          ? Cast<UShidenCommandDefinitions>(OriginalGetCommandDefinitionsInPin->DefaultObject)
 		                                                          : nullptr;
@@ -434,6 +427,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 			OutputPins.Add(TestPin);
 		}
 	}
+	
 	for (UEdGraphPin* OutputPin : OutputPins)
 	{
 		Count++;
@@ -469,15 +463,15 @@ void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLo
 {
 	Super::EarlyValidation(MessageLog);
 
-	const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin();
-	const UEdGraphPin* CommandNamePin = GetCommandNamePin();
+	const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin();
+	const UEdGraphPin* CommandNamePin = FindCommandNamePin();
 	if (!CommandDefinitionsPin || !CommandNamePin)
 	{
 		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "MissingPins", "Missing pins in @@").ToString(), this);
 		return;
 	}
 
-	const UEdGraphPin* CommandPin = GetCommandPin();
+	const UEdGraphPin* CommandPin = FindCommandPin();
 	if (!CommandPin || (CommandPin->LinkedTo.Num() == 0 && !CommandPin->DefaultObject && CommandPin->SubPins.Num() == 0))
 	{
 		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandPinDefaultValue", "The current value of the '@@' pin is invalid.").ToString(), this);
@@ -516,7 +510,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLo
 
 void UK2Node_GetCommandArguments::PreloadRequiredAssets()
 {
-	if (const UEdGraphPin* CommandDefinitionsPin = GetCommandDefinitionsPin())
+	if (const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin())
 	{
 		if (const TObjectPtr<UShidenCommandDefinitions> CommandDefinitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject))
 		{

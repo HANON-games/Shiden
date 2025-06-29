@@ -9,15 +9,15 @@ bool UShidenChangeVisibilityCommand::TryParseCommand(const FShidenCommand& Comma
 	return TryConvertToVisibility(VisibilityStr, Args.Visibility, ErrorMessage);
 }
 
-void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TMap<FString, FString>& ScenarioProperties, UShidenWidget* ShidenWidget,
+void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
                                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                         UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
                                                                         FString& ErrorMessage)
 {
-	for (const TTuple<FString, FString>& Pair : ScenarioProperties)
+	for (const TTuple<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
 		Args.Name = Pair.Key;
-		const FString& VisibilityStr = Pair.Value;
+		const FString& VisibilityStr = Pair.Value.GetValueAsString();
 		if (!TryConvertToVisibility(VisibilityStr, Args.Visibility, ErrorMessage))
 		{
 			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to ESlateVisibility."), *VisibilityStr);
@@ -69,10 +69,7 @@ void UShidenChangeVisibilityCommand::PreviewCommand_Implementation(const FShiden
 bool UShidenChangeVisibilityCommand::TryChangeVisibility(const FChangeVisibilityCommandArgs& Args, UShidenWidget* ShidenWidget,
                                                          const bool bRegisterProperty, FString& ErrorMessage)
 {
-	bool bSuccess;
-	ShidenWidget->SetVisibilityByName(Args.Name, Args.Visibility, bRegisterProperty, bSuccess);
-
-	if (!bSuccess)
+	if (!ShidenWidget->TrySetVisibilityByName(Args.Name, Args.Visibility, bRegisterProperty))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to change visibility. Widget %s not found."), *Args.Name);
 		return false;

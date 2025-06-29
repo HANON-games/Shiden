@@ -21,6 +21,13 @@ class SHIDENCORE_API IShidenBacklogItemInterface
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Initializes a backlog item widget with character dialogue information.
+	 * @param ShidenManager The Shiden manager interface for managing visual novel state
+	 * @param Name The character name for this dialogue entry
+	 * @param Text The dialogue text content
+	 * @param VoicePath The file path to the voice audio for this dialogue
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "Name,Text,VoicePath"))
 	void InitBacklogItem(const TScriptInterface<UShidenManagerInterface>& ShidenManager, const FString& Name, const FString& Text,
 	                     const FString& VoicePath);

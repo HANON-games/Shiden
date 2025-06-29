@@ -16,14 +16,11 @@ class SHIDENCORE_API UShidenWaitClickCommand : public UShidenCommandObject
 		bool bCanSkip;
 	};
 
-	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                              UShidenWidget* ShidenWidget,
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                              UObject* CallerObject, EShidenPreProcessStatus& Status,
-	                                              FString& ErrorMessage) override;
+	                                              UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage) override;
 
-	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                           UShidenWidget* ShidenWidget,
+	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject,
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
@@ -35,5 +32,5 @@ class SHIDENCORE_API UShidenWaitClickCommand : public UShidenCommandObject
 
 	FWaitClickCommandArgs Args;
 
-	bool PressNext = true;
+	bool bPressNext = true;
 };

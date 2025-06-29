@@ -16,9 +16,7 @@ void UShidenPlayMediaCommand::PreProcessCommand_Implementation(const FString& Pr
 {
 	ParseFromCommand(Command, Args);
 
-	bool bSuccess;
-	ShidenWidget->PlayMedia(Args.MediaSourcePath, Args.bCanOpenPauseMenu, Args.MediaZOrder, bSuccess);
-	if (!bSuccess)
+	if (!ShidenWidget->TryPlayMedia(Args.MediaSourcePath, Args.bCanOpenPauseMenu, Args.MediaZOrder))
 	{
 		Status = EShidenPreProcessStatus::Error;
 		ErrorMessage = FString::Printf(TEXT("Failed to play media %s."), *Args.MediaSourcePath);

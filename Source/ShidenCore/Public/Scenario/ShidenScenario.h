@@ -30,11 +30,8 @@ public:
 	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
 
 	UShidenScenario()
+		: ScenarioId(FGuid::NewGuid())
 	{
-		ScenarioId = FGuid::NewGuid();
-		Commands = TArray<FShidenCommand>();
-		MacroParameterDefinitions = TArray<FShidenMacroParameter>();
-		LocalVariableDefinitions = TArray<FShidenVariableDefinition>();
 	}
 
 	virtual void PostDuplicate(bool bDuplicateForPie) override;

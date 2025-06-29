@@ -7,7 +7,7 @@
 #include "ShidenCanvasPanelSlotMoveParams.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenCanvasPanelSlotMoveParams
+struct SHIDENCORE_API FShidenCanvasPanelSlotMoveParams
 {
 	GENERATED_BODY()
 

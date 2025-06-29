@@ -7,8 +7,8 @@
 #include "TextureResource.h"
 #include "ShidenSaveTexture.generated.h"
 
-USTRUCT(BlueprintType, Category = "Shiden Visual Novel|Save Game")
-struct FShidenSaveTexture
+USTRUCT(BlueprintType)
+struct SHIDENCORE_API FShidenSaveTexture
 {
 	GENERATED_BODY()
 

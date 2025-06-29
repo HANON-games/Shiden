@@ -20,7 +20,7 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	check(ShidenSubsystem);
 
 	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Num() == 0)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
@@ -29,12 +29,10 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 
 	const FGuid ScenarioId = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last().ScenarioId;
 	UShidenScenario* Scenario;
-	bool bSuccess;
-	UShidenScenarioBlueprintLibrary::GetScenarioFromCache(ScenarioId, Scenario, bSuccess);
-	if (!bSuccess)
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioId, Scenario))
 	{
 		Status = EShidenProcessStatus::Error;
-		ErrorMessage = TEXT("GetScenarioFromCache failed.");
+		ErrorMessage = TEXT("GetScenario failed.");
 		return;
 	}
 

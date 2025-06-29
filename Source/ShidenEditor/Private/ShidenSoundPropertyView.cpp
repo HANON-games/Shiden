@@ -117,9 +117,9 @@ void UShidenSoundPropertyView::OnObjectChanged(const FAssetData& AssetData)
 
 #if WITH_EDITOR
 
-void UShidenSoundPropertyView::SetSoundClass(USoundClass* InSoundClass)
+void UShidenSoundPropertyView::SetSoundClass(USoundClass* NewSoundClass)
 {
-	SoundClass = InSoundClass;
+	SoundClass = NewSoundClass;
 	if (SelectedAsset.IsValid()
 		&& SoundClass != SelectedAsset->SoundClassObject
 		&& !SoundClass->ChildClasses.Contains(SelectedAsset->SoundClassObject))
@@ -134,18 +134,17 @@ USoundClass* UShidenSoundPropertyView::GetSoundClass() const
 	return SoundClass.Get();
 }
 
-void UShidenSoundPropertyView::SetSelectedAsset(USoundBase* InAsset, bool& bSuccess)
+bool UShidenSoundPropertyView::TrySetSelectedAsset(USoundBase* NewAsset)
 {
-	if (InAsset == nullptr || SoundClass == nullptr
-		|| SoundClass == InAsset->SoundClassObject
-		|| SoundClass->ChildClasses.Contains(InAsset->SoundClassObject))
+	if (NewAsset == nullptr || SoundClass == nullptr
+		|| SoundClass == NewAsset->SoundClassObject
+		|| SoundClass->ChildClasses.Contains(NewAsset->SoundClassObject))
 	{
-		SelectedAsset = InAsset;
-		OnAssetChanged.Broadcast(InAsset);
-		bSuccess = true;
-		return;
+		SelectedAsset = NewAsset;
+		OnAssetChanged.Broadcast(NewAsset);
+		return true;
 	}
-	bSuccess = false;
+	return false;
 }
 
 USoundBase* UShidenSoundPropertyView::GetSelectedAsset() const

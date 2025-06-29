@@ -6,7 +6,7 @@
 #include "ShidenMacroParameter.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenMacroParameter : public FShidenVariableDefinition
+struct SHIDENCORE_API FShidenMacroParameter : public FShidenVariableDefinition
 {
 	GENERATED_BODY()
 

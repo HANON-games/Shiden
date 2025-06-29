@@ -29,7 +29,7 @@ class FShidenCustomGraphPanelPinFactory final : public FGraphPanelPinFactory
 			{
 				const UK2Node_GetCommandArguments* GetShidenCommandNode = CastChecked<UK2Node_GetCommandArguments>(Outer);
 
-				if (const UEdGraphPin* CommandDefinitionsPin = GetShidenCommandNode->GetCommandDefinitionsPin())
+				if (const UEdGraphPin* CommandDefinitionsPin = GetShidenCommandNode->FindCommandDefinitionsPin())
 				{
 					if (CommandDefinitionsPin->DefaultObject != nullptr && CommandDefinitionsPin->LinkedTo.Num() == 0)
 					{

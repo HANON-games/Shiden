@@ -10,9 +10,7 @@ bool UShidenWaitUntilCommand::TryParseCommand(const FShidenCommand& Command, FWa
 	Args.Operator = Command.GetArg("Operator");
 	Args.RightHandValue = Command.GetArg("RightHandValue");
 
-	bool bSuccess;
-	UShidenVariableBlueprintLibrary::ConvertToVariableKind(Args.VariableKindStr, Args.VariableKind, bSuccess);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(Args.VariableKindStr, Args.VariableKind))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenVariableKind."), *Args.VariableKindStr);
 		return false;
@@ -43,8 +41,7 @@ void UShidenWaitUntilCommand::ProcessCommand_Implementation(const FString& Proce
 	Status = bResult ? EShidenProcessStatus::Next : EShidenProcessStatus::DelayUntilNextTick;
 }
 
-bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& Args, const FString& ProcessName, bool& bResult,
-                                                   FString& ErrorMessage)
+bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& Args, const FString& ProcessName, bool& bResult, FString& ErrorMessage)
 {
 	EShidenVariableType VariableType = EShidenVariableType::Boolean;
 	bool bBooleanValue;
@@ -53,12 +50,10 @@ bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& 
 	float FloatValue;
 	FVector2d Vector2Value;
 	FVector Vector3Value;
-	bool bSuccess;
 
-	UShidenVariableBlueprintLibrary::FindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
-	                                              bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value,
-	                                              bSuccess, ErrorMessage);
-	if (!bSuccess)
+	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
+												  bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value,
+												  ErrorMessage))
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to find variable %s."), *Args.VariableName);
 		return false;
@@ -70,41 +65,35 @@ bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& 
 	case EShidenVariableType::Boolean:
 		{
 			const bool bRightHandValue = Args.RightHandValue.ToBool();
-			UShidenVariableBlueprintLibrary::EvaluateBoolean(Args.Operator, bBooleanValue, bRightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateBoolean(Args.Operator, bBooleanValue, bRightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::String:
 	case EShidenVariableType::AssetPath:
 		{
-			UShidenVariableBlueprintLibrary::EvaluateString(Args.Operator, StringValue, Args.RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateString(Args.Operator, StringValue, Args.RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Integer:
 		{
 			const int32 RightHandValue = FCString::Atoi(*Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateInteger(Args.Operator, IntegerValue, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateInteger(Args.Operator, IntegerValue, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Float:
 		{
 			const float RightHandValue = FCString::Atof(*Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateFloat(Args.Operator, FloatValue, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateFloat(Args.Operator, FloatValue, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Vector2:
 		{
 			FVector2d RightHandValue;
 			RightHandValue.InitFromString(Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Vector3:
 		{
 			FVector RightHandValue;
 			RightHandValue.InitFromString(Args.RightHandValue);
-			UShidenVariableBlueprintLibrary::EvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, bSuccess, ErrorMessage);
-			break;
+			return UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, ErrorMessage);
 		}
 	}
-	return bSuccess;
+	return false;
 }

@@ -6,7 +6,7 @@
 #include "ShidenCommandDefinition.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenCommandArgument
+struct SHIDENCORE_API FShidenCommandArgument
 {
 	GENERATED_BODY()
 
@@ -33,20 +33,20 @@ struct FShidenCommandArgument
 	{
 	}
 
-	FShidenCommandArgument(FName InArgName, FText InDisplayName, FString InDefaultValue, FSoftObjectPath InTemplateWidget,
-	                       TMap<FString, FString> InTemplateParameters, bool bInIsAssetToBeLoaded)
+	FShidenCommandArgument(FName ArgName, FText DisplayName, FString DefaultValue, FSoftObjectPath TemplateWidget,
+	                       TMap<FString, FString> TemplateParameters, bool bIsAssetToBeLoaded)
+		: ArgName(ArgName),
+		  DisplayName(DisplayName),
+		  DefaultValue(DefaultValue),
+		  TemplateWidget(TemplateWidget),
+		  TemplateParameters(TemplateParameters),
+		  bIsAssetToBeLoaded(bIsAssetToBeLoaded)
 	{
-		ArgName = InArgName;
-		DisplayName = InDisplayName;
-		DefaultValue = InDefaultValue;
-		TemplateWidget = InTemplateWidget;
-		TemplateParameters = InTemplateParameters;
-		bIsAssetToBeLoaded = bInIsAssetToBeLoaded;
 	}
 };
 
 USTRUCT(BlueprintType)
-struct FShidenCommandStyle
+struct SHIDENCORE_API FShidenCommandStyle
 {
 	GENERATED_BODY()
 
@@ -70,17 +70,18 @@ struct FShidenCommandStyle
 	{
 	}
 
-	FShidenCommandStyle(const FLinearColor InFontColor, const FLinearColor InItemNormalColor, const FLinearColor InItemHoveredColor, const FLinearColor InItemPressedColor)
-		: FontColor(InFontColor)
-		  , ItemNormalColor(InItemNormalColor)
-		  , ItemHoveredColor(InItemHoveredColor)
-		  , ItemPressedColor(InItemPressedColor)
+	FShidenCommandStyle(const FLinearColor FontColor, const FLinearColor ItemNormalColor, const FLinearColor ItemHoveredColor,
+	                    const FLinearColor ItemPressedColor)
+		: FontColor(FontColor)
+		  , ItemNormalColor(ItemNormalColor)
+		  , ItemHoveredColor(ItemHoveredColor)
+		  , ItemPressedColor(ItemPressedColor)
 	{
 	}
 };
 
 USTRUCT(BlueprintType)
-struct FShidenCommandDefinition
+struct SHIDENCORE_API FShidenCommandDefinition
 {
 	GENERATED_BODY()
 

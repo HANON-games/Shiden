@@ -5,7 +5,7 @@
 #include "ShidenCsvParsedRow.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenCsvParsedRow
+struct SHIDENEDITOR_API FShidenCsvParsedRow
 {
 	GENERATED_BODY()
 

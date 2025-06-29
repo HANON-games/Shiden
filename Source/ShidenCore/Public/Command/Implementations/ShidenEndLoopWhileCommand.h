@@ -14,13 +14,11 @@ class SHIDENCORE_API UShidenEndLoopWhileCommand : public UShidenCommandObject
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           const float DeltaTime, UObject* CallerObject,
-	                                           EShidenProcessStatus& Status, FString& BreakReason,
+	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	static void FindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands,
-	                                                    int32& ResultIndex, bool& bSuccess, FString& ErrorMessage);
+	static bool TryFindLoopWhileIndexWithoutCheckCondition(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands,
+	                                                       int32& ResultIndex, FString& ErrorMessage);
 
-	static void FindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands, bool& bSuccess,
-	                               FString& ErrorMessage);
+	static bool TryFindLoopWhileIndex(const FString& ProcessName, const int32& CurrentIndex, const TArray<FShidenCommand>& Commands, FString& ErrorMessage);
 };

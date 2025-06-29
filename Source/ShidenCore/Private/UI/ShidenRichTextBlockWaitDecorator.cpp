@@ -29,9 +29,9 @@ UShidenRichTextBlockWaitDecorator::UShidenRichTextBlockWaitDecorator(const FObje
 {
 }
 
-TSharedPtr<ITextDecorator> UShidenRichTextBlockWaitDecorator::CreateDecorator(URichTextBlock* InOwner)
+TSharedPtr<ITextDecorator> UShidenRichTextBlockWaitDecorator::CreateDecorator(URichTextBlock* Owner)
 {
-	return MakeShareable(new FRichTextWaitDecorator(InOwner));
+	return MakeShareable(new FRichTextWaitDecorator(Owner));
 }
 
 /////////////////////////////////////////////////////

@@ -5,10 +5,10 @@
 #include "ShidenReadLines.generated.h"
 
 USTRUCT(BlueprintType)
-struct FShidenReadLines
+struct SHIDENCORE_API FShidenReadLines
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
-	TSet<FGuid> ReadLineHashSet;
+	TSet<FGuid> ReadLineHashes;
 };

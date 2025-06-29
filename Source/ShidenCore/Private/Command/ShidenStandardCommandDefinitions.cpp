@@ -192,7 +192,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("Voice"),
 						NSLOCTEXT("ShidenNamespace", "VoiceKey", "Voice"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("Target"), TEXT("Voice")}},
 						true
@@ -208,7 +208,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("TextBlip"),
 						NSLOCTEXT("ShidenNamespace", "DialogueBlipKey", "TextBlip"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("Target"), TEXT("Voice")}},
 						true
@@ -326,7 +326,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("Image"),
 						NSLOCTEXT("ShidenNamespace", "ImageKey", "Image"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("SlateBrush")}},
 						true
@@ -428,7 +428,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("SoundSource"),
 						NSLOCTEXT("ShidenNamespace", "SoundSourceKey", "SoundSource"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("SoundTypeSourceIndex"), TEXT("0")}},
 						true
@@ -572,40 +572,40 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Choice 1"),
-						NSLOCTEXT("ShidenNamespace", "Choice1Key", "Choice 1"),
+						TEXT("Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Option1Key", "Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
 						false
 					},
 					{
-						TEXT("Choice 2"),
-						NSLOCTEXT("ShidenNamespace", "Choice2Key", "Choice 2"),
+						TEXT("Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Option2Key", "Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
 						false
 					},
 					{
-						TEXT("Choice 3"),
-						NSLOCTEXT("ShidenNamespace", "Choice3Key", "Choice 3"),
+						TEXT("Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Option3Key", "Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
 						false
 					},
 					{
-						TEXT("Choice 4"),
-						NSLOCTEXT("ShidenNamespace", "Choice4Key", "Choice 4"),
+						TEXT("Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Option4Key", "Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
 						false
 					},
 					{
-						TEXT("Choice 5"),
-						NSLOCTEXT("ShidenNamespace", "Choice5Key", "Choice 5"),
+						TEXT("Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Option5Key", "Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -638,7 +638,367 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						BooleanInputTemplate,
 						{},
 						false
-					}
+					},
+					{
+						TEXT("Language 2 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language2Option1Key", "Language 2 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 2 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language2Option2Key", "Language 2 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 2 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language2Option3Key", "Language 2 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 2 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language2Option4Key", "Language 2 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 2 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language2Option5Key", "Language 2 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 3 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language3Option1Key", "Language 3 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 3 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language3Option2Key", "Language 3 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 3 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language3Option3Key", "Language 3 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 3 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language3Option4Key", "Language 3 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 3 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language3Option5Key", "Language 3 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 4 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language4Option1Key", "Language 4 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 4 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language4Option2Key", "Language 4 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 4 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language4Option3Key", "Language 4 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 4 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language4Option4Key", "Language 4 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 4 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language4Option5Key", "Language 4 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 5 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language5Option1Key", "Language 5 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 5 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language5Option2Key", "Language 5 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 5 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language5Option3Key", "Language 5 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 5 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language5Option4Key", "Language 5 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 5 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language5Option5Key", "Language 5 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 6 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language6Option1Key", "Language 6 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 6 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language6Option2Key", "Language 6 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 6 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language6Option3Key", "Language 6 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 6 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language6Option4Key", "Language 6 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 6 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language6Option5Key", "Language 6 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 7 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language7Option1Key", "Language 7 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 7 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language7Option2Key", "Language 7 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 7 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language7Option3Key", "Language 7 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 7 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language7Option4Key", "Language 7 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 7 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language7Option5Key", "Language 7 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 8 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language8Option1Key", "Language 8 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 8 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language8Option2Key", "Language 8 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 8 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language8Option3Key", "Language 8 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 8 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language8Option4Key", "Language 8 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 8 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language8Option5Key", "Language 8 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 9 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language9Option1Key", "Language 9 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 9 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language9Option2Key", "Language 9 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 9 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language9Option3Key", "Language 9 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 9 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language9Option4Key", "Language 9 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 9 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language9Option5Key", "Language 9 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 10 Option 1"),
+						NSLOCTEXT("ShidenNamespace", "Language10Option1Key", "Language 10 Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 10 Option 2"),
+						NSLOCTEXT("ShidenNamespace", "Language10Option2Key", "Language 10 Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 10 Option 3"),
+						NSLOCTEXT("ShidenNamespace", "Language10Option3Key", "Language 10 Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 10 Option 4"),
+						NSLOCTEXT("ShidenNamespace", "Language10Option4Key", "Language 10 Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("Language 10 Option 5"),
+						NSLOCTEXT("ShidenNamespace", "Language10Option5Key", "Language 10 Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					},
 				}
 			}
 		},
@@ -1057,7 +1417,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("NextScenario"),
 						NSLOCTEXT("ShidenNamespace", "NextScenarioKey", "NextScenario"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						ScenarioInputTemplate,
 						{
 							{TEXT("Target"), TEXT("Scenario")},
@@ -1115,7 +1475,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = NSLOCTEXT("ShidenNamespace", "WidgetAnimationNoteKey",
-				                  "You can specify the animation of a child widget as \"ChildWidgetName.AnimationName\"."),
+				                  "You can specify the animation of a child widget as \"ChildWidgetName.AnimationName\".\nWhen RestoreState is true, the behavior may differ between gameplay and preview."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWidgetAnimationCommand")),
@@ -1541,7 +1901,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("OverwriteThumbnail"),
 						NSLOCTEXT("ShidenNamespace", "OverwriteThumbnailKey", "OverwriteThumbnail"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						AssetInputTemplate,
 						{
 							{TEXT("Target"), TEXT("Texture")},
@@ -1690,7 +2050,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("FeedbackEffect"),
 						NSLOCTEXT("ShidenNamespace", "FeedbackEffectKey", "FeedbackEffect"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("ForceFeedback")}},
 						true
@@ -1712,7 +2072,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("MediaSource"),
 						NSLOCTEXT("ShidenNamespace", "MediaSourceKey", "MediaSource"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("MediaSource")}},
 						true
@@ -1875,7 +2235,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("Texture"),
 						NSLOCTEXT("ShidenNamespace", "TextureKey", "Texture"),
-						TEXT("{EMPTY}"),
+						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("Texture")}},
 						true
@@ -1897,7 +2257,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("MacroName"),
 						NSLOCTEXT("ShidenNamespace", "MacroNameKey", "MacroName"),
-						TEXT(""),
+						TEXT("None"),
 						ScenarioInputTemplate,
 						{
 							{TEXT("Target"), TEXT("macro")},
@@ -1930,7 +2290,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					{
 						TEXT("MacroName"),
 						NSLOCTEXT("ShidenNamespace", "MacroNameKey", "MacroName"),
-						TEXT(""),
+						TEXT("None"),
 						ScenarioInputTemplate,
 						{
 							{TEXT("Target"), TEXT("macro")},
