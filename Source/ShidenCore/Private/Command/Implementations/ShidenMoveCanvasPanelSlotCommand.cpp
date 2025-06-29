@@ -114,7 +114,7 @@ void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FStr
 	}
 	
 	FShidenScenarioProperty ScenarioProperty;
-	UShidenScenarioBlueprintLibrary::FindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
+	UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
 	TMap<FString, FString> ScenarioProperties;
 	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 	
@@ -228,7 +228,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 	if (bRegisterCurrentProperty)
 	{
 		FShidenScenarioProperty ScenarioProperty;
-		UShidenScenarioBlueprintLibrary::FindScenarioProperty(TEXT("MoveCanvasPanelSlot"), Args.SlotName, ScenarioProperty);
+		UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("MoveCanvasPanelSlot"), Args.SlotName, ScenarioProperty);
 		TMap<FString, FString> ScenarioProperties;
 		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 

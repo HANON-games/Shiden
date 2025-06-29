@@ -12,7 +12,7 @@ bool RegisterScenarioPropertyFromArrayTest::RunTest(const FString& Parameters)
 		// Act
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromArray(TEXT("TEST"), TEXT("Key"), TestArray);
 		FShidenScenarioProperty ResultProperty;
-		bool bResult = UShidenScenarioBlueprintLibrary::FindScenarioProperty(TEXT("TEST"), TEXT("Key"), ResultProperty);
+		bool bResult = UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("TEST"), TEXT("Key"), ResultProperty);
 
 		// Assert
 		if (!bResult)
@@ -59,7 +59,7 @@ bool RegisterScenarioPropertyFromMapTest::RunTest(const FString& Parameters)
 		// Act
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("TEST"), TEXT("Key"), TestMap);
 		FShidenScenarioProperty ResultProperty;
-		bool bResult = UShidenScenarioBlueprintLibrary::FindScenarioProperty(TEXT("TEST"), TEXT("Key"), ResultProperty);
+		bool bResult = UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("TEST"), TEXT("Key"), ResultProperty);
 		
 		// Assert
 		if (!bResult)

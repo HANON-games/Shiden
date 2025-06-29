@@ -123,8 +123,8 @@ public:
 	 * @param Property [out] The value associated with the property key
 	 * @return True if the property was found
 	 */
-	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Scenario Property")
-	static bool FindScenarioProperty(const FString& CommandName, const FString& Key, FShidenScenarioProperty& Property);
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Scenario Property", meta = (DisplayName = "Find Scenario Property"))
+	static UPARAM(DisplayName = "Success") bool TryFindScenarioProperty(const FString& CommandName, const FString& Key, FShidenScenarioProperty& Property);
 
 	/**
 	 * Registers a scenario property for a specific command.

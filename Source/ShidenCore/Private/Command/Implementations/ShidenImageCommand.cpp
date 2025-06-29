@@ -151,7 +151,7 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	}
 
 	FShidenScenarioProperty ScenarioProperty;
-	UShidenScenarioBlueprintLibrary::FindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
+	UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
 	TMap<FString, FString> ScenarioProperties;
 	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 	

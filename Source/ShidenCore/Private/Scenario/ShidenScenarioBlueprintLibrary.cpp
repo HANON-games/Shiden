@@ -845,7 +845,7 @@ SHIDENCORE_API void MakeObjectPathFromPackagePath(const FString& PackagePath, FN
 	ObjectPath = FName(*ObjectPathString);
 }
 
-SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::FindScenarioProperty(const FString& CommandName, const FString& Key, FShidenScenarioProperty& Property)
+SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(const FString& CommandName, const FString& Key, FShidenScenarioProperty& Property)
 {
 	if (!IsScenarioPlaying())
 	{

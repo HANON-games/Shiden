@@ -97,7 +97,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 	if (Args.bContinueFromThePreviousText)
 	{
 		FShidenScenarioProperty ScenarioProperty;
-		UShidenScenarioBlueprintLibrary::FindScenarioProperty(Command.CommandName,
+		UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName,
 		                                                      FString::Printf(TEXT("%s::%s"), *Args.TextWidgetName, *Args.TextType),
 		                                                      ScenarioProperty);
 		TArray<FString> PreviousTexts;

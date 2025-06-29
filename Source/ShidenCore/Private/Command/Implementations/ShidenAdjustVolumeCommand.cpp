@@ -72,7 +72,7 @@ void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& Pr
 	else
 	{
 		FShidenScenarioProperty ScenarioProperty;
-		UShidenScenarioBlueprintLibrary::FindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty);
+		UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty);
 		TMap<FString, FString> ScenarioProperties;
 		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 		ScenarioProperties.Add(TEXT("Volume"), FString::SanitizeFloat(Args.Volume));
