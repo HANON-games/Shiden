@@ -61,7 +61,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryLoadTextFile(const FStri
 	const void* WindowHandle = nullptr;
 	if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
 	{
-		const IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(ShidenEditorConstants::ContentBrowserModuleName);
+		const IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(ShidenEditorConstants::MainFrameModuleName);
 		const TSharedPtr<SWindow> MainWindow = MainFrameModule.GetParentWindow();
 		if (MainWindow.IsValid() && MainWindow->GetNativeWindow().IsValid())
 		{
@@ -369,6 +369,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 	}
 	
 	// Parse rows
+	TMap<FString, TObjectPtr<UShidenScenario>> MacroScenarioCache;
 	const TMap<FString, FShidenCommandDefinition>& CommandDefinitions = UShidenBlueprintLibrary::GetCommandDefinitionsCache();
 	TArray<FShidenCsvParsedRow> CsvParsedRow;
 	ParseCsvContent(CsvString, CsvParsedRow);
@@ -398,7 +399,36 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		TArray<FShidenCommandArgument> Args = CommandDefinitions[Command.CommandName].Args;
 		for (int Index = 0; Index < Args.Num(); Index++)
 		{
-			Command.Args.Add(Args[Index].ArgName.ToString(), Row.Num() > Index + 4 ? Row[Index + 4] : TEXT("{EMPTY}"));
+			FString Value = Row.IsValidIndex(Index + 4) ? Row[Index + 4] : TEXT("{EMPTY}");
+			Command.Args.Add(Args[Index].ArgName.ToString(), Value);
+
+			// If the HasAdditionalArgs Property of Args[Index] is true, add MacroArguments
+			if (!Value.IsEmpty() && Args[Index].TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
+			{
+				if (!MacroScenarioCache.Contains(Value))
+				{
+					// Load Macro Scenario
+					FGuid MacroScenarioId;
+					UShidenScenario* MacroScenario;
+					if (UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(Value, MacroScenarioId, MacroScenario))
+					{
+						MacroScenarioCache.Add(Value, MacroScenario);
+					}
+				}
+				
+				const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache.FindRef(Value);
+				if (!MacroScenario)
+				{
+					continue;
+				}
+					
+				for (const FShidenVariableDefinition& MacroParameterDefinition : MacroScenario->MacroParameterDefinitions)
+				{
+					Index++;
+					Value = Row.IsValidIndex(Index + 4) ? Row[Index + 4] : TEXT("{EMPTY}");
+					Command.Args.Add(MacroParameterDefinition.Name, Value);
+				}
+			}
 		}
 		
 		Scenario->Commands.Add(Command);
@@ -450,15 +480,15 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	}
 
 	// Get max column count
-	int MaxColumnCount = 0;
+	int MaxArgCount = 0;
 	for (const FShidenCommand& Command : Scenario->Commands)
 	{
-		MaxColumnCount = FMath::Max(MaxColumnCount, Command.Args.Num());
+		MaxArgCount = FMath::Max(MaxArgCount, Command.Args.Num());
 	}
 
 	// Add header
 	FString Header = TEXT("CommandId,Enabled,CommandName,PresetName");
-	for (int Index = 0; Index < MaxColumnCount; Index++)
+	for (int Index = 0; Index < MaxArgCount; Index++)
 	{
 		Header += TEXT(",Arg") + FString::FromInt(Index + 1);
 	}
@@ -486,9 +516,9 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 		}
 		
 		TArray<FShidenCommandArgument> CommandArguments = CommandDefinitions[CommandName].Args;
-		for (int Index = 0; Index < MaxColumnCount; Index++)
+		for (int Index = 0; Index < MaxArgCount; Index++)
 		{
-			if (Index < CommandDefinitions[CommandName].Args.Num() && Args.Contains(CommandArguments[Index].ArgName.ToString()))
+			if (CommandArguments.IsValidIndex(Index) && Args.Contains(CommandArguments[Index].ArgName.ToString()))
 			{
 				FString Arg = Args[CommandArguments[Index].ArgName.ToString()];
 				Row += TEXT(",") + EscapeCsvItem(Arg);
@@ -519,10 +549,12 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 						{
 							FString MacroArg = Args[MacroParameterDefinition.Name];
 							Row += TEXT(",") + EscapeCsvItem(MacroArg);
+							Index++;
 						}
 						else
 						{
 							Row += TEXT(",");
+							Index++;
 						}
 					}
 				}
