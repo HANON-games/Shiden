@@ -37,10 +37,10 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	/**
 	 * Sets the path of the scenario currently being edited.
 	 * 
-	 * @param Path The file path to the scenario asset
+	 * @param PackageName The file path to the scenario asset
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetEditScenarioPath(const FString& Path);
+	static void SetEditScenarioPath(const FString& PackageName);
 
 	/**
 	 * Enables or disables sound preview functionality in the editor.

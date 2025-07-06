@@ -1282,3 +1282,5 @@ TArray<FShidenCommandRedirector> UShidenEditorBlueprintLibrary::GetRedirectDefin
 	}
 	return Redirects;
 }
+
+#undef LOCTEXT_NAMESPACE
