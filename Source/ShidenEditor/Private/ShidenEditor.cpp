@@ -5,6 +5,8 @@
 #include "ShidenEditorConfig.h"
 #include "EditorSubsystem.h"
 #include "ShidenCommandDefinitionCustomization.h"
+#include "ShidenScenarioCustomization.h"
+#include "Scenario/ShidenScenario.h"
 #include "Editor/EditorEngine.h"
 
 #define LOCTEXT_NAMESPACE "FShidenEditorModule"
@@ -30,6 +32,10 @@ void FShidenEditorModule::StartupModule()
 		"ShidenCommandDefinition",
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenCommandDefinitionCustomization::MakeInstance)
 	);
+	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+		UShidenScenario::StaticClass()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenScenarioCustomization::MakeInstance)
+	);
 	PropertyEditorModule.NotifyCustomizationModuleChanged();
 }
 
@@ -49,6 +55,7 @@ void FShidenEditorModule::ShutdownModule()
 
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandDefinition");
+	PropertyEditorModule.UnregisterCustomPropertyTypeLayout(UShidenScenario::StaticClass()->GetFName());
 }
 
 #undef LOCTEXT_NAMESPACE

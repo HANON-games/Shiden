@@ -13,10 +13,10 @@ SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializ
 {
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& Path)
+SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& PackageName)
 {
 	const TObjectPtr<UShidenEditorConfig> ShidenEditorConfig = GetMutableDefault<UShidenEditorConfig>();
-	ShidenEditorConfig->EditScenarioPath = Path;
+	ShidenEditorConfig->EditScenarioPath = PackageName;
 	UpdateConfig(ShidenEditorConfig);
 }
 
