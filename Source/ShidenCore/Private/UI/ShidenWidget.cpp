@@ -936,7 +936,7 @@ SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESla
 SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, const ESlateVisibility NewVisibility,
                                                        const bool bShouldRegisterScenarioProperty)
 {
-	if (!AllWidgets.Contains(Name))
+	if (!IsValid(this) || !AllWidgets.Contains(Name))
 	{
 		return false;
 	}
