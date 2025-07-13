@@ -7,7 +7,6 @@
 #include "ShidenEditorBlueprintLibrary.h"
 #include "ShidenEditorConfig.h"
 #include "Widgets/Input/SButton.h"
-#include "Widgets/Text/STextBlock.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "EditorUtilitySubsystem.h"
@@ -111,8 +110,7 @@ void FShidenScenarioCustomization::OnOpenInEditorClicked() const
 		return;
 	}
 
-	const TObjectPtr<UEditorUtilityWidget> EditorWidget = EditorUtilitySubsystem->FindUtilityWidgetFromBlueprint(EditorWidgetBlueprint);
-	if (!EditorWidget)
+	if (const TObjectPtr<UEditorUtilityWidget> EditorWidget = EditorUtilitySubsystem->FindUtilityWidgetFromBlueprint(EditorWidgetBlueprint); !EditorWidget)
 	{
 		EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidgetBlueprint);
 	}
@@ -126,16 +124,13 @@ void FShidenScenarioCustomization::OnNewScenarioClicked() const
 	}
 
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	const FString DefaultPath = DefaultPath.IsEmpty()
-		                            ? "/Game/Scenarios"
-		                            : ProjectConfig->ScenarioDirectoryPath;
-
+	
 	FString SavePackagePath, SaveAssetName;
 	bool bAssetNameWasSet = false;
 
 	UShidenEditorBlueprintLibrary::ShowSaveAssetDialog(
 		UShidenScenario::StaticClass(),
-		DefaultPath,
+		ProjectConfig->ScenarioDirectoryPath,
 		TEXT("NewScenario"),
 		SavePackagePath,
 		SaveAssetName,
