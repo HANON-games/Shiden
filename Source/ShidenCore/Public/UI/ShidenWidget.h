@@ -186,6 +186,13 @@ public:
 	void CaptureScreenToTexture2D(UTexture2D*& ResultTexture);
 
 	/**
+	 * Loads the widget state for the save slot metadata.
+	 * @return A map of metadata key-value pairs for the current save slot
+	 */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (ReturnDisplayName = "Map"))
+	TMap<FString, FString> GetSaveSlotMetadata();
+	
+	/**
 	 * Initializes the Shiden widget with the manager interface for normal gameplay.
 	 * @param InShidenManager The Shiden manager interface
 	 * @param bSuccess [out] Whether the widget was successfully initialized
@@ -544,7 +551,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Text Input")
 	bool IsTextSubmitted() const;
-
+	
 	/**
 	 * Sanitizes input text according to the specified properties and constraints.
 	 * @param Text The raw input text to sanitize
@@ -600,6 +607,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget);
+	
+	/**
+	 * Checks if any widget in the text layer is currently visible.
+	 * @return True if any widget in the text layer is visible
+	 */
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Widget")
+	bool IsTextVisible() const;
 
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Widget")

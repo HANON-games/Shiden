@@ -50,7 +50,8 @@ public class ShidenCore : ModuleRules
 				"RHI",
 				"Projects",
 				"JsonUtilities",
-				"Json"
+				"Json",
+				"SignalProcessing"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

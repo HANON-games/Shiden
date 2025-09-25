@@ -105,6 +105,12 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 		}
 
 		const FString* Path = Values.Find(TEXT("Path"));
+		if (!Path)
+		{
+			Status = EShidenInitFromSaveDataStatus::Error;
+			ErrorMessage = TEXT("Failed to find Path.");
+			return;
+		}
 		const int32 TrackId = FCString::Atoi(*SoundTrackStr);
 		const float Volume = FCString::Atof(**VolumeStr);
 		const float Pitch = FCString::Atof(**PitchStr);
