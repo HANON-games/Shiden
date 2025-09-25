@@ -1126,3 +1126,27 @@ SHIDENCORE_API bool UShidenWidget::TryFindRetainerBoxMaterialScalarParams(const 
 	}
 	return false;
 }
+
+SHIDENCORE_API bool UShidenWidget::IsTextVisible() const
+{
+	if (!TextLayer->IsVisible() && !OptionLayer->IsVisible() && !TextInputLayer->IsVisible())
+	{
+		return false;
+	}
+
+	if (OptionLayer->IsVisible() || TextInputLayer->IsVisible())
+	{
+		return true;
+	}
+
+	const TArray<UWidget*> Children = TextLayer->GetAllChildren();
+	for (const UWidget* Child : Children)
+	{
+		if (Child->IsVisible())
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}

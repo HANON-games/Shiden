@@ -65,14 +65,9 @@ void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& Pr
 
 	// Update the volume property in the scenario
 	const FString PropertyKey = FString::FromInt(Args.TrackId);
-	if (Args.Volume == 0.0f)
+	FShidenScenarioProperty ScenarioProperty;
+	if (UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty))
 	{
-		UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(TEXT("Sound"), PropertyKey);
-	}
-	else
-	{
-		FShidenScenarioProperty ScenarioProperty;
-		UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty);
 		TMap<FString, FString> ScenarioProperties;
 		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 		ScenarioProperties.Add(TEXT("Volume"), FString::SanitizeFloat(Args.Volume));
