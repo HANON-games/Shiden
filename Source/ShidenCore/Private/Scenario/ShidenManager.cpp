@@ -10,6 +10,8 @@
 #include "GameFramework/ForceFeedbackEffect.h"
 #include "Scenario/ShidenParallelProcessManagerInterface.h"
 #include "DSP/VolumeFader.h"
+#include "Engine/TimerHandle.h"
+#include "TimerManager.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
 AShidenManager::AShidenManager(): ShidenWidget(nullptr)
