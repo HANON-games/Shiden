@@ -6,7 +6,7 @@
 #include "ISettingsModule.h"
 #endif
 
-#define LOCTEXT_NAMESPACE "FShidenCoreModule"
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
 
 void FShidenCoreModule::StartupModule()
 {
@@ -19,8 +19,8 @@ void FShidenCoreModule::StartupModule()
 			"Project",
 			"Plugins",
 			"ShidenVisualNovelEditor",
-			NSLOCTEXT("ShidenNamespace", "ShidenVisualNovelEditorName", "Shiden Visual Novel Editor"),
-			NSLOCTEXT("ShidenNamespace", "ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor"),
+			LOCTEXT("ShidenVisualNovelEditorName", "Shiden Visual Novel Editor"),
+			LOCTEXT("ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor"),
 			GetMutableDefault<UShidenProjectConfig>()
 		);
 	}

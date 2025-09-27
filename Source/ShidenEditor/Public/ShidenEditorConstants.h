@@ -4,15 +4,17 @@
 
 #include "CoreMinimal.h"
 
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
+
 /**
  * Constants used throughout the ShidenEditor module
  */
 namespace ShidenEditorConstants
 {
 	// Dialog Titles
-	static const FText SaveAssetDialogTitle = NSLOCTEXT("ShidenNamespace", "SaveAssetDialogTitle", "Save Asset As");
-	static const FText OpenFileDialogTitle = NSLOCTEXT("ShidenNamespace", "OpenFileDialogTitle", "Open File Dialog");
-	static const FText SaveFileDialogTitle = NSLOCTEXT("ShidenNamespace", "SaveFileDialogTitle", "Save File Dialog");
+	static const FText SaveAssetDialogTitle = LOCTEXT("SaveAssetDialogTitle", "Save Asset As");
+	static const FText OpenFileDialogTitle = LOCTEXT("OpenFileDialogTitle", "Open File Dialog");
+	static const FText SaveFileDialogTitle = LOCTEXT("SaveFileDialogTitle", "Save File Dialog");
 
 	// Module Names
 	static const FName MainFrameModuleName = TEXT("MainFrame");
@@ -30,3 +32,5 @@ namespace ShidenEditorConstants
 	// UI Text
 	static const FText CommandSoftObjectPathDisplayName = FText::FromString(TEXT("Command Soft Object Path"));
 }
+
+#undef LOCTEXT_NAMESPACE

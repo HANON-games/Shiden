@@ -53,7 +53,8 @@ public class ShidenEditor : ModuleRules
 				"ContentBrowserData",
 				"ToolWidgets",
 				"PropertyEditor",
-				"AssetTools"
+				"AssetTools",
+				"ToolMenus",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

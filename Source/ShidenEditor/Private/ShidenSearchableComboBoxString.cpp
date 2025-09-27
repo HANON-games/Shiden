@@ -8,11 +8,7 @@
 #include "Engine/Font.h"
 #include "Styling/DefaultStyleCache.h"
 
-#ifdef LOCTEXT_NAMESPACE
-#undef LOCTEXT_NAMESPACE
-#endif
-
-#define LOCTEXT_NAMESPACE "UMG"
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
 
 SHIDENEDITOR_API UShidenSearchableComboBoxString::UShidenSearchableComboBoxString(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -373,7 +369,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleOpening()
 
 SHIDENEDITOR_API const FText UShidenSearchableComboBoxString::GetPaletteCategory()
 {
-	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
+	return LOCTEXT("Shiden Editor", "Shiden Editor");
 }
 
 #endif
