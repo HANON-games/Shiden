@@ -30,7 +30,7 @@
 
 class UBlueprint;
 
-#define LOCTEXT_NAMESPACE "K2Node_GetShidenCommand"
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
 
 static const FName CommandPinName(TEXT("Command"));
 static const FName CommandDefinitionsPinName(TEXT("CommandDefinitions"));
@@ -55,7 +55,7 @@ UEdGraphPin* FindPinByName(const TArray<UEdGraphPin*>& PinsToSearch, const FName
 UK2Node_GetCommandArguments::UK2Node_GetCommandArguments(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), CommandDefinitionsCache(nullptr)
 {
-	NodeTooltip = NSLOCTEXT("ShidenNamespace", "NodeTooltip", "Attempt to retrieve a arguments from a command");
+	NodeTooltip = LOCTEXT("NodeTooltip", "Attempt to retrieve a arguments from a command");
 	OnCommandDefinitionsChangedHandle = FDelegateHandle();
 }
 
@@ -65,18 +65,18 @@ void UK2Node_GetCommandArguments::AllocateDefaultPins()
 	UEdGraphPin* CommandDefinitionsPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UShidenCommandDefinitions::StaticClass(),
 	                                               CommandDefinitionsPinName);
 	CommandDefinitionsPin->bNotConnectable = true;
-	SetPinToolTip(*CommandDefinitionsPin, NSLOCTEXT("ShidenNamespace", "CommandDefinitionsPinDescription", "The CommandDefinitions"));
+	SetPinToolTip(*CommandDefinitionsPin, LOCTEXT("CommandDefinitionsPinDescription", "The CommandDefinitions"));
 
 	// Command Name pin
 	UEdGraphPin* CommandNamePin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, CommandNamePinName);
 	CommandNamePin->bNotConnectable = true;
 	CommandNamePin->bHidden = !CommandDefinitionsPin->DefaultObject;
-	SetPinToolTip(*CommandNamePin, NSLOCTEXT("ShidenNamespace", "CommandNamePinDescription", "The command name"));
+	SetPinToolTip(*CommandNamePin, LOCTEXT("CommandNamePinDescription", "The command name"));
 
 	// Add Command pin
 	UScriptStruct* ShidenCommandStruct = TBaseStructure<FShidenCommand>::Get();
 	UEdGraphPin* CommandPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, ShidenCommandStruct, CommandPinName);
-	SetPinToolTip(*CommandPin, NSLOCTEXT("ShidenNamespace", "CommandPinDescription", "The Command"));
+	SetPinToolTip(*CommandPin, LOCTEXT("CommandPinDescription", "The Command"));
 
 	Super::AllocateDefaultPins();
 }
@@ -396,7 +396,7 @@ UEdGraphPin* UK2Node_GetCommandArguments::FindCommandNamePin(const TArray<UEdGra
 
 FText UK2Node_GetCommandArguments::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return NSLOCTEXT("ShidenNamespace", "Get Command Arguments", "Get Command Arguments");
+	return LOCTEXT("Get Command Arguments", "Get Command Arguments");
 }
 
 void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
@@ -409,7 +409,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 		                                                          : nullptr;
 	if (nullptr == OriginalGetCommandDefinitionsInPin || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
-		CompilerContext.MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "GetCommandArgumentsNoCommandDefinitions_Error",
+		CompilerContext.MessageLog.Error(*LOCTEXT("GetCommandArgumentsNoCommandDefinitions_Error",
 		                                            "GetCommandArguments must have a CommandDefinitions specified.").
 		                                 ToString(), this);
 		// we break exec links so this is the only error we get
@@ -467,14 +467,14 @@ void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLo
 	const UEdGraphPin* CommandNamePin = FindCommandNamePin();
 	if (!CommandDefinitionsPin || !CommandNamePin)
 	{
-		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "MissingPins", "Missing pins in @@").ToString(), this);
+		MessageLog.Error(*LOCTEXT("MissingPins", "Missing pins in @@").ToString(), this);
 		return;
 	}
 
 	const UEdGraphPin* CommandPin = FindCommandPin();
 	if (!CommandPin || (CommandPin->LinkedTo.Num() == 0 && !CommandPin->DefaultObject && CommandPin->SubPins.Num() == 0))
 	{
-		MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandPinDefaultValue", "The current value of the '@@' pin is invalid.").ToString(), this);
+		MessageLog.Error(*LOCTEXT("CommandPinDefaultValue", "The current value of the '@@' pin is invalid.").ToString(), this);
 		return;
 	}
 
@@ -484,7 +484,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLo
 		CommandDefinitions->CommandDefinitions.GetKeys(Keys);
 		if (!Keys.Contains(CommandNamePin->DefaultValue))
 		{
-			MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(),
+			MessageLog.Error(*LOCTEXT("CommandNameNotFound", "Command name not found in CommandDefinitions. @@").ToString(),
 			                 this);
 		}
 		else
@@ -500,7 +500,7 @@ void UK2Node_GetCommandArguments::EarlyValidation(FCompilerResultsLog& MessageLo
 				{
 					if (!ArgKeys.Contains(Pin->PinName.ToString()))
 					{
-						MessageLog.Error(*NSLOCTEXT("ShidenNamespace", "ArgNameNotFound", "@@ not found in CommandDefinitions.").ToString(), Pin);
+						MessageLog.Error(*LOCTEXT("ArgNameNotFound", "@@ not found in CommandDefinitions.").ToString(), Pin);
 					}
 				}
 			}

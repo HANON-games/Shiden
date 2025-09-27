@@ -10,5 +10,9 @@ class SHIDENEDITOR_API FShidenEditorModule final : public IModuleInterface
 public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
+	void RegisterMenuExtensions();
 	virtual void ShutdownModule() override;
+
+private:
+	static void InitializeScenarioPaths();
 };

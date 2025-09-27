@@ -2,6 +2,8 @@
 
 #include "Command/ShidenStandardCommandDefinitions.h"
 
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
+
 const FShidenCommandStyle UShidenStandardCommandDefinitions::TextStyle = FShidenCommandStyle{
 	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
 	FLinearColor(0.150000f, 0.150000f, 0.150000f, 1.00000f),
@@ -142,7 +144,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Text"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "TextNoteKey",
+				.Note = LOCTEXT("TextNoteKey",
 				                  "You can insert variable values using { variable_name }.\r\nIf \":\" is included in the variable name, escape it as \"\\:\".\r\nThe prefixes for variables are as follows:\r\n* \"System::\": System variables\r\n* \"Local::\": Local variables\r\n* \"Predefined::\": Predefined system variables\r\nThe track ID for Voice will be 0.\r\nIf both Voice and DialogueBlip are specified, Voice takes precedence."),
 				.Style = TextStyle,
 				.bCanCallInMacro = true,
@@ -151,7 +153,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("TextWidgetName"),
-						NSLOCTEXT("ShidenNamespace", "TextWidgetNameKey", "TextWidgetName"),
+						LOCTEXT("TextWidgetNameKey", "TextWidgetName"),
 						TEXT("Talk"),
 						TextInputTemplate,
 						{},
@@ -159,7 +161,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TextType"),
-						NSLOCTEXT("ShidenNamespace", "TextTypeKey", "TextType"),
+						LOCTEXT("TextTypeKey", "TextType"),
 						TEXT("Default"),
 						TextTypeInputTemplate,
 						{},
@@ -167,7 +169,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Text"),
-						NSLOCTEXT("ShidenNamespace", "TextKey", "Text"),
+						LOCTEXT("TextKey", "Text"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -175,7 +177,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForInput"),
-						NSLOCTEXT("ShidenNamespace", "WaitForInputKey", "WaitForInput"),
+						LOCTEXT("WaitForInputKey", "WaitForInput"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -183,7 +185,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("InstantTextDisplay"),
-						NSLOCTEXT("ShidenNamespace", "InstantTextDisplayKey", "InstantTextDisplay"),
+						LOCTEXT("InstantTextDisplayKey", "InstantTextDisplay"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -191,7 +193,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Voice"),
-						NSLOCTEXT("ShidenNamespace", "VoiceKey", "Voice"),
+						LOCTEXT("VoiceKey", "Voice"),
 						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("Target"), TEXT("Voice")}},
@@ -199,7 +201,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VoiceTrackId"),
-						NSLOCTEXT("ShidenNamespace", "VoiceTrackIdKey", "VoiceTrackId"),
+						LOCTEXT("VoiceTrackIdKey", "VoiceTrackId"),
 						TEXT("0"),
 						IntegerInputTemplate,
 						{},
@@ -207,7 +209,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TextBlip"),
-						NSLOCTEXT("ShidenNamespace", "DialogueBlipKey", "TextBlip"),
+						LOCTEXT("DialogueBlipKey", "TextBlip"),
 						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("Target"), TEXT("Voice")}},
@@ -215,7 +217,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DisableAutoStopPreviousVoices"),
-						NSLOCTEXT("ShidenNamespace", "DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+						LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -223,7 +225,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ContinueFromThePreviousText"),
-						NSLOCTEXT("ShidenNamespace", "ContinueFromThePreviousTextKey", "ContinueFrom\r\nThePreviousText"),
+						LOCTEXT("ContinueFromThePreviousTextKey", "ContinueFrom\r\nThePreviousText"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -231,7 +233,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2"),
-						NSLOCTEXT("ShidenNamespace", "Language2Key", "Language 2"),
+						LOCTEXT("Language2Key", "Language 2"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -239,7 +241,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3"),
-						NSLOCTEXT("ShidenNamespace", "Language3Key", "Language 3"),
+						LOCTEXT("Language3Key", "Language 3"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -247,7 +249,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4"),
-						NSLOCTEXT("ShidenNamespace", "Language4Key", "Language 4"),
+						LOCTEXT("Language4Key", "Language 4"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -255,7 +257,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5"),
-						NSLOCTEXT("ShidenNamespace", "Language5Key", "Language 5"),
+						LOCTEXT("Language5Key", "Language 5"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -263,7 +265,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6"),
-						NSLOCTEXT("ShidenNamespace", "Language6Key", "Language 6"),
+						LOCTEXT("Language6Key", "Language 6"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -271,7 +273,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7"),
-						NSLOCTEXT("ShidenNamespace", "Language7Key", "Language 7"),
+						LOCTEXT("Language7Key", "Language 7"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -279,7 +281,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8"),
-						NSLOCTEXT("ShidenNamespace", "Language8Key", "Language 8"),
+						LOCTEXT("Language8Key", "Language 8"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -287,7 +289,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9"),
-						NSLOCTEXT("ShidenNamespace", "Language9Key", "Language 9"),
+						LOCTEXT("Language9Key", "Language 9"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -295,7 +297,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10"),
-						NSLOCTEXT("ShidenNamespace", "Language10Key", "Language 10"),
+						LOCTEXT("Language10Key", "Language 10"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -308,7 +310,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Image"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "ImageNoteKey",
+				.Note = LOCTEXT("ImageNoteKey",
 				                  "If no image is specified, the values of Position, Size,\r\nand SizeToContent are ignored, and the current image fades out.\r\nSteps is used only when the FadeFunction is Step.\r\nBlend Exp is used only when the FadeFunction is Ease.\r\nFor SlateBrush created from Material, fading does not work,\r\nso please change the opacity separately."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -317,7 +319,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("SlotName"),
-						NSLOCTEXT("ShidenNamespace", "SlotNameKey", "SlotName"),
+						LOCTEXT("SlotNameKey", "SlotName"),
 						TEXT("Background"),
 						TextInputTemplate,
 						{},
@@ -325,7 +327,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Image"),
-						NSLOCTEXT("ShidenNamespace", "ImageKey", "Image"),
+						LOCTEXT("ImageKey", "Image"),
 						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("SlateBrush")}},
@@ -333,7 +335,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwritePosition"),
-						NSLOCTEXT("ShidenNamespace", "OverwritePositionKey", "OverwritePosition"),
+						LOCTEXT("OverwritePositionKey", "OverwritePosition"),
 						TEXT(""),
 						Vector2InputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -341,7 +343,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwriteSize"),
-						NSLOCTEXT("ShidenNamespace", "OverwriteSizeKey", "OverwriteSize"),
+						LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
 						TEXT(""),
 						Vector2InputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -349,7 +351,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwriteSizeToContent"),
-						NSLOCTEXT("ShidenNamespace", "OverwriteSizeToContentKey", "OverwriteSizeToContent"),
+						LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
 						TEXT(""),
 						BooleanInputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -357,7 +359,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeFunction"),
-						NSLOCTEXT("ShidenNamespace", "FadeFunctionKey", "FadeFunction"),
+						LOCTEXT("FadeFunctionKey", "FadeFunction"),
 						TEXT("Linear"),
 						EasingFuncInputTemplate,
 						{},
@@ -365,7 +367,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeDuration"),
-						NSLOCTEXT("ShidenNamespace", "FadeDurationKey", "FadeDuration"),
+						LOCTEXT("FadeDurationKey", "FadeDuration"),
 						TEXT("0.0"),
 						FloatInputTemplate,
 						{},
@@ -373,7 +375,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Steps"),
-						NSLOCTEXT("ShidenNamespace", "StepsKey", "Steps"),
+						LOCTEXT("StepsKey", "Steps"),
 						TEXT("2"),
 						IntegerInputTemplate,
 						{},
@@ -381,7 +383,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("BlendExp"),
-						NSLOCTEXT("ShidenNamespace", "BlendExpKey", "BlendExp"),
+						LOCTEXT("BlendExpKey", "BlendExp"),
 						TEXT("2.0"),
 						FloatInputTemplate,
 						{},
@@ -389,7 +391,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -402,7 +404,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Sound"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "SoundNoteKey",
+				.Note = LOCTEXT("SoundNoteKey",
 				                  "Track ID is not effective for SE.\r\nYou cannot stop a playing SE midway.\r\nYou can stop it by leaving the sound source field empty.\r\nThe value for DisableAutoStopPreviousVoices is only effective for Voice.\r\nWhen fading out the currently playing BGM or voice, the values of Volume and Pitch are ignored.\r\nFor MetaSound Source, it seems that the Start Time value is not reflected."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
@@ -411,7 +413,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("SoundType"),
-						NSLOCTEXT("ShidenNamespace", "SoundTypeKey", "SoundType"),
+						LOCTEXT("SoundTypeKey", "SoundType"),
 						TEXT("BGM"),
 						SoundTypeInputTemplate,
 						{},
@@ -419,7 +421,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TrackId"),
-						NSLOCTEXT("ShidenNamespace", "TrackIdKey", "TrackId"),
+						LOCTEXT("TrackIdKey", "TrackId"),
 						TEXT("0"),
 						IntegerInputTemplate,
 						{},
@@ -427,7 +429,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("SoundSource"),
-						NSLOCTEXT("ShidenNamespace", "SoundSourceKey", "SoundSource"),
+						LOCTEXT("SoundSourceKey", "SoundSource"),
 						TEXT("None"),
 						SoundInputTemplate,
 						{{TEXT("SoundTypeSourceIndex"), TEXT("0")}},
@@ -435,7 +437,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Volume"),
-						NSLOCTEXT("ShidenNamespace", "VolumeKey", "Volume"),
+						LOCTEXT("VolumeKey", "Volume"),
 						TEXT("1.00"),
 						FloatInputTemplate,
 						{},
@@ -443,7 +445,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Pitch"),
-						NSLOCTEXT("ShidenNamespace", "PitchKey", "Pitch"),
+						LOCTEXT("PitchKey", "Pitch"),
 						TEXT("1.00"),
 						FloatInputTemplate,
 						{},
@@ -451,7 +453,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("StartTime"),
-						NSLOCTEXT("ShidenNamespace", "StartTimeKey", "StartTime"),
+						LOCTEXT("StartTimeKey", "StartTime"),
 						TEXT("0.00"),
 						FloatInputTemplate,
 						{},
@@ -459,7 +461,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeType"),
-						NSLOCTEXT("ShidenNamespace", "FadeTypeKey", "FadeType"),
+						LOCTEXT("FadeTypeKey", "FadeType"),
 						TEXT("FadeIn"),
 						FadeTypeInputTemplate,
 						{},
@@ -467,7 +469,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeFunction"),
-						NSLOCTEXT("ShidenNamespace", "FadeFunctionKey", "FadeFunction"),
+						LOCTEXT("FadeFunctionKey", "FadeFunction"),
 						TEXT("Linear"),
 						BGMFadeFuncInputTemplate,
 						{},
@@ -475,7 +477,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeDuration"),
-						NSLOCTEXT("ShidenNamespace", "FadeDurationKey", "FadeDuration"),
+						LOCTEXT("FadeDurationKey", "FadeDuration"),
 						TEXT("0.00"),
 						FloatInputTemplate,
 						{},
@@ -483,7 +485,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DisableAutoStopPreviousVoices"),
-						NSLOCTEXT("ShidenNamespace", "DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+						LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -491,7 +493,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForFadeCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForFadeCompletionKey", "WaitForFadeCompletion"),
+						LOCTEXT("WaitForFadeCompletionKey", "WaitForFadeCompletion"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -499,7 +501,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForSoundCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForSoundCompletionKey", "WaitForSoundCompletion"),
+						LOCTEXT("WaitForSoundCompletionKey", "WaitForSoundCompletion"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -519,7 +521,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("TrackId"),
-						NSLOCTEXT("ShidenNamespace", "TrackIdKey", "TrackId"),
+						LOCTEXT("TrackIdKey", "TrackId"),
 						TEXT("0"),
 						IntegerInputTemplate,
 						{},
@@ -527,7 +529,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Volume"),
-						NSLOCTEXT("ShidenNamespace", "VolumeKey", "Volume"),
+						LOCTEXT("VolumeKey", "Volume"),
 						TEXT("1.00"),
 						FloatInputTemplate,
 						{},
@@ -535,7 +537,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeFunction"),
-						NSLOCTEXT("ShidenNamespace", "FadeFunctionKey", "FadeFunction"),
+						LOCTEXT("FadeFunctionKey", "FadeFunction"),
 						TEXT("Linear"),
 						BGMFadeFuncInputTemplate,
 						{},
@@ -543,7 +545,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeDuration"),
-						NSLOCTEXT("ShidenNamespace", "FadeDurationKey", "FadeDuration"),
+						LOCTEXT("FadeDurationKey", "FadeDuration"),
 						TEXT("0.00"),
 						FloatInputTemplate,
 						{},
@@ -551,7 +553,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -564,7 +566,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Options"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "OptionsNoteKey",
+				.Note = LOCTEXT("OptionsNoteKey",
 				                  "Only Integer type variables can be specified for DestinationVariableName."),
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
@@ -573,7 +575,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Option1Key", "Option 1"),
+						LOCTEXT("Option1Key", "Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -581,7 +583,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Option2Key", "Option 2"),
+						LOCTEXT("Option2Key", "Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -589,7 +591,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Option3Key", "Option 3"),
+						LOCTEXT("Option3Key", "Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -597,7 +599,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Option4Key", "Option 4"),
+						LOCTEXT("Option4Key", "Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -605,7 +607,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Option5Key", "Option 5"),
+						LOCTEXT("Option5Key", "Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -613,7 +615,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DestinationVariableKind"),
-						NSLOCTEXT("ShidenNamespace", "DestinationVariableKindKey", "DestinationVariableKind"),
+						LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -621,7 +623,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DestinationVariableName"),
-						NSLOCTEXT("ShidenNamespace", "DestinationVariableNameKey", "DestinationVariableName"),
+						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
@@ -633,7 +635,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("HideTextLayer"),
-						NSLOCTEXT("ShidenNamespace", "HideTextLayerKey", "HideTextLayer"),
+						LOCTEXT("HideTextLayerKey", "HideTextLayer"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -641,7 +643,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language2Option1Key", "Language 2 Option 1"),
+						LOCTEXT("Language2Option1Key", "Language 2 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -649,7 +651,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language2Option2Key", "Language 2 Option 2"),
+						LOCTEXT("Language2Option2Key", "Language 2 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -657,7 +659,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language2Option3Key", "Language 2 Option 3"),
+						LOCTEXT("Language2Option3Key", "Language 2 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -665,7 +667,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language2Option4Key", "Language 2 Option 4"),
+						LOCTEXT("Language2Option4Key", "Language 2 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -673,7 +675,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 2 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language2Option5Key", "Language 2 Option 5"),
+						LOCTEXT("Language2Option5Key", "Language 2 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -681,7 +683,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language3Option1Key", "Language 3 Option 1"),
+						LOCTEXT("Language3Option1Key", "Language 3 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -689,7 +691,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language3Option2Key", "Language 3 Option 2"),
+						LOCTEXT("Language3Option2Key", "Language 3 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -697,7 +699,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language3Option3Key", "Language 3 Option 3"),
+						LOCTEXT("Language3Option3Key", "Language 3 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -705,7 +707,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language3Option4Key", "Language 3 Option 4"),
+						LOCTEXT("Language3Option4Key", "Language 3 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -713,7 +715,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 3 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language3Option5Key", "Language 3 Option 5"),
+						LOCTEXT("Language3Option5Key", "Language 3 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -721,7 +723,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language4Option1Key", "Language 4 Option 1"),
+						LOCTEXT("Language4Option1Key", "Language 4 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -729,7 +731,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language4Option2Key", "Language 4 Option 2"),
+						LOCTEXT("Language4Option2Key", "Language 4 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -737,7 +739,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language4Option3Key", "Language 4 Option 3"),
+						LOCTEXT("Language4Option3Key", "Language 4 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -745,7 +747,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language4Option4Key", "Language 4 Option 4"),
+						LOCTEXT("Language4Option4Key", "Language 4 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -753,7 +755,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 4 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language4Option5Key", "Language 4 Option 5"),
+						LOCTEXT("Language4Option5Key", "Language 4 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -761,7 +763,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language5Option1Key", "Language 5 Option 1"),
+						LOCTEXT("Language5Option1Key", "Language 5 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -769,7 +771,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language5Option2Key", "Language 5 Option 2"),
+						LOCTEXT("Language5Option2Key", "Language 5 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -777,7 +779,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language5Option3Key", "Language 5 Option 3"),
+						LOCTEXT("Language5Option3Key", "Language 5 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -785,7 +787,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language5Option4Key", "Language 5 Option 4"),
+						LOCTEXT("Language5Option4Key", "Language 5 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -793,7 +795,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 5 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language5Option5Key", "Language 5 Option 5"),
+						LOCTEXT("Language5Option5Key", "Language 5 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -801,7 +803,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language6Option1Key", "Language 6 Option 1"),
+						LOCTEXT("Language6Option1Key", "Language 6 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -809,7 +811,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language6Option2Key", "Language 6 Option 2"),
+						LOCTEXT("Language6Option2Key", "Language 6 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -817,7 +819,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language6Option3Key", "Language 6 Option 3"),
+						LOCTEXT("Language6Option3Key", "Language 6 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -825,7 +827,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language6Option4Key", "Language 6 Option 4"),
+						LOCTEXT("Language6Option4Key", "Language 6 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -833,7 +835,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 6 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language6Option5Key", "Language 6 Option 5"),
+						LOCTEXT("Language6Option5Key", "Language 6 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -841,7 +843,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language7Option1Key", "Language 7 Option 1"),
+						LOCTEXT("Language7Option1Key", "Language 7 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -849,7 +851,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language7Option2Key", "Language 7 Option 2"),
+						LOCTEXT("Language7Option2Key", "Language 7 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -857,7 +859,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language7Option3Key", "Language 7 Option 3"),
+						LOCTEXT("Language7Option3Key", "Language 7 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -865,7 +867,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language7Option4Key", "Language 7 Option 4"),
+						LOCTEXT("Language7Option4Key", "Language 7 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -873,7 +875,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 7 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language7Option5Key", "Language 7 Option 5"),
+						LOCTEXT("Language7Option5Key", "Language 7 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -881,7 +883,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language8Option1Key", "Language 8 Option 1"),
+						LOCTEXT("Language8Option1Key", "Language 8 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -889,7 +891,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language8Option2Key", "Language 8 Option 2"),
+						LOCTEXT("Language8Option2Key", "Language 8 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -897,7 +899,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language8Option3Key", "Language 8 Option 3"),
+						LOCTEXT("Language8Option3Key", "Language 8 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -905,7 +907,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language8Option4Key", "Language 8 Option 4"),
+						LOCTEXT("Language8Option4Key", "Language 8 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -913,7 +915,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 8 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language8Option5Key", "Language 8 Option 5"),
+						LOCTEXT("Language8Option5Key", "Language 8 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -921,7 +923,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language9Option1Key", "Language 9 Option 1"),
+						LOCTEXT("Language9Option1Key", "Language 9 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -929,7 +931,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language9Option2Key", "Language 9 Option 2"),
+						LOCTEXT("Language9Option2Key", "Language 9 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -937,7 +939,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language9Option3Key", "Language 9 Option 3"),
+						LOCTEXT("Language9Option3Key", "Language 9 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -945,7 +947,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language9Option4Key", "Language 9 Option 4"),
+						LOCTEXT("Language9Option4Key", "Language 9 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -953,7 +955,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 9 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language9Option5Key", "Language 9 Option 5"),
+						LOCTEXT("Language9Option5Key", "Language 9 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -961,7 +963,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10 Option 1"),
-						NSLOCTEXT("ShidenNamespace", "Language10Option1Key", "Language 10 Option 1"),
+						LOCTEXT("Language10Option1Key", "Language 10 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -969,7 +971,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10 Option 2"),
-						NSLOCTEXT("ShidenNamespace", "Language10Option2Key", "Language 10 Option 2"),
+						LOCTEXT("Language10Option2Key", "Language 10 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -977,7 +979,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10 Option 3"),
-						NSLOCTEXT("ShidenNamespace", "Language10Option3Key", "Language 10 Option 3"),
+						LOCTEXT("Language10Option3Key", "Language 10 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -985,7 +987,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10 Option 4"),
-						NSLOCTEXT("ShidenNamespace", "Language10Option4Key", "Language 10 Option 4"),
+						LOCTEXT("Language10Option4Key", "Language 10 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -993,7 +995,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Language 10 Option 5"),
-						NSLOCTEXT("ShidenNamespace", "Language10Option5Key", "Language 10 Option 5"),
+						LOCTEXT("Language10Option5Key", "Language 10 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1006,7 +1008,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("TextInput"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "TextInputNoteKey",
+				.Note = LOCTEXT("TextInputNoteKey",
 				                  "You can input patterns like the following in AllowedCharacterRegex.\r\n- Allow only numbers: [0-9]\r\n- Allow only abc: [abc]\r\n- Allow anything except numbers: [^0-9]"),
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
@@ -1015,7 +1017,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("MaxLength"),
-						NSLOCTEXT("ShidenNamespace", "MaxLengthKey", "MaxLength"),
+						LOCTEXT("MaxLengthKey", "MaxLength"),
 						TEXT(""),
 						IntegerInputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1023,7 +1025,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("MaxLineCount"),
-						NSLOCTEXT("ShidenNamespace", "MaxLineCountKey", "MaxLineCount"),
+						LOCTEXT("MaxLineCountKey", "MaxLineCount"),
 						TEXT("1"),
 						IntegerInputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1031,7 +1033,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("AllowedCharacterRegex"),
-						NSLOCTEXT("ShidenNamespace", "AllowedCharacterRegexKey", "AllowedCharacterRegex"),
+						LOCTEXT("AllowedCharacterRegexKey", "AllowedCharacterRegex"),
 						TEXT(""),
 						TextInputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1039,7 +1041,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DefaultText"),
-						NSLOCTEXT("ShidenNamespace", "DefaultTextKey", "DefaultText"),
+						LOCTEXT("DefaultTextKey", "DefaultText"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -1047,7 +1049,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("HintText"),
-						NSLOCTEXT("ShidenNamespace", "HintTextKey", "HintText"),
+						LOCTEXT("HintTextKey", "HintText"),
 						TEXT(""),
 						MultilineTextInputTemplate,
 						{},
@@ -1055,7 +1057,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DestinationVariableKind"),
-						NSLOCTEXT("ShidenNamespace", "DestinationVariableKindKey", "DestinationVariableKind"),
+						LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1063,7 +1065,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DestinationVariableName"),
-						NSLOCTEXT("ShidenNamespace", "DestinationVariableNameKey", "DestinationVariableName"),
+						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
@@ -1074,7 +1076,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("HideTextLayer"),
-						NSLOCTEXT("ShidenNamespace", "HideTextLayerKey", "HideTextLayer"),
+						LOCTEXT("HideTextLayerKey", "HideTextLayer"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -1087,7 +1089,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("AssignVariable"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "AssignVariableNoteKey", "Spaces cannot be used in the key."),
+				.Note = LOCTEXT("AssignVariableNoteKey", "Spaces cannot be used in the key."),
 				.Style = DataStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAssignVariableCommand")),
@@ -1095,7 +1097,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1103,7 +1105,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
@@ -1114,7 +1116,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Value"),
-						NSLOCTEXT("ShidenNamespace", "ValueKey", "Value"),
+						LOCTEXT("ValueKey", "Value"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -1137,7 +1139,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1145,7 +1147,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
@@ -1157,7 +1159,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Operator"),
-						NSLOCTEXT("ShidenNamespace", "OperatorKey", "Operator"),
+						LOCTEXT("OperatorKey", "Operator"),
 						TEXT(""),
 						FlexCalculationOperatorInputTemplate,
 						{
@@ -1168,7 +1170,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Value"),
-						NSLOCTEXT("ShidenNamespace", "ValueKey", "Value"),
+						LOCTEXT("ValueKey", "Value"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -1191,7 +1193,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1199,7 +1201,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
@@ -1207,7 +1209,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Operator"),
-						NSLOCTEXT("ShidenNamespace", "OperatorKey", "Operator"),
+						LOCTEXT("OperatorKey", "Operator"),
 						TEXT(""),
 						FlexOperatorInputTemplate,
 						{
@@ -1218,7 +1220,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("RightHandValue"),
-						NSLOCTEXT("ShidenNamespace", "RightHandValueKey", "RightHandValue"),
+						LOCTEXT("RightHandValueKey", "RightHandValue"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -1241,7 +1243,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1249,7 +1251,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
@@ -1257,7 +1259,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Operator"),
-						NSLOCTEXT("ShidenNamespace", "OperatorKey", "Operator"),
+						LOCTEXT("OperatorKey", "Operator"),
 						TEXT(""),
 						FlexOperatorInputTemplate,
 						{
@@ -1268,7 +1270,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("RightHandValue"),
-						NSLOCTEXT("ShidenNamespace", "RightHandValueKey", "RightHandValue"),
+						LOCTEXT("RightHandValueKey", "RightHandValue"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -1302,7 +1304,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("LoopWhile"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "LoopWhileNoteKey",
+				.Note = LOCTEXT("LoopWhileNoteKey",
 				                  "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1311,7 +1313,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1319,7 +1321,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
@@ -1327,7 +1329,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Operator"),
-						NSLOCTEXT("ShidenNamespace", "OperatorKey", "Operator"),
+						LOCTEXT("OperatorKey", "Operator"),
 						TEXT(""),
 						FlexOperatorInputTemplate,
 						{
@@ -1338,7 +1340,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("RightHandValue"),
-						NSLOCTEXT("ShidenNamespace", "RightHandValueKey", "RightHandValue"),
+						LOCTEXT("RightHandValueKey", "RightHandValue"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -1354,7 +1356,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("EndLoopWhile"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "EndLoopWhileNoteKey",
+				.Note = LOCTEXT("EndLoopWhileNoteKey",
 				                  "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1372,7 +1374,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Name"),
-						NSLOCTEXT("ShidenNamespace", "NameKey", "Name"),
+						LOCTEXT("NameKey", "Name"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1385,7 +1387,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Jump"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "JumpNoteKey",
+				.Note = LOCTEXT("JumpNoteKey",
 				                  "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1394,7 +1396,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("DestinationTagName"),
-						NSLOCTEXT("ShidenNamespace", "DestinationTagNameKey", "DestinationTagName"),
+						LOCTEXT("DestinationTagNameKey", "DestinationTagName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1407,7 +1409,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("EndScenario"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "EndScenarioNoteKey",
+				.Note = LOCTEXT("EndScenarioNoteKey",
 				                  "In a macro, the next scenario specification is ignored,\r\nand it resumes from the continuation of the original scenario.\r\nThis command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1416,7 +1418,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("NextScenario"),
-						NSLOCTEXT("ShidenNamespace", "NextScenarioKey", "NextScenario"),
+						LOCTEXT("NextScenarioKey", "NextScenario"),
 						TEXT("None"),
 						ScenarioInputTemplate,
 						{
@@ -1432,7 +1434,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Break"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "BreakNoteKey",
+				.Note = LOCTEXT("BreakNoteKey",
 				                  "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1441,7 +1443,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("ReasonForInterruption"),
-						NSLOCTEXT("ShidenNamespace", "ReasonForInterruptionKey", "ReasonForInterruption"),
+						LOCTEXT("ReasonForInterruptionKey", "ReasonForInterruption"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1461,7 +1463,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Comment"),
-						NSLOCTEXT("ShidenNamespace", "CommentKey", "Comment"),
+						LOCTEXT("CommentKey", "Comment"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1474,7 +1476,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("WidgetAnimation"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "WidgetAnimationNoteKey",
+				.Note = LOCTEXT("WidgetAnimationNoteKey",
 				                  "You can specify the animation of a child widget as \"ChildWidgetName.AnimationName\".\nWhen RestoreState is true, the behavior may differ between gameplay and preview."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -1483,7 +1485,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("AnimationName"),
-						NSLOCTEXT("ShidenNamespace", "AnimationNameKey", "AnimationName"),
+						LOCTEXT("AnimationNameKey", "AnimationName"),
 						TEXT("Shake"),
 						TextInputTemplate,
 						{},
@@ -1491,7 +1493,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("StartTime"),
-						NSLOCTEXT("ShidenNamespace", "StartTimeKey", "StartTime"),
+						LOCTEXT("StartTimeKey", "StartTime"),
 						TEXT("0.0"),
 						FloatInputTemplate,
 						{},
@@ -1499,7 +1501,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("NumLoopToPlay"),
-						NSLOCTEXT("ShidenNamespace", "NumLoopToPlayKey", "NumLoopToPlay"),
+						LOCTEXT("NumLoopToPlayKey", "NumLoopToPlay"),
 						TEXT("1"),
 						IntegerInputTemplate,
 						{},
@@ -1507,7 +1509,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("PlayMode"),
-						NSLOCTEXT("ShidenNamespace", "PlayModeKey", "PlayMode"),
+						LOCTEXT("PlayModeKey", "PlayMode"),
 						TEXT("Forward"),
 						ComboBoxInputTemplate,
 						{
@@ -1519,7 +1521,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("PlaybackSpeed"),
-						NSLOCTEXT("ShidenNamespace", "PlaybackSpeedKey", "PlaybackSpeed"),
+						LOCTEXT("PlaybackSpeedKey", "PlaybackSpeed"),
 						TEXT("1.0"),
 						FloatInputTemplate,
 						{},
@@ -1527,7 +1529,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("RestoreState"),
-						NSLOCTEXT("ShidenNamespace", "RestoreStateKey", "RestoreState"),
+						LOCTEXT("RestoreStateKey", "RestoreState"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -1535,7 +1537,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -1548,7 +1550,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Delay"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "DelayNoteKey",
+				.Note = LOCTEXT("DelayNoteKey",
 				                  "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
@@ -1557,7 +1559,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Duration"),
-						NSLOCTEXT("ShidenNamespace", "DurationKey", "Duration"),
+						LOCTEXT("DurationKey", "Duration"),
 						TEXT("1.0"),
 						FloatInputTemplate,
 						{},
@@ -1570,7 +1572,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("CallWidgetFunction"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "CallWidgetFunctionNoteKey", "Arg cannot be left empty midway."),
+				.Note = LOCTEXT("CallWidgetFunctionNoteKey", "Arg cannot be left empty midway."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenCallWidgetFunctionCommand")),
@@ -1578,7 +1580,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("FunctionName"),
-						NSLOCTEXT("ShidenNamespace", "FunctionNameKey", "FunctionName"),
+						LOCTEXT("FunctionNameKey", "FunctionName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1586,7 +1588,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 1"),
-						NSLOCTEXT("ShidenNamespace", "Arg1Key", "Arg 1"),
+						LOCTEXT("Arg1Key", "Arg 1"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1594,7 +1596,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 2"),
-						NSLOCTEXT("ShidenNamespace", "Arg2Key", "Arg 2"),
+						LOCTEXT("Arg2Key", "Arg 2"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1602,7 +1604,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 3"),
-						NSLOCTEXT("ShidenNamespace", "Arg3Key", "Arg 3"),
+						LOCTEXT("Arg3Key", "Arg 3"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1610,7 +1612,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 4"),
-						NSLOCTEXT("ShidenNamespace", "Arg4Key", "Arg 4"),
+						LOCTEXT("Arg4Key", "Arg 4"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1618,7 +1620,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 5"),
-						NSLOCTEXT("ShidenNamespace", "Arg5Key", "Arg 5"),
+						LOCTEXT("Arg5Key", "Arg 5"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1626,7 +1628,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 6"),
-						NSLOCTEXT("ShidenNamespace", "Arg6Key", "Arg 6"),
+						LOCTEXT("Arg6Key", "Arg 6"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1634,7 +1636,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 7"),
-						NSLOCTEXT("ShidenNamespace", "Arg7Key", "Arg 7"),
+						LOCTEXT("Arg7Key", "Arg 7"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1642,7 +1644,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 8"),
-						NSLOCTEXT("ShidenNamespace", "Arg8Key", "Arg 8"),
+						LOCTEXT("Arg8Key", "Arg 8"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1650,7 +1652,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 9"),
-						NSLOCTEXT("ShidenNamespace", "Arg9Key", "Arg 9"),
+						LOCTEXT("Arg9Key", "Arg 9"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1658,7 +1660,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Arg 10"),
-						NSLOCTEXT("ShidenNamespace", "Arg10Key", "Arg 10"),
+						LOCTEXT("Arg10Key", "Arg 10"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1671,7 +1673,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Fade"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "FadeNoteKey",
+				.Note = LOCTEXT("FadeNoteKey",
 				                  "The larger the value of z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 100: in front of movie\r\nGreater than 150: in front of menus"),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -1680,7 +1682,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("LayerName"),
-						NSLOCTEXT("ShidenNamespace", "LayerNameKey", "LayerName"),
+						LOCTEXT("LayerNameKey", "LayerName"),
 						TEXT("Default"),
 						TextInputTemplate,
 						{},
@@ -1688,7 +1690,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeType"),
-						NSLOCTEXT("ShidenNamespace", "FadeTypeKey", "FadeType"),
+						LOCTEXT("FadeTypeKey", "FadeType"),
 						TEXT("FadeOut"),
 						FadeTypeInputTemplate,
 						{},
@@ -1696,7 +1698,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeDuration"),
-						NSLOCTEXT("ShidenNamespace", "FadeDurationKey", "FadeDuration"),
+						LOCTEXT("FadeDurationKey", "FadeDuration"),
 						TEXT("0.0"),
 						FloatInputTemplate,
 						{},
@@ -1704,7 +1706,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("FadeFunction"),
-						NSLOCTEXT("ShidenNamespace", "FadeFunctionKey", "FadeFunction"),
+						LOCTEXT("FadeFunctionKey", "FadeFunction"),
 						TEXT("Linear"),
 						EasingFuncInputTemplate,
 						{},
@@ -1712,7 +1714,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TargetColor"),
-						NSLOCTEXT("ShidenNamespace", "TargetColorKey", "TargetColor"),
+						LOCTEXT("TargetColorKey", "TargetColor"),
 						TEXT("R=0.0 G=0.0 B=0.0"),
 						ColorInputTemplate,
 						{},
@@ -1720,7 +1722,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Steps"),
-						NSLOCTEXT("ShidenNamespace", "StepsKey", "Steps"),
+						LOCTEXT("StepsKey", "Steps"),
 						TEXT("2"),
 						IntegerInputTemplate,
 						{},
@@ -1728,7 +1730,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("BlendExp"),
-						NSLOCTEXT("ShidenNamespace", "BlendExpKey", "BlendExp"),
+						LOCTEXT("BlendExpKey", "BlendExp"),
 						TEXT("2.0"),
 						FloatInputTemplate,
 						{},
@@ -1736,7 +1738,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -1744,7 +1746,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ZOrder"),
-						NSLOCTEXT("ShidenNamespace", "ZOrderKey", "ZOrder"),
+						LOCTEXT("ZOrderKey", "ZOrder"),
 						TEXT("250"),
 						IntegerInputTemplate,
 						{},
@@ -1757,7 +1759,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("ChangeVisibility"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "ChangeVisibilityNoteKey",
+				.Note = LOCTEXT("ChangeVisibilityNoteKey",
 				                  "You can specify the widget of a child widget as \"ChildWidgetName.WidgetName\"."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -1766,7 +1768,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Name"),
-						NSLOCTEXT("ShidenNamespace", "NameKey", "Name"),
+						LOCTEXT("NameKey", "Name"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1774,7 +1776,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Visibility"),
-						NSLOCTEXT("ShidenNamespace", "VisibilityKey", "Visibility"),
+						LOCTEXT("VisibilityKey", "Visibility"),
 						TEXT("Visible"),
 						SlateVisibilityInputTemplate,
 						{},
@@ -1787,7 +1789,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("MoveCanvasPanelSlot"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "MoveCanvasPanelSlotNoteKey",
+				.Note = LOCTEXT("MoveCanvasPanelSlotNoteKey",
 				                  "Steps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -1796,7 +1798,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("SlotName"),
-						NSLOCTEXT("ShidenNamespace", "SlotNameKey", "SlotName"),
+						LOCTEXT("SlotNameKey", "SlotName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -1804,7 +1806,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("EasingFunction"),
-						NSLOCTEXT("ShidenNamespace", "EasingFunctionKey", "EasingFunction"),
+						LOCTEXT("EasingFunctionKey", "EasingFunction"),
 						TEXT("Linear"),
 						EasingFuncInputTemplate,
 						{},
@@ -1812,7 +1814,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Duration"),
-						NSLOCTEXT("ShidenNamespace", "DurationKey", "Duration"),
+						LOCTEXT("DurationKey", "Duration"),
 						TEXT("1.0"),
 						FloatInputTemplate,
 						{},
@@ -1820,7 +1822,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ChangeType"),
-						NSLOCTEXT("ShidenNamespace", "ChangeTypeKey", "ChangeType"),
+						LOCTEXT("ChangeTypeKey", "ChangeType"),
 						TEXT("AbsoluteValue"),
 						ComboBoxInputTemplate,
 						{
@@ -1831,7 +1833,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwritePosition"),
-						NSLOCTEXT("ShidenNamespace", "OverwritePositionKey", "OverwritePosition"),
+						LOCTEXT("OverwritePositionKey", "OverwritePosition"),
 						TEXT("{EMPTY}"),
 						Vector2InputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1839,7 +1841,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwriteSize"),
-						NSLOCTEXT("ShidenNamespace", "OverwriteSizeKey", "OverwriteSize"),
+						LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
 						TEXT("{EMPTY}"),
 						Vector2InputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1847,7 +1849,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwriteZOrder"),
-						NSLOCTEXT("ShidenNamespace", "OverwriteZOrderKey", "OverwriteZOrder"),
+						LOCTEXT("OverwriteZOrderKey", "OverwriteZOrder"),
 						TEXT("{EMPTY}"),
 						IntegerInputTemplate,
 						{{TEXT("HasToggle"), TEXT("true")}},
@@ -1855,7 +1857,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Steps"),
-						NSLOCTEXT("ShidenNamespace", "StepsKey", "Steps"),
+						LOCTEXT("StepsKey", "Steps"),
 						TEXT("2"),
 						IntegerInputTemplate,
 						{},
@@ -1863,7 +1865,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("BlendExp"),
-						NSLOCTEXT("ShidenNamespace", "BlendExpKey", "BlendExp"),
+						LOCTEXT("BlendExpKey", "BlendExp"),
 						TEXT("2.0"),
 						FloatInputTemplate,
 						{},
@@ -1871,7 +1873,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -1884,7 +1886,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("AutoSave"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "AutoSaveNoteKey", "This command is not supported in preview."),
+				.Note = LOCTEXT("AutoSaveNoteKey", "This command is not supported in preview."),
 				.Style = DataStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAutoSaveCommand")),
@@ -1892,7 +1894,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("SlotName"),
-						NSLOCTEXT("ShidenNamespace", "SlotNameKey", "SlotName"),
+						LOCTEXT("SlotNameKey", "SlotName"),
 						TEXT("Auto Save"),
 						TextInputTemplate,
 						{},
@@ -1900,7 +1902,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("OverwriteThumbnail"),
-						NSLOCTEXT("ShidenNamespace", "OverwriteThumbnailKey", "OverwriteThumbnail"),
+						LOCTEXT("OverwriteThumbnailKey", "OverwriteThumbnail"),
 						TEXT("None"),
 						AssetInputTemplate,
 						{
@@ -1923,7 +1925,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -1931,7 +1933,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("DestinationVariableName"),
-						NSLOCTEXT("ShidenNamespace", "DestinationVariableNameKey", "DestinationVariableName"),
+						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
@@ -1943,7 +1945,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Min"),
-						NSLOCTEXT("ShidenNamespace", "MinKey", "Min"),
+						LOCTEXT("MinKey", "Min"),
 						TEXT("0"),
 						FlexNumberInputTemplate,
 						{
@@ -1954,7 +1956,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Max"),
-						NSLOCTEXT("ShidenNamespace", "MaxKey", "Max"),
+						LOCTEXT("MaxKey", "Max"),
 						TEXT("1"),
 						FlexNumberInputTemplate,
 						{
@@ -1977,7 +1979,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("CanSkip"),
-						NSLOCTEXT("ShidenNamespace", "CanSkipKey", "CanSkip"),
+						LOCTEXT("CanSkipKey", "CanSkip"),
 						TEXT("false"),
 						BooleanInputTemplate,
 						{},
@@ -1990,7 +1992,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("WaitUntil"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "WaitUntilNoteKey", "This command is not supported in preview."),
+				.Note = LOCTEXT("WaitUntilNoteKey", "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWaitUntilCommand")),
@@ -1998,7 +2000,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("VariableKind"),
-						NSLOCTEXT("ShidenNamespace", "VariableKindKey", "VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
 						TEXT("UserVariable"),
 						VariableKindInputTemplate,
 						{},
@@ -2006,7 +2008,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("VariableName"),
-						NSLOCTEXT("ShidenNamespace", "VariableNameKey", "VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
 						TEXT(""),
 						VariableNameInputTemplate,
 						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
@@ -2014,7 +2016,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Operator"),
-						NSLOCTEXT("ShidenNamespace", "OperatorKey", "Operator"),
+						LOCTEXT("OperatorKey", "Operator"),
 						TEXT(""),
 						FlexOperatorInputTemplate,
 						{
@@ -2025,7 +2027,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("RightHandValue"),
-						NSLOCTEXT("ShidenNamespace", "RightHandValueKey", "RightHandValue"),
+						LOCTEXT("RightHandValueKey", "RightHandValue"),
 						TEXT(""),
 						FlexInputTemplate,
 						{
@@ -2041,7 +2043,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("ForceFeedback"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "ForceFeedbackNoteKey", "This command is not supported in preview."),
+				.Note = LOCTEXT("ForceFeedbackNoteKey", "This command is not supported in preview."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenForceFeedbackCommand")),
@@ -2049,7 +2051,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("FeedbackEffect"),
-						NSLOCTEXT("ShidenNamespace", "FeedbackEffectKey", "FeedbackEffect"),
+						LOCTEXT("FeedbackEffectKey", "FeedbackEffect"),
 						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("ForceFeedback")}},
@@ -2062,7 +2064,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("PlayMedia"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "PlayMediaNoteKey",
+				.Note = LOCTEXT("PlayMediaNoteKey",
 				                  "It is recommended to use ElectraPlayer for the Player of MediaSource.\r\nThe larger the value of Z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 150: in front of menus\r\nThis command is not supported in preview."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
@@ -2071,7 +2073,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("MediaSource"),
-						NSLOCTEXT("ShidenNamespace", "MediaSourceKey", "MediaSource"),
+						LOCTEXT("MediaSourceKey", "MediaSource"),
 						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("MediaSource")}},
@@ -2079,7 +2081,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("CanOpenPauseMenu"),
-						NSLOCTEXT("ShidenNamespace", "CanOpenPauseMenuKey", "CanOpenPauseMenu"),
+						LOCTEXT("CanOpenPauseMenuKey", "CanOpenPauseMenu"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -2087,7 +2089,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("MediaZOrder"),
-						NSLOCTEXT("ShidenNamespace", "MediaZOrderKey", "MediaZOrder"),
+						LOCTEXT("MediaZOrderKey", "MediaZOrder"),
 						TEXT("100"),
 						IntegerInputTemplate,
 						{},
@@ -2100,7 +2102,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("ChangeMaterialScalarParameter"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "ChangeMaterialScalarNoteKey",
+				.Note = LOCTEXT("ChangeMaterialScalarNoteKey",
 				                  "You will manipulate the Effect of the Retainer Box.\r\nSteps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
@@ -2109,7 +2111,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Target"),
-						NSLOCTEXT("ShidenNamespace", "TargetKey", "Target"),
+						LOCTEXT("TargetKey", "Target"),
 						TEXT("Image"),
 						ComboBoxInputTemplate,
 						{
@@ -2120,7 +2122,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TargetName"),
-						NSLOCTEXT("ShidenNamespace", "TargetNameKey", "TargetName"),
+						LOCTEXT("TargetNameKey", "TargetName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2128,7 +2130,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ParameterName"),
-						NSLOCTEXT("ShidenNamespace", "ParameterNameKey", "ParameterName"),
+						LOCTEXT("ParameterNameKey", "ParameterName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2136,7 +2138,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("EasingFunction"),
-						NSLOCTEXT("ShidenNamespace", "EasingFunctionKey", "EasingFunction"),
+						LOCTEXT("EasingFunctionKey", "EasingFunction"),
 						TEXT("Linear"),
 						EasingFuncInputTemplate,
 						{},
@@ -2144,7 +2146,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Duration"),
-						NSLOCTEXT("ShidenNamespace", "DurationKey", "Duration"),
+						LOCTEXT("DurationKey", "Duration"),
 						TEXT("1.0"),
 						FloatInputTemplate,
 						{},
@@ -2152,7 +2154,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ChangeType"),
-						NSLOCTEXT("ShidenNamespace", "ChangeTypeKey", "ChangeType"),
+						LOCTEXT("ChangeTypeKey", "ChangeType"),
 						TEXT("AbsoluteValue"),
 						ComboBoxInputTemplate,
 						{
@@ -2163,7 +2165,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("EndValue"),
-						NSLOCTEXT("ShidenNamespace", "EndValueKey", "EndValue"),
+						LOCTEXT("EndValueKey", "EndValue"),
 						TEXT("0.0"),
 						FloatInputTemplate,
 						{},
@@ -2171,7 +2173,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Steps"),
-						NSLOCTEXT("ShidenNamespace", "StepsKey", "Steps"),
+						LOCTEXT("StepsKey", "Steps"),
 						TEXT("2"),
 						IntegerInputTemplate,
 						{},
@@ -2179,7 +2181,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("BlendExp"),
-						NSLOCTEXT("ShidenNamespace", "BlendExpKey", "BlendExp"),
+						LOCTEXT("BlendExpKey", "BlendExp"),
 						TEXT("2.0"),
 						FloatInputTemplate,
 						{},
@@ -2187,7 +2189,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -2207,7 +2209,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Target"),
-						NSLOCTEXT("ShidenNamespace", "TargetKey", "Target"),
+						LOCTEXT("TargetKey", "Target"),
 						TEXT("Image"),
 						ComboBoxInputTemplate,
 						{
@@ -2218,7 +2220,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("TargetName"),
-						NSLOCTEXT("ShidenNamespace", "TargetNameKey", "TargetName"),
+						LOCTEXT("TargetNameKey", "TargetName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2226,7 +2228,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("ParameterName"),
-						NSLOCTEXT("ShidenNamespace", "ParameterNameKey", "ParameterName"),
+						LOCTEXT("ParameterNameKey", "ParameterName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2234,7 +2236,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Texture"),
-						NSLOCTEXT("ShidenNamespace", "TextureKey", "Texture"),
+						LOCTEXT("TextureKey", "Texture"),
 						TEXT("None"),
 						AssetInputTemplate,
 						{{TEXT("Target"), TEXT("Texture")}},
@@ -2247,7 +2249,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("RunMacro"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "RunMacroNoteKey",
+				.Note = LOCTEXT("RunMacroNoteKey",
 				                  "The arguments passed to the macro are treated as local variables."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = true,
@@ -2256,7 +2258,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("MacroName"),
-						NSLOCTEXT("ShidenNamespace", "MacroNameKey", "MacroName"),
+						LOCTEXT("MacroNameKey", "MacroName"),
 						TEXT("None"),
 						ScenarioInputTemplate,
 						{
@@ -2272,7 +2274,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("RunMacroAsParallel"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "RunMacroAsParallelNoteKey",
+				.Note = LOCTEXT("RunMacroAsParallelNoteKey",
 				                  "\"Default\" cannot be used as a process name.\r\nThe arguments passed to the macro are treated as local variables.\r\nThis command is not supported in preview."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = true,
@@ -2281,7 +2283,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("NewProcessName"),
-						NSLOCTEXT("ShidenNamespace", "NewProcessNameKey", "NewProcessName"),
+						LOCTEXT("NewProcessNameKey", "NewProcessName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2289,7 +2291,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("MacroName"),
-						NSLOCTEXT("ShidenNamespace", "MacroNameKey", "MacroName"),
+						LOCTEXT("MacroNameKey", "MacroName"),
 						TEXT("None"),
 						ScenarioInputTemplate,
 						{
@@ -2305,7 +2307,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("StopParallelProcess"),
 			FShidenCommandDefinition
 			{
-				.Note = NSLOCTEXT("ShidenNamespace", "StopParallelProcessNoteKey",
+				.Note = LOCTEXT("StopParallelProcessNoteKey",
 				                  "Due to the potential for causing issues,\r\nit is recommended to set wait for completion to true.\r\nThis command is not supported in preview."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = false,
@@ -2314,7 +2316,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("ProcessName"),
-						NSLOCTEXT("ShidenNamespace", "ProcessNameKey", "ProcessName"),
+						LOCTEXT("ProcessNameKey", "ProcessName"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2322,7 +2324,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("Reason"),
-						NSLOCTEXT("ShidenNamespace", "ReasonKey", "Reason"),
+						LOCTEXT("ReasonKey", "Reason"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2330,7 +2332,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("StopTiming"),
-						NSLOCTEXT("ShidenNamespace", "StopTimingKey", "StopTiming"),
+						LOCTEXT("StopTimingKey", "StopTiming"),
 						TEXT("Immediately"),
 						ComboBoxInputTemplate,
 						{
@@ -2341,7 +2343,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						TEXT("WaitForCompletion"),
-						NSLOCTEXT("ShidenNamespace", "WaitForCompletionKey", "WaitForCompletion"),
+						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 						TEXT("true"),
 						BooleanInputTemplate,
 						{},
@@ -2361,7 +2363,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						TEXT("Content"),
-						NSLOCTEXT("ShidenNamespace", "ContentKey", "Content"),
+						LOCTEXT("ContentKey", "Content"),
 						TEXT(""),
 						TextInputTemplate,
 						{},
@@ -2372,3 +2374,5 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 		}
 	};
 }
+
+#undef LOCTEXT_NAMESPACE
