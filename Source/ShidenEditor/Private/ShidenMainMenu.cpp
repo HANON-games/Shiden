@@ -23,7 +23,7 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface *Owner)
 		LOCTEXT("ShidenEditorLabel", "Shiden Editor"),
 		LOCTEXT("OpenShidenEditorTooltip", "Open Shiden Editor"),
 		FSlateIcon(FName("EditorStyle"), FName("ClassThumbnail.UserWidget"), FName("ClassIcon.UserWidget")),
-	FUIAction(FExecuteAction::CreateLambda([]
+		FUIAction(FExecuteAction::CreateLambda([]
 		{
 			if (!GEditor)
 			{
