@@ -43,9 +43,11 @@ void FShidenEditorModule::StartupModule()
 
 	UToolMenus::RegisterStartupCallback(
 	   FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FShidenEditorModule::RegisterMenuExtensions)
-   );
+	);
 
-	InitializeScenarioPaths();
+	FEditorDelegates::OnEditorInitialized.AddLambda([](double){
+		InitializeScenarioPaths();
+	});
 }
 
 void FShidenEditorModule::ShutdownModule()
@@ -67,6 +69,8 @@ void FShidenEditorModule::ShutdownModule()
 
 	UToolMenus::UnRegisterStartupCallback(this);
 	UToolMenus::UnregisterOwner(this);
+	
+	FEditorDelegates::OnEditorInitialized.RemoveAll(this);
 }
 
 void FShidenEditorModule::RegisterMenuExtensions()
