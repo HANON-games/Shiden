@@ -26,15 +26,40 @@ SHIDENCORE_API void UShidenBlueprintLibrary::GetClipboardContent(FString& Clipbo
 
 SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Text)
 {
-	FString ResultText = Text;
+	FString ResultText;
+	ResultText.Reserve(Text.Len());
 
-	ResultText.ReplaceInline(TEXT("&quot;"), TEXT("a"), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("&amp;"), TEXT("a"), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("&apos;"), TEXT("a"), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("&lt;"), TEXT("a"), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("&gt;"), TEXT("a"), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("\n"), TEXT(""), ESearchCase::CaseSensitive);
-	ResultText.ReplaceInline(TEXT("\r"), TEXT(""), ESearchCase::CaseSensitive);
+	// Replace HTML entities with 'a' to treat them as single characters
+	for (int32 i = 0; i < Text.Len(); i++)
+	{
+		if (Text[i] == '\n' || Text[i] == '\r')
+		{
+			continue;
+		}
+		if (Text[i] == '&')
+		{
+			FString Temp = Text.Mid(i + 1);
+			if (Temp.StartsWith("lt;") || Temp.StartsWith("gt;"))
+			{
+				ResultText.AppendChar(TEXT('a'));
+				i += 3;
+				continue;
+			}
+			if (Temp.StartsWith("amp;"))
+			{
+				ResultText.AppendChar(TEXT('a'));
+				i += 4;
+				continue;
+			}
+			if (Temp.StartsWith("quot;"))
+			{
+				ResultText.AppendChar(TEXT('a'));
+				i += 5;
+				continue;
+			}
+		}
+		ResultText.AppendChar(Text[i]);
+	}
 
 	// pattern like <tagName> ... </>
 	FRegexMatcher TagMatcher(GetNonSelfClosingTagPattern(), ResultText);
@@ -43,15 +68,8 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 	{
 		FString Str1 = TagMatcher.GetCaptureGroup(0);
 		FString Str2 = TagMatcher.GetCaptureGroup(2);
-		// Replace all characters to 'a' to avoid matching with Self ClosingTagPattern
-		for (int32 i = 0; i < Str2.Len(); i++)
-		{
-			if (Str2[i] == '\n' || Str2[i] == '\r')
-			{
-				continue;
-			}
-			Str2[i] = TEXT('a');
-		}
+		// Replace all '<' characters to 'a' to avoid matching with Self ClosingTagPattern
+		Str2.ReplaceCharInline('<', 'a', ESearchCase::CaseSensitive);
 		ResultText.ReplaceInline(*Str1, *Str2, ESearchCase::CaseSensitive);
 	}
 
@@ -156,20 +174,21 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 
 	FString ResultText = Text;
 	bool bIsInTag = false;
+	FString LastTagName = TEXT("");
 	for (int32 Index = 0; Index < Length; Index++)
 	{
-		if (ResultText.IsValidIndex(ResultLen) && ResultText[ResultLen] == '&')
+		if (ResultText.IsValidIndex(ResultLen + 1) && ResultText[ResultLen] == '&')
 		{
-			FString Temp = ResultText.Mid(ResultLen);
-			if (Temp.StartsWith("&lt;") || Temp.StartsWith("&gt;"))
+			FString Temp = ResultText.Mid(ResultLen + 1);
+			if (Temp.StartsWith("lt;") || Temp.StartsWith("gt;"))
 			{
 				ResultLen += 3;
 			}
-			else if (Temp.StartsWith("&amp;"))
+			else if (Temp.StartsWith("amp;"))
 			{
 				ResultLen += 4;
 			}
-			else if (Temp.StartsWith("&quot;") || Temp.StartsWith("&apos;"))
+			else if (Temp.StartsWith("quot;"))
 			{
 				ResultLen += 5;
 			}
@@ -179,11 +198,12 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 		{
 			if (!bIsInTag && OpenTagStart == ResultLen)
 			{
-				if (ContentStart == -1)
+				LastTagName = TagName;
+				if (ContentStart == -1 || ContentStart == ContentEnd)
 				{
 					ResultLen = CloseTagEnd;
 				}
-				else if (ContentStart != ContentEnd)
+				else
 				{
 					bIsInTag = true;
 					ResultLen = ContentStart;
@@ -239,6 +259,15 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 
 	if (bIsInTag)
 	{
+		if (LastTagName == TEXT("Ruby"))
+		{
+			// Add all="false" to the attribute of the last ruby tag
+			const int32 Index = ResultText.Find(TEXT("<ruby"), ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+			if (Index != INDEX_NONE)
+			{
+				ResultText.InsertAt(Index + 5, TEXT(" all=\"false\""));
+			}
+		}
 		ResultText += TEXT("</>");
 	}
 

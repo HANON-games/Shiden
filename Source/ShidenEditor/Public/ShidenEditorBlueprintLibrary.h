@@ -104,6 +104,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config", meta = (DisplayName = "Migrate Plugin"))
 	static UPARAM(DisplayName = "Success") bool TryMigratePlugin();
 
+	UFUNCTION(BlueprintCallable, Category="SvnInternal|EditorUtility|Config", meta=(AutoCreateRefTerm="ContainerName, CategoryName, SectionName"))
+	static void OpenSettings(const FName& ContainerName, const FName& CategoryName, const FName& SectionName);
+
 	static TArray<FShidenCommandRedirector> GetRedirectDefinitions();
 
 private:

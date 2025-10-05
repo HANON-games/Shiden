@@ -15,6 +15,9 @@ public:
 	UPROPERTY(EditAnywhere, meta = (FilePathFilter = "svg"), Category = "SVG")
 	FFilePath SvgFile;
 
+	UPROPERTY(EditAnywhere, Category = "SVG")
+	FVector2D IconSize = FVector2D(20.0f, 20.0f);
+
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 

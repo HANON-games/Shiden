@@ -70,7 +70,11 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 	OutBeautifiedNames.Add("BoldTag03");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello World! <b>Bold</>"), 17);
 	OutTestCommands.Add(Params.ToString());
-	
+
+	OutBeautifiedNames.Add("BoldTag04");
+	Params = FShidenGetParsedLengthTestParameters(TEXT("Hell<b>o</> World!"), 12);
+	OutTestCommands.Add(Params.ToString());
+
 	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags01");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello <b>bold<wait time=\"1.0\"/> text</> World!"), 40);
 	OutTestCommands.Add(Params.ToString());
@@ -84,7 +88,7 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 	OutTestCommands.Add(Params.ToString());
 
 	OutBeautifiedNames.Add("HtmlEscape01");
-	Params = FShidenGetParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;"), 5);
+	Params = FShidenGetParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;"), 4);
 	OutTestCommands.Add(Params.ToString());
 	
 	OutBeautifiedNames.Add("HtmlEscape02");
@@ -93,6 +97,18 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 
 	OutBeautifiedNames.Add("HtmlEscape03");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("&lt;<wait time=\"1.0\"/>"), 1);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText01");
+	Params = FShidenGetParsedLengthTestParameters(TEXT("<ruby t=\"るび\">ルビ</>"), 2);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText02");
+	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello <ruby t=\"るび\">ルビ</> World!"), 15);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText03");
+	Params = FShidenGetParsedLengthTestParameters(TEXT("<ruby t=\"\">漢字</>"), 2);
 	OutTestCommands.Add(Params.ToString());
 }
 
@@ -239,6 +255,10 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<b>Hello World!</>test"), TEXT("<b>Hello World!</>t"), 13);
 	OutTestCommands.Add(Params.ToString());
 
+	OutBeautifiedNames.Add("BoldTag05");
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("Hell<b>o</> World!"), TEXT("Hell<b>o</> W"), 7);
+	OutTestCommands.Add(Params.ToString());
+
 	OutBeautifiedNames.Add("MultiTags01");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<img id=\"value\"/><wait time=\"1.0\"/>"), TEXT("<img id=\"value\"/><wait time=\"1.0\"/>"), 1);
 	OutTestCommands.Add(Params.ToString());
@@ -251,40 +271,52 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("Hello <b>bold<wait time=\"1.0\"/>text</> World!"), TEXT("Hello <b>bold<</>"), 11);
 	OutTestCommands.Add(Params.ToString());
 
-	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags03");
+	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags02");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("Hello <b>bold<wait time=\"1.0\"/><img id=\"value\"/> text</> World!"), TEXT("Hello <b>bold<wait time=\"1.0\"/><</>"), 29);
 	OutTestCommands.Add(Params.ToString());
 
-	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags02");
+	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags03");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<b>Hello bold<wait time=\"1.0\"/><img id=\"value\"/>text World!</>"), TEXT("<b>Hello bold<wait time=\"1.0\"/><</>"), 29);
 	OutTestCommands.Add(Params.ToString());
 	
 	OutBeautifiedNames.Add("HtmlEscape01");
-	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;test"), TEXT("&quot;"), 1);
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;"), 1);
 	OutTestCommands.Add(Params.ToString());
 
 	OutBeautifiedNames.Add("HtmlEscape02");
-	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;test"), TEXT("&quot;&amp;"), 2);
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;"), 2);
 	OutTestCommands.Add(Params.ToString());
-
+	
 	OutBeautifiedNames.Add("HtmlEscape03");
-	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;test"), TEXT("&quot;&amp;&apos;"), 3);
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;&lt;"), 3);
 	OutTestCommands.Add(Params.ToString());
 
 	OutBeautifiedNames.Add("HtmlEscape04");
-	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;test"), TEXT("&quot;&amp;&apos;&lt;"), 4);
-	OutTestCommands.Add(Params.ToString());
-
-	OutBeautifiedNames.Add("HtmlEscape05");
-	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&apos;&lt;&gt;test"), TEXT("&quot;&amp;&apos;&lt;&gt;"), 5);
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;&lt;&gt;"), 4);
 	OutTestCommands.Add(Params.ToString());
 	
-	OutBeautifiedNames.Add("HtmlEscape06");
+	OutBeautifiedNames.Add("HtmlEscape05");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&lt;wait time=\"1.0\"/>"), TEXT("&lt;wait"), 5);
 	OutTestCommands.Add(Params.ToString());
 
-	OutBeautifiedNames.Add("HtmlEscape07");
+	OutBeautifiedNames.Add("HtmlEscape06");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&lt;<wait time=\"1.0\"/>"), TEXT("&lt;<wait time=\"1.0\"/>"), 1);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText01");
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<ruby t=\"るび\">ルビ</>"), TEXT("<ruby all=\"false\" t=\"るび\">ル</>"), 1);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText02");
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<ruby t=\"るび\">ルビ</>"), TEXT("<ruby t=\"るび\">ルビ</>"), 2);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText03");
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("Hello <ruby t=\"るび\">ルビ</> World!"), TEXT("Hello <ruby all=\"false\" t=\"るび\">ル</>"), 7);
+	OutTestCommands.Add(Params.ToString());
+
+	OutBeautifiedNames.Add("RubyText04");
+	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("Hello <ruby t=\"るび\">ルビ</> World!"), TEXT("Hello <ruby t=\"るび\">ルビ</> W"), 10);
 	OutTestCommands.Add(Params.ToString());
 }
 

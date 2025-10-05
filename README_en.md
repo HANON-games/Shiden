@@ -41,7 +41,7 @@ It is designed to be simple and flexible, allowing for more than just visual nov
 
 ## System Requirements
 
-- UE5.3 ～ 5.6
+- UE5.3 ～ 5.7
 - Windows, Mac, Android
 
 It is highly likely to work on iOS as well, but editing of the uplugin file is required.
