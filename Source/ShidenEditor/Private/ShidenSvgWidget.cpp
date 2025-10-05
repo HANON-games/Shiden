@@ -6,8 +6,6 @@
 
 TSharedRef<SWidget> UShidenSvgWidget::RebuildWidget()
 {
-	const FVector2D IconSize(20.f, 20.f);
-
 	SvgBrush.Reset();
 	if (FPaths::FileExists(SvgFile.FilePath))
 	{

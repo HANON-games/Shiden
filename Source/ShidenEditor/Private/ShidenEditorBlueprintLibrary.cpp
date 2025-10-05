@@ -7,6 +7,7 @@
 #include "DesktopPlatformModule.h"
 #include "IContentBrowserDataModule.h"
 #include "IDesktopPlatform.h"
+#include "ISettingsModule.h"
 #include "JsonObjectConverter.h"
 #include "Command/ShidenCommandDefinition.h"
 #include "ShidenCommandRedirector.h"
@@ -1266,9 +1267,17 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 	return true;
 }
 
+void UShidenEditorBlueprintLibrary::OpenSettings(const FName& ContainerName, const FName& CategoryName, const FName& SectionName)
+{
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->ShowViewer(ContainerName, CategoryName, SectionName);
+	}
+}
+
 TArray<FShidenCommandRedirector> UShidenEditorBlueprintLibrary::GetRedirectDefinitions()
 {
-	const UShidenEditorConfig* EditorConfig = GetDefault<UShidenEditorConfig>();
+	const TObjectPtr<const UShidenEditorConfig> EditorConfig = GetDefault<UShidenEditorConfig>();
 	TArray<FShidenCommandRedirector> Redirects = UShidenCommandRedirectors::GetBuiltIn(EditorConfig->PluginVersion);
 	for (const FSoftObjectPath& RedirectorPath : EditorConfig->CommandRedirectors)
 	{
