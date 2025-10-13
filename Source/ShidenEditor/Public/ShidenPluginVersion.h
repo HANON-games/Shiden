@@ -50,4 +50,9 @@ struct SHIDENEDITOR_API FShidenPluginVersion
 			|| (Major == That.Major && Minor > That.Minor)
 			|| (Major == That.Major && Minor == That.Minor && Patch > That.Patch);
 	}
+
+	FString ToString() const noexcept
+	{
+		return FString::Printf(TEXT("%d.%d.%d"), Major, Minor, Patch);
+	}
 };

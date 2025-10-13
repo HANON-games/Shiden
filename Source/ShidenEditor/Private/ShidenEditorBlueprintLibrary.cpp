@@ -188,30 +188,6 @@ SHIDENEDITOR_API void UShidenEditorBlueprintLibrary::SetDefaultClassProperty(con
 	ClassProperty->SetObjectPropertyValue(ValuePtr, Value);
 }
 
-TMap<FString, FString> GetCsvComments(const FString& CsvString)
-{
-	TArray<FString> Lines;
-	CsvString.ParseIntoArrayLines(Lines, true);
-	TMap<FString, FString> Comments;
-	for (const FString& Line : Lines)
-	{
-		if (Line.StartsWith("#"))
-		{
-			FString Trimmed = Line.RightChop(1).TrimStart().TrimEnd();
-			FString Key, Value;
-			if (Trimmed.Split(" ", &Key, &Value))
-			{
-				Comments.Add(Key, Value);
-			}
-			else
-			{
-				Comments.Add(Trimmed, TEXT(""));
-			}
-		}
-	}
-	return Comments;
-}
-
 FString EscapeCsvItem(const FString& Item)
 {
 	FString EscapedItem = Item;
@@ -305,6 +281,30 @@ UShidenScenario* RemovePresetValues(const UShidenScenario* SourceScenario)
 
 SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenarioFromCsv(const FString& CsvString)
 {
+	auto GetCsvComments = [](const FString& Str)
+	{
+		TArray<FString> Lines;
+		Str.ParseIntoArrayLines(Lines, true);
+		TMap<FString, FString> Comments;
+		for (const FString& Line : Lines)
+		{
+			if (Line.StartsWith("#"))
+			{
+				FString Trimmed = Line.RightChop(1).TrimStart().TrimEnd();
+				FString Key, Value;
+				if (Trimmed.Split(" ", &Key, &Value))
+				{
+					Comments.Add(Key, Value);
+				}
+				else
+				{
+					Comments.Add(Trimmed, TEXT(""));
+				}
+			}
+		}
+		return Comments;
+	};
+	
 	TObjectPtr<UShidenScenario> Scenario = NewObject<UShidenScenario>();
 	TMap<FString, FString> Comments = GetCsvComments(CsvString);
 
@@ -447,6 +447,10 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	// Add comments
 	CsvRows.Add(TEXT("#ScenarioId ") + Scenario->ScenarioId.ToString());
 	CsvRows.Add(TEXT("#Note ") + Scenario->Note);
+	if (FShidenPluginVersion Version; TryGetCurrentPluginVersion(Version))
+	{
+		CsvRows.Add(TEXT("#PluginVersion ") + Version.ToString());
+	}
 	for (int Index = 0; Index < Scenario->MacroParameterDefinitions.Num(); Index++)
 	{
 		FString IndexStr = FString::FromInt(Index + 1);
@@ -610,8 +614,13 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToScenarioFromJso
 SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToJsonFromScenario(const UShidenScenario* SourceScenario, const bool bExpandPresets,
                                                                                   FString& Json)
 {
-	const UShidenScenario* Scenario = bExpandPresets ? ExpandPresets(SourceScenario) : SourceScenario;
-	const FShidenScenarioStruct ScenarioStruct(Scenario);
+	const TObjectPtr<const UShidenScenario> Scenario = bExpandPresets ? ExpandPresets(SourceScenario) : SourceScenario;
+	FString VersionStr = TEXT("");
+	if (FShidenPluginVersion Version; TryGetCurrentPluginVersion(Version))
+	{
+		VersionStr = Version.ToString();
+	}
+	const FShidenScenarioStruct ScenarioStruct(Scenario, VersionStr);
 	const TSharedPtr<FJsonObject> JsonObject = FJsonObjectConverter::UStructToJsonObject(ScenarioStruct);
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Json);
 	return FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
@@ -673,6 +682,20 @@ void UShidenEditorBlueprintLibrary::AddUserVariableDefinition(const FShidenVaria
 		ProjectConfig->UserVariableDefinitions[Index] = VariableDefinition;
 	}
 
+	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
+	ProjectConfig->TryUpdateDefaultConfigFile();
+
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	
+	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
+}
+
+void UShidenEditorBlueprintLibrary::UpdateUserVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions)
+{
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	
+	ProjectConfig->UserVariableDefinitions = VariableDefinitions;
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
@@ -746,6 +769,20 @@ void UShidenEditorBlueprintLibrary::AddSystemVariableDefinition(const FShidenVar
 		ProjectConfig->SystemVariableDefinitions[Index] = VariableDefinition;
 	}
 
+	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
+	ProjectConfig->TryUpdateDefaultConfigFile();
+
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+	
+	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
+}
+
+void UShidenEditorBlueprintLibrary::UpdateSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions)
+{
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	
+	ProjectConfig->SystemVariableDefinitions = VariableDefinitions;
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
 	ProjectConfig->TryUpdateDefaultConfigFile();
 

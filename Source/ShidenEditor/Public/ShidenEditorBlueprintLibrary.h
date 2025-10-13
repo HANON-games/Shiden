@@ -68,6 +68,9 @@ public:
 	static void AddUserVariableDefinition(const FShidenVariableDefinition& VariableDefinition);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
+	static void UpdateUserVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void UpdateUserVariableDefinition(const FString& OldName, const FShidenVariableDefinition& VariableDefinition);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
@@ -75,6 +78,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void AddSystemVariableDefinition(const FShidenVariableDefinition& VariableDefinition);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
+	static void UpdateSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config")
 	static void UpdateSystemVariableDefinition(const FString& OldName, const FShidenVariableDefinition& VariableDefinition);
