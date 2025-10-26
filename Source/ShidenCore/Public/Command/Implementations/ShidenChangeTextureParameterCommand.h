@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
-#include "UObject/ConstructorHelpers.h"
 #include "ShidenChangeTextureParameterCommand.generated.h"
 
 UCLASS()
@@ -19,15 +18,8 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 		FString ParameterName;
 		FString TexturePath;
 	};
-
-	UShidenChangeTextureParameterCommand() : Super()
-	{
-		static ConstructorHelpers::FObjectFinder<UTexture> ClearTextureFinder(TEXT("/Shiden/Misc/ClearTexture"));
-		if (ClearTextureFinder.Succeeded())
-		{
-			ClearTexture = ClearTextureFinder.Object;
-		}
-	}
+	
+	UShidenChangeTextureParameterCommand();
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,

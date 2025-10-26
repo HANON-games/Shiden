@@ -5,6 +5,33 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "Engine/Texture2D.h"
+#include "TextureResource.h"
+
+UShidenChangeTextureParameterCommand::UShidenChangeTextureParameterCommand() : Super()
+{
+	if (const TObjectPtr<UTexture2D> NewTex = UTexture2D::CreateTransient(1, 1, PF_B8G8R8A8))
+	{
+#if WITH_EDITORONLY_DATA
+		NewTex->MipGenSettings = TMGS_NoMipmaps;
+#endif
+		NewTex->CompressionSettings = TC_Default;
+		NewTex->SRGB = true;
+		NewTex->NeverStream = false;
+		NewTex->VirtualTextureStreaming = false;
+
+		if (NewTex->GetPlatformData() && NewTex->GetPlatformData()->Mips.Num() > 0)
+		{
+			FTexture2DMipMap& Mip = NewTex->GetPlatformData()->Mips[0];
+			void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
+			FMemory::Memzero(Data, sizeof(FColor));
+			Mip.BulkData.Unlock();
+			NewTex->UpdateResource();
+		}
+
+		ClearTexture = NewTex;
+	}
+}
 
 void UShidenChangeTextureParameterCommand::ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args)
 {
