@@ -329,7 +329,7 @@ SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryGetScenario(const FGuid&
 
 	if (!AssetData.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), (TCHAR*)ScenarioPath);
+		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), **ScenarioPath);
 		return false;
 	}
 
@@ -337,14 +337,14 @@ SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryGetScenario(const FGuid&
 	TObjectPtr<UObject> LoadedAsset = Streamable.LoadSynchronous(AssetData.ToSoftObjectPath(), false);
 	if (!LoadedAsset)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), (TCHAR*)ScenarioPath);
+		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), **ScenarioPath);
 		return false;
 	}
 
 	Scenario = Cast<UShidenScenario>(LoadedAsset);
 	if (!Scenario)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), (TCHAR*)ScenarioPath);
+		UE_LOG(LogTemp, Warning, TEXT("Error: Loading scenario \"%s\" failed."), **ScenarioPath);
 		return false;
 	}
 
@@ -560,8 +560,11 @@ FShidenVariable ExtractReadOnlyLocalVariable(const UShidenScenario* Scenario, co
 				{
 					if (CommandArgs.Contains(VariableDefinition.Name))
 					{
-						FVector2d Vector2Value;
-						Vector2Value.InitFromString(CommandArgs[VariableDefinition.Name]);
+						FVector2D Vector2Value;
+						if (!Vector2Value.InitFromString(CommandArgs[VariableDefinition.Name]))
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector2D."), *CommandArgs[VariableDefinition.Name]);
+						}
 						TempMacroVariable.TryUpdate(VariableDefinition.Name, Vector2Value, true);
 					}
 					break;
@@ -571,7 +574,10 @@ FShidenVariable ExtractReadOnlyLocalVariable(const UShidenScenario* Scenario, co
 					if (CommandArgs.Contains(VariableDefinition.Name))
 					{
 						FVector Vector3Value;
-						Vector3Value.InitFromString(CommandArgs[VariableDefinition.Name]);
+						if (!Vector3Value.InitFromString(CommandArgs[VariableDefinition.Name]))
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector."), *CommandArgs[VariableDefinition.Name]);
+						}
 						TempMacroVariable.TryUpdate(VariableDefinition.Name, Vector3Value, true);
 					}
 					break;
@@ -751,7 +757,7 @@ SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryLoadScenarioAssets(UObje
 	{
 		const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 		const FString* ScenarioPath = ProjectConfig->ScenarioPaths.Find(ScenarioProgress.ScenarioId);
-		ErrorMessage = FString::Printf(TEXT("Load scenario failed: %p"), ScenarioPath);
+		ErrorMessage = FString::Printf(TEXT("Load scenario failed: %s"), ScenarioPath ? **ScenarioPath : TEXT("Unknown"));
 		ErrorScenarioId = ScenarioProgress.ScenarioId;
 		ErrorIndex = INDEX_NONE;
 		return false;

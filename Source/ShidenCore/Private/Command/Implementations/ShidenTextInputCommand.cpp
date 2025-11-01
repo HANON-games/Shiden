@@ -78,10 +78,28 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 
 	const FString ResultText = ShidenWidget->GetTextInput().ToString();
 
-	FVector2d Vector2Value;
-	Vector2Value.InitFromString(*ResultText);
+	FVector2D Vector2Value;
 	FVector Vector3Value;
-	Vector3Value.InitFromString(*ResultText);
+
+	// Only parse vectors if needed for the destination type
+	if (Args.DestinationType == EShidenVariableType::Vector2)
+	{
+		if (!Vector2Value.InitFromString(*ResultText))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *ResultText);
+			Status = EShidenProcessStatus::Error;
+			return;
+		}
+	}
+	else if (Args.DestinationType == EShidenVariableType::Vector3)
+	{
+		if (!Vector3Value.InitFromString(*ResultText))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *ResultText);
+			Status = EShidenProcessStatus::Error;
+			return;
+		}
+	}
 
 	if (!UShidenVariableBlueprintLibrary::TryUpdateVariable(ShidenWidget, ProcessName, Args.DestinationVariableKind,
 													Args.DestinationType, Args.DestinationVariableName, ResultText.ToBool(),
@@ -121,10 +139,28 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 
 	const FString SampleText = Args.DefaultText.IsEmpty() ? TEXT("Sample") : Args.DefaultText;
 
-	FVector2d Vector2Value;
-	Vector2Value.InitFromString(*SampleText);
+	FVector2D Vector2Value;
 	FVector Vector3Value;
-	Vector3Value.InitFromString(*SampleText);
+
+	// Only parse vectors if needed for the destination type
+	if (Args.DestinationType == EShidenVariableType::Vector2)
+	{
+		if (!Vector2Value.InitFromString(*SampleText))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *SampleText);
+			Status = EShidenPreviewStatus::Error;
+			return;
+		}
+	}
+	else if (Args.DestinationType == EShidenVariableType::Vector3)
+	{
+		if (!Vector3Value.InitFromString(*SampleText))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *SampleText);
+			Status = EShidenPreviewStatus::Error;
+			return;
+		}
+	}
 
 	const bool bSuccess = UShidenVariableBlueprintLibrary::TryUpdateVariable(ShidenWidget, TEXT("Default"), Args.DestinationVariableKind,
 	                                                Args.DestinationType, Args.DestinationVariableName, SampleText.ToBool(),

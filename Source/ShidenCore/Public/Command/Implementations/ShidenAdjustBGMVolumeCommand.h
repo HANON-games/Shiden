@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
-#include "ShidenAdjustVolumeCommand.generated.h"
+#include "ShidenAdjustBGMVolumeCommand.generated.h"
 
 UCLASS()
-class SHIDENCORE_API UShidenAdjustVolumeCommand : public UShidenCommandObject
+class SHIDENCORE_API UShidenAdjustBGMVolumeCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 

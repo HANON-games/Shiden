@@ -1,9 +1,9 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
-#include "Command/Implementations/ShidenAdjustVolumeCommand.h"
+#include "Command/Implementations/ShidenAdjustBGMVolumeCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
-bool UShidenAdjustVolumeCommand::TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage)
+bool UShidenAdjustBGMVolumeCommand::TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage)
 {
 	Args.TrackId = Command.GetArgAsInt("TrackId");
 	Args.Volume = Command.GetArgAsFloat("Volume");
@@ -19,7 +19,7 @@ bool UShidenAdjustVolumeCommand::TryParseCommand(const FShidenCommand& Command, 
 
 	if (Args.Volume < 0.0f)
 	{
-		ErrorMessage = FString::Printf(TEXT("Invalid Volume: %f.  non-negative."), Args.Volume);
+		ErrorMessage = FString::Printf(TEXT("Invalid Volume: %f. Must be non-negative."), Args.Volume);
 		return false;
 	}
 
@@ -32,10 +32,10 @@ bool UShidenAdjustVolumeCommand::TryParseCommand(const FShidenCommand& Command, 
 	return TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
-void UShidenAdjustVolumeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                                  UShidenWidget* ShidenWidget,
-                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                  UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
+void UShidenAdjustBGMVolumeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                     UShidenWidget* ShidenWidget,
+                                                                     const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                     UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -48,10 +48,11 @@ void UShidenAdjustVolumeCommand::PreProcessCommand_Implementation(const FString&
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                               const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
-                                                               FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
+void UShidenAdjustBGMVolumeCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                  UShidenWidget* ShidenWidget,
+                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                  const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
+                                                                  FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	if (Args.bWaitForCompletion)
 	{
@@ -77,9 +78,9 @@ void UShidenAdjustVolumeCommand::ProcessCommand_Implementation(const FString& Pr
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenAdjustVolumeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                               const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
+void UShidenAdjustBGMVolumeCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                  const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	if (!TryParseCommand(Command, Args, ErrorMessage))
 	{
@@ -96,17 +97,17 @@ void UShidenAdjustVolumeCommand::PreviewCommand_Implementation(const FShidenComm
 	Status = EShidenPreviewStatus::Complete;
 }
 
-bool UShidenAdjustVolumeCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve,
-                                                             FString& ErrorMessage)
+bool UShidenAdjustBGMVolumeCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve,
+                                                                FString& ErrorMessage)
 {
 	static const TMap<FString, EAudioFaderCurve> CurveMap = {
-		{TEXT("Linear"), EAudioFaderCurve::Linear},
-		{TEXT("Logarithmic"), EAudioFaderCurve::Logarithmic},
-		{TEXT("Sin (S-Curve)"), EAudioFaderCurve::SCurve},
-		{TEXT("Sin (Equal Power)"), EAudioFaderCurve::Sin}
+		{TEXT("linear"), EAudioFaderCurve::Linear},
+		{TEXT("logarithmic"), EAudioFaderCurve::Logarithmic},
+		{TEXT("sin (s-curve)"), EAudioFaderCurve::SCurve},
+		{TEXT("sin (equal power)"), EAudioFaderCurve::Sin}
 	};
 
-	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr))
+	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr.ToLower()))
 	{
 		AudioFaderCurve = *FoundCurve;
 		return true;

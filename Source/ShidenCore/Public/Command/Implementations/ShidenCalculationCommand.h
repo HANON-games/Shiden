@@ -38,7 +38,7 @@ class SHIDENCORE_API UShidenCalculationCommand : public UShidenCommandObject
 
 	static bool CalculateInteger(const FString& Operator, const int32& A, const int32& B, int32& Result, FString& ErrorMessage);
 
-	static bool CalculateVector2(const FString& Operator, const FVector2d& A, const FVector2d& B, FVector2d& Result, FString& ErrorMessage);
+	static bool CalculateVector2(const FString& Operator, const FVector2D& A, const FVector2D& B, FVector2D& Result, FString& ErrorMessage);
 
 	static bool CalculateVector3(const FString& Operator, const FVector& A, const FVector& B, FVector& Result, FString& ErrorMessage);
 

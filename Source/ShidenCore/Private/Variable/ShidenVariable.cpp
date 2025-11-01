@@ -2,11 +2,11 @@
 
 #include "Variable/ShidenVariable.h"
 
-SHIDENCORE_API bool FShidenVariable::TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition)
+SHIDENCORE_API bool FShidenVariable::TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition) const
 {
-	if (const FShidenVariableDefinition* Temp = VariableDefinitions.FindByKey(Name))
+	if (const FShidenVariableDefinition* FoundDefinition = VariableDefinitions.FindByKey(Name))
 	{
-		Definition = *Temp;
+		Definition = *FoundDefinition;
 		return true;
 	}
 	if (Name == TEXT("EMPTY"))
@@ -17,7 +17,7 @@ SHIDENCORE_API bool FShidenVariable::TryGetDefinition(const FString& Name, FShid
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::CanUpdate(const FString& Name, const EShidenVariableType& Type, const bool bForceUpdateReadOnly)
+SHIDENCORE_API bool FShidenVariable::CanUpdate(const FString& Name, const EShidenVariableType& Type, const bool bForceUpdateReadOnly) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -122,7 +122,7 @@ SHIDENCORE_API bool FShidenVariable::CanGet(const FShidenVariableDefinition* Def
 	return true;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, bool& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, bool& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -140,7 +140,7 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, bool& Value)
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, int32& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, int32& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -158,7 +158,7 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, int32& Value)
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, float& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, float& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -176,7 +176,7 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, float& Value)
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FString& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FString& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -194,7 +194,7 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FString& Value)
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -207,17 +207,17 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector& Value)
 		{
 			Value = Vector3Variables[Name];
 		}
-		else
+		else if (Value.InitFromString(Definition.DefaultValue))
 		{
-			Value.InitFromString(Definition.DefaultValue);
+			return true;
 		}
-		return true;
+		UE_LOG(LogTemp, Warning, TEXT("Failed to convert default value %s to FVector for variable %s."), *Definition.DefaultValue, *Name);
 	}
 	Value = FVector();
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector2d& Value)
+SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector2D& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -230,17 +230,17 @@ SHIDENCORE_API bool FShidenVariable::TryGet(const FString& Name, FVector2d& Valu
 		{
 			Value = Vector2Variables[Name];
 		}
-		else
+		else if (Value.InitFromString(Definition.DefaultValue))
 		{
-			Value.InitFromString(Definition.DefaultValue);
+			return true;
 		}
-		return true;
+		UE_LOG(LogTemp, Warning, TEXT("Failed to convert default value %s to FVector2D for variable %s."), *Definition.DefaultValue, *Name);
 	}
-	Value = FVector2d();
+	Value = FVector2D();
 	return false;
 }
 
-SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value)
+SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const
 {
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
@@ -284,7 +284,7 @@ SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShiden
 		}
 	case EShidenVariableType::Vector2:
 		{
-			if (FVector2d Vector2Value; TryGet(Name, Vector2Value))
+			if (FVector2D Vector2Value; TryGet(Name, Vector2Value))
 			{
 				Value = Vector2Value.ToString();
 				return true;
@@ -359,7 +359,7 @@ SHIDENCORE_API int32 FShidenVariable::Num() const
 	return VariableDefinitions.Num();
 }
 
-SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
+SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors) const
 {
 	VariableDescriptors.Empty();
 	TArray<FString> Names;
@@ -400,7 +400,7 @@ SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescr
 				}
 			case EShidenVariableType::Vector2:
 				{
-					FVector2d Vector2Value;
+					FVector2D Vector2Value;
 					TryGet(Name, Vector2Value);
 					Value = Vector2Value.ToString();
 					break;

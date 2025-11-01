@@ -600,6 +600,18 @@ public:
 	static FRegexPattern& GetVariablePattern();
 
 private:
+	template <class T>
+	static bool TryUpdateUserVariableImpl(const FString& Name, const T& Value, EShidenVariableType Type, FString& ErrorMessage);
+
+	template <class T>
+	static bool TryUpdateSystemVariableImpl(const FString& Name, const T& Value, EShidenVariableType Type, FString& ErrorMessage);
+
+	template <class T>
+	static bool TryUpdateLocalVariableImpl(const FString& ProcessName, const FString& Name, const T& Value, EShidenVariableType Type, FString& ErrorMessage);
+
+	template <class T>
+	static bool TryEvaluateComparisonImpl(const FString& Operator, const T& A, const T& B, bool& bResult, FString& ErrorMessage);
+
 	static bool TryUpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type, const FString& Name,
 	                                        const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue, const float FloatValue,
 	                                        FString& ErrorMessage);

@@ -32,7 +32,7 @@ void UShidenAutoSaveCommand::ProcessCommand_Implementation(const FString& Proces
 
 bool UShidenAutoSaveCommand::IsWidgetInitialized(const UShidenWidget* ShidenWidget)
 {
-	const FVector2d DesiredSize = ShidenWidget->GetDesiredSize();
+	const FVector2D DesiredSize = ShidenWidget->GetDesiredSize();
 	return DesiredSize.X > 0 && DesiredSize.Y > 0;
 }
 

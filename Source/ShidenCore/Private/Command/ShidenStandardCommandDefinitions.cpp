@@ -516,7 +516,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			{
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAdjustVolumeCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAdjustBGMVolumeCommand")),
 				.Args =
 				{
 					{
@@ -2204,7 +2204,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			{
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeTextureParameterCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeMaterialTextureParameterCommand")),
 				.Args =
 				{
 					{

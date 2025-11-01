@@ -281,13 +281,13 @@ bool UShidenSoundCommand::ShouldStopVoice(const bool bDisableAutoStopPreviousVoi
 bool UShidenSoundCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage)
 {
 	static const TMap<FString, EAudioFaderCurve> CurveMap = {
-		{TEXT("Linear"), EAudioFaderCurve::Linear},
-		{TEXT("Logarithmic"), EAudioFaderCurve::Logarithmic},
-		{TEXT("Sin (S-Curve)"), EAudioFaderCurve::SCurve},
-		{TEXT("Sin (Equal Power)"), EAudioFaderCurve::Sin}
+		{TEXT("linear"), EAudioFaderCurve::Linear},
+		{TEXT("logarithmic"), EAudioFaderCurve::Logarithmic},
+		{TEXT("sin (s-curve)"), EAudioFaderCurve::SCurve},
+		{TEXT("sin (equal power)"), EAudioFaderCurve::Sin}
 	};
 
-	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr))
+	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr.ToLower()))
 	{
 		AudioFaderCurve = *FoundCurve;
 		return true;
@@ -300,12 +300,12 @@ bool UShidenSoundCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderC
 bool UShidenSoundCommand::TryConvertToShidenSoundType(const FString& SoundTypeStr, EShidenSoundType& SoundType, FString& ErrorMessage)
 {
 	static const TMap<FString, EShidenSoundType> TypeMap = {
-		{TEXT("BGM"), EShidenSoundType::BGM},
-		{TEXT("SE"), EShidenSoundType::SE},
-		{TEXT("Voice"), EShidenSoundType::Voice}
+		{TEXT("bgm"), EShidenSoundType::BGM},
+		{TEXT("se"), EShidenSoundType::SE},
+		{TEXT("voice"), EShidenSoundType::Voice}
 	};
 
-	if (const EShidenSoundType* FoundType = TypeMap.Find(SoundTypeStr))
+	if (const EShidenSoundType* FoundType = TypeMap.Find(SoundTypeStr.ToLower()))
 	{
 		SoundType = *FoundType;
 		return true;

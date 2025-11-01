@@ -349,7 +349,7 @@ bool UShidenTextCommand::IsAssetPathEmpty(const FString& VoicePath)
 	return VoicePath.IsEmpty() || VoicePath == TEXT("None");
 }
 
-bool UShidenTextCommand::IsTextDisplayComplete() const
+bool UShidenTextCommand::IsTextDisplayComplete() const noexcept
 {
 	return CurrentTextIndex == TextLength;
 }

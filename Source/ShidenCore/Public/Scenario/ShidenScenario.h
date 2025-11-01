@@ -34,5 +34,5 @@ public:
 	{
 	}
 
-	virtual void PostDuplicate(bool bDuplicateForPie) override;
+	virtual void PostDuplicate(const bool bDuplicateForPie) override;
 };

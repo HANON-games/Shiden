@@ -65,15 +65,15 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 
 	bool TryGetDefinition(const FString& Name, FShidenPredefinedSystemVariableDefinition& Definition) const;
 
-	bool TryUpdateByString(const FString& Name, const FString& Value, bool bForceUpdateReadOnly = false) const;
+	bool TryUpdateByString(const FString& Name, const FString& Value, bool bForceUpdateReadOnly = false);
 
 	bool Contains(const FString& Name) const;
 
 	bool TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const;
 
-	void ResetAll() const;
+	void ResetAll();
 
-	bool TryReset(const FString& Name) const;
+	bool TryReset(const FString& Name);
 
 	void GetNames(TArray<FString>& OutNames) const;
 

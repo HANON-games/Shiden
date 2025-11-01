@@ -63,7 +63,7 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	FString StringValue;
 	int32 IntegerValue;
 	float FloatValue;
-	FVector2d Vector2Value;
+	FVector2D Vector2Value;
 	FVector Vector3Value;
 	EShidenVariableType VariableType;
 	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
@@ -142,9 +142,13 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 		}
 	case EShidenVariableType::Vector2:
 		{
-			FVector2d ValueVector2 = FVector2d::ZeroVector;
-			ValueVector2.InitFromString(Args.Value);
-			FVector2d ResultValue = FVector2d::ZeroVector;
+			FVector2D ValueVector2 = FVector2D::ZeroVector;
+			if (!ValueVector2.InitFromString(Args.Value))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.Value);
+				return false;
+			}
+			FVector2D ResultValue = FVector2D::ZeroVector;
 			if (!CalculateVector2(Args.Operator, Vector2Value, ValueVector2, ResultValue, ErrorMessage))
 			{
 				return false;
@@ -166,7 +170,11 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	case EShidenVariableType::Vector3:
 		{
 			FVector ValueVector3 = FVector::ZeroVector;
-			ValueVector3.InitFromString(Args.Value);
+			if (!ValueVector3.InitFromString(Args.Value))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *Args.Value);
+				return false;
+			}
 			FVector ResultValue = FVector::ZeroVector;
 			if (!CalculateVector3(Args.Operator, Vector3Value, ValueVector3, ResultValue, ErrorMessage))
 			{
@@ -264,7 +272,7 @@ bool UShidenCalculationCommand::CalculateInteger(const FString& Operator, const 
 	return false;
 }
 
-bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const FVector2d& A, const FVector2d& B, FVector2d& Result,
+bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const FVector2D& A, const FVector2D& B, FVector2D& Result,
                                                  FString& ErrorMessage)
 {
 	if (Operator == TEXT("+="))
@@ -287,7 +295,7 @@ bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result = B.X == 0 || B.Y == 0 ? FVector2d::ZeroVector : A / B;
+		Result = B.X == 0 || B.Y == 0 ? FVector2D::ZeroVector : A / B;
 		return true;
 	}
 

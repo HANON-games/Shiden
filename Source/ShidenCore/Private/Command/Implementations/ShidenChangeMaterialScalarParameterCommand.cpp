@@ -34,8 +34,7 @@ void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementa
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
-		FString TargetType, TargetName, ParameterName;
-		Tie(TargetType, TargetName, ParameterName) = ParseScenarioPropertyKey(Pair.Key);
+		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
 
 		Args = FChangeMaterialScalarParameterCommandArgs
 		{
@@ -254,23 +253,23 @@ bool UShidenChangeMaterialScalarParameterCommand::TryConvertToEasingFunc(const F
                                                                          FString& ErrorMessage)
 {
 	static const TMap<FString, EEasingFunc::Type> CurveMap = {
-		{TEXT("Linear"), EEasingFunc::Linear},
-		{TEXT("Step"), EEasingFunc::Step},
-		{TEXT("Sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("Sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("Sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("Ease in"), EEasingFunc::EaseIn},
-		{TEXT("Ease out"), EEasingFunc::EaseOut},
-		{TEXT("Ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("Expo in"), EEasingFunc::ExpoIn},
-		{TEXT("Expo out"), EEasingFunc::ExpoOut},
-		{TEXT("Expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("Circular in"), EEasingFunc::CircularIn},
-		{TEXT("Circular out"), EEasingFunc::CircularOut},
-		{TEXT("Circular in out"), EEasingFunc::CircularInOut}
+		{TEXT("linear"), EEasingFunc::Linear},
+		{TEXT("step"), EEasingFunc::Step},
+		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
+		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
+		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
+		{TEXT("ease in"), EEasingFunc::EaseIn},
+		{TEXT("ease out"), EEasingFunc::EaseOut},
+		{TEXT("ease in out"), EEasingFunc::EaseInOut},
+		{TEXT("expo in"), EEasingFunc::ExpoIn},
+		{TEXT("expo out"), EEasingFunc::ExpoOut},
+		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
+		{TEXT("circular in"), EEasingFunc::CircularIn},
+		{TEXT("circular out"), EEasingFunc::CircularOut},
+		{TEXT("circular in out"), EEasingFunc::CircularInOut}
 	};
 
-	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr))
+	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr.ToLower()))
 	{
 		EasingFunc = *FoundCurve;
 		return true;

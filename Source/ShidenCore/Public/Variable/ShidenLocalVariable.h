@@ -47,7 +47,7 @@ struct SHIDENCORE_API FShidenLocalVariable
 
 	bool TryGet(const FString& ScopeKey, const FString& Name, FVector& Value);
 
-	bool TryGet(const FString& ScopeKey, const FString& Name, FVector2d& Value);
+	bool TryGet(const FString& ScopeKey, const FString& Name, FVector2D& Value);
 
 	bool TryGetAsString(const FString& ScopeKey, const FString& Name, EShidenVariableType& Type, FString& Value);
 

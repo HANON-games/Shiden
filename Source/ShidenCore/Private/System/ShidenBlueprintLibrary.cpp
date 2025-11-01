@@ -38,20 +38,20 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 		}
 		if (Text[i] == '&')
 		{
-			FString Temp = Text.Mid(i + 1);
-			if (Temp.StartsWith("lt;") || Temp.StartsWith("gt;"))
+			const FString Temp = Text.Mid(i + 1);
+			if (Temp.StartsWith(TEXT("lt;")) || Temp.StartsWith(TEXT("gt;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
 				i += 3;
 				continue;
 			}
-			if (Temp.StartsWith("amp;"))
+			if (Temp.StartsWith(TEXT("amp;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
 				i += 4;
 				continue;
 			}
-			if (Temp.StartsWith("quot;"))
+			if (Temp.StartsWith(TEXT("quot;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
 				i += 5;
@@ -316,22 +316,6 @@ SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath
 
 	const FString Path = SoftObjectPath.GetAssetPathString() + "_C";
 	return StaticLoadClass(UObject::StaticClass(), nullptr, *Path, nullptr, LOAD_None, nullptr);
-}
-
-void FlipBitmapVertical(TArray<FColor>& Bitmap, const int32 Width, const int32 Height)
-{
-	for (int32 Y = 0; Y < Height / 2; ++Y)
-	{
-		const int32 IndexTop = Y * Width;
-		const int32 IndexBottom = (Height - 1 - Y) * Width;
-
-		for (int32 X = 0; X < Width; ++X)
-		{
-			const FColor Temp = Bitmap[IndexTop + X];
-			Bitmap[IndexTop + X] = Bitmap[IndexBottom + X];
-			Bitmap[IndexBottom + X] = Temp;
-		}
-	}
 }
 
 SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetOrLoadAsset(const FString& ObjectPath, UObject*& Asset)

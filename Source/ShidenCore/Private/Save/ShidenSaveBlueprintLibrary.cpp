@@ -34,7 +34,13 @@ SHIDENCORE_API UTexture2D* UShidenSaveBlueprintLibrary::ConvertSaveTextureToText
 	Texture->SRGB = true;
 	Texture->LODGroup = TEXTUREGROUP_Pixels2D;
 
-	FTexture2DMipMap& Mip = Texture->GetPlatformData()->Mips[0];
+	FTexturePlatformData* PlatformData = Texture->GetPlatformData();
+	if (!PlatformData || PlatformData->Mips.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	FTexture2DMipMap& Mip = PlatformData->Mips[0];
 
 	void* TextureData = Mip.BulkData.Lock(LOCK_READ_WRITE);
 	FMemory::Memcpy(TextureData, SaveTexture.Pixels.GetData(), SaveTexture.Pixels.Num());
@@ -81,13 +87,10 @@ TObjectPtr<UShidenSaveSlotsSaveGame> CreateOrUpdateSaveSlots(const FString& Slot
 
 void UShidenSaveBlueprintLibrary::WaitUntilEmpty()
 {
-	while (true)
+	while (SaveGamePipe.HasWork())
 	{
-		if (!SaveGamePipe.HasWork())
-		{
-			break;
-		}
-		FPlatformProcess::Sleep(0.0f);
+		// Sleep for 1ms to avoid busy-waiting and reduce CPU usage
+		FPlatformProcess::Sleep(0.001f);
 	}
 }
 

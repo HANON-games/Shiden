@@ -2,7 +2,8 @@
 
 #include "Scenario/ShidenScenario.h"
 
-SHIDENCORE_API void UShidenScenario::PostDuplicate(bool bDuplicateForPie)
+SHIDENCORE_API void UShidenScenario::PostDuplicate(const bool bDuplicateForPie)
 {
+	Super::PostDuplicate(bDuplicateForPie);
 	ScenarioId = FGuid::NewGuid();
 }

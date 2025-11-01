@@ -68,13 +68,29 @@ void UShidenAssignVariableCommand::PreviewCommand_Implementation(const FShidenCo
 bool UShidenAssignVariableCommand::TrySetVariable(const UObject* WorldContextObject, const FAssignVariableCommandArgs& Args,
                                                   const FString& ProcessName, FString& ErrorMessage)
 {
-	FVector2d Vector2Value;
-	Vector2Value.InitFromString(*Args.Value);
-	FVector Vector3Value;
-	Vector3Value.InitFromString(*Args.Value);
+	FVector2D Vector2Value = FVector2D::ZeroVector;
+	FVector Vector3Value = FVector::ZeroVector;
+
+	// Only parse vectors if needed for the variable type
+	if (Args.VariableType == EShidenVariableType::Vector2)
+	{
+		if (!Vector2Value.InitFromString(Args.Value))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.Value);
+			return false;
+		}
+	}
+	else if (Args.VariableType == EShidenVariableType::Vector3)
+	{
+		if (!Vector3Value.InitFromString(Args.Value))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *Args.Value);
+			return false;
+		}
+	}
 
 	return UShidenVariableBlueprintLibrary::TryUpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
-	                                                Args.VariableType, Args.VariableName, Args.Value.ToBool(),
-	                                                Args.Value, FCString::Atoi(*Args.Value),
-	                                                FCString::Atof(*Args.Value), Vector2Value, Vector3Value, ErrorMessage);
+	                                                          Args.VariableType, Args.VariableName, Args.Value.ToBool(),
+	                                                          Args.Value, FCString::Atoi(*Args.Value),
+	                                                          FCString::Atof(*Args.Value), Vector2Value, Vector3Value, ErrorMessage);
 }

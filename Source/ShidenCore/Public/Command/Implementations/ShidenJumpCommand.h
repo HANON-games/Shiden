@@ -24,7 +24,7 @@ class SHIDENCORE_API UShidenJumpCommand : public UShidenCommandObject
 
 	static void ParseFromCommand(const FShidenCommand& Command, FJumpCommandArgs& Args);
 
-	static bool TryFindTagIndex(const FJumpCommandArgs& Args, UShidenScenario* Scenario, int32& FoundIndex, FString& ErrorMessage);
+	static bool TryFindTagIndex(const FJumpCommandArgs& Args, const UShidenScenario* Scenario, int32& FoundIndex, FString& ErrorMessage);
 
 	FJumpCommandArgs Args;
 };

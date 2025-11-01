@@ -382,14 +382,14 @@ public:
 	 * @return The index of the selected option, or -1 if none selected
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Option")
-	int32 GetSelectedOption() const;
+	int32 GetSelectedOption() const noexcept;
 
 	/**
 	 * Checks if an option has been selected by the player.
 	 * @return True if an option has been selected
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Option")
-	bool IsOptionSelected() const;
+	bool IsOptionSelected() const noexcept;
 
 	/**
 	 * Attempts to play media content from the specified source path.
@@ -406,7 +406,7 @@ public:
 	 * @return True if media playback has completed
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Media")
-	bool IsMediaCompleted() const;
+	bool IsMediaCompleted() const noexcept;
 
 	/**
 	 * Collapses the media player interface.
@@ -550,7 +550,7 @@ public:
 	 * @return True if text has been submitted
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Text Input")
-	bool IsTextSubmitted() const;
+	bool IsTextSubmitted() const noexcept;
 	
 	/**
 	 * Sanitizes input text according to the specified properties and constraints.
@@ -566,7 +566,7 @@ public:
 	 * @return True if the skip button is pressed
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Input")
-	bool IsSkipPressed() const;
+	bool IsSkipPressed() const noexcept;
 
 	/**
 	 * Gets the visibility state of a widget by name.

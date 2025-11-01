@@ -16,27 +16,29 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeK
 
 SHIDENCORE_API void FShidenLocalVariable::InitLocalVariable(const FString& ScopeKey, const UShidenScenario* Scenario)
 {
-	if (Scenario)
+	if (!Scenario)
 	{
-		TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
-		Definitions.Append(Scenario->LocalVariableDefinitions);
-		Variables.Add(ScopeKey, FShidenVariable(Definitions));
-		ScenarioIds.Add(ScopeKey, Scenario->ScenarioId);
+		UE_LOG(LogTemp, Warning, TEXT("InitLocalVariable failed: Scenario is null for ScopeKey: %s"), *ScopeKey);
+		return;
 	}
+	
+	TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
+	Definitions.Append(Scenario->LocalVariableDefinitions);
+	Variables.Add(ScopeKey, FShidenVariable(Definitions));
+	ScenarioIds.Add(ScopeKey, Scenario->ScenarioId);
 }
 
 SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
 {
-	TArray<FString> ScopeKeys;
-	Variables.GetKeys(ScopeKeys);
-	for (const FString& ScopeKey : ScopeKeys)
+	for (TPair<FString, FShidenVariable>& Pair : Variables)
 	{
+		const FString& ScopeKey = Pair.Key;
 		UShidenScenario* Scenario = nullptr;
-		if (UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioIds[ScopeKey], Scenario))
+		if (ScenarioIds.Contains(ScopeKey) && UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioIds[ScopeKey], Scenario))
 		{
 			TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
 			Definitions.Append(Scenario->LocalVariableDefinitions);
-			Variables[ScopeKey].UpdateVariableDefinitions(Definitions);
+			Pair.Value.UpdateVariableDefinitions(Definitions);
 		}
 	}
 }
@@ -156,13 +158,13 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector2d& Value)
+SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector2D& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
 		return Variables[ScopeKey].TryGet(Name, Value);
 	}
-	Value = FVector2d();
+	Value = FVector2D();
 	return false;
 }
 
@@ -179,13 +181,9 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGetAsString(const FString& ScopeKey
 SHIDENCORE_API int32 FShidenLocalVariable::Num() const
 {
 	int32 Count = 0;
-	TArray<FString> ScopeKeys;
-	Variables.GetKeys(ScopeKeys);
-	for (const FString& ScopeKey : ScopeKeys)
+	for (const TPair<FString, FShidenVariable>& Pair : Variables)
 	{
-		TArray<FString> VariableKeys;
-
-		Count += Variables[ScopeKey].Num();
+		Count += Pair.Value.Num();
 	}
 	return Count;
 }
@@ -220,29 +218,28 @@ SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInCurrentScope(const FS
 
 SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInProcess(const FString& ProcessName)
 {
-	FString SearchKey = ProcessName + TEXT("$");
-
-	TArray<FString> Keys;
-	Variables.GetKeys(Keys);
-
-	for (const FString& Key : Keys)
+	TArray<FString> KeysToRemove;
+	const FString SearchKey = ProcessName + TEXT("$");
+	for (const TPair<FString, FShidenVariable>& Pair : Variables)
 	{
-		if (Key.StartsWith(ProcessName, ESearchCase::CaseSensitive))
+		if (Pair.Key.StartsWith(SearchKey, ESearchCase::CaseSensitive))
 		{
-			Variables.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 		}
+	}
+	for (const FString& Key : KeysToRemove)
+	{
+		Variables.Remove(Key);
 	}
 }
 
 SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	VariableDescriptors.Empty();
-	TArray<FString> ScopeKeys;
-	Variables.GetKeys(ScopeKeys);
-	for (const FString& ScopeKey : ScopeKeys)
+	for (const TPair<FString, FShidenVariable>& Pair : Variables)
 	{
+		const FShidenVariable& Variable = Pair.Value;
 		TArray<FString> Names;
-		FShidenVariable Variable = Variables[ScopeKey];
 		Variable.GetNames(Names);
 		for (const FString& Name : Names)
 		{
@@ -253,7 +250,7 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 				{
 				case EShidenVariableType::Boolean:
 					{
-						bool bBooleanValue;
+						bool bBooleanValue = false;
 						Variable.TryGet(Name, bBooleanValue);
 						Value = bBooleanValue ? TEXT("true") : TEXT("false");
 						break;
@@ -266,33 +263,37 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 					}
 				case EShidenVariableType::Integer:
 					{
-						int32 IntegerValue;
+						int32 IntegerValue = 0;
 						Variable.TryGet(Name, IntegerValue);
 						Value = FString::FromInt(IntegerValue);
 						break;
 					}
 				case EShidenVariableType::Float:
 					{
-						float FloatValue;
+						float FloatValue = 0.0f;
 						Variable.TryGet(Name, FloatValue);
 						Value = FString::SanitizeFloat(FloatValue);
 						break;
 					}
 				case EShidenVariableType::Vector2:
 					{
-						FVector2d Vector2Value;
+						FVector2D Vector2Value = FVector2D::ZeroVector;
 						Variable.TryGet(Name, Vector2Value);
 						Value = Vector2Value.ToString();
 						break;
 					}
 				case EShidenVariableType::Vector3:
 					{
-						FVector Vector3Value;
+						FVector Vector3Value = FVector::ZeroVector;
 						Variable.TryGet(Name, Vector3Value);
 						Value = Vector3Value.ToString();
 						break;
 					}
+				default:
+					UE_LOG(LogTemp, Warning, TEXT("Unknown variable type for variable: %s"), *Name);
+					break;
 				}
+				const FString& ScopeKey = Pair.Key;
 				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Definition.AssetPathType, Value,
 				                                                  Definition.DefaultValue, Definition.bIsReadOnly));
 			}

@@ -58,12 +58,12 @@ struct SHIDENCORE_API FShidenScenarioProgressStack
 		}
 	}
 
-	int32 GetCurrentScenarioIndex() const
+	int32 GetCurrentScenarioIndex() const noexcept
 	{
 		return IsEmpty() ? INDEX_NONE : Stack.Last().CurrentIndex;
 	}
 
-	bool IsEmpty() const
+	bool IsEmpty() const noexcept
 	{
 		return Stack.Num() == 0;
 	}

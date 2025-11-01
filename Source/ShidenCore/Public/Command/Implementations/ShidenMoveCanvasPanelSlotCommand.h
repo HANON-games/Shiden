@@ -17,8 +17,8 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 		EEasingFunc::Type EasingFunction;
 		float Duration;
 		FString ChangeType;
-		FVector2d EndPosition;
-		FVector2d EndSize;
+		FVector2D EndPosition;
+		FVector2D EndSize;
 		int32 OverwriteZOrder;
 		int32 Steps;
 		float BlendExp;
