@@ -110,37 +110,38 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 		return false;
 	}
 
-	if (!bResult)
+	if (bResult)
 	{
-		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
-
-		if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-			|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
-		{
-			return true;
-		}
-
-		int32 NextIndex;
-		UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
-
-		const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
-
-		UShidenScenario* Scenario = nullptr;
-		if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
-		{
-			ErrorMessage = TEXT("GetScenario failed.");
-			return false;
-		}
-
-		int32 ResultIndex;
-		if (!TryFindEndLoopWhileIndex(Scenario, ScenarioProgress.CurrentIndex + 1, ResultIndex, ErrorMessage))
-		{
-			return false;
-		}
-		UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, ResultIndex);
+		return true;
 	}
 
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+
+	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
+	{
+		return true;
+	}
+
+	int32 NextIndex;
+	UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
+
+	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
+
+	UShidenScenario* Scenario = nullptr;
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
+	{
+		ErrorMessage = TEXT("GetScenario failed.");
+		return false;
+	}
+
+	int32 ResultIndex;
+	if (!TryFindEndLoopWhileIndex(Scenario, NextIndex, ResultIndex, ErrorMessage))
+	{
+		return false;
+	}
+	UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, ResultIndex);
 	return true;
 }
 
@@ -167,7 +168,6 @@ bool UShidenLoopWhileCommand::TryFindEndLoopWhileIndex(const UShidenScenario* Sc
 			{
 				return false;
 			}
-
 			return TryFindEndLoopWhileIndex(Scenario, ResultIndex + 1, ResultIndex, ErrorMessage);
 		}
 	}
