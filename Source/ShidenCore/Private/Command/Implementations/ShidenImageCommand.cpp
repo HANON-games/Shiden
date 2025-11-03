@@ -86,19 +86,20 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			Image->SetColorAndOpacity(Color);
 		}
 
+		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+		if (!Slot)
+		{
+			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
+			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
+		}
+		
 		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 		{
 			FVector2D Position;
 			if (!Position.InitFromString(*PositionStr))
 			{
 				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **PositionStr);
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
-			}
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
-			if (!Slot)
-			{
-				ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
@@ -114,26 +115,12 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
-			if (!Slot)
-			{
-				ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
-			}
 			Slot->SetSize(Size);
 		}
 
 		if (const FString* SizeToContentStr = PropertyMap.Find(TEXT("SizeToContent")))
 		{
 			const bool bOverwriteSizeToContent = SizeToContentStr->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
-			if (!Slot)
-			{
-				ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
-			}
 			Slot->SetAutoSize(bOverwriteSizeToContent);
 		}
 	}
