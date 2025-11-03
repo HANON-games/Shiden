@@ -48,7 +48,7 @@ bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& 
 	FString StringValue;
 	int32 IntegerValue;
 	float FloatValue;
-	FVector2d Vector2Value;
+	FVector2D Vector2Value;
 	FVector Vector3Value;
 
 	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
@@ -84,14 +84,22 @@ bool UShidenWaitUntilCommand::TryEvaluateCondition(const FWaitUntilCommandArgs& 
 		}
 	case EShidenVariableType::Vector2:
 		{
-			FVector2d RightHandValue;
-			RightHandValue.InitFromString(Args.RightHandValue);
+			FVector2D RightHandValue;
+			if (!RightHandValue.InitFromString(Args.RightHandValue))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.RightHandValue);
+				return false;
+			}
 			return UShidenVariableBlueprintLibrary::TryEvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, ErrorMessage);
 		}
 	case EShidenVariableType::Vector3:
 		{
 			FVector RightHandValue;
-			RightHandValue.InitFromString(Args.RightHandValue);
+			if (!RightHandValue.InitFromString(Args.RightHandValue))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *Args.RightHandValue);
+				return false;
+			}
 			return UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, ErrorMessage);
 		}
 	}

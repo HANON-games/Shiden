@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
-#include "ShidenChangeTextureParameterCommand.generated.h"
+#include "ShidenChangeMaterialTextureParameterCommand.generated.h"
 
 UCLASS()
-class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenCommandObject
+class SHIDENCORE_API UShidenChangeMaterialTextureParameterCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ class SHIDENCORE_API UShidenChangeTextureParameterCommand : public UShidenComman
 		FString TexturePath;
 	};
 	
-	UShidenChangeTextureParameterCommand();
+	UShidenChangeMaterialTextureParameterCommand();
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,

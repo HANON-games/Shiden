@@ -1,14 +1,13 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
-#include "Command/Implementations/ShidenChangeTextureParameterCommand.h"
+#include "Command/Implementations/ShidenChangeMaterialTextureParameterCommand.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Materials/MaterialInterface.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Engine/Texture2D.h"
 #include "TextureResource.h"
 
-UShidenChangeTextureParameterCommand::UShidenChangeTextureParameterCommand() : Super()
+UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParameterCommand() : Super()
 {
 	if (const TObjectPtr<UTexture2D> NewTex = UTexture2D::CreateTransient(1, 1, PF_B8G8R8A8))
 	{
@@ -33,7 +32,7 @@ UShidenChangeTextureParameterCommand::UShidenChangeTextureParameterCommand() : S
 	}
 }
 
-void UShidenChangeTextureParameterCommand::ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args)
+void UShidenChangeMaterialTextureParameterCommand::ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args)
 {
 	Args.Target = Command.GetArg("Target");
 	Args.TargetName = Command.GetArg("TargetName");
@@ -41,7 +40,7 @@ void UShidenChangeTextureParameterCommand::ParseFromCommand(const FShidenCommand
 	Args.TexturePath = Command.GetArg("Texture");
 }
 
-void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
+void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
                                                                               UShidenWidget* ShidenWidget,
                                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                               UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
@@ -49,8 +48,7 @@ void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(co
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
-		FString TargetType, TargetName, ParameterName;
-		Tie(TargetType, TargetName, ParameterName) = ParseScenarioPropertyKey(Pair.Key);
+		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
 
 		Args = FChangeTextureParameterCommandArgs
 		{
@@ -65,13 +63,10 @@ void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(co
 		{
 			Texture = ClearTexture;
 		}
-		else
+		else if (!TryLoadTexture(Args, Texture, ErrorMessage))
 		{
-			if (!TryLoadTexture(Args, Texture, ErrorMessage))
-			{
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
-			}
+			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
 		}
 
 		if (!TryChangeTextureParameter(Args, ShidenWidget, Texture, ErrorMessage))
@@ -84,7 +79,7 @@ void UShidenChangeTextureParameterCommand::RestoreFromSaveData_Implementation(co
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenChangeTextureParameterCommand::ProcessCommand_Implementation(const FString& ProcessName,
+void UShidenChangeMaterialTextureParameterCommand::ProcessCommand_Implementation(const FString& ProcessName,
                                                                          const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                          const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
@@ -97,13 +92,10 @@ void UShidenChangeTextureParameterCommand::ProcessCommand_Implementation(const F
 	{
 		Texture = ClearTexture;
 	}
-	else
+	else if (!TryLoadTexture(Args, Texture, ErrorMessage))
 	{
-		if (!TryLoadTexture(Args, Texture, ErrorMessage))
-		{
-			Status = EShidenProcessStatus::Error;
-			return;
-		}
+		Status = EShidenProcessStatus::Error;
+		return;
 	}
 
 	if (!TryChangeTextureParameter(Args, ShidenWidget, Texture, ErrorMessage))
@@ -117,7 +109,7 @@ void UShidenChangeTextureParameterCommand::ProcessCommand_Implementation(const F
 	Status = EShidenProcessStatus::Next;
 }
 
-void UShidenChangeTextureParameterCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+void UShidenChangeMaterialTextureParameterCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                          bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
@@ -128,13 +120,10 @@ void UShidenChangeTextureParameterCommand::PreviewCommand_Implementation(const F
 	{
 		Texture = ClearTexture;
 	}
-	else
+	else if (!TryLoadTexture(Args, Texture, ErrorMessage))
 	{
-		if (!TryLoadTexture(Args, Texture, ErrorMessage))
-		{
-			Status = EShidenPreviewStatus::Error;
-			return;
-		}
+		Status = EShidenPreviewStatus::Error;
+		return;
 	}
 
 	Status = TryChangeTextureParameter(Args, ShidenWidget, Texture, ErrorMessage)
@@ -142,7 +131,7 @@ void UShidenChangeTextureParameterCommand::PreviewCommand_Implementation(const F
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenChangeTextureParameterCommand::TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage)
+bool UShidenChangeMaterialTextureParameterCommand::TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage)
 {
 	UObject* Object;
 	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.TexturePath, Object))
@@ -161,7 +150,7 @@ bool UShidenChangeTextureParameterCommand::TryLoadTexture(const FChangeTexturePa
 	return true;
 }
 
-bool UShidenChangeTextureParameterCommand::TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args,
+bool UShidenChangeMaterialTextureParameterCommand::TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args,
                                                                      const UShidenWidget* ShidenWidget,
                                                                      UTexture* Texture, FString& ErrorMessage)
 {
@@ -204,7 +193,7 @@ bool UShidenChangeTextureParameterCommand::TryChangeTextureParameter(const FChan
 	return true;
 }
 
-FString UShidenChangeTextureParameterCommand::MakeScenarioPropertyKey(const FString& TargetType,
+FString UShidenChangeMaterialTextureParameterCommand::MakeScenarioPropertyKey(const FString& TargetType,
                                                                       const FString& TargetName, const FString& ParameterName)
 {
 	return FString::Printf(TEXT("%s::%s::%s"),
@@ -213,7 +202,7 @@ FString UShidenChangeTextureParameterCommand::MakeScenarioPropertyKey(const FStr
 	                       *ParameterName.Replace(TEXT(":"), TEXT("\\:")));
 }
 
-TTuple<FString, FString, FString> UShidenChangeTextureParameterCommand::ParseScenarioPropertyKey(const FString& Key)
+TTuple<FString, FString, FString> UShidenChangeMaterialTextureParameterCommand::ParseScenarioPropertyKey(const FString& Key)
 {
 	TArray<FString> TempArray;
 	Key.ParseIntoArray(TempArray, TEXT("::"), true);

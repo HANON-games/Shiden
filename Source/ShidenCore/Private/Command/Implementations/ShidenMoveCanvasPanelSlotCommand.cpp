@@ -56,15 +56,25 @@ void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const
 
 		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 		{
-			FVector2d Position;
-			Position.InitFromString(*PositionStr);
+			FVector2D Position;
+			if (!Position.InitFromString(*PositionStr))
+			{
+				Status = EShidenInitFromSaveDataStatus::Error;
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **PositionStr);
+				return;
+			}
 			Slot->SetPosition(Position);
 		}
 
 		if (const FString* SizeStr = PropertyMap.Find(TEXT("Size")))
 		{
-			FVector2d Size;
-			Size.InitFromString(*SizeStr);
+			FVector2D Size;
+			if (!Size.InitFromString(*SizeStr))
+			{
+				Status = EShidenInitFromSaveDataStatus::Error;
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **SizeStr);
+				return;
+			}
 			Slot->SetSize(Size);
 		}
 
@@ -243,20 +253,20 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 bool UShidenMoveCanvasPanelSlotCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
 {
 	static const TMap<FString, EEasingFunc::Type> EasingFuncMap = {
-		{TEXT("Linear"), EEasingFunc::Linear},
-		{TEXT("Step"), EEasingFunc::Step},
-		{TEXT("Sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("Sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("Sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("Ease in"), EEasingFunc::EaseIn},
-		{TEXT("Ease out"), EEasingFunc::EaseOut},
-		{TEXT("Ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("Expo in"), EEasingFunc::ExpoIn},
-		{TEXT("Expo out"), EEasingFunc::ExpoOut},
-		{TEXT("Expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("Circular in"), EEasingFunc::CircularIn},
-		{TEXT("Circular out"), EEasingFunc::CircularOut},
-		{TEXT("Circular in out"), EEasingFunc::CircularInOut}
+		{TEXT("linear"), EEasingFunc::Linear},
+		{TEXT("step"), EEasingFunc::Step},
+		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
+		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
+		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
+		{TEXT("ease in"), EEasingFunc::EaseIn},
+		{TEXT("ease out"), EEasingFunc::EaseOut},
+		{TEXT("ease in out"), EEasingFunc::EaseInOut},
+		{TEXT("expo in"), EEasingFunc::ExpoIn},
+		{TEXT("expo out"), EEasingFunc::ExpoOut},
+		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
+		{TEXT("circular in"), EEasingFunc::CircularIn},
+		{TEXT("circular out"), EEasingFunc::CircularOut},
+		{TEXT("circular in out"), EEasingFunc::CircularInOut}
 	};
 
 	if (const EEasingFunc::Type* Found = EasingFuncMap.Find(EasingFuncStr.ToLower()))

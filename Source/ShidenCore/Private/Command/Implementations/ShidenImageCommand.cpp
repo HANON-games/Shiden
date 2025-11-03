@@ -86,6 +86,14 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			Image->SetColorAndOpacity(Color);
 		}
 
+		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+		if (!Slot)
+		{
+			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
+			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
+		}
+		
 		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 		{
 			FVector2D Position;
@@ -95,7 +103,6 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetPosition(Position);
 		}
 
@@ -108,14 +115,12 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 				Status = EShidenInitFromSaveDataStatus::Error;
 				return;
 			}
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetSize(Size);
 		}
 
 		if (const FString* SizeToContentStr = PropertyMap.Find(TEXT("SizeToContent")))
 		{
 			const bool bOverwriteSizeToContent = SizeToContentStr->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
-			const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
 			Slot->SetAutoSize(bOverwriteSizeToContent);
 		}
 	}
@@ -158,7 +163,7 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	ScenarioProperties.Add(TEXT("Path"), Args.ImagePath);
 	
 	const bool bImagePathIsEmpty = Args.ImagePath.IsEmpty() || Args.ImagePath == TEXT("None");
-	const FColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
+	const FLinearColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
 	ScenarioProperties.Add(TEXT("Color"), ResultColor.ToString());
 
 	if (!Args.OverwritePosition.IsEmpty())
@@ -223,6 +228,12 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 		}
 
 		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
+		if (!Slot)
+		{
+			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *Args.SlotName);
+			return false;
+		}
+
 		if (!Args.OverwritePosition.IsEmpty())
 		{
 			FVector2D Position;
@@ -261,23 +272,23 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 bool UShidenImageCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
 {
 	static const TMap<FString, EEasingFunc::Type> CurveMap = {
-		{TEXT("Linear"), EEasingFunc::Linear},
-		{TEXT("Step"), EEasingFunc::Step},
-		{TEXT("Sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("Sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("Sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("Ease in"), EEasingFunc::EaseIn},
-		{TEXT("Ease out"), EEasingFunc::EaseOut},
-		{TEXT("Ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("Expo in"), EEasingFunc::ExpoIn},
-		{TEXT("Expo out"), EEasingFunc::ExpoOut},
-		{TEXT("Expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("Circular in"), EEasingFunc::CircularIn},
-		{TEXT("Circular out"), EEasingFunc::CircularOut},
-		{TEXT("Circular in out"), EEasingFunc::CircularInOut}
+		{TEXT("linear"), EEasingFunc::Linear},
+		{TEXT("step"), EEasingFunc::Step},
+		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
+		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
+		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
+		{TEXT("ease in"), EEasingFunc::EaseIn},
+		{TEXT("ease out"), EEasingFunc::EaseOut},
+		{TEXT("ease in out"), EEasingFunc::EaseInOut},
+		{TEXT("expo in"), EEasingFunc::ExpoIn},
+		{TEXT("expo out"), EEasingFunc::ExpoOut},
+		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
+		{TEXT("circular in"), EEasingFunc::CircularIn},
+		{TEXT("circular out"), EEasingFunc::CircularOut},
+		{TEXT("circular in out"), EEasingFunc::CircularInOut}
 	};
 
-	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr))
+	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr.ToLower()))
 	{
 		EasingFunc = *FoundCurve;
 		return true;

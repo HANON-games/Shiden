@@ -81,14 +81,14 @@ bool UShidenChangeVisibilityCommand::TryChangeVisibility(const FChangeVisibility
 bool UShidenChangeVisibilityCommand::TryConvertToVisibility(const FString& Visibility, ESlateVisibility& Result, FString& ErrorMessage)
 {
 	static const TMap<FString, ESlateVisibility> VisibilityMap = {
-		{TEXT("Visible"), ESlateVisibility::Visible},
-		{TEXT("Hidden"), ESlateVisibility::Hidden},
-		{TEXT("Collapsed"), ESlateVisibility::Collapsed},
-		{TEXT("Not Hit-Testable (Self & All Children)"), ESlateVisibility::HitTestInvisible},
-		{TEXT("Not Hit-Testable (Self Only)"), ESlateVisibility::SelfHitTestInvisible}
+		{TEXT("visible"), ESlateVisibility::Visible},
+		{TEXT("hidden"), ESlateVisibility::Hidden},
+		{TEXT("collapsed"), ESlateVisibility::Collapsed},
+		{TEXT("not hit-testable (self & all children)"), ESlateVisibility::HitTestInvisible},
+		{TEXT("not hit-testable (self only)"), ESlateVisibility::SelfHitTestInvisible}
 	};
 
-	if (const ESlateVisibility* Found = VisibilityMap.Find(Visibility))
+	if (const ESlateVisibility* Found = VisibilityMap.Find(Visibility.ToLower()))
 	{
 		Result = *Found;
 		return true;

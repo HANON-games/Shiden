@@ -47,7 +47,7 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	Status = EShidenProcessStatus::Next;
 }
 
-bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, UShidenScenario* Scenario, int32& FoundIndex, FString& ErrorMessage)
+bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, const UShidenScenario* Scenario, int32& FoundIndex, FString& ErrorMessage)
 {
 	for (int32 Index = 0; Index < Scenario->Commands.Num(); Index++)
 	{

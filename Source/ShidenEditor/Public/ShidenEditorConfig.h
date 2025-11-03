@@ -75,5 +75,6 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	static void SetDefaultCommand(const FString& CommandName);
 
 private:
-	static void UpdateConfig(TObjectPtr<UShidenEditorConfig> Config);
+	template <class T, class TMember>
+	static void UpdateConfig(TMember UShidenEditorConfig::* MemberPtr, const T& Value);
 };

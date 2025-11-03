@@ -15,8 +15,9 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FStr
 	return false;
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value,
-                                                                       const bool bForceUpdateReadOnly /*= false*/) const
+                                                                       const bool bForceUpdateReadOnly /*= false*/)
 {
 	const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name);
 	if (Definition && (bForceUpdateReadOnly || !Definition->bIsReadOnly))
@@ -43,7 +44,8 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetAsString(const FStrin
 	return false;
 }
 
-SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll() const
+// ReSharper disable once CppMemberFunctionMayBeConst
+SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll()
 {
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)
 	{
@@ -51,7 +53,8 @@ SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll() const
 	}
 }
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryReset(const FString& Name) const
+// ReSharper disable once CppMemberFunctionMayBeConst
+SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryReset(const FString& Name)
 {
 	if (const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name))
 	{

@@ -156,7 +156,7 @@ protected:
 	 * @return True if all text has been displayed
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
-	bool IsTextDisplayComplete() const;
+	bool IsTextDisplayComplete() const noexcept;
 
 	/**
 	 * Attempts to close a text window widget based on the specified text type.
@@ -298,7 +298,7 @@ protected:
 	 * @return True if the command can transition to complete state
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
-	bool CanTransitionToComplete(bool bWaitForInput) const;
+	bool CanTransitionToComplete(const bool bWaitForInput) const;
 	
 	/**
 	 * Attempts to preview text content for editor.

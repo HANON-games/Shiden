@@ -32,12 +32,12 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 			continue;
 		}
 
-		FColor Color;
+		FLinearColor Color;
 		const FString ColorStr = PropertyMap.FindRef(TEXT("Color"));
 		if (!Color.InitFromString(ColorStr))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
-			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *ColorStr);
+			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FLinearColor."), *ColorStr);
 			return;
 		}
 
@@ -46,7 +46,7 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 			continue;
 		}
 
-		const FString ZOrderStr = PropertyMap.FindRef(TEXT("%s::ZOrder"));
+		const FString ZOrderStr = PropertyMap.FindRef(TEXT("ZOrder"));
 
 		Args = FFadeCommandArgs
 		{
@@ -141,23 +141,23 @@ bool UShidenFadeCommand::IsFadeOut(const FString& FadeTypeStr)
 bool UShidenFadeCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
 {
 	static const TMap<FString, EEasingFunc::Type> CurveMap = {
-		{TEXT("Linear"), EEasingFunc::Linear},
-		{TEXT("Step"), EEasingFunc::Step},
-		{TEXT("Sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("Sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("Sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("Ease in"), EEasingFunc::EaseIn},
-		{TEXT("Ease out"), EEasingFunc::EaseOut},
-		{TEXT("Ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("Expo in"), EEasingFunc::ExpoIn},
-		{TEXT("Expo out"), EEasingFunc::ExpoOut},
-		{TEXT("Expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("Circular in"), EEasingFunc::CircularIn},
-		{TEXT("Circular out"), EEasingFunc::CircularOut},
-		{TEXT("Circular in out"), EEasingFunc::CircularInOut}
+		{TEXT("linear"), EEasingFunc::Linear},
+		{TEXT("step"), EEasingFunc::Step},
+		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
+		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
+		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
+		{TEXT("ease in"), EEasingFunc::EaseIn},
+		{TEXT("ease out"), EEasingFunc::EaseOut},
+		{TEXT("ease in out"), EEasingFunc::EaseInOut},
+		{TEXT("expo in"), EEasingFunc::ExpoIn},
+		{TEXT("expo out"), EEasingFunc::ExpoOut},
+		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
+		{TEXT("circular in"), EEasingFunc::CircularIn},
+		{TEXT("circular out"), EEasingFunc::CircularOut},
+		{TEXT("circular in out"), EEasingFunc::CircularInOut}
 	};
 
-	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr))
+	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr.ToLower()))
 	{
 		EasingFunc = *FoundCurve;
 		return true;

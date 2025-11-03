@@ -25,19 +25,56 @@ TArray<FColor> ResizeBitmap(const TArray<FColor>& OriginalBitmap, const int32 Or
 
 	for (int32 y = 0; y < TargetHeight; ++y)
 	{
+		const int32 SrcY = FMath::Clamp(FMath::FloorToInt(y * YRatio), 0, OriginalHeight - 1);
+		const int32 SrcYOffset = SrcY * OriginalWidth;
+		const int32 DestOffset = y * TargetWidth;
+
 		for (int32 x = 0; x < TargetWidth; ++x)
 		{
-			int32 SrcX = FMath::FloorToInt(x * XRatio);
-			int32 SrcY = FMath::FloorToInt(y * YRatio);
-
-			SrcX = FMath::Clamp(SrcX, 0, OriginalWidth - 1);
-			SrcY = FMath::Clamp(SrcY, 0, OriginalHeight - 1);
-
-			ResizedBitmap[y * TargetWidth + x] = OriginalBitmap[SrcY * OriginalWidth + SrcX];
+			const int32 SrcX = FMath::Clamp(FMath::FloorToInt(x * XRatio), 0, OriginalWidth - 1);
+			ResizedBitmap[DestOffset + x] = OriginalBitmap[SrcYOffset + SrcX];
 		}
 	}
 
 	return ResizedBitmap;
+}
+
+bool CreateTexture2DFromBitmap(TArray<FColor>& Bitmap, const int32 Width, const int32 Height, UTexture2D*& OutTexture)
+{
+	// Set alpha to 255 for all pixels
+	for (FColor& Color : Bitmap)
+	{
+		Color.A = 255;
+	}
+
+	// Create transient texture
+	OutTexture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	if (!OutTexture)
+	{
+		return false;
+	}
+
+	// Get platform data and validate
+	FTexturePlatformData* PlatformData = OutTexture->GetPlatformData();
+	if (!PlatformData || PlatformData->Mips.Num() == 0)
+	{
+		return false;
+	}
+
+	// Configure texture properties
+	OutTexture->SRGB = true;
+	OutTexture->AddToRoot();
+
+	// Copy bitmap data to texture
+	FTexture2DMipMap& Mip = PlatformData->Mips[0];
+	void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
+	FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
+	Mip.BulkData.Unlock();
+
+	// Update texture resource
+	OutTexture->UpdateResource();
+
+	return true;
 }
 
 SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
@@ -77,20 +114,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 		if (TArray<FColor> Bitmap; RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags()))
 		{
 			Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
-			for (FColor& Color : Bitmap)
-			{
-				Color.A = 255;
-			}
-
-			ResultTexture =
-				UTexture2D::CreateTransient(OutSize.X * CaptureScale, OutSize.Y * CaptureScale, PF_B8G8R8A8);
-			ResultTexture->SRGB = true;
-			ResultTexture->AddToRoot();
-			FTexture2DMipMap& Mip = ResultTexture->GetPlatformData()->Mips[0];
-			void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
-			FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
-			Mip.BulkData.Unlock();
-			ResultTexture->UpdateResource();
+			CreateTexture2DFromBitmap(Bitmap, OutSize.X * CaptureScale, OutSize.Y * CaptureScale, ResultTexture);
 		}
 	}
 }
@@ -124,24 +148,10 @@ SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer,
 		TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
 	}
 
-	Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
-
 	if (bScreenshotSuccessful)
 	{
-		for (FColor& Color : Bitmap)
-		{
-			Color.A = 255;
-		}
-
-		ResultTexture =
-			UTexture2D::CreateTransient(OutSize.X * CaptureScale, OutSize.Y * CaptureScale, PF_B8G8R8A8);
-		ResultTexture->AddToRoot();
-		FTexture2DMipMap& Mip = ResultTexture->GetPlatformData()->Mips[0];
-		void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
-		FMemory::Memcpy(Data, Bitmap.GetData(), Bitmap.Num() * sizeof(FColor));
-		Mip.BulkData.Unlock();
-		ResultTexture->SRGB = true;
-		ResultTexture->UpdateResource();
+		Bitmap = ResizeBitmap(Bitmap, OutSize.X, OutSize.Y, OutSize.X * CaptureScale, OutSize.Y * CaptureScale);
+		CreateTexture2DFromBitmap(Bitmap, OutSize.X * CaptureScale, OutSize.Y * CaptureScale, ResultTexture);
 	}
 }
 
@@ -186,24 +196,22 @@ SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const
 
 SHIDENCORE_API void UShidenWidget::FadeInOut(const float DeltaTime)
 {
-	TArray<FString> Keys;
-	FadeParams.GetKeys(Keys);
-
-	for (FString& Key : Keys)
+	TArray<FString> KeysToRemove;
+	for (TPair<FString, FShidenFadeParams>& Pair : FadeParams)
 	{
-		FShidenFadeParams* Param = FadeParams.Find(Key);
-		Param->EasingAlpha += DeltaTime / Param->FadeDuration;
-		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
-		const float ResultR = UKismetMathLibrary::Ease(Param->StartColor.R, Param->TargetColor.R, Alpha, Param->FadeFunction, Param->BlendExp,
-		                                               Param->Steps);
-		const float ResultG = UKismetMathLibrary::Ease(Param->StartColor.G, Param->TargetColor.G, Alpha, Param->FadeFunction, Param->BlendExp,
-		                                               Param->Steps);
-		const float ResultB = UKismetMathLibrary::Ease(Param->StartColor.B, Param->TargetColor.B, Alpha, Param->FadeFunction, Param->BlendExp,
-		                                               Param->Steps);
-		const float ResultA = UKismetMathLibrary::Ease(Param->StartColor.A, Param->TargetColor.A, Alpha, Param->FadeFunction, Param->BlendExp,
-		                                               Param->Steps);
+		FShidenFadeParams& Param = Pair.Value;
+		Param.EasingAlpha += DeltaTime / Param.FadeDuration;
+		const float Alpha = FMath::Clamp(Param.EasingAlpha, 0.0f, 1.0f);
+		const float ResultR = UKismetMathLibrary::Ease(Param.StartColor.R, Param.TargetColor.R, Alpha, Param.FadeFunction, Param.BlendExp,
+		                                               Param.Steps);
+		const float ResultG = UKismetMathLibrary::Ease(Param.StartColor.G, Param.TargetColor.G, Alpha, Param.FadeFunction, Param.BlendExp,
+		                                               Param.Steps);
+		const float ResultB = UKismetMathLibrary::Ease(Param.StartColor.B, Param.TargetColor.B, Alpha, Param.FadeFunction, Param.BlendExp,
+		                                               Param.Steps);
+		const float ResultA = UKismetMathLibrary::Ease(Param.StartColor.A, Param.TargetColor.A, Alpha, Param.FadeFunction, Param.BlendExp,
+		                                               Param.Steps);
 
-		const TObjectPtr<UBorder> FadeWidget = FadeWidgets.FindRef(Key);
+		const TObjectPtr<UBorder> FadeWidget = FadeWidgets.FindRef(Pair.Key);
 		if (FadeWidget)
 		{
 			FadeWidget->SetBrushColor(FLinearColor(ResultR, ResultG, ResultB, ResultA));
@@ -211,137 +219,154 @@ SHIDENCORE_API void UShidenWidget::FadeInOut(const float DeltaTime)
 
 		if (Alpha >= 1.0f)
 		{
-			FadeParams.Remove(Key);
-			if (ResultA == 0.0f && FadeWidget)
+			KeysToRemove.Add(Pair.Key);
+			if (FMath::IsNearlyZero(ResultA) && FadeWidget)
 			{
 				FadeWidget->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		FadeParams.Remove(Key);
+	}
 }
 
 SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 {
-	TArray<FString> Keys;
-	ImageFadeParams.GetKeys(Keys);
-
-	for (FString& Key : Keys)
+	TArray<FString> KeysToRemove;
+	for (TPair<FString, FShidenImageFadeParams>& Pair : ImageFadeParams)
 	{
-		FShidenImageFadeParams* Param = ImageFadeParams.Find(Key);
-		Param->EasingAlpha += DeltaTime / Param->FadeDuration;
-		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
+		FShidenImageFadeParams& Param = Pair.Value;
+		Param.EasingAlpha += DeltaTime / Param.FadeDuration;
+		const float Alpha = FMath::Clamp(Param.EasingAlpha, 0.0f, 1.0f);
 
-		FLinearColor NewColor = Param->bIsWhiteFade ? FLinearColor::White : FLinearColor::Black;
-		NewColor.A = UKismetMathLibrary::Ease(Param->bShouldBeTransparent ? 1 : 0, Param->bShouldBeTransparent ? 0 : 1, Alpha, Param->FadeFunction,
-		                                      Param->BlendExp, Param->Steps);
+		FLinearColor NewColor = Param.bIsWhiteFade ? FLinearColor::White : FLinearColor::Black;
+		NewColor.A = UKismetMathLibrary::Ease(Param.bShouldBeTransparent ? 1 : 0, Param.bShouldBeTransparent ? 0 : 1, Alpha, Param.FadeFunction,
+		                                      Param.BlendExp, Param.Steps);
 
-		Param->Target->SetColorAndOpacity(NewColor);
+		Param.Target->SetColorAndOpacity(NewColor);
 
 		if (Alpha >= 1.0f)
 		{
-			if (Param->bShouldClearImageOnCompleted)
+			if (Param.bShouldClearImageOnCompleted)
 			{
-				Param->Target->SetBrush(FSlateNoResource());
+				Param.Target->SetBrush(FSlateNoResource());
 			}
-			ImageFadeParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 		}
+	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		ImageFadeParams.Remove(Key);
 	}
 }
 
 SHIDENCORE_API void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
 {
-	TArray<FString> Keys;
-	CanvasPanelMoveParams.GetKeys(Keys);
-
-	for (FString& Key : Keys)
+	TArray<FString> KeysToRemove;
+	for (TPair<FString, FShidenCanvasPanelSlotMoveParams>& Pair : CanvasPanelMoveParams)
 	{
-		FShidenCanvasPanelSlotMoveParams* Param = CanvasPanelMoveParams.Find(Key);
-		Param->EasingAlpha += DeltaTime / Param->MoveDuration;
-		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
-		const TObjectPtr<UCanvasPanelSlot> PanelSlot = Param->Target;
+		FShidenCanvasPanelSlotMoveParams& Param = Pair.Value;
+		Param.EasingAlpha += DeltaTime / Param.MoveDuration;
+		const float Alpha = FMath::Clamp(Param.EasingAlpha, 0.0f, 1.0f);
+		const TObjectPtr<UCanvasPanelSlot> PanelSlot = Param.Target;
 
-		if (Param->bChangePosition)
+		if (Param.bChangePosition)
 		{
 			const FVector2D NewPosition = FVector2D(
-				UKismetMathLibrary::Ease(Param->StartPosition.X, Param->EndPosition.X, Alpha, Param->MoveFunction, Param->BlendExp, Param->Steps),
-				UKismetMathLibrary::Ease(Param->StartPosition.Y, Param->EndPosition.Y, Alpha, Param->MoveFunction, Param->BlendExp, Param->Steps)
+				UKismetMathLibrary::Ease(Param.StartPosition.X, Param.EndPosition.X, Alpha, Param.MoveFunction, Param.BlendExp, Param.Steps),
+				UKismetMathLibrary::Ease(Param.StartPosition.Y, Param.EndPosition.Y, Alpha, Param.MoveFunction, Param.BlendExp, Param.Steps)
 			);
 			PanelSlot->SetPosition(NewPosition);
 		}
 
-		if (Param->bChangeSize)
+		if (Param.bChangeSize)
 		{
 			const FVector2D NewSize = FVector2D(
-				UKismetMathLibrary::Ease(Param->StartSize.X, Param->EndSize.X, Alpha, Param->MoveFunction, Param->BlendExp, Param->Steps),
-				UKismetMathLibrary::Ease(Param->StartSize.Y, Param->EndSize.Y, Alpha, Param->MoveFunction, Param->BlendExp, Param->Steps)
+				UKismetMathLibrary::Ease(Param.StartSize.X, Param.EndSize.X, Alpha, Param.MoveFunction, Param.BlendExp, Param.Steps),
+				UKismetMathLibrary::Ease(Param.StartSize.Y, Param.EndSize.Y, Alpha, Param.MoveFunction, Param.BlendExp, Param.Steps)
 			);
 			PanelSlot->SetSize(NewSize);
 		}
 
 		if (Alpha >= 1.0f)
 		{
-			CanvasPanelMoveParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 		}
 	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		CanvasPanelMoveParams.Remove(Key);
+	}	
 }
 
 SHIDENCORE_API void UShidenWidget::ChangeImageMaterial(const float DeltaTime)
 {
-	TArray<FString> Keys;
-	ImageMaterialParams.GetKeys(Keys);
-
-	for (FString Key : Keys)
+	TArray<FString> KeysToRemove;
+	for (TPair<FString, FShidenImageMaterialScalarParams>& Pair : ImageMaterialParams)
 	{
-		FShidenImageMaterialScalarParams* Param = ImageMaterialParams.Find(Key);
-		Param->EasingAlpha += DeltaTime / Param->MoveDuration;
-		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
-		const float NewValue = UKismetMathLibrary::Ease(Param->StartValue, Param->EndValue, Alpha, Param->MoveFunction, Param->BlendExp,
-		                                                Param->Steps);
+		FShidenImageMaterialScalarParams& Param = Pair.Value;
+		Param.EasingAlpha += DeltaTime / Param.MoveDuration;
+		const float Alpha = FMath::Clamp(Param.EasingAlpha, 0.0f, 1.0f);
+		const float NewValue = UKismetMathLibrary::Ease(Param.StartValue, Param.EndValue, Alpha, Param.MoveFunction, Param.BlendExp,
+		                                                Param.Steps);
 
-		TObjectPtr<UMaterialInstanceDynamic> Material = Param->Target->GetDynamicMaterial();
+		TObjectPtr<UMaterialInstanceDynamic> Material = Param.Target->GetDynamicMaterial();
 
 		if (!Material)
 		{
-			ImageMaterialParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 			continue;
 		}
 
-		Material->SetScalarParameterValue(Param->ParameterName, NewValue);
+		Material->SetScalarParameterValue(Param.ParameterName, NewValue);
 
 		if (Alpha >= 1.0f)
 		{
-			ImageMaterialParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 		}
+	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		ImageMaterialParams.Remove(Key);
 	}
 }
 
 SHIDENCORE_API void UShidenWidget::ChangeRetainerBoxMaterial(const float DeltaTime)
 {
-	TArray<FString> Keys;
-	RetainerBoxMaterialParams.GetKeys(Keys);
-
-	for (FString Key : Keys)
+	TArray<FString> KeysToRemove;
+	for (TPair<FString, FShidenRetainerBoxMaterialScalarParams>& Pair : RetainerBoxMaterialParams)
 	{
-		FShidenRetainerBoxMaterialScalarParams* Param = RetainerBoxMaterialParams.Find(Key);
-		Param->EasingAlpha += DeltaTime / Param->MoveDuration;
-		const float Alpha = FMath::Clamp(Param->EasingAlpha, 0.0f, 1.0f);
-		const float NewValue = UKismetMathLibrary::Ease(Param->StartValue, Param->EndValue, Alpha, Param->MoveFunction, Param->BlendExp,
-		                                                Param->Steps);
+		FShidenRetainerBoxMaterialScalarParams& Param = Pair.Value;
+		Param.EasingAlpha += DeltaTime / Param.MoveDuration;
+		const float Alpha = FMath::Clamp(Param.EasingAlpha, 0.0f, 1.0f);
+		const float NewValue = UKismetMathLibrary::Ease(Param.StartValue, Param.EndValue, Alpha, Param.MoveFunction, Param.BlendExp,
+		                                                Param.Steps);
 
-		TObjectPtr<UMaterialInstanceDynamic> Material = Param->Target->GetEffectMaterial();
+		TObjectPtr<UMaterialInstanceDynamic> Material = Param.Target->GetEffectMaterial();
 
 		if (!Material)
 		{
-			RetainerBoxMaterialParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 			continue;
 		}
 
-		Material->SetScalarParameterValue(Param->ParameterName, NewValue);
+		Material->SetScalarParameterValue(Param.ParameterName, NewValue);
 
 		if (Alpha >= 1.0f)
 		{
-			RetainerBoxMaterialParams.Remove(Key);
+			KeysToRemove.Add(Pair.Key);
 		}
+	}
+
+	for (const FString& Key : KeysToRemove)
+	{
+		RetainerBoxMaterialParams.Remove(Key);
 	}
 }
 
@@ -564,12 +589,12 @@ SHIDENCORE_API void UShidenWidget::SetOptions_Implementation(const TArray<FStrin
 	SelectedOption = INDEX_NONE;
 }
 
-SHIDENCORE_API int32 UShidenWidget::GetSelectedOption() const
+SHIDENCORE_API int32 UShidenWidget::GetSelectedOption() const noexcept
 {
 	return SelectedOption;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsOptionSelected() const
+SHIDENCORE_API bool UShidenWidget::IsOptionSelected() const noexcept
 {
 	return SelectedOption > -1;
 }
@@ -594,7 +619,7 @@ SHIDENCORE_API bool UShidenWidget::TryPlayMedia(const FString& MediaSourcePath, 
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsMediaCompleted() const
+SHIDENCORE_API bool UShidenWidget::IsMediaCompleted() const noexcept
 {
 	return bIsEndOfMedia;
 }
@@ -848,7 +873,7 @@ SHIDENCORE_API void UShidenWidget::SetInputModeTextInput_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeTextInput function of Shiden Widget!"));
 }
 
-SHIDENCORE_API bool UShidenWidget::IsTextSubmitted() const
+SHIDENCORE_API bool UShidenWidget::IsTextSubmitted() const noexcept
 {
 	return bIsTextSubmitted;
 }
@@ -920,7 +945,7 @@ SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const 
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::IsSkipPressed() const
+SHIDENCORE_API bool UShidenWidget::IsSkipPressed() const noexcept
 {
 	return bPressSkipButton;
 }

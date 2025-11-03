@@ -5,66 +5,66 @@
 #define LOCTEXT_NAMESPACE "ShidenNamespace"
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::TextStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.150000f, 0.150000f, 0.150000f, 1.00000f),
-	FLinearColor(0.150000f, 0.150000f, 0.150000f, 1.00000f),
-	FLinearColor(0.150000f, 0.150000f, 0.150000f, 1.00000f)
+	FLinearColor::White,
+	FLinearColor(0.15f, 0.15f, 0.15f),
+	FLinearColor(0.15f, 0.15f, 0.15f),
+	FLinearColor(0.15f, 0.15f, 0.15f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::MediaStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.200000f, 0.100000f, 0.000000f, 1.0f),
-	FLinearColor(0.250000f, 0.125000f, 0.000000f, 1.0f),
-	FLinearColor(0.250000f, 0.125000f, 0.000000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.2f, 0.1f, 0.0f),
+	FLinearColor(0.25f, 0.125f, 0.0f),
+	FLinearColor(0.25f, 0.125f, 0.0f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::FlowControlStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.000000f, 0.000000f, 0.150000f, 1.0f),
-	FLinearColor(0.000000f, 0.000000f, 0.200000f, 1.0f),
-	FLinearColor(0.000000f, 0.000000f, 0.200000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.0f, 0.0f, 0.15f),
+	FLinearColor(0.0f, 0.0f, 0.2f),
+	FLinearColor(0.0f, 0.0f, 0.2f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::UIControlStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.000000f, 0.200000f, 0.000000f, 1.0f),
-	FLinearColor(0.000000f, 0.250000f, 0.000000f, 1.0f),
-	FLinearColor(0.000000f, 0.250000f, 0.000000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.0f, 0.2f, 0.0f),
+	FLinearColor(0.0f, 0.25f, 0.0f),
+	FLinearColor(0.0f, 0.25f, 0.0f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::DataStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.000000f, 0.150000f, 0.200000f, 1.0f),
-	FLinearColor(0.000000f, 0.175000f, 0.250000f, 1.0f),
-	FLinearColor(0.000000f, 0.175000f, 0.250000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.0f, 0.15f, 0.20f),
+	FLinearColor(0.0f, 0.175f, 0.25f),
+	FLinearColor(0.0f, 0.175f, 0.25f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::MacroStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.050000f, 0.050000f, 0.050000f, 1.0f),
-	FLinearColor(0.070000f, 0.070000f, 0.070000f, 1.0f),
-	FLinearColor(0.070000f, 0.070000f, 0.070000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.05f, 0.05f, 0.05f),
+	FLinearColor(0.07f, 0.07f, 0.07f),
+	FLinearColor(0.07f, 0.07f, 0.07f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::CommentStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.250000f, 0.250000f, 0.000000f, 1.0f),
-	FLinearColor(0.300000f, 0.300000f, 0.000000f, 1.0f),
-	FLinearColor(0.300000f, 0.300000f, 0.000000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.25f, 0.25f, 0.0f),
+	FLinearColor(0.3f, 0.3f, 0.0f),
+	FLinearColor(0.3f, 0.3f, 0.0f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::TagStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.200000f, 0.000000f, 0.000000f, 1.0f),
-	FLinearColor(0.250000f, 0.000000f, 0.000000f, 1.0f),
-	FLinearColor(0.250000f, 0.000000f, 0.000000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.2f, 0.0f, 0.0f),
+	FLinearColor(0.25f, 0.0f, 0.0f),
+	FLinearColor(0.25f, 0.0f, 0.0f)
 };
 
 const FShidenCommandStyle UShidenStandardCommandDefinitions::InteractionStyle = FShidenCommandStyle{
-	FLinearColor(1.0f, 1.0f, 1.0f, 1.0f),
-	FLinearColor(0.200000f, 0.000000f, 0.200000f, 1.0f),
-	FLinearColor(0.250000f, 0.000000f, 0.250000f, 1.0f),
-	FLinearColor(0.250000f, 0.000000f, 0.250000f, 1.0f)
+	FLinearColor::White,
+	FLinearColor(0.2f, 0.0f, 0.20f),
+	FLinearColor(0.25f, 0.0f, 0.25f),
+	FLinearColor(0.25f, 0.0f, 0.25f)
 };
 
 const FSoftObjectPath UShidenStandardCommandDefinitions::TextInputTemplate =
@@ -516,7 +516,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			{
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAdjustVolumeCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAdjustBGMVolumeCommand")),
 				.Args =
 				{
 					{
@@ -2204,7 +2204,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			{
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeTextureParameterCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeMaterialTextureParameterCommand")),
 				.Args =
 				{
 					{

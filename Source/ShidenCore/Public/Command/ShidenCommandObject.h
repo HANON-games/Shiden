@@ -75,11 +75,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command")
 	void PreviewCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
+	                    const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
 
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
+	                                           const bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage);
 
 	/**
 	 * Performs pre-processing setup before executing a command, such as loading assets or validating parameters.
@@ -115,11 +115,11 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Command", meta = (ProcessName = "Default"))
 	void ProcessCommand(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager, float DeltaTime, UObject* CallerObject,
+	                    const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime, UObject* CallerObject,
 	                    EShidenProcessStatus& Status, FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage);
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, float DeltaTime,
+	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
 	                                           UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage);
 };

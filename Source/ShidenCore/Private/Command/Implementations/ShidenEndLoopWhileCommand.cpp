@@ -79,7 +79,7 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndexWithoutCheckCondition(cons
 		}
 		if (Command.CommandName == TEXT("EndLoopWhile"))
 		{
-			if (!TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, ErrorMessage))
+			if (!TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, Index, Commands, ResultIndex, ErrorMessage))
 			{
 				ResultIndex = 0;
 				return false;

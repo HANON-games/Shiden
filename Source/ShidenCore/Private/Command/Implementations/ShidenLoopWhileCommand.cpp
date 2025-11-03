@@ -45,7 +45,7 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 	FString StringValue;
 	int32 IntegerValue;
 	float FloatValue;
-	FVector2d Vector2Value;
+	FVector2D Vector2Value;
 	FVector Vector3Value;
 
 	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType, bBooleanValue,
@@ -83,15 +83,23 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 		}
 	case EShidenVariableType::Vector2:
 		{
-			FVector2d RightHandValue;
-			RightHandValue.InitFromString(Args.RightHandValue);
+			FVector2D RightHandValue;
+			if (!RightHandValue.InitFromString(Args.RightHandValue))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.RightHandValue);
+				return false;
+			}
 			bSuccess = UShidenVariableBlueprintLibrary::TryEvaluateVector2(Args.Operator, Vector2Value, RightHandValue, bResult, ErrorMessage);
 			break;
 		}
 	case EShidenVariableType::Vector3:
 		{
 			FVector RightHandValue;
-			RightHandValue.InitFromString(Args.RightHandValue);
+			if (!RightHandValue.InitFromString(Args.RightHandValue))
+			{
+				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector."), *Args.RightHandValue);
+				return false;
+			}
 			bSuccess = UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValue, bResult, ErrorMessage);
 			break;
 		}
@@ -102,37 +110,38 @@ bool UShidenLoopWhileCommand::TryEvaluateCondition(const FLoopWhileCommandArgs& 
 		return false;
 	}
 
-	if (!bResult)
+	if (bResult)
 	{
-		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
-
-		if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-			|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
-		{
-			return true;
-		}
-
-		int32 NextIndex;
-		UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
-
-		const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
-
-		UShidenScenario* Scenario = nullptr;
-		if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
-		{
-			ErrorMessage = TEXT("GetScenario failed.");
-			return false;
-		}
-
-		int32 ResultIndex;
-		if (!TryFindEndLoopWhileIndex(Scenario, ScenarioProgress.CurrentIndex + 1, ResultIndex, ErrorMessage))
-		{
-			return false;
-		}
-		UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, ResultIndex);
+		return true;
 	}
 
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	check(ShidenSubsystem);
+
+	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
+		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
+	{
+		return true;
+	}
+
+	int32 NextIndex;
+	UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
+
+	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
+
+	UShidenScenario* Scenario = nullptr;
+	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
+	{
+		ErrorMessage = TEXT("GetScenario failed.");
+		return false;
+	}
+
+	int32 ResultIndex;
+	if (!TryFindEndLoopWhileIndex(Scenario, NextIndex, ResultIndex, ErrorMessage))
+	{
+		return false;
+	}
+	UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, ResultIndex);
 	return true;
 }
 
@@ -159,7 +168,6 @@ bool UShidenLoopWhileCommand::TryFindEndLoopWhileIndex(const UShidenScenario* Sc
 			{
 				return false;
 			}
-
 			return TryFindEndLoopWhileIndex(Scenario, ResultIndex + 1, ResultIndex, ErrorMessage);
 		}
 	}

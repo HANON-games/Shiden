@@ -12,7 +12,7 @@ struct SHIDENCORE_API FShidenVariable
 {
 	GENERATED_BODY()
 
-	bool TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition);
+	bool TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition) const;
 
 	bool TryUpdate(const FString& Name, bool Value, bool bForceUpdateReadOnly = false);
 
@@ -28,19 +28,19 @@ struct SHIDENCORE_API FShidenVariable
 
 	bool Contains(const FString& Name) const;
 
-	bool TryGet(const FString& Name, bool& Value);
+	bool TryGet(const FString& Name, bool& Value) const;
 
-	bool TryGet(const FString& Name, int32& Value);
+	bool TryGet(const FString& Name, int32& Value) const;
 
-	bool TryGet(const FString& Name, float& Value);
+	bool TryGet(const FString& Name, float& Value) const;
 
-	bool TryGet(const FString& Name, FString& Value);
+	bool TryGet(const FString& Name, FString& Value) const;
 
-	bool TryGet(const FString& Name, FVector& Value);
+	bool TryGet(const FString& Name, FVector& Value) const;
 
-	bool TryGet(const FString& Name, FVector2d& Value);
+	bool TryGet(const FString& Name, FVector2D& Value) const;
 
-	bool TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value);
+	bool TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const;
 
 	void ResetAll();
 
@@ -50,7 +50,7 @@ struct SHIDENCORE_API FShidenVariable
 
 	int32 Num() const;
 
-	void ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors);
+	void ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors) const;
 
 	void UpdateVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions);
 
@@ -66,11 +66,29 @@ struct SHIDENCORE_API FShidenVariable
 		FloatVariables = TMap<FString, float>();
 		StringVariables = TMap<FString, FString>();
 		Vector3Variables = TMap<FString, FVector>();
-		Vector2Variables = TMap<FString, FVector2d>();
+		Vector2Variables = TMap<FString, FVector2D>();
 	}
 
 private:
-	bool CanUpdate(const FString& Name, const EShidenVariableType& Type, bool bForceUpdateReadOnly);
+	template<typename T>
+	bool TryUpdateImpl(const FString& Name, const T& Value, EShidenVariableType Type, TMap<FString, T>& VariableMap, bool bForceUpdateReadOnly);
+
+	template<typename T>
+	bool TryGetImpl(const FString& Name, T& Value, const EShidenVariableType Type, const TMap<FString, T>& VariableMap) const;
+
+	static bool GetDefaultValue(const FString& DefaultValue, bool& Value);
+
+	static bool GetDefaultValue(const FString& DefaultValue, int32& Value);
+
+	static bool GetDefaultValue(const FString& DefaultValue, float& Value);
+
+	static bool GetDefaultValue(const FString& DefaultValue, FString& Value);
+
+	static bool GetDefaultValue(const FString& DefaultValue, FVector& Value);
+
+	static bool GetDefaultValue(const FString& DefaultValue, FVector2D& Value);
+
+	bool CanUpdate(const FString& Name, const EShidenVariableType& Type, bool bForceUpdateReadOnly) const;
 
 	static bool CanGet(const FShidenVariableDefinition* Definition, const FString& Name, const EShidenVariableType& Type);
 
