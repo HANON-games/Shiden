@@ -13,27 +13,28 @@ SHIDENCORE_API void UShidenTextWidget::GetAllFullTexts_Implementation(TMap<FStri
 
 SHIDENCORE_API void UShidenTextWidget::GetFullText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
-	if (!OriginalTexts.Contains(TextType))
+	if (const FString* OriginalText = OriginalTexts.Find(TextType))
 	{
-		Text = TEXT("");
-		bSuccess = false;
+		Text = *OriginalText;
+		bSuccess = true;
 		return;
 	}
-	Text = OriginalTexts.FindRef(TextType);
-	bSuccess = true;
+	
+	Text = TEXT("");
+	bSuccess = false;
 }
 
 SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
-	if (!OriginalTexts.Contains(TextType))
+	if (const FString* OriginalText = OriginalTexts.Find(TextType))
 	{
-		Text = TEXT("");
-		bSuccess = false;
+		Text = UShidenBlueprintLibrary::GetCharactersWithParsedLength(*OriginalText, CurrentLength);
+		bSuccess = true;
 		return;
 	}
-	const FString& Original = OriginalTexts.FindRef(TextType);
-	Text = UShidenBlueprintLibrary::GetCharactersWithParsedLength(Original, CurrentLength);
-	bSuccess = true;
+
+	Text = TEXT("");
+	bSuccess = false;
 }
 
 SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess)
@@ -50,43 +51,38 @@ SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString&
 	bSuccess = true;
 }
 
-SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int Length)
+SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int32 Length)
 {
-	FString ParsedText = UShidenBlueprintLibrary::GetCharactersWithParsedLength(RawText, Length);
-	const int32 ParsedLength = UShidenBlueprintLibrary::GetParsedLength(RawText);
-	const TMap<FString, FShidenTextType> TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
-
-	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph && ParsedLength <= Length)
+	if (RawText.IsEmpty())
 	{
-		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
-		ParsedText = ParsedText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
+		OriginalTexts.Remove(TextType);
+	}
+	else
+	{
+		OriginalTexts.Add(TextType, RawText);
 	}
 
+	CurrentLength = Length;
+	
+	FString ParsedText = UShidenBlueprintLibrary::GetCharactersWithParsedLength(RawText, Length);
+	const int32 ParsedLength = UShidenBlueprintLibrary::GetParsedLength(RawText);
+
+	if (const FShidenTextType* TextTypePtr = UShidenBlueprintLibrary::GetShidenTextTypes().Find(TextType))
+	{
+		if (TextTypePtr->bShouldShowClickWaitingGlyph && ParsedLength <= Length)
+		{
+			const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+			check(ShidenSubsystem);
+			ParsedText = ParsedText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
+		}
+	}
+	
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
-		if (RawText.IsEmpty())
-		{
-			OriginalTexts.Remove(TextType);
-		}
-		else
-		{
-			OriginalTexts.Add(TextType, RawText);
-		}
-		CurrentLength = Length;
 		RichTextBlock->SetText(FText::FromString(ParsedText));
 	}
 	else if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
 	{
-		if (RawText.IsEmpty())
-		{
-			OriginalTexts.Remove(TextType);
-		}
-		else
-		{
-			OriginalTexts.Add(TextType, RawText);
-		}
-		CurrentLength = Length;
 		TextBlock->SetText(FText::FromString(ParsedText));
 	}
 }
@@ -98,11 +94,10 @@ SHIDENCORE_API void UShidenTextWidget::ClearText_Implementation(const FString& T
 
 SHIDENCORE_API void UShidenTextWidget::ClearAllTexts_Implementation()
 {
-	TArray<FString> TextTypes;
-	UShidenBlueprintLibrary::GetShidenTextTypes().GetKeys(TextTypes);
-	for (const FString& TextType : TextTypes)
+	const TMap<FString, FShidenTextType>& TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
+	for (const TPair<FString, FShidenTextType>& Pair : TextTypes)
 	{
-		ClearText(TextType);
+		ClearText(Pair.Key);
 	}
 }
 
@@ -127,28 +122,32 @@ SHIDENCORE_API void UShidenTextWidget::NativeConstruct()
 
 void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, const FString& Text, bool& bSuccess)
 {
-	const TMap<FString, FShidenTextType> TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
+	if (Text.IsEmpty())
+	{
+		OriginalTexts.Remove(TextType);
+	}
+	else
+	{
+		OriginalTexts.Add(TextType, Text);
+	}
+
+	CurrentLength = Text.Len();
+
 	FString ResultText = Text;
 
-	if (TextTypes.Contains(TextType) && TextTypes.FindRef(TextType).bShouldShowClickWaitingGlyph)
+	if (const FShidenTextType* TextTypePtr = UShidenBlueprintLibrary::GetShidenTextTypes().Find(TextType))
 	{
-		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
-
-		ResultText = ResultText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
+		if (TextTypePtr->bShouldShowClickWaitingGlyph)
+		{
+			const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+			check(ShidenSubsystem);
+			ResultText = ResultText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
+		}
 	}
 
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
-		if (Text.IsEmpty())
-		{
-			OriginalTexts.Remove(TextType);
-		}
-		else
-		{
-			OriginalTexts.Add(TextType, Text);
-		}
-		CurrentLength = Text.Len();
+		
 		RichTextBlock->SetText(FText::FromString(ResultText));
 		bSuccess = true;
 		return;
@@ -156,15 +155,6 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 
 	if (const TObjectPtr<UTextBlock> TextBlock = TextBlocks.FindRef(TextType))
 	{
-		if (Text.IsEmpty())
-		{
-			OriginalTexts.Remove(TextType);
-		}
-		else
-		{
-			OriginalTexts.Add(TextType, Text);
-		}
-		CurrentLength = Text.Len();
 		TextBlock->SetText(FText::FromString(ResultText));
 		bSuccess = true;
 		return;

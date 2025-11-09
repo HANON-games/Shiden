@@ -42,17 +42,17 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName) ||
-		ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
+	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
+	if (!ProgressStack || ProgressStack->IsEmpty())
 	{
 		ErrorMessage = FString::Printf(TEXT("Failed to peek scenario %s."), *ProcessName);
 		return false;
 	}
 
-	const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack[ProcessName].GetCurrentScenarioIndex();
+	const int32 CurrentIndex = ProgressStack->GetCurrentScenarioIndex();
 
 	// Temporarily advance the scenario index so that the game does not resume from the AutoSave command
-	ShidenSubsystem->ScenarioProgressStack[ProcessName].UpdateCurrentScenarioIndex(CurrentIndex + 1);
+	ProgressStack->UpdateCurrentScenarioIndex(CurrentIndex + 1);
 
 	if (Args.OverwriteThumbnail.IsEmpty())
 	{
@@ -70,9 +70,17 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 			ErrorMessage = FString::Printf(TEXT("Failed to load thumbnail asset %s."), *Args.OverwriteThumbnail);
 			return false;
 		}
-		ShidenWidget->SaveGame(Args.SlotName, Cast<UTexture2D>(Thumbnail));
+		
+		const TObjectPtr<const UTexture2D> ThumbnailTexture = Cast<UTexture2D>(Thumbnail);
+		if (!ThumbnailTexture)
+		{
+			ErrorMessage = FString::Printf(TEXT("Thumbnail asset %s is not a valid Texture2D."), *Args.OverwriteThumbnail);
+			return false;
+		}
+
+		ShidenWidget->SaveGame(Args.SlotName, ThumbnailTexture);
 	}
 
-	ShidenSubsystem->ScenarioProgressStack[ProcessName].UpdateCurrentScenarioIndex(CurrentIndex);
+	ProgressStack->UpdateCurrentScenarioIndex(CurrentIndex);
 	return true;
 }

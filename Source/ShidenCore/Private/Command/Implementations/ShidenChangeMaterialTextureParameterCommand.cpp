@@ -19,13 +19,16 @@ UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParame
 		NewTex->NeverStream = false;
 		NewTex->VirtualTextureStreaming = false;
 
-		if (NewTex->GetPlatformData() && NewTex->GetPlatformData()->Mips.Num() > 0)
+		if (FTexturePlatformData* PlatformData = NewTex->GetPlatformData())
 		{
-			FTexture2DMipMap& Mip = NewTex->GetPlatformData()->Mips[0];
-			void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
-			FMemory::Memzero(Data, sizeof(FColor));
-			Mip.BulkData.Unlock();
-			NewTex->UpdateResource();
+			if (PlatformData->Mips.Num() > 0)
+			{
+				FTexture2DMipMap& Mip = PlatformData->Mips[0];
+				void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
+				FMemory::Memzero(Data, sizeof(FColor));
+				Mip.BulkData.Unlock();
+				NewTex->UpdateResource();
+			}
 		}
 
 		ClearTexture = NewTex;

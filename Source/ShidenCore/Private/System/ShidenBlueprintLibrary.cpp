@@ -45,12 +45,14 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 				i += 3;
 				continue;
 			}
+			
 			if (Temp.StartsWith(TEXT("amp;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
 				i += 4;
 				continue;
 			}
+			
 			if (Temp.StartsWith(TEXT("quot;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
@@ -66,11 +68,11 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 
 	while (TagMatcher.FindNext())
 	{
-		FString Str1 = TagMatcher.GetCaptureGroup(0);
-		FString Str2 = TagMatcher.GetCaptureGroup(2);
+		FString FullMatch = TagMatcher.GetCaptureGroup(0);
+		FString TagContent = TagMatcher.GetCaptureGroup(2);
 		// Replace all '<' characters to 'a' to avoid matching with Self ClosingTagPattern
-		Str2.ReplaceCharInline('<', 'a', ESearchCase::CaseSensitive);
-		ResultText.ReplaceInline(*Str1, *Str2, ESearchCase::CaseSensitive);
+		TagContent.ReplaceCharInline('<', 'a', ESearchCase::CaseSensitive);
+		ResultText.ReplaceInline(*FullMatch, *TagContent, ESearchCase::CaseSensitive);
 	}
 
 	// pattern like <img id="value"/>
@@ -78,16 +80,16 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 
 	while (Matcher.FindNext())
 	{
-		FString Str = Matcher.GetCaptureGroup(0);
+		FString FullMatch = Matcher.GetCaptureGroup(0);
 		FString TagName = Matcher.GetCaptureGroup(1);
 		if (TagName != TEXT("wait"))
 		{
 			// Treat as 1 character
-			ResultText.ReplaceInline(*Str, TEXT("a"), ESearchCase::CaseSensitive);
+			ResultText.ReplaceInline(*FullMatch, TEXT("a"), ESearchCase::CaseSensitive);
 		}
 		else
 		{
-			ResultText.ReplaceInline(*Str, TEXT(""), ESearchCase::CaseSensitive);
+			ResultText.ReplaceInline(*FullMatch, TEXT(""), ESearchCase::CaseSensitive);
 		}
 	}
 
@@ -156,11 +158,11 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 			ResultLen++;
 			bFound = true;
 		}
-		for (const auto& [TagName, OpenTagStart, CloseTagEnd, ContentStart, ContentEnd] : WaitTagPos)
+		for (const FTextPosition& WaitTag : WaitTagPos)
 		{
-			if (ResultLen == OpenTagStart)
+			if (ResultLen == WaitTag.OpenTagStart)
 			{
-				ResultLen = CloseTagEnd + 1;
+				ResultLen = WaitTag.CloseTagEnd + 1;
 				bFound = true;
 			}
 		}
@@ -179,52 +181,52 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 	{
 		if (ResultText.IsValidIndex(ResultLen + 1) && ResultText[ResultLen] == '&')
 		{
-			FString Temp = ResultText.Mid(ResultLen + 1);
-			if (Temp.StartsWith("lt;") || Temp.StartsWith("gt;"))
+			const FString Temp = ResultText.Mid(ResultLen + 1);
+			if (Temp.StartsWith(TEXT("lt;")) || Temp.StartsWith(TEXT("gt;")))
 			{
 				ResultLen += 3;
 			}
-			else if (Temp.StartsWith("amp;"))
+			else if (Temp.StartsWith(TEXT("amp;")))
 			{
 				ResultLen += 4;
 			}
-			else if (Temp.StartsWith("quot;"))
+			else if (Temp.StartsWith(TEXT("quot;")))
 			{
 				ResultLen += 5;
 			}
 		}
 		
-		for (const auto& [TagName, OpenTagStart, CloseTagEnd, ContentStart, ContentEnd] : Pos)
+		for (const FTextPosition& Tag : Pos)
 		{
-			if (!bIsInTag && OpenTagStart == ResultLen)
+			if (!bIsInTag && Tag.OpenTagStart == ResultLen)
 			{
-				LastTagName = TagName;
-				if (ContentStart == -1 || ContentStart == ContentEnd)
+				LastTagName = Tag.TagName;
+				if (Tag.ContentStart == -1 || Tag.ContentStart == Tag.ContentEnd)
 				{
-					ResultLen = CloseTagEnd;
+					ResultLen = Tag.CloseTagEnd;
 				}
 				else
 				{
 					bIsInTag = true;
-					ResultLen = ContentStart;
+					ResultLen = Tag.ContentStart;
 				}
 				break;
 			}
-			if (bIsInTag && ContentEnd == ResultLen)
+			if (bIsInTag && Tag.ContentEnd == ResultLen)
 			{
 				bIsInTag = false;
-				ResultLen = CloseTagEnd;
+				ResultLen = Tag.CloseTagEnd;
 				break;
 			}
 		}
 		
 		if (!bIsInTag)
 		{
-			for (const auto& [TagName, OpenTagStart, CloseTagEnd, ContentStart, ContentEnd] : WaitTagPos)
+			for (const FTextPosition& WaitTag : WaitTagPos)
 			{
-				if (ResultLen == OpenTagStart)
+				if (ResultLen == WaitTag.OpenTagStart)
 				{
-					ResultLen = CloseTagEnd;
+					ResultLen = WaitTag.CloseTagEnd;
 					break;
 				}
 			}
@@ -304,17 +306,23 @@ SHIDENCORE_API void UShidenBlueprintLibrary::MultiThreadDelay(UObject* WorldCont
 
 SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
 {
-	if (SoftObjectPath.IsNull())
+	if (SoftObjectPath.IsNull() || !SoftObjectPath.IsValid())
 	{
 		return nullptr;
 	}
 
-	if (SoftObjectPath.GetAssetPathString().StartsWith(TEXT("/Script/")))
+	const FString AssetPathString = SoftObjectPath.GetAssetPathString();
+	if (AssetPathString.IsEmpty())
 	{
-		return StaticLoadClass(UObject::StaticClass(), nullptr, *SoftObjectPath.GetAssetPathString(), nullptr, LOAD_None, nullptr);
+		return nullptr;
+	}
+	
+	if (AssetPathString.StartsWith(TEXT("/Script/")))
+	{
+		return StaticLoadClass(UObject::StaticClass(), nullptr, *AssetPathString, nullptr, LOAD_None, nullptr);
 	}
 
-	const FString Path = SoftObjectPath.GetAssetPathString() + "_C";
+	const FString Path = AssetPathString + TEXT("_C");
 	return StaticLoadClass(UObject::StaticClass(), nullptr, *Path, nullptr, LOAD_None, nullptr);
 }
 
@@ -431,12 +439,23 @@ SHIDENCORE_API TMap<FString, FShidenTextType> UShidenBlueprintLibrary::GetShiden
 
 SHIDENCORE_API FString UShidenBlueprintLibrary::GetObjectPathFromClass(const UClass* Class)
 {
+	if (!Class)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Class is null"));
+		return FString();
+	}
 	const FTopLevelAssetPath Path = FTopLevelAssetPath(Class);
 	return Path.ToString().LeftChop(2);
 }
 
-bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType)
+SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType)
 {
+	if (!SoundBase)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SoundBase is null"));
+		return false;
+	}
+	
 	const TObjectPtr<USoundClass> SoundClass = SoundBase->GetSoundClass();
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	const TObjectPtr<USoundClass> BGMSoundClass = ProjectConfig->GetBGMSoundClass();

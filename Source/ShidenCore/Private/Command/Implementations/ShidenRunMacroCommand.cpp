@@ -48,10 +48,11 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	if (ShidenSubsystem->ScenarioProgressStack.FindRef("Default").Stack.Num() > 50)
+	constexpr int32 MaxStackDepth = 50;
+	if (ShidenSubsystem->ScenarioProgressStack.FindRef("Default").Stack.Num() > MaxStackDepth)
 	{
 		Status = EShidenPreviewStatus::Error;
-		ErrorMessage = TEXT("The stack contains too many scenarios to be previewed.");
+		ErrorMessage = FString::Printf(TEXT("The stack contains too many scenarios to be previewed (limit: %d)."), MaxStackDepth);
 		return;
 	}
 

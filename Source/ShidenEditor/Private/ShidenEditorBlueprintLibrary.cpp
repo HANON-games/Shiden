@@ -157,11 +157,11 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TrySaveTextFile(const FStri
 
 SHIDENEDITOR_API void UShidenEditorBlueprintLibrary::ParseCsvContent(const FString& CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow)
 {
-	const FCsvParser Parser = FCsvParser(CsvText);
+	const FCsvParser Parser(CsvText);
 	const TArray<TArray<const TCHAR*>>& Rows = Parser.GetRows();
 	bool bCommentEnd = false;
 
-	for (auto& Row : Rows)
+	for (const TArray<const TCHAR*>& Row : Rows)
 	{
 		// Skip comment lines like "# comment"
 		if (!bCommentEnd && FString(Row[0]).TrimStart().TrimEnd().StartsWith("#"))
@@ -315,7 +315,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		                       : FGuid::NewGuid();
 	Scenario->Note = Comments.Contains(TEXT("Note")) ? Comments[TEXT("Note")] : TEXT("");
 	
-	for (int Index = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Name")); Index++)
+	for (int32 Index = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Name")); Index++)
 	{
 		FShidenMacroParameter MacroParameterDefinition;
 		MacroParameterDefinition.Name = Comments[TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Name")];
@@ -335,7 +335,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		const FString IsReadOnlyKey = TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("IsReadOnly");
 		MacroParameterDefinition.bIsReadOnly = Comments.Contains(IsReadOnlyKey) && Comments[IsReadOnlyKey] == TEXT("true");
 
-		for (int EnumIndex = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Enum") + FString::FromInt(EnumIndex));
+		for (int32 EnumIndex = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Enum") + FString::FromInt(EnumIndex));
 		     EnumIndex++)
 		{
 			MacroParameterDefinition.bIsEnumParameter = true;
@@ -346,7 +346,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		Scenario->MacroParameterDefinitions.Add(MacroParameterDefinition);
 	}
 	
-	for (int Index = 1; Comments.Contains(TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("Name")); Index++)
+	for (int32 Index = 1; Comments.Contains(TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("Name")); Index++)
 	{
 		FShidenVariableDefinition LocalVariableDefinition;
 		LocalVariableDefinition.Name = Comments[TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("Name")];
@@ -398,7 +398,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		}
 		
 		TArray<FShidenCommandArgument> Args = CommandDefinitions[Command.CommandName].Args;
-		for (int Index = 0; Index < Args.Num(); Index++)
+		for (int32 Index = 0; Index < Args.Num(); Index++)
 		{
 			FString Value = Row.IsValidIndex(Index + 4) ? Row[Index + 4] : TEXT("{EMPTY}");
 			Command.Args.Add(Args[Index].ArgName.ToString(), Value);
@@ -451,7 +451,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	{
 		CsvRows.Add(TEXT("#PluginVersion ") + Version.ToString());
 	}
-	for (int Index = 0; Index < Scenario->MacroParameterDefinitions.Num(); Index++)
+	for (int32 Index = 0; Index < Scenario->MacroParameterDefinitions.Num(); Index++)
 	{
 		FString IndexStr = FString::FromInt(Index + 1);
 		CsvRows.Add(TEXT("#MacroParameter") + IndexStr + TEXT("Name ") + Scenario->MacroParameterDefinitions[Index].Name);
@@ -463,7 +463,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 		CsvRows.Add(TEXT("#MacroParameter") + IndexStr + TEXT("IsReadOnly ") + (Scenario->MacroParameterDefinitions[Index].bIsReadOnly ? TEXT("true") : TEXT("false")));
 		if (Scenario->MacroParameterDefinitions[Index].bIsEnumParameter)
 		{
-			for (int EnumIndex = 0; EnumIndex < Scenario->MacroParameterDefinitions[Index].EnumValues.Num(); EnumIndex++)
+			for (int32 EnumIndex = 0; EnumIndex < Scenario->MacroParameterDefinitions[Index].EnumValues.Num(); EnumIndex++)
 			{
 				CsvRows.Add(
 					TEXT("#MacroParameter") + IndexStr + TEXT("Enum") + FString::FromInt(EnumIndex + 1) + TEXT(" ") + Scenario->
@@ -472,7 +472,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 		}
 	}
 	
-	for (int Index = 0; Index < Scenario->LocalVariableDefinitions.Num(); Index++)
+	for (int32 Index = 0; Index < Scenario->LocalVariableDefinitions.Num(); Index++)
 	{
 		FString IndexStr = FString::FromInt(Index + 1);
 		CsvRows.Add(TEXT("#LocalVariable") + IndexStr + TEXT("Name ") + Scenario->LocalVariableDefinitions[Index].Name);
@@ -485,7 +485,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	}
 
 	// Get max column count
-	int MaxArgCount = 0;
+	int32 MaxArgCount = 0;
 	for (const FShidenCommand& Command : Scenario->Commands)
 	{
 		MaxArgCount = FMath::Max(MaxArgCount, Command.Args.Num());
@@ -493,7 +493,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 
 	// Add header
 	FString Header = TEXT("CommandId,Enabled,CommandName,PresetName");
-	for (int Index = 0; Index < MaxArgCount; Index++)
+	for (int32 Index = 0; Index < MaxArgCount; Index++)
 	{
 		Header += TEXT(",Arg") + FString::FromInt(Index + 1);
 	}
@@ -521,7 +521,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 		}
 		
 		TArray<FShidenCommandArgument> CommandArguments = CommandDefinitions[CommandName].Args;
-		for (int Index = 0; Index < MaxArgCount; Index++)
+		for (int32 Index = 0; Index < MaxArgCount; Index++)
 		{
 			if (CommandArguments.IsValidIndex(Index) && Args.Contains(CommandArguments[Index].ArgName.ToString()))
 			{
@@ -1217,7 +1217,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 		// Migrate variables
 		// Migrate UserVariableDefinitions
 		const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-		for (int i = 0; i < ProjectConfig->UserVariableDefinitions.Num(); i++)
+		for (int32 i = 0; i < ProjectConfig->UserVariableDefinitions.Num(); i++)
 		{
 			FShidenVariableDefinition& Definition = ProjectConfig->UserVariableDefinitions[i];
 			if (Definition.Type == EShidenVariableType::AssetPath && Definition.AssetPathType == EShidenAssetPathType::None)
@@ -1227,7 +1227,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 		}
 		
 		// Migrate SystemVariableDefinitions
-		for (int i = 0; i < ProjectConfig->SystemVariableDefinitions.Num(); i++)
+		for (int32 i = 0; i < ProjectConfig->SystemVariableDefinitions.Num(); i++)
 		{
 			FShidenVariableDefinition& Definition = ProjectConfig->SystemVariableDefinitions[i];
 			if (Definition.Type == EShidenVariableType::AssetPath && Definition.AssetPathType == EShidenAssetPathType::None)
