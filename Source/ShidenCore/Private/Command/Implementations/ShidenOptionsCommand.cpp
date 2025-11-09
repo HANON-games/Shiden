@@ -123,7 +123,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 
 	const int32 LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
 
-	if (LanguageIndex < 0 || LanguageIndex >= Args.LocalizedOptions.Num())
+	if (!Args.LocalizedOptions.IsValidIndex(LanguageIndex))
 	{
 		ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, Args.LocalizedOptions.Num() - 1);
 		return false;

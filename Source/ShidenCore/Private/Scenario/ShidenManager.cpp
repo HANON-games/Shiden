@@ -384,14 +384,17 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 	{
 	case EShidenSoundType::BGM:
 		{
-			TArray<int32> Keys;
-			BGMComponents.GetKeys(Keys);
-			for (const int32& Key : Keys)
+			TArray<int32> KeysToRemove;
+			for (const TPair<int32, UAudioComponent*>& Pair : BGMComponents)
 			{
-				if (!BGMComponents[Key] || BGMComponents[Key]->GetPlayState() == EAudioComponentPlayState::Stopped)
+				if (!Pair.Value || Pair.Value->GetPlayState() == EAudioComponentPlayState::Stopped)
 				{
-					BGMComponents.Remove(Key);
+					KeysToRemove.Add(Pair.Key);
 				}
+			}
+			for (const int32& Key : KeysToRemove)
+			{
+				BGMComponents.Remove(Key);
 			}
 			break;
 		}
@@ -408,14 +411,17 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 		}
 	case EShidenSoundType::Voice:
 		{
-			TArray<int32> Keys;
-			VoiceComponents.GetKeys(Keys);
-			for (const int32& Key : Keys)
+			TArray<int32> KeysToRemove;
+			for (const TPair<int32, UAudioComponent*>& Pair : VoiceComponents)
 			{
-				if (!VoiceComponents[Key] || VoiceComponents[Key]->GetPlayState() == EAudioComponentPlayState::Stopped)
+				if (!Pair.Value || Pair.Value->GetPlayState() == EAudioComponentPlayState::Stopped)
 				{
-					VoiceComponents.Remove(Key);
+					KeysToRemove.Add(Pair.Key);
 				}
+			}
+			for (const int32& Key : KeysToRemove)
+			{
+				VoiceComponents.Remove(Key);
 			}
 			break;
 		}

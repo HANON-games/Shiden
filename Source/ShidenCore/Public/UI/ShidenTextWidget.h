@@ -21,7 +21,7 @@ protected:
 	TMap<FString, FString> OriginalTexts;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
-	int CurrentLength;
+	int32 CurrentLength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TMap<FString, TObjectPtr<URichTextBlock>> RichTextBlocks;
@@ -78,14 +78,14 @@ public:
 		meta = (TextType = "Default", AutoCreateRefTerm = "OnClosed"))
 	void CloseWindow(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess);
 
-	/** 
+	/**
 	 * Sets the text for a specific text type, cutting it to the specified length
 	 * @param TextType The type of text to set
 	 * @param RawText The raw text content to set
 	 * @param Length How many characters to display
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (TextType = "Default"))
-	void SetText(const FString& TextType, const FString& RawText, int Length);
+	void SetText(const FString& TextType, const FString& RawText, int32 Length);
 
 	/** 
 	 * Clear text for a specific text type

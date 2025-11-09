@@ -36,16 +36,14 @@ protected:
 		const FString* SizePtr = RunInfo.MetaData.Find(TEXT("size"));
 		if (SizePtr && !SizePtr->IsEmpty())
 		{
-			SizeCoefficient = FCString::Atof(**SizePtr);
-			SizeCoefficient = FMath::Clamp(SizeCoefficient, 0.1f, 2.0f);
+			SizeCoefficient = FMath::Clamp(FCString::Atof(**SizePtr), 0.1f, 2.0f);
 		}
 
 		float OffsetCoefficient = DefaultOffsetCoefficient;
 		const FString* OffsetPtr = RunInfo.MetaData.Find(TEXT("offset"));
 		if (OffsetPtr && !OffsetPtr->IsEmpty())
 		{
-			OffsetCoefficient = FCString::Atof(**OffsetPtr);
-			OffsetCoefficient = FMath::Clamp(OffsetCoefficient, -1.0f, 1.0f);
+			OffsetCoefficient = FMath::Clamp(FCString::Atof(**OffsetPtr), -1.0f, 1.0f);
 		}
 
 		const FString* AllPtr = RunInfo.MetaData.Find(TEXT("all"));

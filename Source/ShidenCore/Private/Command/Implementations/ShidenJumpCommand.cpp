@@ -49,6 +49,12 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 
 bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, const UShidenScenario* Scenario, int32& FoundIndex, FString& ErrorMessage)
 {
+	if (!Scenario)
+	{
+		ErrorMessage = TEXT("Scenario is null.");
+		return false;
+	}
+	
 	for (int32 Index = 0; Index < Scenario->Commands.Num(); Index++)
 	{
 		const FShidenCommand& Command = Scenario->Commands[Index];
