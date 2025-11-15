@@ -20,8 +20,8 @@ void UShidenChangeVisibilityCommand::RestoreFromSaveData_Implementation(const TM
 		const FString& VisibilityStr = Pair.Value.GetValueAsString();
 		if (!TryConvertToVisibility(VisibilityStr, Args.Visibility, ErrorMessage))
 		{
-			ErrorMessage = FString::Printf(TEXT("Failed to convert %s to ESlateVisibility."), *VisibilityStr);
 			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
 		}
 
 		if (!TryChangeVisibility(Args, ShidenWidget, false, ErrorMessage))

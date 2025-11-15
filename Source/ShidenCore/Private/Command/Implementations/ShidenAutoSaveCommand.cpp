@@ -70,7 +70,7 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 			ErrorMessage = FString::Printf(TEXT("Failed to load thumbnail asset %s."), *Args.OverwriteThumbnail);
 			return false;
 		}
-		
+
 		const TObjectPtr<const UTexture2D> ThumbnailTexture = Cast<UTexture2D>(Thumbnail);
 		if (!ThumbnailTexture)
 		{

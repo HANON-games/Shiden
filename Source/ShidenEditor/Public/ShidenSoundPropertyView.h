@@ -13,7 +13,6 @@ UCLASS()
 class UShidenSoundPropertyView : public UContentWidget
 {
 	GENERATED_UCLASS_BODY()
-	
 	// UVisual interface
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	// End of UVisual interface
@@ -54,10 +53,10 @@ private:
 
 	UPROPERTY()
 	TSoftObjectPtr<USoundBase> SelectedAsset = nullptr;
-	
+
 	EVisibility GetResetVisibility() const;
-	
+
 	FString GetCurrentAssetPath() const;
-	
+
 	void OnObjectChanged(const FAssetData& AssetData);
 };

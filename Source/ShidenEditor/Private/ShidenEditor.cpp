@@ -42,10 +42,11 @@ void FShidenEditorModule::StartupModule()
 	PropertyEditorModule.NotifyCustomizationModuleChanged();
 
 	UToolMenus::RegisterStartupCallback(
-	   FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FShidenEditorModule::RegisterMenuExtensions)
+		FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FShidenEditorModule::RegisterMenuExtensions)
 	);
 
-	FEditorDelegates::OnEditorInitialized.AddLambda([](double){
+	FEditorDelegates::OnEditorInitialized.AddLambda([](double)
+	{
 		InitializeScenarioPaths();
 	});
 }
@@ -69,7 +70,7 @@ void FShidenEditorModule::ShutdownModule()
 
 	UToolMenus::UnRegisterStartupCallback(this);
 	UToolMenus::UnregisterOwner(this);
-	
+
 	FEditorDelegates::OnEditorInitialized.RemoveAll(this);
 }
 
@@ -85,21 +86,21 @@ void FShidenEditorModule::InitializeScenarioPaths()
 	{
 		return;
 	}
-	
+
 	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
 	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	AssetRegistry.WaitForCompletion();
 
 	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-	
+
 	TArray<FAssetData> AssetDataList;
 	AssetRegistry.GetAssetsByPath(FName(*ShidenProjectConfig->ScenarioDirectoryPath), AssetDataList, true);
 
 	TArray<FAssetData> MacroAssetDataList;
 	AssetRegistry.GetAssetsByPath(FName(*ShidenProjectConfig->MacroDirectoryPath), MacroAssetDataList, true);
 	AssetDataList.Append(MacroAssetDataList);
-	
+
 	TMap<FGuid, FString> ScenarioPaths;
 	for (const FAssetData& AssetData : AssetDataList)
 	{

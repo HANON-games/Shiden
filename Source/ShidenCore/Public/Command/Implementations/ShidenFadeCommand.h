@@ -43,8 +43,6 @@ class SHIDENCORE_API UShidenFadeCommand : public UShidenCommandObject
 
 	static bool TryParseCommand(const FShidenCommand& Command, FFadeCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
-
 	static bool TryStartFade(const FFadeCommandArgs& Args, UShidenWidget* ShidenWidget, const FString& OwnerProcessName, FString& ErrorMessage);
 
 	static bool IsFadeOut(const FString& FadeTypeStr);

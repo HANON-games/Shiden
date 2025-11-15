@@ -18,6 +18,13 @@ TArray<FColor> ResizeBitmap(const TArray<FColor>& OriginalBitmap, const int32 Or
                             const int32 TargetHeight)
 {
 	TArray<FColor> ResizedBitmap;
+
+	// Prevent division by zero
+	if (TargetWidth <= 0 || TargetHeight <= 0)
+	{
+		return ResizedBitmap;
+	}
+
 	ResizedBitmap.SetNumZeroed(TargetWidth * TargetHeight);
 
 	const float XRatio = static_cast<float>(OriginalWidth) / TargetWidth;
@@ -117,6 +124,11 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 			CreateTexture2DFromBitmap(Bitmap, OutSize.X * CaptureScale, OutSize.Y * CaptureScale, ResultTexture);
 		}
 	}
+	else
+	{
+		// In case of failure, clean up the widget renderer
+		BeginCleanup(WidgetRenderer);
+	}
 }
 
 SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
@@ -183,9 +195,9 @@ SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	const float DeltaTimeToUse  = bIsSkippedResult
-		                        ? DeltaTime * ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
-		                        : DeltaTime;
+	const float DeltaTimeToUse = bIsSkippedResult
+		                             ? DeltaTime * ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
+		                             : DeltaTime;
 
 	FadeInOut(DeltaTimeToUse);
 	ImageFadeInOut(DeltaTimeToUse);
@@ -301,7 +313,7 @@ SHIDENCORE_API void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
 	for (const FString& Key : KeysToRemove)
 	{
 		CanvasPanelMoveParams.Remove(Key);
-	}	
+	}
 }
 
 SHIDENCORE_API void UShidenWidget::ChangeImageMaterial(const float DeltaTime)
@@ -472,12 +484,13 @@ SHIDENCORE_API void UShidenWidget::ClearAllImages()
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartImageFade(const FString& ImageName, UPARAM(ref) UImage* Target,
-                                                  const EEasingFunc::Type Function, const float Duration,
-                                                  const bool bIsWhiteFade, const bool bShouldBeTransparent,
-                                                  const float BlendExp, const int32 Steps,
-                                                  const FString& OwnerProcessName, const bool bClearImageOnCompleted,
-                                                  FString& ErrorMessage)
+SHIDENCORE_API bool UShidenWidget::TryStartImageFade(const FString& ImageName, UPARAM(ref)
+                                                     UImage* Target,
+                                                     const EEasingFunc::Type Function, const float Duration,
+                                                     const bool bIsWhiteFade, const bool bShouldBeTransparent,
+                                                     const float BlendExp, const int32 Steps,
+                                                     const FString& OwnerProcessName, const bool bClearImageOnCompleted,
+                                                     FString& ErrorMessage)
 {
 	if (const FShidenImageFadeParams* FadeParam = ImageFadeParams.Find(ImageName); FadeParam && FadeParam->OwnerProcessName != OwnerProcessName)
 	{
@@ -516,9 +529,9 @@ SHIDENCORE_API bool UShidenWidget::TryStartImageFade(const FString& ImageName, U
 }
 
 SHIDENCORE_API bool UShidenWidget::TryStartFade(const FString& LayerName, const EEasingFunc::Type Function,
-                                             const float Duration, const FLinearColor TargetColor,
-                                             const bool bIsFadeOut, const float BlendExp, const int32 Steps,
-                                             const FString& OwnerProcessName, const int32 ZOrder, FString& ErrorMessage)
+                                                const float Duration, const FLinearColor TargetColor,
+                                                const bool bIsFadeOut, const float BlendExp, const int32 Steps,
+                                                const FString& OwnerProcessName, const int32 ZOrder, FString& ErrorMessage)
 {
 	TObjectPtr<UBorder> FadeWidget = FadeWidgets.FindRef(LayerName);
 	TObjectPtr<UCanvasPanelSlot> CanvasPanelSlot;
@@ -646,11 +659,12 @@ SHIDENCORE_API FString UShidenWidget::MakeMaterialParamsKey(const FString& Targe
 	return FString::Printf(TEXT("%s::%s"), *EscapedTargetName, *EscapedParameterName);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartImageMaterialScalarChange(const FString& ImageName, UPARAM(ref) UImage* Target,
-                                                                  const FName& ParameterName, const EEasingFunc::Type Function,
-                                                                  const float Duration, const float EndValue,
-                                                                  const float BlendExp, const int32 Steps,
-                                                                  const FString& OwnerProcessName, FString& ErrorMessage)
+SHIDENCORE_API bool UShidenWidget::TryStartImageMaterialScalarChange(const FString& ImageName, UPARAM(ref)
+                                                                     UImage* Target,
+                                                                     const FName& ParameterName, const EEasingFunc::Type Function,
+                                                                     const float Duration, const float EndValue,
+                                                                     const float BlendExp, const int32 Steps,
+                                                                     const FString& OwnerProcessName, FString& ErrorMessage)
 {
 	const FString Key = MakeMaterialParamsKey(ImageName, ParameterName.ToString());
 	const FShidenImageMaterialScalarParams* Params = ImageMaterialParams.Find(Key);
@@ -707,10 +721,11 @@ SHIDENCORE_API bool UShidenWidget::IsImageMaterialParameterChangeCompleted(const
 	return !ImageMaterialParams.Contains(Key);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartRetainerBoxMaterialScalarChange(const FString& RetainerBoxName, UPARAM(ref) URetainerBox* Target,
-                                                                        const FName& ParameterName, const EEasingFunc::Type Function,
-                                                                        const float Duration, const float EndValue, const float BlendExp,
-                                                                        const int32 Steps, const FString& OwnerProcessName, FString& ErrorMessage)
+SHIDENCORE_API bool UShidenWidget::TryStartRetainerBoxMaterialScalarChange(const FString& RetainerBoxName, UPARAM(ref)
+                                                                           URetainerBox* Target,
+                                                                           const FName& ParameterName, const EEasingFunc::Type Function,
+                                                                           const float Duration, const float EndValue, const float BlendExp,
+                                                                           const int32 Steps, const FString& OwnerProcessName, FString& ErrorMessage)
 {
 	const FString Key = MakeMaterialParamsKey(RetainerBoxName, ParameterName.ToString());
 	const FShidenRetainerBoxMaterialScalarParams* Params = RetainerBoxMaterialParams.Find(Key);
@@ -766,11 +781,12 @@ SHIDENCORE_API bool UShidenWidget::IsRetainerBoxMaterialParameterChangeCompleted
 	return !RetainerBoxMaterialParams.Contains(Key);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref) UCanvasPanelSlot* Target,
-                                                            const EEasingFunc::Type Function, const float Duration,
-                                                            const bool bChangePosition, const FVector2D EndPosition,
-                                                            const bool bChangeSize, const FVector2D EndSize, const float BlendExp,
-                                                            const int32 Steps, const FString& OwnerProcessName, FString& ErrorMessage)
+SHIDENCORE_API bool UShidenWidget::TryStartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref)
+                                                               UCanvasPanelSlot* Target,
+                                                               const EEasingFunc::Type Function, const float Duration,
+                                                               const bool bChangePosition, const FVector2D EndPosition,
+                                                               const bool bChangeSize, const FVector2D EndSize, const float BlendExp,
+                                                               const int32 Steps, const FString& OwnerProcessName, FString& ErrorMessage)
 {
 	const FShidenCanvasPanelSlotMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelSlotName);
 	if (Params && Params->OwnerProcessName != OwnerProcessName)
@@ -917,7 +933,7 @@ SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const 
 	{
 		Result = Text;
 	}
-	
+
 	int32 NewLineCount = 0;
 	for (const TCHAR& Char : Result)
 	{
@@ -926,7 +942,7 @@ SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const 
 			NewLineCount++;
 		}
 	}
-	
+
 	if (Properties.MaxLength > 0)
 	{
 		Result = Result.Left(Properties.MaxLength + NewLineCount);
@@ -959,19 +975,19 @@ SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESla
 }
 
 SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, const ESlateVisibility NewVisibility,
-                                                       const bool bShouldRegisterScenarioProperty)
+                                                          const bool bShouldRegisterScenarioProperty)
 {
 	if (!IsValid(this) || !AllWidgets.Contains(Name))
 	{
 		return false;
 	}
-	
+
 	const TObjectPtr<UWidget> Widget = AllWidgets[Name];
 	if (!Widget)
 	{
 		return false;
 	}
-	
+
 	Widget->SetVisibility(NewVisibility);
 	if (bShouldRegisterScenarioProperty)
 	{
@@ -1172,6 +1188,6 @@ SHIDENCORE_API bool UShidenWidget::IsTextVisible() const
 			return true;
 		}
 	}
-	
+
 	return false;
 }

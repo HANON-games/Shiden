@@ -49,7 +49,7 @@ struct SHIDENCORE_API FShidenScenarioProgressStack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	FShidenCancelInfo CancelInfo;
-	
+
 	void UpdateCurrentScenarioIndex(const int32 Index)
 	{
 		if (!IsEmpty())

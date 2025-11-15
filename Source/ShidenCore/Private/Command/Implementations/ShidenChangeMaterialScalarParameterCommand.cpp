@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenChangeMaterialScalarParameterCommand.h"
+#include "Command/ShidenCommandHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
@@ -23,7 +24,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenC
 		return false;
 	}
 
-	return TryConvertToEasingFunc(EasingFuncStr, Args.EasingFunction, ErrorMessage);
+	return ShidenCommandHelpers::TryConvertToEasingFunc(EasingFuncStr, Args.EasingFunction, ErrorMessage);
 }
 
 void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
@@ -202,8 +203,8 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 		}
 
 		return ShidenWidget->TryStartImageMaterialScalarChange(Args.TargetName, Image, FName(Args.ParameterName),
-		                                             Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
-		                                             ProcessName, ErrorMessage);
+		                                                       Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
+		                                                       ProcessName, ErrorMessage);
 	}
 
 	if (Args.Target == TEXT("RetainerBox"))
@@ -216,8 +217,8 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 		}
 
 		return ShidenWidget->TryStartRetainerBoxMaterialScalarChange(Args.TargetName, RetainerBox, FName(Args.ParameterName),
-		                                                   Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
-		                                                   ProcessName, ErrorMessage);
+		                                                             Args.EasingFunction, Args.Duration, Args.EndValue, Args.BlendExp, Args.Steps,
+		                                                             ProcessName, ErrorMessage);
 	}
 
 	ErrorMessage = FString::Printf(TEXT("Invalid target type %s."), *Args.Target);
@@ -246,35 +247,4 @@ TTuple<FString, FString, FString> UShidenChangeMaterialScalarParameterCommand::P
 	const FString TargetName = TempArray[1].Replace(TEXT("\\:"), TEXT(":"));
 	const FString ParameterName = TempArray[2].Replace(TEXT("\\:"), TEXT(":"));
 	return TTuple<FString, FString, FString>(TargetType, TargetName, ParameterName);
-}
-
-
-bool UShidenChangeMaterialScalarParameterCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc,
-                                                                         FString& ErrorMessage)
-{
-	static const TMap<FString, EEasingFunc::Type> CurveMap = {
-		{TEXT("linear"), EEasingFunc::Linear},
-		{TEXT("step"), EEasingFunc::Step},
-		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("ease in"), EEasingFunc::EaseIn},
-		{TEXT("ease out"), EEasingFunc::EaseOut},
-		{TEXT("ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("expo in"), EEasingFunc::ExpoIn},
-		{TEXT("expo out"), EEasingFunc::ExpoOut},
-		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("circular in"), EEasingFunc::CircularIn},
-		{TEXT("circular out"), EEasingFunc::CircularOut},
-		{TEXT("circular in out"), EEasingFunc::CircularInOut}
-	};
-
-	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr.ToLower()))
-	{
-		EasingFunc = *FoundCurve;
-		return true;
-	}
-
-	ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EEasingFunc::Type."), *EasingFuncStr);
-	return false;
 }

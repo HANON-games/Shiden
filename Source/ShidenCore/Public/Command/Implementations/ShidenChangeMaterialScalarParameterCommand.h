@@ -52,8 +52,6 @@ class SHIDENCORE_API UShidenChangeMaterialScalarParameterCommand : public UShide
 
 	static TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key);
 
-	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
-
 	static bool TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, float OriginalEndValue, UShidenWidget* ShidenWidget,
 	                               float& ResultValue, FString& ErrorMessage);
 

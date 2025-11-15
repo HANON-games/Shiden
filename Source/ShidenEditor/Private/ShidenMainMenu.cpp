@@ -6,7 +6,7 @@
 
 #define LOCTEXT_NAMESPACE "ShidenNamespace"
 
-void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface *Owner)
+void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 {
 	FToolMenuOwnerScoped OwnerScoped(Owner);
 
@@ -33,7 +33,7 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface *Owner)
 			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
 		}))
 	);
-	
+
 	Section.AddMenuEntry(
 		"OpenShidenDebugger",
 		LOCTEXT("ShidenDebuggerLabel", "Shiden Debugger"),
@@ -49,7 +49,7 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface *Owner)
 			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
 		}))
 	);
-	
+
 	Section.AddMenuEntry(
 		"OpenShidenAssetList",
 		LOCTEXT("ShidenAssetListLabel", "Shiden Asset List"),

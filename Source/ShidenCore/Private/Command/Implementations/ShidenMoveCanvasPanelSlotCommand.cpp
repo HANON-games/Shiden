@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenMoveCanvasPanelSlotCommand.h"
+#include "Command/ShidenCommandHelpers.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
@@ -26,8 +27,8 @@ bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Co
 	{
 		return false;
 	}
-	
-	return TryConvertToEasingFunc(EasingFunctionStr, Args.EasingFunction, ErrorMessage);
+
+	return ShidenCommandHelpers::TryConvertToEasingFunc(EasingFunctionStr, Args.EasingFunction, ErrorMessage);
 }
 
 void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
@@ -45,7 +46,7 @@ void UShidenMoveCanvasPanelSlotCommand::RestoreFromSaveData_Implementation(const
 		{
 			continue;
 		}
-		
+
 		UCanvasPanelSlot* Slot;
 		if (!ShidenWidget->TryFindCanvasPanelSlot(SlotName, Slot))
 		{
@@ -112,7 +113,7 @@ void UShidenMoveCanvasPanelSlotCommand::PreProcessCommand_Implementation(const F
 }
 
 void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-	                                                                  UShidenWidget* ShidenWidget,
+                                                                      UShidenWidget* ShidenWidget,
                                                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                       const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                       FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
@@ -122,12 +123,12 @@ void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FStr
 		Status = EShidenProcessStatus::DelayUntilNextTick;
 		return;
 	}
-	
+
 	FShidenScenarioProperty ScenarioProperty;
 	UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
 	TMap<FString, FString> ScenarioProperties;
 	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
-	
+
 	if (Args.bChangePosition)
 	{
 		ScenarioProperties.Add(TEXT("Position"), Args.EndPosition.ToString());
@@ -188,17 +189,17 @@ bool UShidenMoveCanvasPanelSlotCommand::TryAddCurrentValue(const FMoveCanvasPane
 		ErrorMessage = FString::Printf(TEXT("CanvasPanelSlot %s not found."), *Args.SlotName);
 		return false;
 	}
-	
+
 	FShidenCanvasPanelSlotMoveParams Params;
 	const bool bSuccess = ShidenWidget->TryFindCanvasPanelMoveParams(Args.SlotName, Params);
 
 	ResultPosition += bSuccess && Params.bChangePosition
-					? Params.EndPosition
-					: Slot->GetPosition();
+		                  ? Params.EndPosition
+		                  : Slot->GetPosition();
 
 	ResultSize += bSuccess && Params.bChangeSize
-				? Params.EndSize
-				: Slot->GetSize();
+		              ? Params.EndSize
+		              : Slot->GetSize();
 
 	return true;
 }
@@ -214,8 +215,8 @@ bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelS
 	}
 
 	return ShidenWidget->TryStartCanvasPanelSlotMove(Args.SlotName, Slot, Args.EasingFunction, Args.Duration,
-	                                       Args.bChangePosition, Args.EndPosition, Args.bChangeSize, Args.EndSize,
-	                                       Args.BlendExp, Args.Steps, ProcessName, ErrorMessage);
+	                                                 Args.bChangePosition, Args.EndPosition, Args.bChangeSize, Args.EndSize,
+	                                                 Args.BlendExp, Args.Steps, ProcessName, ErrorMessage);
 }
 
 bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPanelSlotCommandArgs& Args, const UShidenWidget* ShidenWidget,
@@ -243,38 +244,9 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 
 		ScenarioProperties.Add(TEXT("ZOrder"), FString::FromInt(Args.OverwriteZOrder));
-		
+
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("MoveCanvasPanelSlot"), Args.SlotName, ScenarioProperties);
 	}
 
 	return true;
-}
-
-bool UShidenMoveCanvasPanelSlotCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
-{
-	static const TMap<FString, EEasingFunc::Type> EasingFuncMap = {
-		{TEXT("linear"), EEasingFunc::Linear},
-		{TEXT("step"), EEasingFunc::Step},
-		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("ease in"), EEasingFunc::EaseIn},
-		{TEXT("ease out"), EEasingFunc::EaseOut},
-		{TEXT("ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("expo in"), EEasingFunc::ExpoIn},
-		{TEXT("expo out"), EEasingFunc::ExpoOut},
-		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("circular in"), EEasingFunc::CircularIn},
-		{TEXT("circular out"), EEasingFunc::CircularOut},
-		{TEXT("circular in out"), EEasingFunc::CircularInOut}
-	};
-
-	if (const EEasingFunc::Type* Found = EasingFuncMap.Find(EasingFuncStr.ToLower()))
-	{
-		EasingFunc = *Found;
-		return true;
-	}
-
-	ErrorMessage = FString::Printf(TEXT("Easing function %s is not supported."), *EasingFuncStr);
-	return false;
 }

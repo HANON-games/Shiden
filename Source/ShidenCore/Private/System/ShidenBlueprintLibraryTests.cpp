@@ -12,7 +12,7 @@ struct FShidenGetParsedLengthTestParameters
 	}
 
 	FShidenGetParsedLengthTestParameters(const FString& InputText, const int32 ExpectedLength)
-		:InputText(InputText),ExpectedLength(ExpectedLength)
+		: InputText(InputText), ExpectedLength(ExpectedLength)
 	{
 	}
 
@@ -25,12 +25,13 @@ struct FShidenGetParsedLengthTestParameters
 };
 
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(GetParsedLengthTest, "ShidenBlueprintLibrary.GetParsedLength", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
 void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
 {
 	OutBeautifiedNames.Add("PlainText01");
 	FShidenGetParsedLengthTestParameters Params(TEXT("Hello World!"), 12);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("NewLine01");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello\r\nWorld!"), 11);
 	OutTestCommands.Add(Params.ToString());
@@ -58,7 +59,7 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 	OutBeautifiedNames.Add("WaitTag03");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello World!<wait time=\"1.0\"/>"), 12);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("BoldTag01");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello <b>Bold</> World!"), 17);
 	OutTestCommands.Add(Params.ToString());
@@ -82,7 +83,7 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags02");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("Hello <b>bold <wait time=\"1.0\"/><img id=\"value\"/> text</> World!"), 58);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags03");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("<b>Hello bold <wait time=\"1.0\"/><img id=\"value\"/> text World!</>"), 58);
 	OutTestCommands.Add(Params.ToString());
@@ -90,7 +91,7 @@ void GetParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<F
 	OutBeautifiedNames.Add("HtmlEscape01");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;"), 4);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("HtmlEscape02");
 	Params = FShidenGetParsedLengthTestParameters(TEXT("&lt;wait time=\"1.0\"/>"), 18);
 	OutTestCommands.Add(Params.ToString());
@@ -138,7 +139,7 @@ struct FShidenGetCharactersWithParsedLengthTestParameters
 	}
 
 	FShidenGetCharactersWithParsedLengthTestParameters(const FString& OriginalText, const FString& ExpectedText, const int32 Length)
-		:OriginalText(OriginalText), ExpectedText(ExpectedText), Length(Length)
+		: OriginalText(OriginalText), ExpectedText(ExpectedText), Length(Length)
 	{
 	}
 
@@ -165,6 +166,7 @@ struct FShidenGetCharactersWithParsedLengthTestParameters
 };
 
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(GetCharactersWithParsedLengthTest, "ShidenBlueprintLibrary.GetCharactersWithParsedLength", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
 void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
 {
 	OutBeautifiedNames.Add("PlainText01");
@@ -238,7 +240,7 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	OutBeautifiedNames.Add("WaitTag08");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<wait time=\"1.0\"/>Hello World!"), TEXT("<wait time=\"1.0\"/>H"), 1);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("BoldTag01");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<b>Hello World!</>"), TEXT("<b>Hello</>"), 5);
 	OutTestCommands.Add(Params.ToString());
@@ -278,7 +280,7 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	OutBeautifiedNames.Add("IgnoreNestedSelfClosedTags03");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("<b>Hello bold<wait time=\"1.0\"/><img id=\"value\"/>text World!</>"), TEXT("<b>Hello bold<wait time=\"1.0\"/><</>"), 29);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("HtmlEscape01");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;"), 1);
 	OutTestCommands.Add(Params.ToString());
@@ -286,7 +288,7 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	OutBeautifiedNames.Add("HtmlEscape02");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;"), 2);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("HtmlEscape03");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;&lt;"), 3);
 	OutTestCommands.Add(Params.ToString());
@@ -294,7 +296,7 @@ void GetCharactersWithParsedLengthTest::GetTests(TArray<FString>& OutBeautifiedN
 	OutBeautifiedNames.Add("HtmlEscape04");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&quot;&amp;&lt;&gt;test"), TEXT("&quot;&amp;&lt;&gt;"), 4);
 	OutTestCommands.Add(Params.ToString());
-	
+
 	OutBeautifiedNames.Add("HtmlEscape05");
 	Params = FShidenGetCharactersWithParsedLengthTestParameters(TEXT("&lt;wait time=\"1.0\"/>"), TEXT("&lt;wait"), 5);
 	OutTestCommands.Add(Params.ToString());

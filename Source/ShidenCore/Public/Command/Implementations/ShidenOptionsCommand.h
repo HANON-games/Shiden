@@ -16,7 +16,7 @@ class SHIDENCORE_API UShidenOptionsCommand : public UShidenCommandObject
 	{
 		TArray<FString> Options;
 	};
-	
+
 	struct FOptionsCommandArgs
 	{
 		TArray<FOptions> LocalizedOptions;
@@ -42,7 +42,7 @@ class SHIDENCORE_API UShidenOptionsCommand : public UShidenCommandObject
 
 	static bool TrySetupOptions(const FOptionsCommandArgs& Args, UShidenWidget* ShidenWidget, bool bRegisterProperty, FString& ErrorMessage);
 
-	static bool TryUpdateVariable(const FString& VariableName, EShidenVariableKind VariableKind, int32 Value, FString& ErrorMessage);
+	static bool TryUpdateVariable(const FString& ProcessName, const FString& VariableName, EShidenVariableKind VariableKind, int32 Value, FString& ErrorMessage);
 
 	FOptionsCommandArgs Args;
 };

@@ -67,7 +67,8 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	FVector Vector3Value;
 	EShidenVariableType VariableType;
 	if (!UShidenVariableBlueprintLibrary::TryFindVariable(ProcessName, Args.VariableKind, Args.VariableName, VariableType,
-												  bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, ErrorMessage))
+	                                                      bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value,
+	                                                      ErrorMessage))
 	{
 		return false;
 	}

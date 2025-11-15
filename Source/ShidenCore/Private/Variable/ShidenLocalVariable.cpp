@@ -21,7 +21,7 @@ SHIDENCORE_API void FShidenLocalVariable::InitLocalVariable(const FString& Scope
 		UE_LOG(LogTemp, Warning, TEXT("InitLocalVariable failed: Scenario is null for ScopeKey: %s"), *ScopeKey);
 		return;
 	}
-	
+
 	TArray<FShidenVariableDefinition> Definitions = static_cast<TArray<FShidenVariableDefinition>>(Scenario->MacroParameterDefinitions);
 	Definitions.Append(Scenario->LocalVariableDefinitions);
 	Variables.Add(ScopeKey, FShidenVariable(Definitions));

@@ -47,7 +47,7 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 			bSuccess = false;
 			return;
 		}
-		
+
 		StopSound_Implementation(SoundInfo.TrackId, SoundInfo.Type);
 		Duration = 0.0f;
 		bSuccess = true;
@@ -69,7 +69,7 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 		bSuccess = false;
 		return;
 	}
-	
+
 	EShidenSoundType SoundType;
 	UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(SoundAsset, SoundType);
 	if (SoundInfo.Type != SoundType)

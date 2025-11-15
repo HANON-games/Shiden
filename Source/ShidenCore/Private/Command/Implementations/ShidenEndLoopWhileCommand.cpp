@@ -11,15 +11,15 @@ void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& Pr
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
+	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
+	if (!ProgressStack || ProgressStack->IsEmpty())
 	{
 		Status = EShidenProcessStatus::Error;
-		ErrorMessage = TEXT("Failed to find EndLoopWhile command.");
+		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
 		return;
 	}
 
-	const FShidenScenarioProgress ScenarioProgress = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last();
+	const FShidenScenarioProgress ScenarioProgress = ProgressStack->Stack.Last();
 	UShidenScenario* Scenario = nullptr;
 	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioProgress.ScenarioId, Scenario))
 	{
@@ -42,7 +42,7 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndex(const FString& ProcessNam
 		{
 			continue;
 		}
-		if (Command.CommandName == TEXT("LoopWhile"))
+		if (Command.CommandName == TEXT("LoopWhile") || Command.CommandName == TEXT("LoopWhileExpression"))
 		{
 			UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, Index - 1);
 			return true;
@@ -58,7 +58,7 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndex(const FString& ProcessNam
 		}
 	}
 
-	ErrorMessage = TEXT("Failed to find LoopWhile command.");
+	ErrorMessage = TEXT("Failed to find LoopWhile or LoopWhileExpression command.");
 	return false;
 }
 
@@ -72,7 +72,7 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndexWithoutCheckCondition(cons
 		{
 			continue;
 		}
-		if (Command.CommandName == TEXT("LoopWhile"))
+		if (Command.CommandName == TEXT("LoopWhile") || Command.CommandName == TEXT("LoopWhileExpression"))
 		{
 			ResultIndex = Index;
 			return true;
@@ -88,6 +88,6 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndexWithoutCheckCondition(cons
 		}
 	}
 
-	ErrorMessage = TEXT("Failed to find LoopWhile command.");
+	ErrorMessage = TEXT("Failed to find LoopWhile or LoopWhileExpression command.");
 	return false;
 }

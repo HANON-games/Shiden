@@ -98,13 +98,13 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 	{
 		FShidenScenarioProperty ScenarioProperty;
 		UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName,
-		                                                      FString::Printf(TEXT("%s::%s"), *Args.TextWidgetName, *Args.TextType),
-		                                                      ScenarioProperty);
+		                                                         FString::Printf(TEXT("%s::%s"), *Args.TextWidgetName, *Args.TextType),
+		                                                         ScenarioProperty);
 		TArray<FString> PreviousTexts;
 		const FString PreviousText = ScenarioProperty.TryConvertToStringArray(PreviousTexts)
-			? GetTextByLanguageIndex(PreviousTexts, LanguageIndex)
-			: TEXT("");
-		
+			                             ? GetTextByLanguageIndex(PreviousTexts, LanguageIndex)
+			                             : TEXT("");
+
 		CurrentTextIndex = UShidenBlueprintLibrary::GetParsedLength(PreviousText);
 		CurrentTexts.Empty();
 		for (int32 i = 0; i < Args.Texts.Num(); i++)
@@ -326,10 +326,10 @@ bool UShidenTextCommand::ShouldPlayTextBlip(const FString& TextBlipPath, const F
 	{
 		return false;
 	}
-	
+
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	if (IsAssetPathEmpty(VoicePath) && !IsAssetPathEmpty(TextBlipPath))
 	{
 		switch (ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode)
@@ -523,7 +523,7 @@ bool UShidenTextCommand::TryProcessTextBlipPlayback(const FString& TextBlipPath,
 		ErrorMessage = TEXT("Failed to play text blip.");
 		return false;
 	}
-	
+
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
@@ -566,9 +566,8 @@ bool UShidenTextCommand::TryUpdateTextProgress(const FString& TextWidgetName, co
 			return true;
 		}
 
-		const float CharacterWaitTime = bSkipButtonPressed
-			                                ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.
-			                                SkipSpeedRate
+		const float CharacterWaitTime = bSkipButtonPressed && ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate > 0.f
+			                                ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
 			                                : ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime;
 		const int32 NextIndex = FMath::Min(CurrentTextIndex + FMath::CeilToInt32(DeltaTime / CharacterWaitTime), TextLength);
 		TextBlipCharacterCount -= NextIndex - CurrentTextIndex;
@@ -648,10 +647,8 @@ void UShidenTextCommand::OnTextWindowOpenedOrClosed_Implementation()
 
 void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* ShidenWidget)
 {
-	static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
-
 	bool bValue, bSuccess;
-	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
+	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), GetSkipInputAction(), bValue, bSuccess);
 
 	if (ShidenWidget->IsSkipPressed() || (bSuccess && bValue))
 	{
@@ -667,10 +664,8 @@ void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerIn
 
 void UShidenTextCommand::UpdateTalkState(const TScriptInterface<IShidenManagerInterface>& ShidenManager)
 {
-	static const TObjectPtr<UInputAction> NextInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext"));
-
 	bool bValue, bSuccess;
-	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), NextInputAction, bValue, bSuccess);
+	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), GetNextInputAction(), bValue, bSuccess);
 
 	if (bSuccess && bValue)
 	{
@@ -694,9 +689,8 @@ float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 		return ShidenSubsystem->PredefinedSystemVariable.AutoModeWaitTime;
 	}
 
-	const float BaseWaitTime = bSkipButtonPressed
-		                           ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.
-		                           SkipSpeedRate
+	const float BaseWaitTime = bSkipButtonPressed && ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate > 0.f
+		                           ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
 		                           : ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime;
 
 	float WaitTimeFromTag;
@@ -724,9 +718,22 @@ bool UShidenTextCommand::TryGetLanguageIndex(int32& LanguageIndex, FString& Erro
 	return true;
 }
 
-UInputAction* UShidenTextCommand::LoadInputActionFromPath(const FString& Path)
+UInputAction* UShidenTextCommand::GetSkipInputAction() const
 {
-	return Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, *Path));
+	if (!SkipInputAction.IsValid())
+	{
+		return SkipInputAction.LoadSynchronous();
+	}
+	return SkipInputAction.Get();
+}
+
+UInputAction* UShidenTextCommand::GetNextInputAction() const
+{
+	if (!NextInputAction.IsValid())
+	{
+		return NextInputAction.LoadSynchronous();
+	}
+	return NextInputAction.Get();
 }
 
 FString UShidenTextCommand::GetTextByLanguageIndex(const TArray<FString>& Texts, const int32 LanguageIndex)

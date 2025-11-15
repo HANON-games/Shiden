@@ -57,7 +57,7 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Input")
 	void FindShidenAxis3DInput(const UInputAction* InputAction, float& X, float& Y, float& Z, bool& bSuccess);
-	
+
 	/**
 	 * Attempts to play a sound with the specified sound information and settings.
 	 * @param SoundInfo The sound information containing audio file path, track ID, and playback settings

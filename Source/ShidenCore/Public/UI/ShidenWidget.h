@@ -162,7 +162,7 @@ public:
 
 	UFUNCTION()
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
-	
+
 	/**
 	 * Saves the current game state to the specified slot with a thumbnail image.
 	 * @param SlotName The save slot name
@@ -177,7 +177,7 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void SaveGameWithScreenCapture(const FString& SlotName);
-	
+
 	/**
 	 * Captures the current screen content to a 2D texture.
 	 * @param ResultTexture [out] The captured screen texture
@@ -191,7 +191,7 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Widget", meta = (ReturnDisplayName = "Map"))
 	TMap<FString, FString> GetSaveSlotMetadata();
-	
+
 	/**
 	 * Initializes the Shiden widget with the manager interface for normal gameplay.
 	 * @param InShidenManager The Shiden manager interface
@@ -239,7 +239,7 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Media")
 	void OnMediaClicked();
-	
+
 	/**
 	 * Opens the pause menu during media playback.
 	 */
@@ -252,7 +252,7 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Option")
 	void SetOptions(const TArray<FString>& Options);
-	
+
 	/**
 	 * Sets the input mode to text input for receiving typed text from the player.
 	 */
@@ -284,7 +284,7 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintPure, Category = "Shiden Visual Novel|Text Input")
 	FText GetTextInput();
-	
+
 	/**
 	 * Starts a fade animation on the specified layer with customizable easing and timing.
 	 * @param LayerName The name of the layer to apply the fade effect to
@@ -544,14 +544,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Animation")
 	void ResetAllAnimations();
-	
+
 	/**
 	 * Checks if text input has been submitted by the player.
 	 * @return True if text has been submitted
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Text Input")
 	bool IsTextSubmitted() const noexcept;
-	
+
 	/**
 	 * Sanitizes input text according to the specified properties and constraints.
 	 * @param Text The raw input text to sanitize
@@ -607,7 +607,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Widget")
 	void UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget);
-	
+
 	/**
 	 * Checks if any widget in the text layer is currently visible.
 	 * @return True if any widget in the text layer is visible

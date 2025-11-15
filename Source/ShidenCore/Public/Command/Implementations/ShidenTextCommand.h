@@ -93,7 +93,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	int32 TextBlipCharacterCount;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float TotalElapsedTime;
 
@@ -188,7 +188,7 @@ protected:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
 	bool TryFindTextWidget(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, UShidenTextWidget*& TextWidget,
-	                    FString& ErrorMessage);
+	                       FString& ErrorMessage);
 
 	/**
 	 * Parses a property key string to extract text widget name and text type information.
@@ -265,7 +265,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
 	bool TryProcessVoicePlayback(int32 VoiceTrackId, const FString& VoicePath, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                             FString& ErrorMessage);
-	
+
 	/**
 	 * Attempts to process text blip sound effect playback during text display.
 	 * @param TextBlipPath The file path to the text blip audio
@@ -299,7 +299,7 @@ protected:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
 	bool CanTransitionToComplete(const bool bWaitForInput) const;
-	
+
 	/**
 	 * Attempts to preview text content for editor.
 	 * @param ShidenWidget The Shiden widget containing the text widget
@@ -312,7 +312,7 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Command|Text", meta = (BlueprintProtected))
 	bool TryPreviewText(const UShidenWidget* ShidenWidget, const FString& TextWidgetName, const FString& TextType,
-	                           const TArray<FString>& Texts, bool bContinueFromThePreviousText, FString& ErrorMessage);
+	                    const TArray<FString>& Texts, bool bContinueFromThePreviousText, FString& ErrorMessage);
 
 	/**
 	 * Attempts to retrieve the complete text content from a text widget.
@@ -334,6 +334,12 @@ protected:
 private:
 	FTextCommandArgs Args;
 
+	UPROPERTY()
+	TSoftObjectPtr<UInputAction> NextInputAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext")));
+
+	UPROPERTY()
+	TSoftObjectPtr<UInputAction> SkipInputAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip")));
+
 	static void ParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs);
 
 	void UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* ShidenWidget);
@@ -342,9 +348,11 @@ private:
 
 	float CalculateWaitTime(const int32 CurrentIndex);
 
-	static bool TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage);
+	UInputAction* GetSkipInputAction() const;
 
-	static UInputAction* LoadInputActionFromPath(const FString& Path);
+	UInputAction* GetNextInputAction() const;
+
+	static bool TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage);
 
 	static FString GetTextByLanguageIndex(const TArray<FString>& Texts, const int32 LanguageIndex);
 };

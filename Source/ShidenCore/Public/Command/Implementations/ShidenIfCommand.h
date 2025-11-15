@@ -4,22 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
-#include "Scenario/ShidenScenario.h"
-#include "Variable/ShidenVariableKind.h"
+#include "Command/ShidenCommandHelpers.h"
 #include "ShidenIfCommand.generated.h"
 
 UCLASS()
 class SHIDENCORE_API UShidenIfCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
-
-	struct FIfCommandArgs
-	{
-		EShidenVariableKind VariableKind;
-		FString VariableName;
-		FString Operator;
-		FString RightHandValue;
-	};
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
@@ -30,14 +21,9 @@ class SHIDENCORE_API UShidenIfCommand : public UShidenCommandObject
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
-	static bool TryParseCommand(const FShidenCommand& Command, FIfCommandArgs& Args, FString& ErrorMessage);
+	static bool TryExecuteCommand(const FString& ProcessName, const ShidenConditionalCommandHelpers::FVariableConditionArgs& Args, FString& ErrorMessage);
 
-	static bool TryEvaluateCondition(const FIfCommandArgs& Args, const FString& ProcessName, bool& bResult, FString& ErrorMessage);
+	static bool TryExecuteElseIfExpression(const FString& ProcessName, int32 ResultIndex, UShidenScenario* Scenario, FString& ErrorMessage);
 
-	static bool TryExecuteCommand(const FIfCommandArgs& Args, const FString& ProcessName, FString& ErrorMessage);
-
-	static bool TryFindNextElseIfOrElseOrEndIf(int32 StartIndex, const UShidenScenario* Scenario, FString& CommandName, int32& ResultIndex,
-	                                           FString& ErrorMessage);
-
-	FIfCommandArgs Args;
+	ShidenConditionalCommandHelpers::FVariableConditionArgs Args;
 };

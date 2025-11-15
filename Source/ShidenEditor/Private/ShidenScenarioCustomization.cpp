@@ -124,7 +124,7 @@ void FShidenScenarioCustomization::OnNewScenarioClicked() const
 	}
 
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	
+
 	FString SavePackagePath, SaveAssetName;
 	bool bAssetNameWasSet = false;
 

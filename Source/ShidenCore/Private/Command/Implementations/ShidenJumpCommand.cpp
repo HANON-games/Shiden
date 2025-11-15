@@ -19,15 +19,15 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
-	if (!ShidenSubsystem->ScenarioProgressStack.Contains(ProcessName)
-		|| ShidenSubsystem->ScenarioProgressStack[ProcessName].IsEmpty())
+	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
+	if (!ProgressStack || ProgressStack->IsEmpty())
 	{
 		Status = EShidenProcessStatus::Error;
 		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
 		return;
 	}
 
-	const FGuid ScenarioId = ShidenSubsystem->ScenarioProgressStack[ProcessName].Stack.Last().ScenarioId;
+	const FGuid ScenarioId = ProgressStack->Stack.Last().ScenarioId;
 	UShidenScenario* Scenario;
 	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioId, Scenario))
 	{
@@ -54,7 +54,7 @@ bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, const USh
 		ErrorMessage = TEXT("Scenario is null.");
 		return false;
 	}
-	
+
 	for (int32 Index = 0; Index < Scenario->Commands.Num(); Index++)
 	{
 		const FShidenCommand& Command = Scenario->Commands[Index];

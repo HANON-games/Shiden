@@ -28,11 +28,12 @@ It is designed to be simple and flexible, allowing for more than just visual nov
     - The macro function allows you to combine frequently used commands into a single command.
     - Import/export functionality in CSV/JSON format.
 - Various features required for visual novel games
-    - 37 types of basic commands
+    - 41 types of basic commands
     - Basic save functionality
     - Simple variable functionality
         - Includes both variables managed per save slot and system variables.
     - Line-level read tracking
+    - Advanced scenario branching with conditional expressions
     - Parallel processing (strictly speaking, concurrent processing)
     - Simple backlog functionality
     - Simple fade functionality

@@ -24,7 +24,7 @@ public:
 
 	virtual void FindShidenAxis1DInput_Implementation(const UInputAction* InputAction, float& X, bool& bSuccess) override;
 
-	virtual void FindShidenAxis2DInput_Implementation(const UInputAction* InputAction, float& X, float& Y,  bool& bSuccess) override;
+	virtual void FindShidenAxis2DInput_Implementation(const UInputAction* InputAction, float& X, float& Y, bool& bSuccess) override;
 
 	virtual void FindShidenAxis3DInput_Implementation(const UInputAction* InputAction, float& X, float& Y, float& Z, bool& bSuccess) override;
 

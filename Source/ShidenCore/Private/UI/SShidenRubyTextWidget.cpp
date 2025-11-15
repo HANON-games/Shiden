@@ -21,20 +21,20 @@ void SShidenRubyTextWidget::Construct(const FArguments& InArgs)
 	}
 
 	const bool bShouldShowRubyText = !InArgs._RubyText.IsEmpty() && (InArgs._bDisplayRubyOnFirstCharacter || InArgs._bContainsAllBaseText);
-	
+
 	const float CalculatedRubyHeight = InArgs._BaseTextStyle
-		? InArgs._BaseTextStyle->Font.Size * InArgs._SizeCoefficient
-		: 12.0f * InArgs._SizeCoefficient;
+		                                   ? InArgs._BaseTextStyle->Font.Size * InArgs._SizeCoefficient
+		                                   : 12.0f * InArgs._SizeCoefficient;
 
 	constexpr float DefaultFontSize = 12.0f;
 	const float BaseFontSize = InArgs._BaseTextStyle ? InArgs._BaseTextStyle->Font.Size : DefaultFontSize;
 
 	constexpr float RubyHeightPadding = 6.0f;
-	
+
 	ChildSlot
 	[
 		SNew(SOverlay)
-		
+
 		// Ruby text layer (always present but may be collapsed)
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Center)
@@ -47,7 +47,7 @@ void SShidenRubyTextWidget::Construct(const FArguments& InArgs)
 			.Justification(ETextJustify::Center)
 			.Visibility(bShouldShowRubyText ? EVisibility::Visible : EVisibility::Collapsed)
 		]
-		
+
 		// Base text layer - positioned to match hidden reference exactly
 		+ SOverlay::Slot()
 		.HAlign(HAlign_Center)

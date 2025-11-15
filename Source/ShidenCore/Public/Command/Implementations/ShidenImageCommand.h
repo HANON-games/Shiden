@@ -44,8 +44,6 @@ class SHIDENCORE_API UShidenImageCommand : public UShidenCommandObject
 
 	static bool TryParseCommand(const FShidenCommand& Command, FImageCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
-
 	static bool TryShowImage(const FImageCommandArgs& Args, UShidenWidget* ShidenWidget, const bool Animate, const FString& OwnerProcessName,
 	                         FString& ErrorMessage);
 

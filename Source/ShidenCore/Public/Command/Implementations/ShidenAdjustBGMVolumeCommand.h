@@ -35,8 +35,6 @@ class SHIDENCORE_API UShidenAdjustBGMVolumeCommand : public UShidenCommandObject
 
 	static bool TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage);
 
-	static bool TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage);
-
 	FAdjustVolumeCommandArgs Args;
 
 	float ElapsedTime = 0.0f;

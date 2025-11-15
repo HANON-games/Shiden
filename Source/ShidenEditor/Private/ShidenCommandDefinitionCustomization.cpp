@@ -20,10 +20,10 @@ void FShidenCommandDefinitionCustomization::CustomizeHeader(const TSharedRef<IPr
 	CanCallInMacroHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FShidenCommandDefinition, bCanCallInMacro));
 	CommandSoftObjectPathHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FShidenCommandDefinition, CommandSoftObjectPath));
 	ArgsHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FShidenCommandDefinition, Args));
-	
+
 	// Validate that all required property handles were found
-	if (!NoteHandle.IsValid() || !StyleHandle.IsValid() || !CanCallInMacroHandle.IsValid() || 
-	    !CommandSoftObjectPathHandle.IsValid() || !ArgsHandle.IsValid())
+	if (!NoteHandle.IsValid() || !StyleHandle.IsValid() || !CanCallInMacroHandle.IsValid() ||
+		!CommandSoftObjectPathHandle.IsValid() || !ArgsHandle.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to find all required property handles for FShidenCommandDefinition"));
 	}
@@ -38,12 +38,12 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 	{
 		StructBuilder.AddProperty(NoteHandle.ToSharedRef());
 	}
-	
+
 	if (StyleHandle.IsValid())
 	{
 		StructBuilder.AddProperty(StyleHandle.ToSharedRef());
 	}
-	
+
 	if (CanCallInMacroHandle.IsValid())
 	{
 		StructBuilder.AddProperty(CanCallInMacroHandle.ToSharedRef());
@@ -70,23 +70,23 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 					{
 						return true;
 					}
-					
+
 					if (AssetData.GetTagValueRef<FString>("GeneratedClass").IsEmpty())
 					{
 						return !GetCachedDerivedClassNames().Contains(FTopLevelAssetPath(ObjectPath));
 					}
-					
+
 					const FString ParentClassName = AssetData.GetTagValueRef<FString>(FBlueprintTags::ParentClassPath);
 					if (ParentClassName == ShidenEditorConstants::ShidenCommandObjectClassName)
 					{
 						return false;
 					}
-					
+
 					if (ParentClassName.IsEmpty())
 					{
 						return true;
 					}
-					
+
 					if (const UClass* ParentClass = FindObject<UClass>(nullptr, *ParentClassName))
 					{
 						ParentClass = ParentClass->GetSuperClass();

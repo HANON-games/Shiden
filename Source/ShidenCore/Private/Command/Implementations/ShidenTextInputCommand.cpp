@@ -102,9 +102,9 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 	}
 
 	if (!UShidenVariableBlueprintLibrary::TryUpdateVariable(ShidenWidget, ProcessName, Args.DestinationVariableKind,
-													Args.DestinationType, Args.DestinationVariableName, ResultText.ToBool(),
-													ResultText, FCString::Atoi(*ResultText),
-													FCString::Atof(*ResultText), Vector2Value, Vector3Value, ErrorMessage))
+	                                                        Args.DestinationType, Args.DestinationVariableName, ResultText.ToBool(),
+	                                                        ResultText, FCString::Atoi(*ResultText),
+	                                                        FCString::Atof(*ResultText), Vector2Value, Vector3Value, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
@@ -163,9 +163,9 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 	}
 
 	const bool bSuccess = UShidenVariableBlueprintLibrary::TryUpdateVariable(ShidenWidget, TEXT("Default"), Args.DestinationVariableKind,
-	                                                Args.DestinationType, Args.DestinationVariableName, SampleText.ToBool(),
-	                                                SampleText, FCString::Atoi(*SampleText),
-	                                                FCString::Atof(*SampleText), Vector2Value, Vector3Value, ErrorMessage);
+	                                                                         Args.DestinationType, Args.DestinationVariableName, SampleText.ToBool(),
+	                                                                         SampleText, FCString::Atoi(*SampleText),
+	                                                                         FCString::Atof(*SampleText), Vector2Value, Vector3Value, ErrorMessage);
 
 	Status = bSuccess ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }

@@ -19,6 +19,4 @@ class SHIDENCORE_API UShidenElseIfCommand : public UShidenCommandObject
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
-
-	static bool TryFindEndIfIndex(const FString& ProcessName, FString& ErrorMessage);
 };
