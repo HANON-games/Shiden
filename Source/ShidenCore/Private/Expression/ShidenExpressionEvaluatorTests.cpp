@@ -2201,6 +2201,32 @@ void ShidenExpressionEvaluatorEdgeCaseTest::GetTests(TArray<FString>& OutBeautif
 
 	OutBeautifiedNames.Add("MixedVector2And3_ShouldFail");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("[1,2] + [1,2,3]"), TEXT(""), false).ToString());
+
+	// Shift operation boundary tests
+	OutBeautifiedNames.Add("LeftShiftNegativeAmount_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 << -1"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("RightShiftNegativeAmount_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 >> -1"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("LeftShiftOverBitWidth_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 << 32"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("RightShiftOverBitWidth_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 >> 32"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("LeftShiftLargeAmount_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("1 << 100"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("RightShiftLargeAmount_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("1 >> 100"), TEXT(""), false).ToString());
+
+	// Edge cases: shift by 31 (maximum valid shift for int32) should succeed
+	OutBeautifiedNames.Add("LeftShift_MaxValidAmount");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("1 << 31"), TEXT("-2147483648")).ToString());
+
+	OutBeautifiedNames.Add("RightShift_MaxValidAmount");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("-2147483648 >> 31"), TEXT("-1")).ToString());
 }
 
 bool ShidenExpressionEvaluatorEdgeCaseTest::RunTest(const FString& Parameters)

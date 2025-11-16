@@ -87,12 +87,23 @@ public:
 	/**
 	 * Validates an expression without evaluating it.
 	 *
+	 * @param ProcessName The process name (use "Default" if unsure)
 	 * @param Expression The expression to validate
 	 * @param ErrorMessage [out] Error message if validation failed
 	 * @return True if the expression is valid
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Expression", meta = (DisplayName = "Validate Expression"))
-	static UPARAM(DisplayName = "Success") bool TryValidateExpression(const FString& Expression, FString& ErrorMessage);
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Expression", meta = (ProcessName = "Default", DisplayName = "Validate Expression"))
+	static UPARAM(DisplayName = "Success") bool TryValidateExpression(const FString& ProcessName, const FString& Expression, FString& ErrorMessage);
+
+	/**
+	 * Validates an expression without evaluating it and without variable substitution.
+	 *
+	 * @param Expression The expression to validate
+	 * @param ErrorMessage [out] Error message if validation failed
+	 * @return True if the expression is valid
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Expression", meta = (DisplayName = "Validate Expression Raw"))
+	static UPARAM(DisplayName = "Success") bool TryValidateExpressionRaw(const FString& Expression, FString& ErrorMessage);
 
 	/**
 	 * Evaluates an expression and returns an integer result without variable substitution.
@@ -164,4 +175,6 @@ private:
 	static FString ReplaceVariablesInExpression(const FString& ProcessName, const FString& Expression);
 
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
+
+	static FString EscapeStringForExpression(const FString& StringValue);
 };

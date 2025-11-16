@@ -35,7 +35,12 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionVector3(const FStri
 	return TryEvaluateExpressionVector3Raw(ReplaceVariablesInExpression(ProcessName, Expression), Result, ErrorMessage);
 }
 
-bool UShidenExpressionBlueprintLibrary::TryValidateExpression(const FString& Expression, FString& ErrorMessage)
+bool UShidenExpressionBlueprintLibrary::TryValidateExpression(const FString& ProcessName, const FString& Expression, FString& ErrorMessage)
+{
+	return TryValidateExpressionRaw(ReplaceVariablesInExpression(ProcessName, Expression), ErrorMessage);
+}
+
+bool UShidenExpressionBlueprintLibrary::TryValidateExpressionRaw(const FString& Expression, FString& ErrorMessage)
 {
 	return FShidenExpressionEvaluator::TryValidate(Expression, ErrorMessage);
 }
@@ -213,8 +218,8 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 						FString StringValue;
 						if (ShidenSubsystem->UserVariable.TryGet(VariableDefinition.Name, StringValue))
 						{
-							// 文字列をダブルクオーテーションで囲む
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *StringValue);
+							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
+							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
 						}
 						else
 						{
@@ -276,8 +281,8 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 						FString StringValue;
 						if (ShidenSubsystem->SystemVariable.TryGet(VariableDefinition.Name, StringValue))
 						{
-							// 文字列をダブルクオーテーションで囲む
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *StringValue);
+							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
+							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
 						}
 						else
 						{
@@ -341,8 +346,8 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 						FString StringValue;
 						if (ShidenSubsystem->LocalVariable.TryGet(ScopeKey, VariableDefinition.Name, StringValue))
 						{
-							// 文字列をダブルクオーテーションで囲む
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *StringValue);
+							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
+							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
 						}
 						else
 						{
@@ -370,10 +375,10 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			{
 				ReplacementText = TEXT("Error");
 			}
-			// 文字列型の場合はダブルクオーテーションで囲む
+			// 文字列型の場合はダブルクオーテーションで囲む（特殊文字をエスケープ）
 			else if (Type == EShidenVariableType::String)
 			{
-				ReplacementText = FString::Printf(TEXT("\"%s\""), *ReplacementText);
+				ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(ReplacementText));
 			}
 		}
 		else
@@ -385,4 +390,13 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 	}
 
 	return ResultText;
+}
+
+FString UShidenExpressionBlueprintLibrary::EscapeStringForExpression(const FString& StringValue)
+{
+	FString EscapedString = StringValue;
+	// Must escape backslashes first, then quotes
+	EscapedString.ReplaceInline(TEXT("\\"), TEXT("\\\\"));
+	EscapedString.ReplaceInline(TEXT("\""), TEXT("\\\""));
+	return EscapedString;
 }
