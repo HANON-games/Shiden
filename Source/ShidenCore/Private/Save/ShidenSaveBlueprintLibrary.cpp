@@ -436,7 +436,7 @@ void UShidenSaveBlueprintLibrary::DeletePredefinedSystemData()
 bool UShidenSaveBlueprintLibrary::DoesAnyUserDataExist()
 {
 	WaitUntilEmpty();
-	
+
 	return DoesSaveSlotsExist() && AcquireSaveSlots().Num() > 0;
 }
 

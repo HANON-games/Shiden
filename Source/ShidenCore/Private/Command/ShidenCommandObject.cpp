@@ -22,10 +22,11 @@ SHIDENCORE_API void UShidenCommandObject::PreviewCommand_Implementation(const FS
 	ErrorMessage = FString();
 }
 
-SHIDENCORE_API void UShidenCommandObject::PreProcessCommand_Implementation(
-	const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-	const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
-	EShidenPreProcessStatus& Status, FString& ErrorMessage)
+SHIDENCORE_API void UShidenCommandObject::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                           UShidenWidget* ShidenWidget,
+                                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                           UObject* CallerObject, EShidenPreProcessStatus& Status,
+                                                                           FString& ErrorMessage)
 {
 	Status = EShidenPreProcessStatus::Complete;
 	ErrorMessage = FString();

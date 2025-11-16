@@ -19,7 +19,7 @@ SHIDENCORE_API void UShidenTextWidget::GetFullText_Implementation(const FString&
 		bSuccess = true;
 		return;
 	}
-	
+
 	Text = TEXT("");
 	bSuccess = false;
 }
@@ -63,7 +63,7 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 	}
 
 	CurrentLength = Length;
-	
+
 	FString ParsedText = UShidenBlueprintLibrary::GetCharactersWithParsedLength(RawText, Length);
 	const int32 ParsedLength = UShidenBlueprintLibrary::GetParsedLength(RawText);
 
@@ -76,7 +76,7 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 			ParsedText = ParsedText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
 		}
 	}
-	
+
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
 		RichTextBlock->SetText(FText::FromString(ParsedText));
@@ -147,7 +147,6 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 
 	if (const TObjectPtr<URichTextBlock> RichTextBlock = RichTextBlocks.FindRef(TextType))
 	{
-		
 		RichTextBlock->SetText(FText::FromString(ResultText));
 		bSuccess = true;
 		return;

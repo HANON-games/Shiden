@@ -18,7 +18,7 @@ class SHIDENCORE_API UShidenChangeMaterialTextureParameterCommand : public UShid
 		FString ParameterName;
 		FString TexturePath;
 	};
-	
+
 	UShidenChangeMaterialTextureParameterCommand();
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
@@ -36,7 +36,7 @@ class SHIDENCORE_API UShidenChangeMaterialTextureParameterCommand : public UShid
 
 	static void ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args);
 
-	static bool TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage);
+	bool TryGetOrLoadTexture(UTexture*& Texture, FString& ErrorMessage) const;
 
 	static bool TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* ShidenWidget, UTexture* Texture,
 	                                      FString& ErrorMessage);

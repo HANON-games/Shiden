@@ -70,7 +70,7 @@ public:
 	void AddOption(const FString& Option);
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
-	bool RemoveOption(const FString& Option);
+	UPARAM(DisplayName = "Success") bool TryRemoveOption(const FString& Option);
 
 	UFUNCTION(BlueprintCallable, Category = "ComboBox")
 	int32 FindOptionIndex(const FString& Option) const;

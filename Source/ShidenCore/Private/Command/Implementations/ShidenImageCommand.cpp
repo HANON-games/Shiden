@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenImageCommand.h"
+#include "Command/ShidenCommandHelpers.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Slate/SlateBrushAsset.h"
@@ -19,7 +20,7 @@ bool UShidenImageCommand::TryParseCommand(const FShidenCommand& Command, FImageC
 	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
 	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
-	return TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
+	return ShidenCommandHelpers::TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
 void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
@@ -93,7 +94,7 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
 		}
-		
+
 		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 		{
 			FVector2D Position;
@@ -159,9 +160,9 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(Command.CommandName, Args.SlotName, ScenarioProperty);
 	TMap<FString, FString> ScenarioProperties;
 	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
-	
+
 	ScenarioProperties.Add(TEXT("Path"), Args.ImagePath);
-	
+
 	const bool bImagePathIsEmpty = Args.ImagePath.IsEmpty() || Args.ImagePath == TEXT("None");
 	const FLinearColor ResultColor(1.f, 1.f, 1.f, bImagePathIsEmpty ? 0.f : 1.f);
 	ScenarioProperties.Add(TEXT("Color"), ResultColor.ToString());
@@ -265,35 +266,6 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 	}
 
 	return ShidenWidget->TryStartImageFade(Args.SlotName, Image, Args.FadeFunction, Animate ? Args.FadeDuration : 0.0f,
-	                             true, bImagePathIsEmpty, Args.BlendExp, Args.Steps, OwnerProcessName, bImagePathIsEmpty,
-	                             ErrorMessage);
-}
-
-bool UShidenImageCommand::TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage)
-{
-	static const TMap<FString, EEasingFunc::Type> CurveMap = {
-		{TEXT("linear"), EEasingFunc::Linear},
-		{TEXT("step"), EEasingFunc::Step},
-		{TEXT("sinusoidal in"), EEasingFunc::SinusoidalIn},
-		{TEXT("sinusoidal out"), EEasingFunc::SinusoidalOut},
-		{TEXT("sinusoidal in out"), EEasingFunc::SinusoidalInOut},
-		{TEXT("ease in"), EEasingFunc::EaseIn},
-		{TEXT("ease out"), EEasingFunc::EaseOut},
-		{TEXT("ease in out"), EEasingFunc::EaseInOut},
-		{TEXT("expo in"), EEasingFunc::ExpoIn},
-		{TEXT("expo out"), EEasingFunc::ExpoOut},
-		{TEXT("expo in out"), EEasingFunc::ExpoInOut},
-		{TEXT("circular in"), EEasingFunc::CircularIn},
-		{TEXT("circular out"), EEasingFunc::CircularOut},
-		{TEXT("circular in out"), EEasingFunc::CircularInOut}
-	};
-
-	if (const EEasingFunc::Type* FoundCurve = CurveMap.Find(EasingFuncStr.ToLower()))
-	{
-		EasingFunc = *FoundCurve;
-		return true;
-	}
-
-	ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EEasingFunc::Type."), *EasingFuncStr);
-	return false;
+	                                       true, bImagePathIsEmpty, Args.BlendExp, Args.Steps, OwnerProcessName, bImagePathIsEmpty,
+	                                       ErrorMessage);
 }

@@ -20,12 +20,12 @@ namespace ShidenEditorConstants
 	static const FName MainFrameModuleName = TEXT("MainFrame");
 	static const FName ContentBrowserModuleName = TEXT("ContentBrowser");
 	static const FName AssetRegistryModuleName = TEXT("AssetRegistry");
-	
+
 	// Asset Paths and Class Names
 	static const FString EnginePathPrefix = TEXT("/Engine/");
 	static const FString ShidenCommandObjectClassName = TEXT("/Script/CoreUObject.Class'/Script/ShidenCore.ShidenCommandObject'");
 	static const FString ShidenCommandObjectName = TEXT("ShidenCommandObject");
-	
+
 	// Plugin Paths
 	static const FString PluginRelativePath = TEXT("Shiden/Shiden.uplugin");
 

@@ -40,7 +40,7 @@ SHIDENCORE_API bool FShidenVariable::CanUpdate(const FString& Name, const EShide
 	return true;
 }
 
-template<typename T>
+template <typename T>
 bool FShidenVariable::TryUpdateImpl(const FString& Name, const T& Value, const EShidenVariableType Type, TMap<FString, T>& VariableMap, const bool bForceUpdateReadOnly)
 {
 	if (CanUpdate(Name, Type, bForceUpdateReadOnly))
@@ -103,7 +103,7 @@ SHIDENCORE_API bool FShidenVariable::CanGet(const FShidenVariableDefinition* Def
 	return true;
 }
 
-template<typename T>
+template <typename T>
 bool FShidenVariable::TryGetImpl(const FString& Name, T& Value, const EShidenVariableType Type, const TMap<FString, T>& VariableMap) const
 {
 	FShidenVariableDefinition Definition;
@@ -124,39 +124,39 @@ bool FShidenVariable::TryGetImpl(const FString& Name, T& Value, const EShidenVar
 		return true;
 	}
 
-	return GetDefaultValue(Definition.DefaultValue, Value);
+	return TryGetDefaultValue(Definition.DefaultValue, Value);
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, bool& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, bool& Value)
 {
 	Value = DefaultValue == TEXT("true");
 	return true;
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, int32& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, int32& Value)
 {
 	Value = FCString::Atoi(*DefaultValue);
 	return true;
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, float& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, float& Value)
 {
 	Value = FCString::Atof(*DefaultValue);
 	return true;
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, FString& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, FString& Value)
 {
 	Value = DefaultValue;
 	return true;
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, FVector& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, FVector& Value)
 {
 	return Value.InitFromString(DefaultValue);
 }
 
-FORCEINLINE bool FShidenVariable::GetDefaultValue(const FString& DefaultValue, FVector2D& Value)
+FORCEINLINE bool FShidenVariable::TryGetDefaultValue(const FString& DefaultValue, FVector2D& Value)
 {
 	return Value.InitFromString(DefaultValue);
 }
@@ -251,6 +251,9 @@ SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShiden
 			}
 			return false;
 		}
+	default:
+		UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Type), *Name);
+		return false;
 	}
 	return false;
 }
@@ -290,6 +293,9 @@ SHIDENCORE_API bool FShidenVariable::TryReset(const FString& Name)
 		case EShidenVariableType::Vector3:
 			Vector3Variables.Remove(Name);
 			break;
+		default:
+			UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Definition.Type), *Name);
+			return false;
 		}
 		return true;
 	}
@@ -363,6 +369,9 @@ SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescr
 					Value = Vector3Value.ToString();
 					break;
 				}
+			default:
+				UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Definition.Type), *Name);
+				break;
 			}
 			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Definition.AssetPathType, Value, Definition.DefaultValue,
 			                                                  Definition.bIsReadOnly));

@@ -57,7 +57,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game", meta = (DisplayName = "Save Predefined System Data"))
 	static UPARAM(DisplayName = "Success") bool TrySavePredefinedSystemData();
-	
+
 	/**
 	 * Asynchronously saves user data to a specified save slot.
 	 * 
@@ -174,7 +174,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
 	static bool DoesPredefinedSystemDataExist();
-	
+
 	/**
 	 * Clears all loaded system data from memory.
 	 */

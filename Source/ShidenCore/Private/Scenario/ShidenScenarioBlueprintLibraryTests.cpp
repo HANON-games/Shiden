@@ -2,9 +2,11 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(RegisterScenarioPropertyFromArrayTest, "ShidenScenarioBlueprintLibrary.RegisterScenarioPropertyFromArray", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
 bool RegisterScenarioPropertyFromArrayTest::RunTest(const FString& Parameters)
 {
-	auto TestArrayToJsonString = [this](const TArray<FString>& TestArray) {
+	auto TestArrayToJsonString = [this](const TArray<FString>& TestArray)
+	{
 		// Arrange
 		FString JsonString;
 		UShidenScenarioBlueprintLibrary::ClearScenarioProperties(TEXT("TEST"));
@@ -40,18 +42,20 @@ bool RegisterScenarioPropertyFromArrayTest::RunTest(const FString& Parameters)
 			}
 		}
 	};
-	
-	TestArrayToJsonString({ TEXT("Hello"), TEXT("World"), TEXT("!") });
-	TestArrayToJsonString({ TEXT("newLine\nTest"), TEXT("newLine\r\nTest"), TEXT("!") });
+
+	TestArrayToJsonString({TEXT("Hello"), TEXT("World"), TEXT("!")});
+	TestArrayToJsonString({TEXT("newLine\nTest"), TEXT("newLine\r\nTest"), TEXT("!")});
 	TestArrayToJsonString({});
-	
+
 	return true;
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(RegisterScenarioPropertyFromMapTest, "ShidenScenarioBlueprintLibrary.RegisterScenarioPropertyFromMap", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
 bool RegisterScenarioPropertyFromMapTest::RunTest(const FString& Parameters)
 {
-	auto TestMapToJsonString = [this](const TMap<FString, FString>& TestMap) {
+	auto TestMapToJsonString = [this](const TMap<FString, FString>& TestMap)
+	{
 		// Arrange
 		FString JsonString;
 		UShidenScenarioBlueprintLibrary::ClearScenarioProperties(TEXT("TEST"));
@@ -60,7 +64,7 @@ bool RegisterScenarioPropertyFromMapTest::RunTest(const FString& Parameters)
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("TEST"), TEXT("Key"), TestMap);
 		FShidenScenarioProperty ResultProperty;
 		bool bResult = UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("TEST"), TEXT("Key"), ResultProperty);
-		
+
 		// Assert
 		if (!bResult)
 		{
@@ -92,10 +96,10 @@ bool RegisterScenarioPropertyFromMapTest::RunTest(const FString& Parameters)
 			}
 		}
 	};
-	
-	TestMapToJsonString({ { TEXT("Arg1"), TEXT("Hello") }, { TEXT("Arg2"), TEXT("World") }, { TEXT("Arg3"), TEXT("!") } });
-	TestMapToJsonString({ { TEXT("Arg1"), TEXT("newLine\nTest") }, { TEXT("Arg2"), TEXT("newLine\r\nTest") }, { TEXT("Arg3"), TEXT("!") } });
+
+	TestMapToJsonString({{TEXT("Arg1"), TEXT("Hello")}, {TEXT("Arg2"), TEXT("World")}, {TEXT("Arg3"), TEXT("!")}});
+	TestMapToJsonString({{TEXT("Arg1"), TEXT("newLine\nTest")}, {TEXT("Arg2"), TEXT("newLine\r\nTest")}, {TEXT("Arg3"), TEXT("!")}});
 	TestMapToJsonString({});
-	
+
 	return true;
 }

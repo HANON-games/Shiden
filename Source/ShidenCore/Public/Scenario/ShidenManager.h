@@ -27,10 +27,10 @@ public:
 
 	virtual void FindShidenAxis1DInput_Implementation(const UInputAction* InputAction, float& X, bool& bSuccess) override;
 
-	virtual void FindShidenAxis2DInput_Implementation(const UInputAction* InputAction, float& X, float& Y,  bool& bSuccess) override;
+	virtual void FindShidenAxis2DInput_Implementation(const UInputAction* InputAction, float& X, float& Y, bool& bSuccess) override;
 
 	virtual void FindShidenAxis3DInput_Implementation(const UInputAction* InputAction, float& X, float& Y, float& Z, bool& bSuccess) override;
-	
+
 	virtual void PlaySound_Implementation(const FShidenSoundInfo& SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess) override;
 
 	virtual void StopSound_Implementation(const int32& TrackId, const EShidenSoundType Type) override;
@@ -74,10 +74,10 @@ private:
 
 	UPROPERTY()
 	TArray<UAudioComponent*> SEComponents;
-	
+
 	UPROPERTY()
 	TMap<int32, UAudioComponent*> VoiceComponents;
-	
+
 	UPROPERTY()
 	TArray<TScriptInterface<IShidenParallelProcessManagerInterface>> ParallelProcessManagers;
 };

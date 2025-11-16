@@ -14,15 +14,17 @@ class SHIDENCORE_API SShidenRubyTextWidget final : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SShidenRubyTextWidget)
-		: _BaseText(FText::GetEmpty())
-		, _RubyText(FText::GetEmpty())
-		, _BaseTextStyle(nullptr)
-		, _RubyTextStyle(nullptr)
-		, _SizeCoefficient(0.1f)
-		, _OffsetCoefficient(-0.05f)
-		, _bContainsAllBaseText(false)
-		, _bDisplayRubyOnFirstCharacter(false)
-	{}
+			: _BaseText(FText::GetEmpty())
+			  , _RubyText(FText::GetEmpty())
+			  , _BaseTextStyle(nullptr)
+			  , _RubyTextStyle(nullptr)
+			  , _SizeCoefficient(0.1f)
+			  , _OffsetCoefficient(-0.05f)
+			  , _bContainsAllBaseText(false)
+			  , _bDisplayRubyOnFirstCharacter(false)
+		{
+		}
+
 		SLATE_ARGUMENT(FText, BaseText)
 		SLATE_ARGUMENT(FText, RubyText)
 		SLATE_ARGUMENT(const FTextBlockStyle*, BaseTextStyle)
@@ -34,7 +36,7 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-	
+
 protected:
 	TSharedPtr<STextBlock> BaseTextBlock;
 	TSharedPtr<STextBlock> RubyTextBlock;

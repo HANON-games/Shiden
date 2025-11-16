@@ -45,14 +45,14 @@ SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Tex
 				i += 3;
 				continue;
 			}
-			
+
 			if (Temp.StartsWith(TEXT("amp;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
 				i += 4;
 				continue;
 			}
-			
+
 			if (Temp.StartsWith(TEXT("quot;")))
 			{
 				ResultText.AppendChar(TEXT('a'));
@@ -195,7 +195,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 				ResultLen += 5;
 			}
 		}
-		
+
 		for (const FTextPosition& Tag : Pos)
 		{
 			if (!bIsInTag && Tag.OpenTagStart == ResultLen)
@@ -219,7 +219,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 				break;
 			}
 		}
-		
+
 		if (!bIsInTag)
 		{
 			for (const FTextPosition& WaitTag : WaitTagPos)
@@ -231,7 +231,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 				}
 			}
 		}
-		
+
 		ResultLen++;
 		do
 		{
@@ -316,7 +316,7 @@ SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath
 	{
 		return nullptr;
 	}
-	
+
 	if (AssetPathString.StartsWith(TEXT("/Script/")))
 	{
 		return StaticLoadClass(UObject::StaticClass(), nullptr, *AssetPathString, nullptr, LOAD_None, nullptr);
@@ -455,7 +455,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const 
 		UE_LOG(LogTemp, Warning, TEXT("SoundBase is null"));
 		return false;
 	}
-	
+
 	const TObjectPtr<USoundClass> SoundClass = SoundBase->GetSoundClass();
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	const TObjectPtr<USoundClass> BGMSoundClass = ProjectConfig->GetBGMSoundClass();
@@ -473,7 +473,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const 
 		SoundType = EShidenSoundType::SE;
 		return true;
 	}
-	
+
 	if (SoundClass == VoiceSoundClass || VoiceSoundClass->ChildClasses.Contains(SoundClass))
 	{
 		SoundType = EShidenSoundType::Voice;

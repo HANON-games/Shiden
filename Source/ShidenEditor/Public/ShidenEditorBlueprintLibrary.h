@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "ShidenCsvParsedRow.h"
 #include "ShidenScenarioStruct.h"
-#include "Variable/ShidenPredefinedSystemVariableDefinition.h"
 #include "Variable/ShidenVariableDescriptor.h"
 #include "ShidenCommandRedirector.h"
 #include "ShidenPluginVersion.h"

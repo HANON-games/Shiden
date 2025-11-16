@@ -11,11 +11,11 @@ class SHIDENEDITOR_API UShidenAddNewContextMenu : public UToolMenuEntryScript
 	GENERATED_BODY()
 
 public:
-	static void RegisterMenuExtensions(IModuleInterface *Owner);
+	static void RegisterMenuExtensions(IModuleInterface* Owner);
 
 private:
 	static UObject* CreateAsset(const FString& Path, const FString& NewAssetName);
-	
+
 	static UObject* CreateAssetFromClass(UClass* AssetClass, const FString& NewAssetName);
 
 	static bool TryDecideNewPackageName(const FString& NewAssetName, FString& OutAssetPath);

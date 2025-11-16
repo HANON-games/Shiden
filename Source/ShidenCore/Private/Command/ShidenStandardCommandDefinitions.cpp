@@ -145,7 +145,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("TextNoteKey",
-				                  "You can insert variable values using { variable_name }.\r\nIf \":\" is included in the variable name, escape it as \"\\:\".\r\nThe prefixes for variables are as follows:\r\n* \"System::\": System variables\r\n* \"Local::\": Local variables\r\n* \"Predefined::\": Predefined system variables\r\nThe track ID for Voice will be 0.\r\nIf both Voice and DialogueBlip are specified, Voice takes precedence."),
+				                "You can insert variable values using { variable_name }.\r\nIf \":\" is included in the variable name, escape it as \"\\:\".\r\nThe prefixes for variables are as follows:\r\n* \"System::\": System variables\r\n* \"Local::\": Local variables\r\n* \"Predefined::\": Predefined system variables\r\nThe track ID for Voice will be 0.\r\nIf both Voice and DialogueBlip are specified, Voice takes precedence."),
 				.Style = TextStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenTextCommand")),
@@ -311,7 +311,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("ImageNoteKey",
-				                  "If no image is specified, the values of Position, Size,\r\nand SizeToContent are ignored, and the current image fades out.\r\nSteps is used only when the FadeFunction is Step.\r\nBlend Exp is used only when the FadeFunction is Ease.\r\nFor SlateBrush created from Material, fading does not work,\r\nso please change the opacity separately."),
+				                "If no image is specified, the values of Position, Size,\r\nand SizeToContent are ignored, and the current image fades out.\r\nSteps is used only when the FadeFunction is Step.\r\nBlend Exp is used only when the FadeFunction is Ease.\r\nFor SlateBrush created from Material, fading does not work,\r\nso please change the opacity separately."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenImageCommand")),
@@ -405,7 +405,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("SoundNoteKey",
-				                  "Track ID is not effective for SE.\r\nYou cannot stop a playing SE midway.\r\nYou can stop it by leaving the sound source field empty.\r\nThe value for DisableAutoStopPreviousVoices is only effective for Voice.\r\nWhen fading out the currently playing BGM or voice, the values of Volume and Pitch are ignored.\r\nFor MetaSound Source, it seems that the Start Time value is not reflected."),
+				                "Track ID is not effective for SE.\r\nYou cannot stop a playing SE midway.\r\nYou can stop it by leaving the sound source field empty.\r\nThe value for DisableAutoStopPreviousVoices is only effective for Voice.\r\nWhen fading out the currently playing BGM or voice, the values of Volume and Pitch are ignored.\r\nFor MetaSound Source, it seems that the Start Time value is not reflected."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenSoundCommand")),
@@ -566,8 +566,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Options"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("OptionsNoteKey",
-				                  "Only Integer type variables can be specified for DestinationVariableName."),
+				.Note = LOCTEXT("OptionsNoteKey", "Only Integer type variables can be specified for DestinationVariableName."),
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenOptionsCommand")),
@@ -1009,7 +1008,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("TextInputNoteKey",
-				                  "You can input patterns like the following in AllowedCharacterRegex.\r\n- Allow only numbers: [0-9]\r\n- Allow only abc: [abc]\r\n- Allow anything except numbers: [^0-9]"),
+				                "You can input patterns like the following in AllowedCharacterRegex.\r\n- Allow only numbers: [0-9]\r\n- Allow only abc: [abc]\r\n- Allow anything except numbers: [^0-9]"),
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenTextInputCommand")),
@@ -1129,6 +1128,47 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			}
 		},
 		{
+			TEXT("AssignExpression"),
+			FShidenCommandDefinition
+			{
+				.Note = LOCTEXT("AssignExpressionNoteKey",
+				                "Assigns the result of evaluating an expression to a variable.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				.Style = DataStyle,
+				.bCanCallInMacro = true,
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAssignExpressionCommand")),
+				.Args =
+				{
+					{
+						TEXT("VariableKind"),
+						LOCTEXT("VariableKindKey", "VariableKind"),
+						TEXT("UserVariable"),
+						VariableKindInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("VariableName"),
+						LOCTEXT("VariableNameKey", "VariableName"),
+						TEXT(""),
+						VariableNameInputTemplate,
+						{
+							{TEXT("VariableKindSourceIndex"), TEXT("0")},
+							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
+						},
+						false
+					},
+					{
+						TEXT("Expression"),
+						LOCTEXT("ExpressionKey", "Expression"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					}
+				}
+			}
+		},
+		{
 			TEXT("Calculation"),
 			FShidenCommandDefinition
 			{
@@ -1186,6 +1226,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("If"),
 			FShidenCommandDefinition
 			{
+				.Note = LOCTEXT("IfNoteKey", "Evaluates an expression and branches the process based on the result."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenIfCommand")),
@@ -1236,6 +1277,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("ElseIf"),
 			FShidenCommandDefinition
 			{
+				.Note = LOCTEXT("ElseIfNoteKey", "Evaluates an expression and branches the process based on the result."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenElseIfCommand")),
@@ -1283,6 +1325,50 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			}
 		},
 		{
+			TEXT("IfExpression"),
+			FShidenCommandDefinition
+			{
+				.Note = LOCTEXT("IfExpressionNoteKey",
+				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				.Style = FlowControlStyle,
+				.bCanCallInMacro = true,
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenIfExpressionCommand")),
+				.Args =
+				{
+					{
+						TEXT("Expression"),
+						LOCTEXT("ExpressionKey", "Expression"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					}
+				}
+			}
+		},
+		{
+			TEXT("ElseIfExpression"),
+			FShidenCommandDefinition
+			{
+				.Note = LOCTEXT("ElseIfExpressionNoteKey",
+				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				.Style = FlowControlStyle,
+				.bCanCallInMacro = true,
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenElseIfExpressionCommand")),
+				.Args =
+				{
+					{
+						TEXT("Expression"),
+						LOCTEXT("ExpressionKey", "Expression"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					}
+				}
+			}
+		},
+		{
 			TEXT("Else"),
 			FShidenCommandDefinition
 			{
@@ -1304,8 +1390,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("LoopWhile"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("LoopWhileNoteKey",
-				                  "This command is not supported in preview."),
+				.Note = LOCTEXT("LoopWhileNoteKey", "Evaluates an expression and loops if the result is true.\r\nThis command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenLoopWhileCommand")),
@@ -1353,11 +1438,32 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			}
 		},
 		{
+			TEXT("LoopWhileExpression"),
+			FShidenCommandDefinition
+			{
+				.Note = LOCTEXT("LoopWhileExpressionNoteKey",
+				                "Evaluates an expression and loops if the result is true.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables\r\n\r\nThis command is not supported in preview."),
+				.Style = FlowControlStyle,
+				.bCanCallInMacro = true,
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenLoopWhileExpressionCommand")),
+				.Args =
+				{
+					{
+						TEXT("Expression"),
+						LOCTEXT("ExpressionKey", "Expression"),
+						TEXT(""),
+						TextInputTemplate,
+						{},
+						false
+					}
+				}
+			}
+		},
+		{
 			TEXT("EndLoopWhile"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("EndLoopWhileNoteKey",
-				                  "This command is not supported in preview."),
+				.Note = LOCTEXT("EndLoopWhileNoteKey", "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenEndLoopWhileCommand"))
@@ -1387,8 +1493,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Jump"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("JumpNoteKey",
-				                  "This command is not supported in preview."),
+				.Note = LOCTEXT("JumpNoteKey", "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenJumpCommand")),
@@ -1410,7 +1515,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("EndScenarioNoteKey",
-				                  "In a macro, the next scenario specification is ignored,\r\nand it resumes from the continuation of the original scenario.\r\nThis command is not supported in preview."),
+				                "In a macro, the next scenario specification is ignored,\r\nand it resumes from the continuation of the original scenario.\r\nThis command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenEndScenarioCommand")),
@@ -1434,8 +1539,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Break"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("BreakNoteKey",
-				                  "This command is not supported in preview."),
+				.Note = LOCTEXT("BreakNoteKey", "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenBreakCommand")),
@@ -1477,7 +1581,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("WidgetAnimationNoteKey",
-				                  "You can specify the animation of a child widget as \"ChildWidgetName.AnimationName\".\nWhen RestoreState is true, the behavior may differ between gameplay and preview."),
+				                "You can specify the animation of a child widget as \"ChildWidgetName.AnimationName\".\nWhen RestoreState is true, the behavior may differ between gameplay and preview."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWidgetAnimationCommand")),
@@ -1550,8 +1654,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("Delay"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("DelayNoteKey",
-				                  "This command is not supported in preview."),
+				.Note = LOCTEXT("DelayNoteKey", "This command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenDelayCommand")),
@@ -1674,7 +1777,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("FadeNoteKey",
-				                  "The larger the value of z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 100: in front of movie\r\nGreater than 150: in front of menus"),
+				                "The larger the value of z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 100: in front of movie\r\nGreater than 150: in front of menus"),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenFadeCommand")),
@@ -1759,8 +1862,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("ChangeVisibility"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("ChangeVisibilityNoteKey",
-				                  "You can specify the widget of a child widget as \"ChildWidgetName.WidgetName\"."),
+				.Note = LOCTEXT("ChangeVisibilityNoteKey", "You can specify the widget of a child widget as \"ChildWidgetName.WidgetName\"."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeVisibilityCommand")),
@@ -1790,7 +1892,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("MoveCanvasPanelSlotNoteKey",
-				                  "Steps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
+				                "Steps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenMoveCanvasPanelSlotCommand")),
@@ -2065,7 +2167,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("PlayMediaNoteKey",
-				                  "It is recommended to use ElectraPlayer for the Player of MediaSource.\r\nThe larger the value of Z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 150: in front of menus\r\nThis command is not supported in preview."),
+				                "It is recommended to use ElectraPlayer for the Player of MediaSource.\r\nThe larger the value of Z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 150: in front of menus\r\nThis command is not supported in preview."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenPlayMediaCommand")),
@@ -2103,7 +2205,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("ChangeMaterialScalarNoteKey",
-				                  "You will manipulate the Effect of the Retainer Box.\r\nSteps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
+				                "You will manipulate the Effect of the Retainer Box.\r\nSteps is used only when the EasingFunction is Step.\r\nBlend Exp is used only when the EasingFunction is Ease."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenChangeMaterialScalarParameterCommand")),
@@ -2250,7 +2352,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("RunMacroNoteKey",
-				                  "The arguments passed to the macro are treated as local variables."),
+				                "The arguments passed to the macro are treated as local variables."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenRunMacroCommand")),
@@ -2275,7 +2377,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("RunMacroAsParallelNoteKey",
-				                  "\"Default\" cannot be used as a process name.\r\nThe arguments passed to the macro are treated as local variables.\r\nThis command is not supported in preview."),
+				                "\"Default\" cannot be used as a process name.\r\nThe arguments passed to the macro are treated as local variables.\r\nThis command is not supported in preview."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenRunMacroAsParallelCommand")),
@@ -2308,7 +2410,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("StopParallelProcessNoteKey",
-				                  "Due to the potential for causing issues,\r\nit is recommended to set wait for completion to true.\r\nThis command is not supported in preview."),
+				                "Due to the potential for causing issues,\r\nit is recommended to set wait for completion to true.\r\nThis command is not supported in preview."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = false,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenStopParallelProcessCommand")),

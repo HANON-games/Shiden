@@ -181,6 +181,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")
 	static USoundMix* GetSoundClassMix();
 
-private:	
+private:
 	static void SaveProjectConfigChanges(TObjectPtr<UShidenProjectConfig> Config);
 };

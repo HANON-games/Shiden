@@ -11,5 +11,5 @@ class SHIDENEDITOR_API UShidenMainMenu : public UToolMenuEntryScript
 	GENERATED_BODY()
 
 public:
-	static void RegisterMenuExtensions(IModuleInterface *Owner);
+	static void RegisterMenuExtensions(IModuleInterface* Owner);
 };

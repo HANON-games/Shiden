@@ -20,5 +20,5 @@ class SHIDENCORE_API UShidenElseCommand : public UShidenCommandObject
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
-	static bool TryFindEndIfIndex(const FString& ProcessName, FString& ErrorMessage);
+	static bool TryFindAndSetEndIfIndex(const FString& ProcessName, FString& ErrorMessage);
 };

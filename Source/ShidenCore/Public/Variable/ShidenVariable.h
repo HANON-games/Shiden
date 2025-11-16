@@ -70,23 +70,23 @@ struct SHIDENCORE_API FShidenVariable
 	}
 
 private:
-	template<typename T>
+	template <typename T>
 	bool TryUpdateImpl(const FString& Name, const T& Value, EShidenVariableType Type, TMap<FString, T>& VariableMap, bool bForceUpdateReadOnly);
 
-	template<typename T>
+	template <typename T>
 	bool TryGetImpl(const FString& Name, T& Value, const EShidenVariableType Type, const TMap<FString, T>& VariableMap) const;
 
-	static bool GetDefaultValue(const FString& DefaultValue, bool& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, bool& Value);
 
-	static bool GetDefaultValue(const FString& DefaultValue, int32& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, int32& Value);
 
-	static bool GetDefaultValue(const FString& DefaultValue, float& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, float& Value);
 
-	static bool GetDefaultValue(const FString& DefaultValue, FString& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, FString& Value);
 
-	static bool GetDefaultValue(const FString& DefaultValue, FVector& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, FVector& Value);
 
-	static bool GetDefaultValue(const FString& DefaultValue, FVector2D& Value);
+	static bool TryGetDefaultValue(const FString& DefaultValue, FVector2D& Value);
 
 	bool CanUpdate(const FString& Name, const EShidenVariableType& Type, bool bForceUpdateReadOnly) const;
 

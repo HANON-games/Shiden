@@ -86,8 +86,8 @@ bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, 
 			}
 			const int32 RandomValue = FMath::RandRange(Min, Max);
 			return UShidenVariableBlueprintLibrary::TryUpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
-			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), RandomValue,
-			                                                0.0f, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
+			                                                          Args.VariableType, Args.DestinationVariableName, false, TEXT(""), RandomValue,
+			                                                          0.0f, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
 		}
 	case EShidenVariableType::Float:
 		{
@@ -100,8 +100,8 @@ bool UShidenRandomCommand::TrySetRandomValue(const UObject* WorldContextObject, 
 			}
 			const float RandomValue = FMath::RandRange(Min, Max);
 			return UShidenVariableBlueprintLibrary::TryUpdateVariable(WorldContextObject, ProcessName, Args.VariableKind,
-			                                                Args.VariableType, Args.DestinationVariableName, false, TEXT(""), 0,
-			                                                RandomValue, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
+			                                                          Args.VariableType, Args.DestinationVariableName, false, TEXT(""), 0,
+			                                                          RandomValue, FVector2D::ZeroVector, FVector::ZeroVector, ErrorMessage);
 		}
 	default:
 		ErrorMessage = FString::Printf(TEXT("Variable %s is not Integer or Float."), *Args.DestinationVariableName);

@@ -13,8 +13,8 @@ SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializ
 {
 }
 
-template<typename T, typename TMember>
-void UShidenEditorConfig::UpdateConfig(TMember UShidenEditorConfig::*MemberPtr, const T& Value)
+template <typename T, typename TMember>
+void UShidenEditorConfig::UpdateConfig(TMember UShidenEditorConfig::* MemberPtr, const T& Value)
 {
 	const TObjectPtr<UShidenEditorConfig> Config = GetMutableDefault<UShidenEditorConfig>();
 	Config->*MemberPtr = Value;

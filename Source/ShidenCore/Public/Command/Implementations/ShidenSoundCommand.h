@@ -48,8 +48,6 @@ class SHIDENCORE_API UShidenSoundCommand : public UShidenCommandObject
 
 	static bool ShouldStopVoice(const bool bDisableAutoStopPreviousVoices);
 
-	static bool TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage);
-
 	static bool TryConvertToShidenSoundType(const FString& SoundTypeStr, EShidenSoundType& SoundType, FString& ErrorMessage);
 
 	static UInputAction* LoadInputActionFromPath(const FString& Path);

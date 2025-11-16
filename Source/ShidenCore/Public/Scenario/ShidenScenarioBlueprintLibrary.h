@@ -114,7 +114,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Scenario")
 	static bool CanSkipCommand();
-	
+
 	/**
 	 * Finds a scenario property for a specific command.
 	 *
@@ -155,7 +155,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Scenario Property")
 	static void RegisterScenarioPropertyFromMap(const FString& CommandName, const FString& Key, const TMap<FString, FString>& Values);
-	
+
 	/**
 	 * Removes a scenario property from a specific command.
 	 * 

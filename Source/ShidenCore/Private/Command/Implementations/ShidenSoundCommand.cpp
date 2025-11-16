@@ -5,6 +5,7 @@
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "Sound/SoundBase.h"
+#include "Command/ShidenCommandHelpers.h"
 
 bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundCommandArgs& Args, FString& ErrorMessage)
 {
@@ -26,7 +27,7 @@ bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundC
 		return false;
 	}
 
-	if (!TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage))
+	if (!ShidenCommandHelpers::TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage))
 	{
 		return false;
 	}
@@ -42,7 +43,7 @@ bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundC
 	{
 		return true;
 	}
-	
+
 	UObject* SoundObject;
 	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.SoundSourcePath, SoundObject))
 	{
@@ -116,7 +117,7 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 		const float Pitch = FCString::Atof(**PitchStr);
 		const float StartTime = FCString::Atof(**StartTimeStr);
 		const FShidenSoundInfo SoundInfo = FShidenSoundInfo(TrackId, EShidenSoundType::BGM, *Path, 0.0f, Volume, Pitch, StartTime,
-															EAudioFaderCurve::Linear, 0.0f);
+		                                                    EAudioFaderCurve::Linear, 0.0f);
 
 		float ResultDuration = 0.0f;
 		bool bSuccess;
@@ -211,13 +212,13 @@ void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		}
 		else
 		{
-				const float EndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
-				UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackIdStr, {
-				{TEXT("Path"), Args.SoundSourcePath},
-				{TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
-				{TEXT("Pitch"), FString::SanitizeFloat(Args.Pitch)},
-				{TEXT("StartTime"), FString::SanitizeFloat(Args.StartTime)}
-			});
+			const float EndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
+			UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackIdStr, {
+				                                                                 {TEXT("Path"), Args.SoundSourcePath},
+				                                                                 {TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
+				                                                                 {TEXT("Pitch"), FString::SanitizeFloat(Args.Pitch)},
+				                                                                 {TEXT("StartTime"), FString::SanitizeFloat(Args.StartTime)}
+			                                                                 });
 		}
 	}
 
@@ -275,25 +276,6 @@ bool UShidenSoundCommand::ShouldStopVoice(const bool bDisableAutoStopPreviousVoi
 	case EShidenVoiceStopCondition::NextVoice:
 		return !bDisableAutoStopPreviousVoices;
 	}
-	return false;
-}
-
-bool UShidenSoundCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage)
-{
-	static const TMap<FString, EAudioFaderCurve> CurveMap = {
-		{TEXT("linear"), EAudioFaderCurve::Linear},
-		{TEXT("logarithmic"), EAudioFaderCurve::Logarithmic},
-		{TEXT("sin (s-curve)"), EAudioFaderCurve::SCurve},
-		{TEXT("sin (equal power)"), EAudioFaderCurve::Sin}
-	};
-
-	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr.ToLower()))
-	{
-		AudioFaderCurve = *FoundCurve;
-		return true;
-	}
-
-	ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EAudioFaderCurve."), *AudioFaderCurveStr);
 	return false;
 }
 

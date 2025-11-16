@@ -24,8 +24,10 @@ UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParame
 			if (PlatformData->Mips.Num() > 0)
 			{
 				FTexture2DMipMap& Mip = PlatformData->Mips[0];
-				void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
-				FMemory::Memzero(Data, sizeof(FColor));
+				if (void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE))
+				{
+					FMemory::Memzero(Data, sizeof(FColor));
+				}
 				Mip.BulkData.Unlock();
 				NewTex->UpdateResource();
 			}
@@ -43,15 +45,23 @@ void UShidenChangeMaterialTextureParameterCommand::ParseFromCommand(const FShide
 	Args.TexturePath = Command.GetArg("Texture");
 }
 
-void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
-                                                                              UShidenWidget* ShidenWidget,
-                                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                              UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
-                                                                              FString& ErrorMessage)
+void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implementation(
+	const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,
+	UShidenWidget* ShidenWidget,
+	const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	UObject* CallerObject, EShidenInitFromSaveDataStatus& Status,
+	FString& ErrorMessage)
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
 		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
+
+		if (TargetType.IsEmpty() || TargetName.IsEmpty() || ParameterName.IsEmpty())
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to restore from save data. Invalid scenario property key: %s"), *Pair.Key);
+			Status = EShidenInitFromSaveDataStatus::Error;
+			return;
+		}
 
 		Args = FChangeTextureParameterCommandArgs
 		{
@@ -62,11 +72,7 @@ void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implement
 		};
 
 		UTexture* Texture;
-		if (Args.TexturePath.IsEmpty() || Args.TexturePath == TEXT("None"))
-		{
-			Texture = ClearTexture;
-		}
-		else if (!TryLoadTexture(Args, Texture, ErrorMessage))
+		if (!TryGetOrLoadTexture(Texture, ErrorMessage))
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
@@ -82,20 +88,15 @@ void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implement
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenChangeMaterialTextureParameterCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                                         const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-                                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                         const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
-                                                                         FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
+void UShidenChangeMaterialTextureParameterCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                                 UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                                 const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
+                                                                                 FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	ParseFromCommand(Command, Args);
 
 	UTexture* Texture;
-	if (Args.TexturePath.IsEmpty() || Args.TexturePath == TEXT("None"))
-	{
-		Texture = ClearTexture;
-	}
-	else if (!TryLoadTexture(Args, Texture, ErrorMessage))
+	if (!TryGetOrLoadTexture(Texture, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
@@ -113,17 +114,13 @@ void UShidenChangeMaterialTextureParameterCommand::ProcessCommand_Implementation
 }
 
 void UShidenChangeMaterialTextureParameterCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
-                                                                         const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                                         bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
+                                                                                 const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                                 bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	ParseFromCommand(Command, Args);
 
 	UTexture* Texture;
-	if (Args.TexturePath.IsEmpty() || Args.TexturePath == TEXT("None"))
-	{
-		Texture = ClearTexture;
-	}
-	else if (!TryLoadTexture(Args, Texture, ErrorMessage))
+	if (!TryGetOrLoadTexture(Texture, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
@@ -134,61 +131,72 @@ void UShidenChangeMaterialTextureParameterCommand::PreviewCommand_Implementation
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenChangeMaterialTextureParameterCommand::TryLoadTexture(const FChangeTextureParameterCommandArgs& Args, UTexture*& Texture, FString& ErrorMessage)
+bool UShidenChangeMaterialTextureParameterCommand::TryGetOrLoadTexture(UTexture*& Texture, FString& ErrorMessage) const
 {
-	UObject* Object;
-	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.TexturePath, Object))
+	if (Args.TexturePath.IsEmpty() || Args.TexturePath == TEXT("None"))
 	{
-		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Failed to load texture asset %s."), *Args.TexturePath);
+		Texture = ClearTexture;
+		return true;
+	}
+
+	UObject* Object = nullptr;
+	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.TexturePath, Object) || !Object)
+	{
+		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Failed to load texture asset '%s'."), *Args.TexturePath);
 		return false;
 	}
 
 	Texture = Cast<UTexture>(Object);
 	if (!Texture)
 	{
-		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Asset %s is not a texture."), *Args.TexturePath);
+		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Asset '%s' is not a texture."), *Args.TexturePath);
 		return false;
 	}
 
 	return true;
 }
 
-bool UShidenChangeMaterialTextureParameterCommand::TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args,
-                                                                     const UShidenWidget* ShidenWidget,
-                                                                     UTexture* Texture, FString& ErrorMessage)
+bool UShidenChangeMaterialTextureParameterCommand::TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* ShidenWidget,
+                                                                             UTexture* Texture, FString& ErrorMessage)
 {
+	if (!Texture)
+	{
+		ErrorMessage = TEXT("Failed to change texture parameter. Texture is null.");
+		return false;
+	}
+
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial;
 
 	if (Args.Target == TEXT("Image"))
 	{
-		UImage* Image;
-		if (!ShidenWidget->TryFindImage(Args.TargetName, Image))
+		UImage* Image = nullptr;
+		if (!ShidenWidget->TryFindImage(Args.TargetName, Image) || !Image)
 		{
-			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not found."), *Args.TargetName);
+			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Image target '%s' is not found."), *Args.TargetName);
 			return false;
 		}
 		DynamicMaterial = Image->GetDynamicMaterial();
 	}
 	else if (Args.Target == TEXT("RetainerBox"))
 	{
-		URetainerBox* RetainerBox;
-		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox))
+		URetainerBox* RetainerBox = nullptr;
+		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox) || !RetainerBox)
 		{
-			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not found."), *Args.TargetName);
+			ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. RetainerBox target '%s' is not found."), *Args.TargetName);
 			return false;
 		}
-		const TObjectPtr<UObject> Resource = IsValid(RetainerBox) ? RetainerBox->GetEffectMaterial() : nullptr;
+		const TObjectPtr<UObject> Resource = RetainerBox->GetEffectMaterial();
 		DynamicMaterial = Cast<UMaterialInstanceDynamic>(Resource);
 	}
 	else
 	{
-		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not supported."), *Args.Target);
+		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target type '%s' is not supported."), *Args.Target);
 		return false;
 	}
 
 	if (!DynamicMaterial)
 	{
-		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target %s is not a dynamic material."), *Args.TargetName);
+		ErrorMessage = FString::Printf(TEXT("Failed to change texture parameter. Target '%s' does not have a dynamic material."), *Args.TargetName);
 		return false;
 	}
 
@@ -196,8 +204,7 @@ bool UShidenChangeMaterialTextureParameterCommand::TryChangeTextureParameter(con
 	return true;
 }
 
-FString UShidenChangeMaterialTextureParameterCommand::MakeScenarioPropertyKey(const FString& TargetType,
-                                                                      const FString& TargetName, const FString& ParameterName)
+FString UShidenChangeMaterialTextureParameterCommand::MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName)
 {
 	return FString::Printf(TEXT("%s::%s::%s"),
 	                       *TargetType.Replace(TEXT(":"), TEXT("\\:")),

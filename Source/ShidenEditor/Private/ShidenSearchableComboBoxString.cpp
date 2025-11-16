@@ -120,7 +120,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::AddOption(const FString& 
 	RefreshOptions();
 }
 
-SHIDENEDITOR_API bool UShidenSearchableComboBoxString::RemoveOption(const FString& Option)
+SHIDENEDITOR_API bool UShidenSearchableComboBoxString::TryRemoveOption(const FString& Option)
 {
 	const int32 OptionIndex = FindOptionIndex(Option);
 

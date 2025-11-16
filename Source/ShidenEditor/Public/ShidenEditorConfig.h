@@ -10,7 +10,6 @@ UCLASS(config = Editor, defaultconfig, Category = "Shiden Visual Novel|Editor Co
 class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 {
 	GENERATED_UCLASS_BODY()
-	
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Meta = (AllowedClasses = "/Script/ShidenCore.ShidenCommandRedirector"),
 		Category = "Shiden Visual Novel|Config", Meta = (ConfigRestartRequired = true))
 	TArray<FSoftObjectPath> CommandRedirectors;

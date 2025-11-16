@@ -36,8 +36,7 @@ bool UShidenOptionsCommand::TryParseCommand(const FShidenCommand& Command, FOpti
 	return true;
 }
 
-void UShidenOptionsCommand::PreProcessCommand_Implementation(const FString& ProcessName,
-                                                             const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+void UShidenOptionsCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager, UObject* CallerObject,
                                                              EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -57,8 +56,7 @@ void UShidenOptionsCommand::PreProcessCommand_Implementation(const FString& Proc
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& ProcessName,
-                                                          const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager, const float DeltaTime,
                                                           UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
                                                           FString& NextScenarioName, FString& ErrorMessage)
@@ -70,7 +68,7 @@ void UShidenOptionsCommand::ProcessCommand_Implementation(const FString& Process
 	}
 
 	const int32 SelectedOption = ShidenWidget->GetSelectedOption();
-	if (!TryUpdateVariable(Args.DestinationVariableName, Args.DestinationVariableKind, SelectedOption, ErrorMessage))
+	if (!TryUpdateVariable(ProcessName, Args.DestinationVariableName, Args.DestinationVariableKind, SelectedOption, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
@@ -110,7 +108,7 @@ void UShidenOptionsCommand::PreviewCommand_Implementation(const FShidenCommand& 
 		}
 	}
 
-	Status = TryUpdateVariable(Args.DestinationVariableName, Args.DestinationVariableKind, 0, ErrorMessage)
+	Status = TryUpdateVariable(TEXT("Default"), Args.DestinationVariableName, Args.DestinationVariableKind, 0, ErrorMessage)
 		         ? EShidenPreviewStatus::Complete
 		         : EShidenPreviewStatus::Error;
 }
@@ -128,7 +126,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 		ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, Args.LocalizedOptions.Num() - 1);
 		return false;
 	}
-	
+
 	ShidenWidget->SetOptions(Args.LocalizedOptions[LanguageIndex].Options);
 
 	if (!ShidenWidget->TrySetVisibilityByName(TEXT("OptionLayer"), ESlateVisibility::SelfHitTestInvisible, bRegisterProperty))
@@ -149,7 +147,7 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
 	return true;
 }
 
-bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const EShidenVariableKind VariableKind, const int32 Value,
+bool UShidenOptionsCommand::TryUpdateVariable(const FString& ProcessName, const FString& VariableName, const EShidenVariableKind VariableKind, const int32 Value,
                                               FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -163,7 +161,7 @@ bool UShidenOptionsCommand::TryUpdateVariable(const FString& VariableName, const
 		return ShidenSubsystem->SystemVariable.TryUpdate(VariableName, Value);
 	case EShidenVariableKind::LocalVariable:
 		{
-			return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(TEXT("Default"), VariableName, Value, ErrorMessage);
+			return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(ProcessName, VariableName, Value, ErrorMessage);
 		}
 	case EShidenVariableKind::PredefinedSystemVariable:
 		{

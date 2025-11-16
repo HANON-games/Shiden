@@ -12,9 +12,9 @@ struct SHIDENCORE_API FShidenScenarioProperty
 	FShidenScenarioProperty()
 	{
 	}
-	
+
 	explicit FShidenScenarioProperty(const FString& Value)
-	: PropertyValue(Value)
+		: PropertyValue(Value)
 	{
 	}
 
@@ -23,7 +23,7 @@ struct SHIDENCORE_API FShidenScenarioProperty
 	bool TryConvertToStringMap(TMap<FString, FString>& Values) const;
 
 	FString GetValueAsString() const;
-	
+
 private:
 	UPROPERTY()
 	FString PropertyValue;

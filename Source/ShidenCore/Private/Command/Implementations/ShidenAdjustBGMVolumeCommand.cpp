@@ -2,6 +2,7 @@
 
 #include "Command/Implementations/ShidenAdjustBGMVolumeCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "Command/ShidenCommandHelpers.h"
 
 bool UShidenAdjustBGMVolumeCommand::TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage)
 {
@@ -29,7 +30,7 @@ bool UShidenAdjustBGMVolumeCommand::TryParseCommand(const FShidenCommand& Comman
 		return false;
 	}
 
-	return TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
+	return ShidenCommandHelpers::TryConvertToAudioFaderCurve(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
 void UShidenAdjustBGMVolumeCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
@@ -95,25 +96,4 @@ void UShidenAdjustBGMVolumeCommand::PreviewCommand_Implementation(const FShidenC
 
 	ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
 	Status = EShidenPreviewStatus::Complete;
-}
-
-bool UShidenAdjustBGMVolumeCommand::TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve,
-                                                                FString& ErrorMessage)
-{
-	static const TMap<FString, EAudioFaderCurve> CurveMap = {
-		{TEXT("linear"), EAudioFaderCurve::Linear},
-		{TEXT("logarithmic"), EAudioFaderCurve::Logarithmic},
-		{TEXT("sin (s-curve)"), EAudioFaderCurve::SCurve},
-		{TEXT("sin (equal power)"), EAudioFaderCurve::Sin}
-	};
-
-	if (const EAudioFaderCurve* FoundCurve = CurveMap.Find(AudioFaderCurveStr.ToLower()))
-	{
-		AudioFaderCurve = *FoundCurve;
-		return true;
-	}
-
-	ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EAudioFaderCurve."), *AudioFaderCurveStr);
-	AudioFaderCurve = EAudioFaderCurve::Linear;
-	return false;
 }

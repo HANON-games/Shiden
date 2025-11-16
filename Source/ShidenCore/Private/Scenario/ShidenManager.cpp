@@ -79,12 +79,12 @@ void AShidenManager::FindShidenAxis3DInput_Implementation(const UInputAction* In
 
 FInputActionValue AShidenManager::GetInputActionValue(const UInputAction* InputAction) const
 {
-	const ULocalPlayer* LocalPlayer =  GetWorld()->GetFirstLocalPlayerFromController();
+	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!LocalPlayer)
 	{
 		return FInputActionValue(InputAction->ValueType, FVector::ZeroVector);
 	}
-	
+
 	const TObjectPtr<const UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
 	if (!Subsystem)
 	{
@@ -106,7 +106,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 			UE_LOG(LogTemp, Warning, TEXT("PlaySound with empty path must have bRegisterSound=true."));
 			return;
 		}
-		
+
 		switch (SoundInfo.Type)
 		{
 		case EShidenSoundType::BGM:
@@ -152,7 +152,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 		return;
 	}
 
-	switch(SoundType)
+	switch (SoundType)
 	{
 	case EShidenSoundType::BGM:
 	case EShidenSoundType::Voice:
@@ -215,7 +215,7 @@ void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 	{
 		if (Pair.Value)
 		{
-				Pair.Value->SetPaused(bPause);
+			Pair.Value->SetPaused(bPause);
 		}
 	}
 
@@ -287,16 +287,16 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 	}
 
 	UAudioComponent* CurrentComponent = SoundInfo.Type == EShidenSoundType::BGM
-												  ? BGMComponents.FindRef(SoundInfo.TrackId)
-												  : VoiceComponents.FindRef(SoundInfo.TrackId);
-	
+		                                    ? BGMComponents.FindRef(SoundInfo.TrackId)
+		                                    : VoiceComponents.FindRef(SoundInfo.TrackId);
+
 	// Is fade out?
 	if (SoundInfo.EndVolumeMultiplier <= 0.0f)
 	{
-		const bool bSamePath = CurrentComponent && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
+		const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
 		UAudioComponent* Component = bSamePath
-			? CurrentComponent
-			: UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+			                             ? CurrentComponent
+			                             : UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
 
 		if (!bSamePath)
 		{
@@ -330,10 +330,11 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		return;
 	}
 
-	const bool bSamePath = CurrentComponent && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
+	const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
 	const TObjectPtr<UAudioComponent> Component = bSamePath
-		? CurrentComponent
-		: UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		                                              ? CurrentComponent
+		                                              : UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier,
+		                                                                               SoundInfo.StartTime);
 
 	if (!bSamePath)
 	{
@@ -360,7 +361,7 @@ void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComp
 		BGMComponents.Add(SoundInfo.TrackId, AudioComponent);
 		AudioComponent->OnAudioFinishedNative.AddLambda([this](const UAudioComponent* Component)
 		{
-			if (Component->Sound->VirtualizationMode == EVirtualizationMode::Disabled)
+			if (Component->Sound && Component->Sound->VirtualizationMode == EVirtualizationMode::Disabled)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("BGM finished playing: %s"), *Component->Sound->GetName());
 				RemoveSound(EShidenSoundType::BGM);
@@ -537,7 +538,7 @@ void AShidenManager::OnApplicationWillDeactivate() const
 
 	UTexture2D* Texture2D;
 	ShidenWidget->CaptureScreenToTexture2D(Texture2D);
-	
+
 	if (!UShidenSaveBlueprintLibrary::TrySaveUserData(TEXT("Auto Save"), Texture2D, ShidenWidget->GetSaveSlotMetadata()))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AutoSave failed on application will deactivate."));
@@ -556,18 +557,18 @@ void AShidenManager::OnApplicationWillDeactivate() const
 TSubclassOf<AActor> AShidenManager::GetParallelProcessManagerClass()
 {
 	static TSubclassOf<AActor> CachedClass = nullptr;
-	
+
 	if (!CachedClass)
 	{
 		const FString BlueprintPath = TEXT("/Shiden/Core/BP_ShidenParallelProcessManager.BP_ShidenParallelProcessManager_C");
 		CachedClass = LoadClass<AActor>(nullptr, *BlueprintPath);
-		
+
 		if (!CachedClass)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Failed to load BP_ShidenParallelProcessManager blueprint class from path: %s"), *BlueprintPath);
 		}
 	}
-	
+
 	return CachedClass;
 }
 
@@ -588,32 +589,35 @@ void AShidenManager::AdjustVolumeInternal(UAudioComponent* Component, const floa
 	// The UAudioComponent::AdjustVolume function treats a volume of 0 as a fade-out, after which volume adjustment is no longer possible.
 	// To match the behavior of the volume adjustment function in the Config menu, if it is not EVirtualizationMode::Disabled,
 	// a very small value close to 0 is specified so that it is not treated as a fade-out.
-	
+
 	constexpr float TargetVolumeLevel = UE_SMALL_NUMBER * 10;
 	Component->AdjustVolume(AdjustVolumeDuration, TargetVolumeLevel, FadeCurve);
-	
+
 	FTimerHandle Handle;
-	Component->GetWorld()->GetTimerManager().SetTimer(Handle, [Component]
-		{
-			if (!Component->IsActive())
-			{
-				return;
-			}
+	Component->GetWorld()
+	         ->GetTimerManager()
+	         .SetTimer(Handle, [Component]
+	                   {
+		                   if (!Component->IsActive())
+		                   {
+			                   return;
+		                   }
 
-			FAudioDevice* AudioDevice = Component->GetAudioDevice();
-			if (!AudioDevice)
-			{
-				return;
-			}
+		                   FAudioDevice* AudioDevice = Component->GetAudioDevice();
+		                   if (!AudioDevice)
+		                   {
+			                   return;
+		                   }
 
-			AudioDevice->SendCommandToActiveSounds(Component->GetAudioComponentID(), [](FActiveSound& ActiveSound)
-			{
-				Audio::FVolumeFader& Fader = ActiveSound.ComponentVolumeFader;
-				if (Fader.GetTargetVolume() <= TargetVolumeLevel)
-				{
-					Fader.SetVolume(0.0f);
-				}
-			});
-		} , AdjustVolumeDuration, false
-	);
+		                   AudioDevice->SendCommandToActiveSounds(
+			                   Component->GetAudioComponentID(), [](FActiveSound& ActiveSound)
+			                   {
+				                   Audio::FVolumeFader& Fader = ActiveSound.ComponentVolumeFader;
+				                   if (Fader.GetTargetVolume() <= TargetVolumeLevel)
+				                   {
+					                   Fader.SetVolume(0.0f);
+				                   }
+			                   });
+	                   }, AdjustVolumeDuration, false
+	         );
 }

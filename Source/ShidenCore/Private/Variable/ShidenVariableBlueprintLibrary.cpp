@@ -1,5 +1,6 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
+// ReSharper disable CppRedundantParentheses
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 #include "AudioDevice.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
@@ -25,7 +26,7 @@ SHIDENCORE_API FString UShidenVariableBlueprintLibrary::MakeUpdateErrorMessage(c
 	return FString::Printf(TEXT("Unknown error."));
 }
 
-template<typename T>
+template <typename T>
 bool UShidenVariableBlueprintLibrary::TryUpdateUserVariableImpl(const FString& Name, const T& Value, const EShidenVariableType Type, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -88,8 +89,8 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::ResetUserVariable(const FSt
 }
 
 SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindUserVariable(const FString& Name, EShidenVariableType& VariableType,
-                                                                      bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
-                                                                      float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, FString& ErrorMessage)
+                                                                         bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+                                                                         float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	FShidenVariableDefinition Definition;
@@ -121,6 +122,9 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindUserVariable(const F
 	case EShidenVariableType::Vector3:
 		ShidenSubsystem->UserVariable.TryGet(Name, Vector3Value);
 		break;
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type %d for variable %s"), static_cast<int32>(VariableType), *Name);
+		return false;
 	}
 	return true;
 }
@@ -135,7 +139,7 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindUserVariableAsString
 	return GEngine->GetEngineSubsystem<UShidenSubsystem>()->UserVariable.TryGetAsString(Name, OriginalType, Result);
 }
 
-template<typename T>
+template <typename T>
 bool UShidenVariableBlueprintLibrary::TryUpdateSystemVariableImpl(const FString& Name, const T& Value, const EShidenVariableType Type, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
@@ -198,9 +202,9 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::ResetSystemVariable(const F
 }
 
 SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindSystemVariable(const FString& Name, EShidenVariableType& VariableType,
-                                                                        bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
-                                                                        float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value,
-                                                                        FString& ErrorMessage)
+                                                                           bool& bBooleanValue, FString& StringValue, int32& IntegerValue,
+                                                                           float& FloatValue, FVector2D& Vector2Value, FVector& Vector3Value,
+                                                                           FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	FShidenVariableDefinition Definition;
@@ -226,9 +230,10 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindSystemVariable(const
 		return ShidenSubsystem->SystemVariable.TryGet(Name, Vector2Value);
 	case EShidenVariableType::Vector3:
 		return ShidenSubsystem->SystemVariable.TryGet(Name, Vector3Value);
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type %d for variable %s"), static_cast<int32>(VariableType), *Name);
+		return false;
 	}
-	
-	return false;
 }
 
 SHIDENCORE_API void UShidenVariableBlueprintLibrary::ResetSystemVariables()
@@ -341,7 +346,7 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::ResetLocalVariable(const FS
 	}
 }
 
-template<typename T>
+template <typename T>
 bool UShidenVariableBlueprintLibrary::TryUpdateLocalVariableImpl(const FString& ProcessName, const FString& Name, const T& Value, const EShidenVariableType Type, FString& ErrorMessage)
 {
 	if (FString ScopeKey; TryCreateScopeKey(ProcessName, ScopeKey))
@@ -429,7 +434,7 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindLocalVariable(const 
                                                                           FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	FString ScopeKey;
 	if (!TryCreateScopeKey(ProcessName, ScopeKey))
 	{
@@ -459,13 +464,14 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindLocalVariable(const 
 		return ShidenSubsystem->LocalVariable.TryGet(ScopeKey, Name, Vector2Value);
 	case EShidenVariableType::Vector3:
 		return ShidenSubsystem->LocalVariable.TryGet(ScopeKey, Name, Vector3Value);
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type %d for variable %s"), static_cast<int32>(VariableType), *Name);
+		return false;
 	}
-
-	return false;
 }
 
 SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindLocalVariableAsString(const FString& ProcessName, const FString& Name,
-                                                                               EShidenVariableType& OriginalType, FString& Result)
+                                                                                  EShidenVariableType& OriginalType, FString& Result)
 {
 	FString ScopeKey;
 	return TryCreateScopeKey(ProcessName, ScopeKey)
@@ -623,7 +629,7 @@ SHIDENCORE_API FString UShidenVariableBlueprintLibrary::ReplaceVariables(const F
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	FString ResultText = Text;
 	FRegexMatcher Matcher(GetReplaceTextPattern(), Text);
 	while (Matcher.FindNext())
@@ -688,7 +694,7 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 	Command.Args.GetKeys(Keys);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	for (const FString& Key : Keys)
 	{
 		FString Value = Command.Args.FindRef(Key);
@@ -847,7 +853,7 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryConvertToVariableType(co
 		Result = EShidenVariableType::AssetPath;
 		return true;
 	}
-	
+
 	Result = EShidenVariableType::Boolean;
 	return false;
 }
@@ -896,9 +902,9 @@ bool UShidenVariableBlueprintLibrary::TryFindVariableDefinition(const FString& P
                                                                 const FString& Name, FShidenVariableDefinition& Definition, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	bool bSuccess = false;
-	
+
 	switch (Kind)
 	{
 	case EShidenVariableKind::UserVariable:
@@ -968,8 +974,8 @@ bool UShidenVariableBlueprintLibrary::TryFindPredefinedSystemVariableDefinition(
 }
 
 bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type,
-                                                               const FString& Name, const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue,
-                                                               const float FloatValue, FString& ErrorMessage)
+                                                                  const FString& Name, const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue,
+                                                                  const float FloatValue, FString& ErrorMessage)
 {
 	ErrorMessage = TEXT("");
 
@@ -980,7 +986,7 @@ bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedVariable(const UObject*
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	FShidenPredefinedSystemVariableDefinition Definition;
 
 	if (!ShidenSubsystem->PredefinedSystemVariable.TryGetDefinition(Name, Definition))
@@ -1092,8 +1098,8 @@ SHIDENCORE_API bool TryUpdateLocalVariable(const FString& ProcessName, const ESh
 }
 
 SHIDENCORE_API bool TryUpdateSystemVariable(const EShidenVariableType& Type, const FString& Name, const bool bBooleanValue,
-                                         const FString& StringValue, const int32 IntegerValue, const float FloatValue,
-                                         const FVector2D& Vector2Value, const FVector& Vector3Value, FString& ErrorMessage)
+                                            const FString& StringValue, const int32 IntegerValue, const float FloatValue,
+                                            const FVector2D& Vector2Value, const FVector& Vector3Value, FString& ErrorMessage)
 {
 	switch (Type)
 	{
@@ -1195,13 +1201,13 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindVariable(const FStri
 	{
 	case EShidenVariableKind::UserVariable:
 		return TryFindUserVariable(Name, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value,
-		                 Vector3Value, ErrorMessage);
+		                           Vector3Value, ErrorMessage);
 	case EShidenVariableKind::LocalVariable:
 		return TryFindLocalVariable(ProcessName, Name, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue,
-		                  Vector2Value, Vector3Value, ErrorMessage);
+		                            Vector2Value, Vector3Value, ErrorMessage);
 	case EShidenVariableKind::SystemVariable:
 		return TryFindSystemVariable(Name, VariableType, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value,
-		                   Vector3Value, ErrorMessage);
+		                             Vector3Value, ErrorMessage);
 	case EShidenVariableKind::PredefinedSystemVariable:
 		{
 			FString Value;
@@ -1241,19 +1247,25 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindVariable(const FStri
 
 			ErrorMessage = FString::Printf(TEXT("Variable %s is not defined."), *Name);
 		}
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable kind %d"), static_cast<int32>(Kind));
+		return false;
 	}
-	return false;
 }
 
 // If T is not an orderable type, constexpr (TIs_Orderable<T>::value) becomes false
-template<typename, typename = void>
-struct TIs_Orderable : std::false_type {};
+template <typename, typename = void>
+struct TIs_Orderable : std::false_type
+{
+};
 
 // If T is an orderable type, constexpr (TIs_Orderable<T>::value) becomes true
-template<typename T>
-struct TIs_Orderable<T, std::void_t<decltype(std::declval<T>() < std::declval<T>())>> : std::true_type {};
+template <typename T>
+struct TIs_Orderable<T, std::void_t<decltype(std::declval<T>() < std::declval<T>())>> : std::true_type
+{
+};
 
-template<typename T>
+template <typename T>
 bool UShidenVariableBlueprintLibrary::TryEvaluateComparisonImpl(const FString& Operator, const T& A, const T& B, bool& bResult, FString& ErrorMessage)
 {
 	if (Operator == TEXT("=="))
@@ -1291,7 +1303,7 @@ bool UShidenVariableBlueprintLibrary::TryEvaluateComparisonImpl(const FString& O
 			return true;
 		}
 	}
-    
+
 	ErrorMessage = TEXT("Invalid Operator");
 	return false;
 }
@@ -1333,11 +1345,11 @@ bool UShidenVariableBlueprintLibrary::TryEvaluateVector3(const FString& Operator
 }
 
 bool UShidenVariableBlueprintLibrary::TryEvaluateCondition(const EShidenVariableType Type, const FString& Operator, const bool bABooleanValue,
-                                                        const FString& AStringValue, const int32 AIntegerValue, const float AFloatValue,
-                                                        const FVector2D& AVector2Value, const FVector& AVector3Value, const bool bBBooleanValue,
-                                                        const FString& BStringValue, const int32 BIntegerValue, const float BFloatValue,
-                                                        const FVector2D& BVector2Value, const FVector& BVector3Value, bool& bResult,
-                                                        FString& ErrorMessage)
+                                                           const FString& AStringValue, const int32 AIntegerValue, const float AFloatValue,
+                                                           const FVector2D& AVector2Value, const FVector& AVector3Value, const bool bBBooleanValue,
+                                                           const FString& BStringValue, const int32 BIntegerValue, const float BFloatValue,
+                                                           const FVector2D& BVector2Value, const FVector& BVector3Value, bool& bResult,
+                                                           FString& ErrorMessage)
 {
 	switch (Type)
 	{

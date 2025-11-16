@@ -45,9 +45,9 @@ void UShidenAssignVariableCommand::ProcessCommand_Implementation(const FString& 
 		return;
 	}
 
-	Status = TrySetVariable(ShidenWidget, Args, ProcessName, ErrorMessage)
-		? EShidenProcessStatus::Next
-		: EShidenProcessStatus::Error;
+	Status = TryAssign(ShidenWidget, Args, ProcessName, ErrorMessage)
+		         ? EShidenProcessStatus::Next
+		         : EShidenProcessStatus::Error;
 }
 
 void UShidenAssignVariableCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
@@ -60,13 +60,13 @@ void UShidenAssignVariableCommand::PreviewCommand_Implementation(const FShidenCo
 		return;
 	}
 
-	Status = TrySetVariable(ShidenWidget, Args, TEXT("Default"), ErrorMessage)
-		? EShidenPreviewStatus::Complete
-		: EShidenPreviewStatus::Error;
+	Status = TryAssign(ShidenWidget, Args, TEXT("Default"), ErrorMessage)
+		         ? EShidenPreviewStatus::Complete
+		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenAssignVariableCommand::TrySetVariable(const UObject* WorldContextObject, const FAssignVariableCommandArgs& Args,
-                                                  const FString& ProcessName, FString& ErrorMessage)
+bool UShidenAssignVariableCommand::TryAssign(const UObject* WorldContextObject, const FAssignVariableCommandArgs& Args,
+                                             const FString& ProcessName, FString& ErrorMessage)
 {
 	FVector2D Vector2Value = FVector2D::ZeroVector;
 	FVector Vector3Value = FVector::ZeroVector;

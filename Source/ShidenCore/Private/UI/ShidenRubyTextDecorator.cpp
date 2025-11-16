@@ -10,11 +10,11 @@ class FShidenRichTextRubyDecorator final : public FRichTextDecorator
 	bool bDisplayRubyOnFirstCharacter = false;
 
 public:
-	explicit FShidenRichTextRubyDecorator(URichTextBlock* InOwner, const float InDefaultSizeCoefficient = 0.7f, const float InDefaultOffsetCoefficient = 0.0f, const bool bInDisplayRubyOnFirstCharacter = false) 
+	explicit FShidenRichTextRubyDecorator(URichTextBlock* InOwner, const float InDefaultSizeCoefficient = 0.7f, const float InDefaultOffsetCoefficient = 0.0f, const bool bInDisplayRubyOnFirstCharacter = false)
 		: FRichTextDecorator(InOwner)
-		, DefaultSizeCoefficient(InDefaultSizeCoefficient)
-		, DefaultOffsetCoefficient(InDefaultOffsetCoefficient)
-		, bDisplayRubyOnFirstCharacter(bInDisplayRubyOnFirstCharacter)
+		  , DefaultSizeCoefficient(InDefaultSizeCoefficient)
+		  , DefaultOffsetCoefficient(InDefaultOffsetCoefficient)
+		  , bDisplayRubyOnFirstCharacter(bInDisplayRubyOnFirstCharacter)
 	{
 	}
 
@@ -31,7 +31,7 @@ protected:
 
 		const FString* RubyTextPtr = RunInfo.MetaData.Find(TEXT("t"));
 		const FText RubyText = RubyTextPtr ? FText::FromString(*RubyTextPtr) : FText::GetEmpty();
-		
+
 		float SizeCoefficient = DefaultSizeCoefficient;
 		const FString* SizePtr = RunInfo.MetaData.Find(TEXT("size"));
 		if (SizePtr && !SizePtr->IsEmpty())
@@ -48,7 +48,7 @@ protected:
 
 		const FString* AllPtr = RunInfo.MetaData.Find(TEXT("all"));
 		const bool bContainsAllBaseText = !AllPtr || AllPtr->ToBool();
-		
+
 		return SNew(SShidenRubyTextWidget)
 			.BaseText(BaseText)
 			.RubyText(RubyText)

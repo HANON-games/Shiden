@@ -44,7 +44,7 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 	virtual void PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
-	
+
 	static bool TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, FVector2D OriginalPosition, FVector2D OriginalSize,
 	                               UShidenWidget* ShidenWidget, FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage);
 
@@ -54,8 +54,6 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 
 	static bool TryOverwriteZOrder(const FMoveCanvasPanelSlotCommandArgs& Args, const UShidenWidget* ShidenWidget, bool bRegisterCurrentProperty,
 	                               FString& ErrorMessage);
-
-	static bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
 
 	FMoveCanvasPanelSlotCommandArgs Args;
 };

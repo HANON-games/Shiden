@@ -74,7 +74,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryLoadTextFile(const FStri
 	{
 		return false;
 	}
-	
+
 	TArray<FString> FilePath = {};
 
 	if (IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get())
@@ -107,7 +107,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryLoadTextFile(const FStri
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -149,7 +149,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TrySaveTextFile(const FStri
 		}
 
 		return FFileHelper::SaveStringToFile(SaveText, *FPaths::ConvertRelativePathToFull(FilePath[0]),
-		                                         FFileHelper::EEncodingOptions::ForceUTF8);
+		                                     FFileHelper::EEncodingOptions::ForceUTF8);
 	}
 
 	return false;
@@ -225,8 +225,8 @@ UShidenScenario* ExpandPresets(const UShidenScenario* SourceScenario)
 					FString Value = Args.Contains(Key) && !Args[Key].IsEmpty()
 						                ? Args[Key]
 						                : CommandPreset->Args.Contains(Key)
-											? CommandPreset->Args[Key]
-											: DefaultValue;
+						                ? CommandPreset->Args[Key]
+						                : DefaultValue;
 					ExpandedCommand.Args.Add(Key, Value);
 				}
 			}
@@ -304,7 +304,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		}
 		return Comments;
 	};
-	
+
 	TObjectPtr<UShidenScenario> Scenario = NewObject<UShidenScenario>();
 	TMap<FString, FString> Comments = GetCsvComments(CsvString);
 
@@ -314,7 +314,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		                       ? ScenarioId
 		                       : FGuid::NewGuid();
 	Scenario->Note = Comments.Contains(TEXT("Note")) ? Comments[TEXT("Note")] : TEXT("");
-	
+
 	for (int32 Index = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Name")); Index++)
 	{
 		FShidenMacroParameter MacroParameterDefinition;
@@ -323,8 +323,8 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		MacroParameterDefinition.Type = static_cast<EShidenVariableType>(StaticEnum<EShidenVariableType>()->GetValueByNameString(TypeStr));
 		MacroParameterDefinition.DefaultValue = Comments[TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("DefaultValue")];
 		MacroParameterDefinition.AssetPathType = MacroParameterDefinition.Type == EShidenVariableType::AssetPath
-			? EShidenAssetPathType::Any
-			: EShidenAssetPathType::None;
+			                                         ? EShidenAssetPathType::Any
+			                                         : EShidenAssetPathType::None;
 		const FString AssetPathTypeKey = TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("AssetPathType");
 
 		if (Comments.Contains(AssetPathTypeKey))
@@ -342,10 +342,10 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 			MacroParameterDefinition.EnumValues.Add(
 				Comments[TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Enum") + FString::FromInt(EnumIndex)]);
 		}
-		
+
 		Scenario->MacroParameterDefinitions.Add(MacroParameterDefinition);
 	}
-	
+
 	for (int32 Index = 1; Comments.Contains(TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("Name")); Index++)
 	{
 		FShidenVariableDefinition LocalVariableDefinition;
@@ -354,21 +354,21 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		LocalVariableDefinition.Type = static_cast<EShidenVariableType>(StaticEnum<EShidenVariableType>()->GetValueByNameString(TypeStr));
 		LocalVariableDefinition.DefaultValue = Comments[TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("DefaultValue")];
 		LocalVariableDefinition.AssetPathType = LocalVariableDefinition.Type == EShidenVariableType::AssetPath
-			? EShidenAssetPathType::Any
-			: EShidenAssetPathType::None;
+			                                        ? EShidenAssetPathType::Any
+			                                        : EShidenAssetPathType::None;
 		const FString AssetPathTypeKey = TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("AssetPathType");
-		
+
 		if (Comments.Contains(AssetPathTypeKey))
 		{
 			LocalVariableDefinition.AssetPathType = static_cast<EShidenAssetPathType>(StaticEnum<EShidenAssetPathType>()->GetValueByNameString(Comments[AssetPathTypeKey]));
 		}
-		
+
 		const FString IsReadOnlyKey = TEXT("LocalVariable") + FString::FromInt(Index) + TEXT("IsReadOnly");
 		LocalVariableDefinition.bIsReadOnly = Comments.Contains(IsReadOnlyKey) && Comments[IsReadOnlyKey] == TEXT("true");
 
 		Scenario->LocalVariableDefinitions.Add(LocalVariableDefinition);
 	}
-	
+
 	// Parse rows
 	TMap<FString, TObjectPtr<UShidenScenario>> MacroScenarioCache;
 	const TMap<FString, FShidenCommandDefinition>& CommandDefinitions = UShidenBlueprintLibrary::GetCommandDefinitionsCache();
@@ -390,13 +390,13 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		Command.bEnabled = Row[1] == TEXT("true");
 		Command.CommandName = Row[2];
 		Command.PresetName = Row[3];
-		
+
 		if (!CommandDefinitions.Contains(Command.CommandName))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("CommandName %s is not found in CommandDefinitions."), *Command.CommandName);
 			continue;
 		}
-		
+
 		TArray<FShidenCommandArgument> Args = CommandDefinitions[Command.CommandName].Args;
 		for (int32 Index = 0; Index < Args.Num(); Index++)
 		{
@@ -416,13 +416,13 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 						MacroScenarioCache.Add(Value, MacroScenario);
 					}
 				}
-				
+
 				const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache.FindRef(Value);
 				if (!MacroScenario)
 				{
 					continue;
 				}
-					
+
 				for (const FShidenVariableDefinition& MacroParameterDefinition : MacroScenario->MacroParameterDefinitions)
 				{
 					Index++;
@@ -431,7 +431,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 				}
 			}
 		}
-		
+
 		Scenario->Commands.Add(Command);
 	}
 
@@ -471,7 +471,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 			}
 		}
 	}
-	
+
 	for (int32 Index = 0; Index < Scenario->LocalVariableDefinitions.Num(); Index++)
 	{
 		FString IndexStr = FString::FromInt(Index + 1);
@@ -508,7 +508,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	{
 		FString Row = CommandId.ToString() + TEXT(",") + (bEnabled ? TEXT("true") : TEXT("false")) + TEXT(",") + EscapeCsvItem(CommandName) +
 			TEXT(",") + EscapeCsvItem(PresetName);
-		
+
 		if (!CommandDefinitions.Contains(CommandName))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("CommandName %s is not found in CommandDefinitions."), *CommandName);
@@ -519,7 +519,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 			CsvRows.Add(Row);
 			continue;
 		}
-		
+
 		TArray<FShidenCommandArgument> CommandArguments = CommandDefinitions[CommandName].Args;
 		for (int32 Index = 0; Index < MaxArgCount; Index++)
 		{
@@ -547,7 +547,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 					{
 						continue;
 					}
-					
+
 					for (const FShidenVariableDefinition& MacroParameterDefinition : MacroScenario->MacroParameterDefinitions)
 					{
 						if (Args.Contains(MacroParameterDefinition.Name))
@@ -584,7 +584,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToScenarioFromJso
 	{
 		return false;
 	}
-	
+
 	FShidenScenarioStruct ScenarioStruct;
 	if (!FJsonObjectConverter::JsonObjectToUStruct<FShidenScenarioStruct>(JsonObject.ToSharedRef(), &ScenarioStruct))
 	{
@@ -598,7 +598,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToScenarioFromJso
 			MacroParameter.AssetPathType = EShidenAssetPathType::Any;
 		}
 	}
-	
+
 	for (FShidenVariableDefinition& LocalVariable : ScenarioStruct.LocalVariableDefinitions)
 	{
 		if (LocalVariable.Type == EShidenVariableType::AssetPath && LocalVariable.AssetPathType == EShidenAssetPathType::None)
@@ -606,7 +606,7 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToScenarioFromJso
 			LocalVariable.AssetPathType = EShidenAssetPathType::Any;
 		}
 	}
-	
+
 	Scenario = RemovePresetValues(ScenarioStruct.ToShidenScenario());
 	return true;
 }
@@ -687,21 +687,21 @@ void UShidenEditorBlueprintLibrary::AddUserVariableDefinition(const FShidenVaria
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
 
 void UShidenEditorBlueprintLibrary::UpdateUserVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	
+
 	ProjectConfig->UserVariableDefinitions = VariableDefinitions;
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
 
@@ -729,14 +729,14 @@ void UShidenEditorBlueprintLibrary::UpdateUserVariableDefinition(const FString& 
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
 
 void UShidenEditorBlueprintLibrary::RemoveUserVariableDefinition(const FString& Name)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	
+
 	ProjectConfig->UserVariableDefinitions.RemoveAll([Name](const FShidenVariableDefinition& VariableDefinition)
 	{
 		return VariableDefinition.Name == Name;
@@ -746,7 +746,7 @@ void UShidenEditorBlueprintLibrary::RemoveUserVariableDefinition(const FString& 
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
 
@@ -774,21 +774,21 @@ void UShidenEditorBlueprintLibrary::AddSystemVariableDefinition(const FShidenVar
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
 
 void UShidenEditorBlueprintLibrary::UpdateSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& VariableDefinitions)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	
+
 	ProjectConfig->SystemVariableDefinitions = VariableDefinitions;
 	ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
 
@@ -816,14 +816,14 @@ void UShidenEditorBlueprintLibrary::UpdateSystemVariableDefinition(const FString
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
 
 void UShidenEditorBlueprintLibrary::RemoveSystemVariableDefinition(const FString& Name)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
-	
+
 	ProjectConfig->SystemVariableDefinitions.RemoveAll([Name](const FShidenVariableDefinition& VariableDefinition)
 	{
 		return VariableDefinition.Name == Name;
@@ -833,7 +833,7 @@ void UShidenEditorBlueprintLibrary::RemoveSystemVariableDefinition(const FString
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
 
@@ -841,7 +841,7 @@ void UShidenEditorBlueprintLibrary::GetPredefinedSystemVariableDefinitions(TArra
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
-	
+
 	VariableDefinitions.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : ShidenSubsystem->PredefinedSystemVariable.Definitions)
 	{
@@ -996,7 +996,7 @@ void UShidenEditorBlueprintLibrary::RedirectLocalVariables(UShidenScenario* Scen
 				}
 			}
 		}
-		
+
 		if (TargetCommand.Contains(Command.CommandName))
 		{
 			if (Command.Args.FindRef(TargetCommand[Command.CommandName].Get<0>()) == TEXT("LocalVariable")
@@ -1171,7 +1171,7 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 					{
 						continue;
 					}
-					
+
 					FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Command.Args[Key]);
 					while (Matcher.FindNext())
 					{
@@ -1184,7 +1184,7 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 						}
 					}
 				}
-				
+
 				if (TargetCommand.Contains(Command.CommandName))
 				{
 					const FString& CommandVariableKindValue = Command.Args.FindRef(TargetCommand[Command.CommandName].Get<0>());
@@ -1196,7 +1196,7 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 					}
 				}
 			}
-			
+
 			if (bChanged)
 			{
 				EditorAssetSubsystem->SaveLoadedAsset(Scenario);
@@ -1225,7 +1225,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 				Definition.AssetPathType = EShidenAssetPathType::Any;
 			}
 		}
-		
+
 		// Migrate SystemVariableDefinitions
 		for (int32 i = 0; i < ProjectConfig->SystemVariableDefinitions.Num(); i++)
 		{
@@ -1235,10 +1235,10 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 				Definition.AssetPathType = EShidenAssetPathType::Any;
 			}
 		}
-		
+
 		ProjectConfig->SaveConfig(CPF_Config, *ProjectConfig->GetDefaultConfigFilename());
 		ProjectConfig->TryUpdateDefaultConfigFile();
-		
+
 		// Migrate Local VariableDefinitions
 		TArray<FAssetData> ScenarioAssets;
 		AssetViewUtils::GetAssetsInPaths({ProjectConfig->ScenarioDirectoryPath, ProjectConfig->MacroDirectoryPath}, ScenarioAssets);
@@ -1248,7 +1248,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 			{
 				continue;
 			}
-			
+
 			if (TObjectPtr<UShidenScenario> Scenario = Cast<UShidenScenario>(Asset.GetAsset()); IsValid(Scenario))
 			{
 				bool bChanged = false;
@@ -1261,7 +1261,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 						bChanged = true;
 					}
 				}
-				
+
 				for (FShidenMacroParameter& Parameter : Scenario->MacroParameterDefinitions)
 				{
 					if (Parameter.Type == EShidenVariableType::AssetPath && Parameter.AssetPathType == EShidenAssetPathType::None)
@@ -1270,7 +1270,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 						bChanged = true;
 					}
 				}
-				
+
 				if (bChanged)
 				{
 					EditorAssetSubsystem->SaveLoadedAsset(Scenario);
@@ -1297,7 +1297,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 		UE_LOG(LogTemp, Error, TEXT("Failed to get current plugin version"));
 		return false;
 	}
-	
+
 	EditorConfig->PluginVersion = NewVersion;
 	EditorConfig->SaveConfig(CPF_Config, *EditorConfig->GetDefaultConfigFilename());
 	EditorConfig->TryUpdateDefaultConfigFile();

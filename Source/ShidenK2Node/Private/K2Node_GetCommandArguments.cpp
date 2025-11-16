@@ -113,13 +113,13 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 		{
 			return true;
 		}
-		
+
 		TArray<FString> Keys;
 		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
 			Keys.Add(Arg.ArgName.ToString());
 		}
-		
+
 		for (FString Key : Keys)
 		{
 			if (!OldPinNames.Contains(Key))
@@ -127,7 +127,7 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 				return true;
 			}
 		}
-		
+
 		for (FString OldPinName : OldPinNames)
 		{
 			if (!Keys.Contains(OldPinName))
@@ -147,7 +147,7 @@ void UK2Node_GetCommandArguments::RefreshOutputPins()
 	TArray<UEdGraphPin*> OldOutputPins = TArray<UEdGraphPin*>();
 	const UEdGraphPin* CommandDefinitionsPin = FindCommandDefinitionsPin();
 	const UEdGraphPin* CommandNamePin = FindCommandNamePin();
-	
+
 	const FString CommandName = CommandNamePin->DefaultValue;
 	const TObjectPtr<UShidenCommandDefinitions> Definitions = Cast<UShidenCommandDefinitions>(CommandDefinitionsPin->DefaultObject);
 
@@ -314,7 +314,7 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 	{
 		return;
 	}
-	
+
 	if (Pin->PinName == CommandDefinitionsPinName)
 	{
 		if (UEdGraphPin* CommandNamePin = FindCommandNamePin())
@@ -410,7 +410,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 	if (nullptr == OriginalGetCommandDefinitionsInPin || (0 == OriginalGetCommandDefinitionsInPin->LinkedTo.Num() && nullptr == Definitions))
 	{
 		CompilerContext.MessageLog.Error(*LOCTEXT("GetCommandArgumentsNoCommandDefinitions_Error",
-		                                            "GetCommandArguments must have a CommandDefinitions specified.").
+		                                          "GetCommandArguments must have a CommandDefinitions specified.").
 		                                 ToString(), this);
 		// we break exec links so this is the only error we get
 		BreakAllNodeLinks();
@@ -427,7 +427,7 @@ void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerCon
 			OutputPins.Add(TestPin);
 		}
 	}
-	
+
 	for (UEdGraphPin* OutputPin : OutputPins)
 	{
 		Count++;
