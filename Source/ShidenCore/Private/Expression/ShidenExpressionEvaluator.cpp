@@ -1156,6 +1156,18 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 			return true;
 		}
 
+		// Validate shift amount (must be non-negative and less than bit width)
+		if (RightInt < 0)
+		{
+			ErrorMessage = TEXT("Shift amount must be non-negative");
+			return false;
+		}
+		if (RightInt >= 32)
+		{
+			ErrorMessage = TEXT("Shift amount must be less than 32 for int32");
+			return false;
+		}
+
 		if (Operator == TEXT("<<"))
 		{
 			OutResult = FShidenExpressionValue(LeftInt << RightInt);
