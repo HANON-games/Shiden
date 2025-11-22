@@ -3,7 +3,6 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/Base64.h"
 #include "Expression/ShidenExpressionBlueprintLibrary.h"
-#include "Variable/ShidenVariableBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 
 // =============================================================================
@@ -29,7 +28,7 @@ struct FReplaceVariablesInExpressionTestParameters
 	}
 
 	FReplaceVariablesInExpressionTestParameters() = default;
-	
+
 	explicit FReplaceVariablesInExpressionTestParameters(const FString& Parameters)
 	{
 		TArray<FString> Parts;
@@ -132,142 +131,149 @@ void FReplaceVariablesInExpressionTest::GetTests(TArray<FString>& OutBeautifiedN
 	// UserVariable_String - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("UserVariable_String"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Hello {PlayerName}!"), TEXT("Hello \"Hero\"!"))
-		.AddUserVariable(TEXT("PlayerName"), EShidenVariableType::String, TEXT("Hero"))
-		.ToString());
+	                    .SetInput(TEXT("Hello {PlayerName}!"), TEXT("Hello \"Hero\"!"))
+	                    .AddUserVariable(TEXT("PlayerName"), EShidenVariableType::String, TEXT("Hero"))
+	                    .ToString());
 
 	// UserVariable_Integer
 	OutBeautifiedNames.Add(TEXT("UserVariable_Integer"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Score: {Score}"), TEXT("Score: 100"))
-		.AddUserVariable(TEXT("Score"), EShidenVariableType::Integer, TEXT("100"))
-		.ToString());
+	                    .SetInput(TEXT("Score: {Score}"), TEXT("Score: 100"))
+	                    .AddUserVariable(TEXT("Score"), EShidenVariableType::Integer, TEXT("100"))
+	                    .ToString());
 
 	// UserVariable_Float
 	OutBeautifiedNames.Add(TEXT("UserVariable_Float"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Health: {Health}"), TEXT("Health: 75.5"))
-		.AddUserVariable(TEXT("Health"), EShidenVariableType::Float, TEXT("75.5"))
-		.ToString());
+	                    .SetInput(TEXT("Health: {Health}"), TEXT("Health: 75.5"))
+	                    .AddUserVariable(TEXT("Health"), EShidenVariableType::Float, TEXT("75.5"))
+	                    .ToString());
 
 	// UserVariable_Boolean
 	OutBeautifiedNames.Add(TEXT("UserVariable_Boolean"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Alive: {IsAlive}"), TEXT("Alive: true"))
-		.AddUserVariable(TEXT("IsAlive"), EShidenVariableType::Boolean, TEXT("true"))
-		.ToString());
+	                    .SetInput(TEXT("Alive: {IsAlive}"), TEXT("Alive: true"))
+	                    .AddUserVariable(TEXT("IsAlive"), EShidenVariableType::Boolean, TEXT("true"))
+	                    .ToString());
 
 	// UserVariable_Multiple - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("UserVariable_Multiple"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("{PlayerName} scored {Score} points"), TEXT("\"Hero\" scored 100 points"))
-		.AddUserVariable(TEXT("PlayerName"), EShidenVariableType::String, TEXT("Hero"))
-		.AddUserVariable(TEXT("Score"), EShidenVariableType::Integer, TEXT("100"))
-		.ToString());
+	                    .SetInput(TEXT("{PlayerName} scored {Score} points"), TEXT("\"Hero\" scored 100 points"))
+	                    .AddUserVariable(TEXT("PlayerName"), EShidenVariableType::String, TEXT("Hero"))
+	                    .AddUserVariable(TEXT("Score"), EShidenVariableType::Integer, TEXT("100"))
+	                    .ToString());
 
 	// SystemVariable_String - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("SystemVariable_String"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Welcome to {System::GameTitle}"), TEXT("Welcome to \"My Visual Novel\""))
-		.AddSystemVariable(TEXT("GameTitle"), EShidenVariableType::String, TEXT("My Visual Novel"))
-		.ToString());
+	                    .SetInput(TEXT("Welcome to {System::GameTitle}"), TEXT("Welcome to \"My Visual Novel\""))
+	                    .AddSystemVariable(TEXT("GameTitle"), EShidenVariableType::String, TEXT("My Visual Novel"))
+	                    .ToString());
 
 	// SystemVariable_Integer
 	OutBeautifiedNames.Add(TEXT("SystemVariable_Integer"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Chapter {System::ChapterNumber}"), TEXT("Chapter 5"))
-		.AddSystemVariable(TEXT("ChapterNumber"), EShidenVariableType::Integer, TEXT("5"))
-		.ToString());
+	                    .SetInput(TEXT("Chapter {System::ChapterNumber}"), TEXT("Chapter 5"))
+	                    .AddSystemVariable(TEXT("ChapterNumber"), EShidenVariableType::Integer, TEXT("5"))
+	                    .ToString());
 
 	// LocalVariable_String - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("LocalVariable_String"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Local: {Local::LocalName}"), TEXT("Local: \"LocalValue\""))
-		.AddLocalVariable(TEXT("LocalName"), EShidenVariableType::String, TEXT("LocalValue"))
-		.ToString());
+	                    .SetInput(TEXT("Local: {Local::LocalName}"), TEXT("Local: \"LocalValue\""))
+	                    .AddLocalVariable(TEXT("LocalName"), EShidenVariableType::String, TEXT("LocalValue"))
+	                    .ToString());
 
 	// LocalVariable_Integer
 	OutBeautifiedNames.Add(TEXT("LocalVariable_Integer"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Local count: {Local::Count}"), TEXT("Local count: 42"))
-		.AddLocalVariable(TEXT("Count"), EShidenVariableType::Integer, TEXT("42"))
-		.ToString());
+	                    .SetInput(TEXT("Local count: {Local::Count}"), TEXT("Local count: 42"))
+	                    .AddLocalVariable(TEXT("Count"), EShidenVariableType::Integer, TEXT("42"))
+	                    .ToString());
 
 	// PredefinedVariable
 	OutBeautifiedNames.Add(TEXT("PredefinedVariable"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("MasterVolume: {Predefined::MasterVolume}"), TEXT("MasterVolume: 1.0"))
-		.ToString());
-	
+	                    .SetInput(TEXT("MasterVolume: {Predefined::MasterVolume}"), TEXT("MasterVolume: 1.0"))
+	                    .ToString());
+
 	// Mixed_UserAndSystem - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("Mixed_UserAndSystem"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("{UserName} is playing version {System::Version}"), TEXT("\"Player1\" is playing version \"1.0.0\""))
-		.AddUserVariable(TEXT("UserName"), EShidenVariableType::String, TEXT("Player1"))
-		.AddSystemVariable(TEXT("Version"), EShidenVariableType::String, TEXT("1.0.0"))
-		.ToString());
+	                    .SetInput(TEXT("{UserName} is playing version {System::Version}"), TEXT("\"Player1\" is playing version \"1.0.0\""))
+	                    .AddUserVariable(TEXT("UserName"), EShidenVariableType::String, TEXT("Player1"))
+	                    .AddSystemVariable(TEXT("Version"), EShidenVariableType::String, TEXT("1.0.0"))
+	                    .ToString());
 
 	// Mixed_AllTypes - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("Mixed_AllTypes"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("{User} / {System::Sys} / {Local::Loc}"), TEXT("\"U\" / \"S\" / \"L\""))
-		.AddUserVariable(TEXT("User"), EShidenVariableType::String, TEXT("U"))
-		.AddSystemVariable(TEXT("Sys"), EShidenVariableType::String, TEXT("S"))
-		.AddLocalVariable(TEXT("Loc"), EShidenVariableType::String, TEXT("L"))
-		.ToString());
+	                    .SetInput(TEXT("{User} / {System::Sys} / {Local::Loc}"), TEXT("\"U\" / \"S\" / \"L\""))
+	                    .AddUserVariable(TEXT("User"), EShidenVariableType::String, TEXT("U"))
+	                    .AddSystemVariable(TEXT("Sys"), EShidenVariableType::String, TEXT("S"))
+	                    .AddLocalVariable(TEXT("Loc"), EShidenVariableType::String, TEXT("L"))
+	                    .ToString());
 
 	// Undefined - Note: undefined variables become empty string in expression context
 	OutBeautifiedNames.Add(TEXT("Undefined"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Hello {UndefinedVar}!"), TEXT("Hello !"))
-		.ToString());
+	                    .SetInput(TEXT("Hello {UndefinedVar}!"), TEXT("Hello !"))
+	                    .ToString());
 
 	// NoPlaceholders_PlainText
 	OutBeautifiedNames.Add(TEXT("NoPlaceholders_PlainText"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Hello World!"), TEXT("Hello World!"))
-		.ToString());
+	                    .SetInput(TEXT("Hello World!"), TEXT("Hello World!"))
+	                    .ToString());
 
 	// NoPlaceholders_Empty
 	OutBeautifiedNames.Add(TEXT("NoPlaceholders_Empty"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT(""), TEXT(""))
-		.ToString());
+	                    .SetInput(TEXT(""), TEXT(""))
+	                    .ToString());
 
 	// NoPlaceholders_SpecialChars
 	OutBeautifiedNames.Add(TEXT("NoPlaceholders_SpecialChars"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Special chars: !@#$%^&*()"), TEXT("Special chars: !@#$%^&*()"))
-		.ToString());
+	                    .SetInput(TEXT("Special chars: !@#$%^&*()"), TEXT("Special chars: !@#$%^&*()"))
+	                    .ToString());
 
 	// SpacesInPlaceholder - Note: strings are wrapped in double quotes
 	OutBeautifiedNames.Add(TEXT("SpacesInPlaceholder"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Value: { TestVar }"), TEXT("Value: \"TestValue\""))
-		.AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("TestValue"))
-		.ToString());
+	                    .SetInput(TEXT("Value: { TestVar }"), TEXT("Value: \"TestValue\""))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("TestValue"))
+	                    .ToString());
 
 	// Vector2 - Note: uses [X, Y] format for expression
 	OutBeautifiedNames.Add(TEXT("Vector2"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Position: {Position2D}"), TEXT("Position: [100, 200]"))
-		.AddUserVariable(TEXT("Position2D"), EShidenVariableType::Vector2, TEXT("X=100.0 Y=200.0"))
-		.ToString());
+	                    .SetInput(TEXT("Position: {Position2D}"), TEXT("Position: [100, 200]"))
+	                    .AddUserVariable(TEXT("Position2D"), EShidenVariableType::Vector2, TEXT("X=100.0 Y=200.0"))
+	                    .ToString());
 
 	// Vector3 - Note: uses [X, Y, Z] format for expression
 	OutBeautifiedNames.Add(TEXT("Vector3"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("Position: {Position3D}"), TEXT("Position: [10, 20, 30]"))
-		.AddUserVariable(TEXT("Position3D"), EShidenVariableType::Vector3, TEXT("X=10.0 Y=20.0 Z=30.0"))
-		.ToString());
+	                    .SetInput(TEXT("Position: {Position3D}"), TEXT("Position: [10, 20, 30]"))
+	                    .AddUserVariable(TEXT("Position3D"), EShidenVariableType::Vector3, TEXT("X=10.0 Y=20.0 Z=30.0"))
+	                    .ToString());
 
 	// VariableValueContainingVariablePattern - Verify no recursive replacement, strings wrapped in quotes
 	OutBeautifiedNames.Add(TEXT("VariableValueContainingVariablePattern_NoRecursiveReplacement"));
 	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
-		.SetInput(TEXT("{Text1} {Text2}"), TEXT("\"{Text2}\" \"test\""))
-		.AddUserVariable(TEXT("Text1"), EShidenVariableType::String, TEXT("{Text2}"))
-		.AddUserVariable(TEXT("Text2"), EShidenVariableType::String, TEXT("test"))
-		.ToString());
+	                    .SetInput(TEXT("{Text1} {Text2}"), TEXT("\"{Text2}\" \"test\""))
+	                    .AddUserVariable(TEXT("Text1"), EShidenVariableType::String, TEXT("{Text2}"))
+	                    .AddUserVariable(TEXT("Text2"), EShidenVariableType::String, TEXT("test"))
+	                    .ToString());
+
+	// MultipleOccurrencesOfSameVariable - Verify that all occurrences of the same variable are replaced
+	OutBeautifiedNames.Add(TEXT("MultipleOccurrencesOfSameVariable"));
+	OutTestCommands.Add(FReplaceVariablesInExpressionTestParameters()
+	                    .SetInput(TEXT("{Text} {Text}"), TEXT("\"test\" \"test\""))
+	                    .AddUserVariable(TEXT("Text"), EShidenVariableType::String, TEXT("test"))
+	                    .ToString());
 }
 
 bool FReplaceVariablesInExpressionTest::RunTest(const FString& Parameters)
