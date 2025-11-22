@@ -2,6 +2,7 @@
 
 #include "Misc/AutomationTest.h"
 #include "Misc/Base64.h"
+#include "Engine/Engine.h"
 #include "Expression/ShidenExpressionBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 
@@ -54,7 +55,7 @@ struct FReplaceVariablesInExpressionTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesInExpressionTestParameters& AddUserVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesInExpressionTestParameters& AddUserVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
@@ -65,7 +66,7 @@ struct FReplaceVariablesInExpressionTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesInExpressionTestParameters& AddSystemVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesInExpressionTestParameters& AddSystemVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
@@ -76,7 +77,7 @@ struct FReplaceVariablesInExpressionTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesInExpressionTestParameters& AddLocalVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesInExpressionTestParameters& AddLocalVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;

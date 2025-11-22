@@ -2,6 +2,7 @@
 
 #include "Misc/AutomationTest.h"
 #include "Misc/Base64.h"
+#include "Engine/Engine.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 
@@ -54,7 +55,7 @@ struct FReplaceVariablesTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesTestParameters& AddUserVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesTestParameters& AddUserVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
@@ -65,7 +66,7 @@ struct FReplaceVariablesTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesTestParameters& AddSystemVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesTestParameters& AddSystemVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
@@ -76,7 +77,7 @@ struct FReplaceVariablesTestParameters
 		return *this;
 	}
 
-	FReplaceVariablesTestParameters& AddLocalVariable(const FString& Name, EShidenVariableType Type, const FString& DefaultValue)
+	FReplaceVariablesTestParameters& AddLocalVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
