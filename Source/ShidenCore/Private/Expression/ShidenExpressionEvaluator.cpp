@@ -1243,6 +1243,11 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 
 	if (Operator == TEXT("%"))
 	{
+		if (FMath::IsNearlyZero(RightValue))
+		{
+			ErrorMessage = TEXT("Modulo by zero");
+			return false;
+		}
 		const float Result = FMath::Fmod(LeftValue, RightValue);
 		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
 		{
