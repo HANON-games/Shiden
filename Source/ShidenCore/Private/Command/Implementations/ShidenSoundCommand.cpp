@@ -275,8 +275,10 @@ bool UShidenSoundCommand::ShouldStopVoice(const bool bDisableAutoStopPreviousVoi
 	case EShidenVoiceStopCondition::NextTextOrVoice:
 	case EShidenVoiceStopCondition::NextVoice:
 		return !bDisableAutoStopPreviousVoices;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown VoiceStopCondition value: %d"), static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition));
+		return false;
 	}
-	return false;
 }
 
 bool UShidenSoundCommand::TryConvertToShidenSoundType(const FString& SoundTypeStr, EShidenSoundType& SoundType, FString& ErrorMessage)

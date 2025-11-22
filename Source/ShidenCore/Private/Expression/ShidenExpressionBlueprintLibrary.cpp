@@ -154,6 +154,14 @@ bool UShidenExpressionBlueprintLibrary::TryCreateScopeKey(const FString& Process
 	return false;
 }
 
+// Structure to hold replacement information with position
+struct FExpressionReplacementInfo
+{
+	int32 Start;
+	int32 End;
+	FString ReplacementText;
+};
+
 FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FString& ProcessName, const FString& Expression)
 {
 	if (!Expression.Contains(TEXT("{")) || !Expression.Contains(TEXT("}")))
@@ -162,11 +170,15 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	FString ResultText = Expression;
 	FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Expression);
+
+	// Collect all replacements with their positions
+	TArray<FExpressionReplacementInfo> Replacements;
 
 	while (Matcher.FindNext())
 	{
+		const int32 MatchStart = Matcher.GetMatchBeginning();
+		const int32 MatchEnd = Matcher.GetMatchEnding();
 		FString Str = Matcher.GetCaptureGroup(1);
 		FString VariableName = Str.Mid(1, Str.Len() - 2).TrimStartAndEnd();
 		FString VariableKind, ReplacementText, VariableKey;
@@ -386,7 +398,16 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			ReplacementText = TEXT("Error");
 		}
 
-		ResultText.ReplaceInline(*Str, *ReplacementText, ESearchCase::CaseSensitive);
+		Replacements.Add({MatchStart, MatchEnd, ReplacementText});
+	}
+
+	// Apply all replacements from back to front to preserve positions
+	FString ResultText = Expression;
+	for (int32 i = Replacements.Num() - 1; i >= 0; --i)
+	{
+		const FExpressionReplacementInfo& Info = Replacements[i];
+		ResultText.RemoveAt(Info.Start, Info.End - Info.Start);
+		ResultText.InsertAt(Info.Start, Info.ReplacementText);
 	}
 
 	return ResultText;

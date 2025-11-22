@@ -24,37 +24,15 @@ struct SHIDENCORE_API FShidenCommand
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	TMap<FString, FString> Args;
 
-	FString GetArg(const FString& Key) const
-	{
-		return Args.FindRef(Key);
-	}
+	FString GetArg(const FString& Key) const;
 
-	int32 GetArgAsInt(const FString& Key) const
-	{
-		return FCString::Atoi(*Args.FindRef(Key));
-	}
+	int32 GetArgAsInt(const FString& Key) const;
 
-	float GetArgAsFloat(const FString& Key) const
-	{
-		return FCString::Atof(*Args.FindRef(Key));
-	}
+	float GetArgAsFloat(const FString& Key) const;
 
-	bool GetArgAsBool(const FString& Key) const
-	{
-		return Args.FindRef(Key).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
-	}
+	bool GetArgAsBool(const FString& Key) const;
 
-	FVector2D GetArgAsVector2D(const FString& Key) const
-	{
-		FVector2D Result;
-		Result.InitFromString(Args.FindRef(Key));
-		return Result;
-	}
+	FVector2D GetArgAsVector2D(const FString& Key) const;
 
-	FVector GetArgAsVector(const FString& Key) const
-	{
-		FVector Result;
-		Result.InitFromString(Args.FindRef(Key));
-		return Result;
-	}
+	FVector GetArgAsVector(const FString& Key) const;
 };

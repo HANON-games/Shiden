@@ -11,39 +11,15 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariableDefinition : public FShiden
 {
 	GENERATED_BODY()
 
-	FString GetVariable() const
-	{
-		if (Getter)
-		{
-			return Getter();
-		}
-		return DefaultValue;
-	}
+	FString GetVariable() const;
 
-	void SetVariable(const FString& Value) const
-	{
-		if (Setter)
-		{
-			Setter(Value);
-		}
-	}
+	void SetVariable(const FString& Value) const;
 
-	FShidenPredefinedSystemVariableDefinition()
-		: FShidenVariableDefinition(), Getter(nullptr), Setter(nullptr)
-	{
-	}
+	FShidenPredefinedSystemVariableDefinition();
 
 	FShidenPredefinedSystemVariableDefinition(const FString& Name, const EShidenVariableType Type, const EShidenAssetPathType AssetPathType,
 	                                          const FString& DefaultValue, const bool bIsReadOnly,
-	                                          const TFunction<FString()>& Getter, const TFunction<void(FString)>& Setter)
-		: Getter(Getter), Setter(Setter)
-	{
-		this->Name = Name;
-		this->Type = Type;
-		this->AssetPathType = AssetPathType;
-		this->DefaultValue = DefaultValue;
-		this->bIsReadOnly = bIsReadOnly;
-	}
+	                                          const TFunction<FString()>& Getter, const TFunction<void(FString)>& Setter);
 
 private:
 	TFunction<FString()> Getter;

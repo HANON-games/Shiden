@@ -272,6 +272,10 @@ void UShidenTextCommand::ProcessCommand_Implementation(const FString& ProcessNam
 			Status = EShidenProcessStatus::Next;
 			break;
 		}
+	default:
+		Status = EShidenProcessStatus::Error;
+		ErrorMessage = FString::Printf(TEXT("Unknown text command state: %d"), static_cast<int32>(CurrentState));
+		break;
 	}
 }
 
@@ -338,6 +342,9 @@ bool UShidenTextCommand::ShouldPlayTextBlip(const FString& TextBlipPath, const F
 			return TextBlipWaitTime <= 0.f;
 		case EShidenTextBlipTriggerMode::CharacterInterval:
 			return TextBlipCharacterCount <= 0;
+		default:
+			UE_LOG(LogTemp, Warning, TEXT("Unknown TextBlipTriggerMode: %d"), static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode));
+			return false;
 		}
 	}
 	return false;

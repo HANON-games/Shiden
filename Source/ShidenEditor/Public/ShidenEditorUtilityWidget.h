@@ -18,4 +18,6 @@ public:
 	void ReceivePostUndo();
 
 	virtual void PostEditUndo() override;
+	
+	virtual const FText GetPaletteCategory() override;
 };

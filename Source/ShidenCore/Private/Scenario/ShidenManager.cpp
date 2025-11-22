@@ -130,6 +130,9 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 			Duration = 0.0f;
 			bSuccess = true;
 			return;
+		default:
+			UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundInfo.Type));
+			return;
 		}
 	}
 
@@ -161,6 +164,9 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 	case EShidenSoundType::SE:
 		PlaySE(SoundInfo, SoundAsset, bRegisterSound);
 		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		return;
 	}
 
 	Duration = SoundAsset->GetDuration();
@@ -188,6 +194,9 @@ void AShidenManager::StopSound_Implementation(const int32& TrackId, const EShide
 			VoiceComponents.Remove(TrackId);
 		}
 		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(Type));
+		break;
 	}
 }
 
@@ -211,7 +220,7 @@ void AShidenManager::AdjustBGMVolume_Implementation(const int32& TrackId, const 
 
 void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 {
-	for (const TPair<int, UAudioComponent*>& Pair : BGMComponents)
+	for (const TPair<int32, UAudioComponent*>& Pair : BGMComponents)
 	{
 		if (Pair.Value)
 		{
@@ -227,7 +236,7 @@ void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 		}
 	}
 
-	for (const TPair<int, UAudioComponent*>& Pair : VoiceComponents)
+	for (const TPair<int32, UAudioComponent*>& Pair : VoiceComponents)
 	{
 		if (Pair.Value)
 		{
@@ -282,7 +291,7 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 {
 	if (SoundInfo.Type == EShidenSoundType::SE)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayBGMOrSE called with non-SE sound type."));
+		UE_LOG(LogTemp, Warning, TEXT("PlayBGMOrVoice called with SE sound type."));
 		return;
 	}
 
@@ -376,6 +385,9 @@ void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComp
 		VoiceComponents.Add(SoundInfo.TrackId, AudioComponent);
 		AudioComponent->OnAudioFinishedNative.AddLambda([this](UAudioComponent* _) { RemoveSound(EShidenSoundType::Voice); });
 		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundInfo.Type));
+		break;
 	}
 }
 
@@ -426,6 +438,9 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 			}
 			break;
 		}
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		break;
 	}
 }
 

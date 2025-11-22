@@ -104,29 +104,22 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindUserVariable(const F
 	switch (VariableType)
 	{
 	case EShidenVariableType::Boolean:
-		ShidenSubsystem->UserVariable.TryGet(Name, bBooleanValue);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, bBooleanValue);
 	case EShidenVariableType::Integer:
-		ShidenSubsystem->UserVariable.TryGet(Name, IntegerValue);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, IntegerValue);
 	case EShidenVariableType::Float:
-		ShidenSubsystem->UserVariable.TryGet(Name, FloatValue);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, FloatValue);
 	case EShidenVariableType::String:
 	case EShidenVariableType::AssetPath:
-		ShidenSubsystem->UserVariable.TryGet(Name, StringValue);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, StringValue);
 	case EShidenVariableType::Vector2:
-		ShidenSubsystem->UserVariable.TryGet(Name, Vector2Value);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, Vector2Value);
 	case EShidenVariableType::Vector3:
-		ShidenSubsystem->UserVariable.TryGet(Name, Vector3Value);
-		break;
+		return ShidenSubsystem->UserVariable.TryGet(Name, Vector3Value);
 	default:
 		ErrorMessage = FString::Printf(TEXT("Unknown variable type %d for variable %s"), static_cast<int32>(VariableType), *Name);
 		return false;
 	}
-	return true;
 }
 
 SHIDENCORE_API void UShidenVariableBlueprintLibrary::ResetUserVariables()
@@ -333,6 +326,8 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::InitLocalVariable(const FSt
 					ShidenSubsystem->LocalVariable.TryUpdate(ScopeKey, Definition.Name, Vector3Value, true);
 					break;
 				}
+			default:
+				break;
 			}
 		}
 	}
@@ -488,27 +483,27 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVa
 		return false;
 	}
 
-	if (Name.Compare(TEXT("MasterVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	if (Name.Compare(TEXT("MasterVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.MasterVolume);
 	}
-	else if (Name.Compare(TEXT("BGMVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("BGMVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.BGMVolume);
 	}
-	else if (Name.Compare(TEXT("SEVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("SEVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.SEVolume);
 	}
-	else if (Name.Compare(TEXT("VoiceVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("VoiceVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.VoiceVolume);
 	}
@@ -528,7 +523,7 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::SetMasterVolume(const UObje
 	if (ShidenSubsystem->PredefinedSystemVariable.MasterVolume != Value)
 	{
 		ShidenSubsystem->PredefinedSystemVariable.MasterVolume = Value;
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(), Value);
 	}
 }
@@ -621,6 +616,14 @@ SHIDENCORE_API TArray<FString> UShidenVariableBlueprintLibrary::GetVariableNames
 	return Result;
 }
 
+// Structure to hold replacement information with position
+struct FShidenReplacementInfo
+{
+	int32 Start;
+	int32 End;
+	FString ReplacementText;
+};
+
 SHIDENCORE_API FString UShidenVariableBlueprintLibrary::ReplaceVariables(const FString& ProcessName, const FString& Text)
 {
 	if (!Text.Contains(TEXT("{")) || !Text.Contains(TEXT("}")))
@@ -630,10 +633,15 @@ SHIDENCORE_API FString UShidenVariableBlueprintLibrary::ReplaceVariables(const F
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	FString ResultText = Text;
 	FRegexMatcher Matcher(GetReplaceTextPattern(), Text);
+
+	// Collect all replacements with their positions
+	TArray<FShidenReplacementInfo> Replacements;
+
 	while (Matcher.FindNext())
 	{
+		const int32 MatchStart = Matcher.GetMatchBeginning();
+		const int32 MatchEnd = Matcher.GetMatchEnding();
 		FString Str = Matcher.GetCaptureGroup(1);
 		FString VariableName = Str.Mid(1, Str.Len() - 2).TrimStartAndEnd();
 
@@ -679,7 +687,16 @@ SHIDENCORE_API FString UShidenVariableBlueprintLibrary::ReplaceVariables(const F
 			ReplacementText = TEXT("Error");
 		}
 
-		ResultText.ReplaceInline(*Str, *ReplacementText, ESearchCase::CaseSensitive);
+		Replacements.Add({MatchStart, MatchEnd, ReplacementText});
+	}
+
+	// Apply all replacements from back to front to preserve positions
+	FString ResultText = Text;
+	for (int32 i = Replacements.Num() - 1; i >= 0; --i)
+	{
+		const FShidenReplacementInfo& Info = Replacements[i];
+		ResultText.RemoveAt(Info.Start, Info.End - Info.Start);
+		ResultText.InsertAt(Info.Start, Info.ReplacementText);
 	}
 
 	return ResultText;
@@ -705,12 +722,15 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 			continue;
 		}
 
-		FString ResultText = Value;
-
 		FRegexMatcher Matcher(GetReplaceTextPattern(), Value);
+
+		// Collect all replacements with their positions
+		TArray<FShidenReplacementInfo> Replacements;
 
 		while (Matcher.FindNext())
 		{
+			const int32 MatchStart = Matcher.GetMatchBeginning();
+			const int32 MatchEnd = Matcher.GetMatchEnding();
 			FString Str = Matcher.GetCaptureGroup(1);
 			FString VariableName = Str.Mid(1, Str.Len() - 2).TrimStartAndEnd();
 
@@ -726,9 +746,9 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 				FShidenVariableDefinition Definition;
 				if (ShidenSubsystem->UserVariable.TryGetDefinition(TempKey, Definition) && Definition.bIsReadOnly)
 				{
-					if (!ShidenSubsystem->UserVariable.TryGetAsString(TempKey, Type, ReplacementText))
+					if (ShidenSubsystem->UserVariable.TryGetAsString(TempKey, Type, ReplacementText))
 					{
-						continue;
+						Replacements.Add({MatchStart, MatchEnd, ReplacementText});
 					}
 				}
 			}
@@ -739,9 +759,9 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 				FShidenVariableDefinition Definition;
 				if (ShidenSubsystem->SystemVariable.TryGetDefinition(TempKey, Definition) && Definition.bIsReadOnly)
 				{
-					if (!ShidenSubsystem->SystemVariable.TryGetAsString(TempKey, Type, ReplacementText))
+					if (ShidenSubsystem->SystemVariable.TryGetAsString(TempKey, Type, ReplacementText))
 					{
-						continue;
+						Replacements.Add({MatchStart, MatchEnd, ReplacementText});
 					}
 				}
 			}
@@ -749,17 +769,20 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 			{
 				// LocalVariable
 				const FString TempKey = VariableKey.Replace(TEXT("\\:"), TEXT(":"));
-				if (!TempLocalVariable.TryGetAsString(TempKey, Type, ReplacementText))
+				if (TempLocalVariable.TryGetAsString(TempKey, Type, ReplacementText))
 				{
-					continue;
+					Replacements.Add({MatchStart, MatchEnd, ReplacementText});
 				}
 			}
-			else
-			{
-				continue;
-			}
+		}
 
-			ResultText.ReplaceInline(*Str, *ReplacementText, ESearchCase::CaseSensitive);
+		// Apply all replacements from back to front to preserve positions
+		FString ResultText = Value;
+		for (int32 i = Replacements.Num() - 1; i >= 0; --i)
+		{
+			const FShidenReplacementInfo& Info = Replacements[i];
+			ResultText.RemoveAt(Info.Start, Info.End - Info.Start);
+			ResultText.InsertAt(Info.Start, Info.ReplacementText);
 		}
 
 		Result.Args.Add(Key, ResultText);
@@ -767,7 +790,7 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 	return Result;
 }
 
-SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceAllVariable(const FString& ProcessName, const FShidenCommand& Command)
+SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceAllVariables(const FString& ProcessName, const FShidenCommand& Command)
 {
 	FShidenCommand Result = Command;
 	Result.Args.Empty();
@@ -1025,6 +1048,9 @@ bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedVariable(const UObject*
 	case EShidenVariableType::Vector3:
 		ErrorMessage = TEXT("Invalid Type");
 		return false;
+	default:
+		ErrorMessage = TEXT("Unknown variable type");
+		return false;
 	}
 
 	if (!ShidenSubsystem->PredefinedSystemVariable.TryUpdateByString(Name, Value))
@@ -1033,27 +1059,27 @@ bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedVariable(const UObject*
 		return false;
 	}
 
-	if (Name.Compare(TEXT("MasterVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	if (Name.Compare(TEXT("MasterVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.MasterVolume);
 	}
-	else if (Name.Compare(TEXT("BGMVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("BGMVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.BGMVolume);
 	}
-	else if (Name.Compare(TEXT("SEVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("SEVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.SEVolume);
 	}
-	else if (Name.Compare(TEXT("VoiceVolumeRate"), ESearchCase::IgnoreCase) == 0)
+	else if (Name.Compare(TEXT("VoiceVolume"), ESearchCase::IgnoreCase) == 0)
 	{
-		const UShidenProjectConfig* ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
 		                ShidenSubsystem->PredefinedSystemVariable.VoiceVolume);
 	}
@@ -1092,9 +1118,10 @@ SHIDENCORE_API bool TryUpdateLocalVariable(const FString& ProcessName, const ESh
 		{
 			return UShidenVariableBlueprintLibrary::TryUpdateLocalVector3(ProcessName, Name, Vector3Value, ErrorMessage);
 		}
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type: %d"), static_cast<int32>(Type));
+		return false;
 	}
-
-	return false;
 }
 
 SHIDENCORE_API bool TryUpdateSystemVariable(const EShidenVariableType& Type, const FString& Name, const bool bBooleanValue,
@@ -1128,9 +1155,10 @@ SHIDENCORE_API bool TryUpdateSystemVariable(const EShidenVariableType& Type, con
 		{
 			return UShidenVariableBlueprintLibrary::TryUpdateSystemVector3(Name, Vector3Value, ErrorMessage);
 		}
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type: %d"), static_cast<int32>(Type));
+		return false;
 	}
-
-	return false;
 }
 
 SHIDENCORE_API bool TryUpdateUserVariable(const EShidenVariableType& Type, const FString& Name, const bool bBooleanValue,
@@ -1164,9 +1192,10 @@ SHIDENCORE_API bool TryUpdateUserVariable(const EShidenVariableType& Type, const
 		{
 			return UShidenVariableBlueprintLibrary::TryUpdateUserVector3(Name, Vector3Value, ErrorMessage);
 		}
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type: %d"), static_cast<int32>(Type));
+		return false;
 	}
-
-	return false;
 }
 
 SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryUpdateVariable(const UObject* WorldContextObject, const FString& ProcessName,
@@ -1186,8 +1215,10 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryUpdateVariable(const UOb
 		return TryUpdateSystemVariable(Type, Name, bBooleanValue, StringValue, IntegerValue, FloatValue, Vector2Value, Vector3Value, ErrorMessage);
 	case EShidenVariableKind::PredefinedSystemVariable:
 		return TryUpdatePredefinedVariable(WorldContextObject, Type, Name, bBooleanValue, StringValue, IntegerValue, FloatValue, ErrorMessage);
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Kind));
+		return false;
 	}
-	return false;
 }
 
 SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindVariable(const FString& ProcessName,
@@ -1366,6 +1397,8 @@ bool UShidenVariableBlueprintLibrary::TryEvaluateCondition(const EShidenVariable
 		return TryEvaluateComparisonImpl(Operator, AVector2Value, BVector2Value, bResult, ErrorMessage);
 	case EShidenVariableType::Vector3:
 		return TryEvaluateComparisonImpl(Operator, AVector3Value, BVector3Value, bResult, ErrorMessage);
+	default:
+		ErrorMessage = FString::Printf(TEXT("Unknown variable type: %d"), static_cast<int32>(Type));
+		return false;
 	}
-	return false;
 }

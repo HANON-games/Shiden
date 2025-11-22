@@ -98,54 +98,39 @@ SHIDENCORE_API void UShidenProjectConfig::SetSystemVariableDefinitions(const TAr
 	SaveProjectConfigChanges(ProjectConfig);
 }
 
+template<typename T>
+T* UShidenProjectConfig::LoadSoftObjectIfNeeded(const TSoftObjectPtr<T>& SoftObject)
+{
+	if (SoftObject.IsValid())
+	{
+		return SoftObject.Get();
+	}
+	return SoftObject.LoadSynchronous();
+}
+
 USoundClass* UShidenProjectConfig::GetMasterSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ProjectConfig->MasterSoundClass.IsValid())
-	{
-		return ProjectConfig->MasterSoundClass.Get();
-	}
-	return ProjectConfig->MasterSoundClass.LoadSynchronous();
+	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->MasterSoundClass);
 }
 
 USoundClass* UShidenProjectConfig::GetBGMSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ProjectConfig->BGMSoundClass.IsValid())
-	{
-		return ProjectConfig->BGMSoundClass.Get();
-	}
-	return ProjectConfig->BGMSoundClass.LoadSynchronous();
+	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->BGMSoundClass);
 }
 
 USoundClass* UShidenProjectConfig::GetSESoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ProjectConfig->SESoundClass.IsValid())
-	{
-		return ProjectConfig->SESoundClass.Get();
-	}
-	return ProjectConfig->SESoundClass.LoadSynchronous();
+	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->SESoundClass);
 }
 
 USoundClass* UShidenProjectConfig::GetVoiceSoundClass()
 {
-	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ProjectConfig->VoiceSoundClass.IsValid())
-	{
-		return ProjectConfig->VoiceSoundClass.Get();
-	}
-	return ProjectConfig->VoiceSoundClass.LoadSynchronous();
+	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->VoiceSoundClass);
 }
 
 USoundMix* UShidenProjectConfig::GetSoundClassMix()
 {
-	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
-	if (ProjectConfig->SoundClassMix.IsValid())
-	{
-		return ProjectConfig->SoundClassMix.Get();
-	}
-	return ProjectConfig->SoundClassMix.LoadSynchronous();
+	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->SoundClassMix);
 }
 
 void UShidenProjectConfig::SaveProjectConfigChanges(const TObjectPtr<UShidenProjectConfig> Config)

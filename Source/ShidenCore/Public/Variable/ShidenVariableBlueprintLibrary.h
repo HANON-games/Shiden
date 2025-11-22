@@ -545,7 +545,7 @@ public:
 	static FShidenCommand ReplaceVariablesForLoad(FShidenVariable TempLocalVariable, const FShidenCommand& Command);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Variables", meta = (ProcessName = "Default"))
-	static FShidenCommand ReplaceAllVariable(const FString& ProcessName, const FShidenCommand& Command);
+	static FShidenCommand ReplaceAllVariables(const FString& ProcessName, const FShidenCommand& Command);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Variables", meta = (DisplayName = "Convert to Variable Kind"))
 	static UPARAM(DisplayName = "Success") bool TryConvertToVariableKind(const FString& VariableKind, EShidenVariableKind& Result);
@@ -599,6 +599,8 @@ public:
 
 	static FRegexPattern& GetVariablePattern();
 
+	static FString ReplaceVariables(const FString& ProcessName, const FString& Text);
+
 private:
 	template <class T>
 	static bool TryUpdateUserVariableImpl(const FString& Name, const T& Value, EShidenVariableType Type, FString& ErrorMessage);
@@ -615,8 +617,6 @@ private:
 	static bool TryUpdatePredefinedVariable(const UObject* WorldContextObject, const EShidenVariableType& Type, const FString& Name,
 	                                        const bool bBooleanValue, const FString& StringValue, const int32 IntegerValue, const float FloatValue,
 	                                        FString& ErrorMessage);
-
-	static FString ReplaceVariables(const FString& ProcessName, const FString& Text);
 
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
 

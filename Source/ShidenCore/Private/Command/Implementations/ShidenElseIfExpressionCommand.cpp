@@ -11,9 +11,6 @@ void UShidenElseIfExpressionCommand::ProcessCommand_Implementation(const FString
                                                                    const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                    FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	int32 NextIndex;
-	UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
-
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 
@@ -42,9 +39,6 @@ void UShidenElseIfExpressionCommand::PreviewCommand_Implementation(const FShiden
                                                                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage
 )
 {
-	int32 NextIndex;
-	UShidenScenarioBlueprintLibrary::ToNext(TEXT("Default"), NextIndex);
-
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	check(ShidenSubsystem);
 

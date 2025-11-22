@@ -120,7 +120,7 @@ void UShidenSoundPropertyView::OnObjectChanged(const FAssetData& AssetData)
 void UShidenSoundPropertyView::SetSoundClass(USoundClass* NewSoundClass)
 {
 	SoundClass = NewSoundClass;
-	if (SelectedAsset.IsValid()
+	if (SelectedAsset.IsValid() && SoundClass
 		&& SoundClass != SelectedAsset->SoundClassObject
 		&& !SoundClass->ChildClasses.Contains(SelectedAsset->SoundClassObject))
 	{
@@ -136,7 +136,7 @@ USoundClass* UShidenSoundPropertyView::GetSoundClass() const
 
 bool UShidenSoundPropertyView::TrySetSelectedAsset(USoundBase* NewAsset)
 {
-	if (NewAsset == nullptr || SoundClass == nullptr
+	if (!NewAsset || !SoundClass
 		|| SoundClass == NewAsset->SoundClassObject
 		|| SoundClass->ChildClasses.Contains(NewAsset->SoundClassObject))
 	{

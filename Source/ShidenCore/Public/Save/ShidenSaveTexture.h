@@ -24,25 +24,7 @@ struct SHIDENCORE_API FShidenSaveTexture
 	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Save Game")
 	TArray<uint8> Pixels = TArray<uint8>();
 
-	explicit FShidenSaveTexture(UTexture2D* Texture)
-	{
-		if (!Texture)
-		{
-			return;
-		}
+	explicit FShidenSaveTexture(UTexture2D* Texture);
 
-		Width = Texture->GetSizeX();
-		Height = Texture->GetSizeY();
-		Format = Texture->GetPixelFormat();
-
-		FTexture2DMipMap& Mip = Texture->GetPlatformData()->Mips[0];
-		const void* TextureData = Mip.BulkData.Lock(LOCK_READ_ONLY);
-		Pixels.SetNum(Mip.BulkData.GetBulkDataSize());
-		FMemory::Memcpy(Pixels.GetData(), TextureData, Pixels.Num());
-		Mip.BulkData.Unlock();
-	}
-
-	FShidenSaveTexture()
-	{
-	}
+	FShidenSaveTexture() = default;
 };

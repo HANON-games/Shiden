@@ -219,15 +219,17 @@ SHIDENCORE_API void UShidenScenarioBlueprintLibrary::MarkAsRead()
 		return;
 	}
 
-	TArray<FShidenScenarioProgress>* Stack = &ShidenSubsystem->ScenarioProgressStack["Default"].Stack;
-	if (Stack->Num() == 0)
+	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
+	if (!ProgressStack || ProgressStack->Stack.Num() == 0)
 	{
 		return;
 	}
 
-	auto& [ReadLineHashSet] = ShidenSubsystem->ScenarioReadLines.FindOrAdd((*Stack)[0].ScenarioId);
+	TArray<FShidenScenarioProgress>& Stack = ProgressStack->Stack;
 
-	const FGuid ReadLineHash = GenerateReadLineHashFromScenarioProgressStack(*Stack);
+	auto& [ReadLineHashSet] = ShidenSubsystem->ScenarioReadLines.FindOrAdd(Stack[0].ScenarioId);
+
+	const FGuid ReadLineHash = GenerateReadLineHashFromScenarioProgressStack(Stack);
 
 	ReadLineHashSet.Add(ReadLineHash);
 }
@@ -242,19 +244,21 @@ SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::IsRead()
 		return false;
 	}
 
-	TArray<FShidenScenarioProgress>* Stack = &ShidenSubsystem->ScenarioProgressStack["Default"].Stack;
-	if (Stack->Num() == 0)
+	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
+	if (!ProgressStack || ProgressStack->Stack.Num() == 0)
 	{
 		return false;
 	}
 
-	const FShidenReadLines* ReadLines = ShidenSubsystem->ScenarioReadLines.Find((*Stack)[0].ScenarioId);
+	TArray<FShidenScenarioProgress>& Stack = ProgressStack->Stack;
+
+	const FShidenReadLines* ReadLines = ShidenSubsystem->ScenarioReadLines.Find(Stack[0].ScenarioId);
 	if (!ReadLines)
 	{
 		return false;
 	}
 
-	const FGuid ReadLineHash = GenerateReadLineHashFromScenarioProgressStack(*Stack);
+	const FGuid ReadLineHash = GenerateReadLineHashFromScenarioProgressStack(Stack);
 
 	return ReadLines->ReadLineHashes.Contains(ReadLineHash);
 }
@@ -375,7 +379,7 @@ SHIDENCORE_API void UShidenScenarioBlueprintLibrary::ConstructCommand(const FStr
 {
 	if (OriginalCommand.PresetName.IsEmpty())
 	{
-		Command = UShidenVariableBlueprintLibrary::ReplaceAllVariable(ProcessName, OriginalCommand);
+		Command = UShidenVariableBlueprintLibrary::ReplaceAllVariables(ProcessName, OriginalCommand);
 		return;
 	}
 
@@ -388,7 +392,7 @@ SHIDENCORE_API void UShidenScenarioBlueprintLibrary::ConstructCommand(const FStr
 	if (!Preset || Preset->CommandName != OriginalCommandName)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Error: Preset \"%s\" is not found. Command Name: %s"), *OriginalPresetName, *OriginalCommandName);
-		Command = UShidenVariableBlueprintLibrary::ReplaceAllVariable(ProcessName, OriginalCommand);
+		Command = UShidenVariableBlueprintLibrary::ReplaceAllVariables(ProcessName, OriginalCommand);
 		return;
 	}
 
@@ -411,7 +415,7 @@ SHIDENCORE_API void UShidenScenarioBlueprintLibrary::ConstructCommand(const FStr
 		}
 	}
 
-	Command = UShidenVariableBlueprintLibrary::ReplaceAllVariable(ProcessName, TempCommand);
+	Command = UShidenVariableBlueprintLibrary::ReplaceAllVariables(ProcessName, TempCommand);
 }
 
 SHIDENCORE_API void UShidenScenarioBlueprintLibrary::ConstructCommandForLoad(const FShidenVariable& TempLocalVariables,
@@ -579,6 +583,9 @@ FShidenVariable ExtractReadOnlyLocalVariable(const UShidenScenario* Scenario, co
 					}
 					break;
 				}
+			default:
+				UE_LOG(LogTemp, Warning, TEXT("ExtractReadOnlyLocalVariable: Unknown variable type %d for variable: %s"), static_cast<int32>(VariableDefinition.Type), *VariableDefinition.Name);
+				break;
 			}
 		}
 	}

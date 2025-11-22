@@ -49,7 +49,8 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 	check(ShidenSubsystem);
 
 	constexpr int32 MaxStackDepth = 50;
-	if (ShidenSubsystem->ScenarioProgressStack.FindRef("Default").Stack.Num() > MaxStackDepth)
+	const FShidenScenarioProgressStack* InitialProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
+	if (InitialProgressStack && InitialProgressStack->Stack.Num() > MaxStackDepth)
 	{
 		Status = EShidenPreviewStatus::Error;
 		ErrorMessage = FString::Printf(TEXT("The stack contains too many scenarios to be previewed (limit: %d)."), MaxStackDepth);
@@ -61,7 +62,14 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 
 	while (true)
 	{
-		const int32 CurrentIndex = ShidenSubsystem->ScenarioProgressStack["Default"].GetCurrentScenarioIndex();
+		const FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
+		if (!ProgressStack)
+		{
+			Status = EShidenPreviewStatus::Error;
+			ErrorMessage = TEXT("ScenarioProgressStack 'Default' not found.");
+			return;
+		}
+		const int32 CurrentIndex = ProgressStack->GetCurrentScenarioIndex();
 		FShidenCommand ShidenCommand;
 		if (!Scenario->Commands.IsValidIndex(CurrentIndex))
 		{

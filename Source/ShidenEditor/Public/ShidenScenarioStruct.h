@@ -32,28 +32,9 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 	UPROPERTY()
 	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
 
-	UShidenScenario* ToShidenScenario()
-	{
-		const TObjectPtr<UShidenScenario> Scenario = NewObject<UShidenScenario>();
-		Scenario->ScenarioId = ScenarioId;
-		Scenario->Note = Note;
-		Scenario->Commands = Commands;
-		Scenario->MacroParameterDefinitions = MacroParameterDefinitions;
-		Scenario->LocalVariableDefinitions = LocalVariableDefinitions;
-		return Scenario;
-	}
+	UShidenScenario* ToShidenScenario();
 
-	explicit FShidenScenarioStruct(const UShidenScenario* InScenario, const FString& InPluginVersion)
-	{
-		ScenarioId = InScenario->ScenarioId;
-		Note = InScenario->Note;
-		Commands = InScenario->Commands;
-		MacroParameterDefinitions = InScenario->MacroParameterDefinitions;
-		LocalVariableDefinitions = InScenario->LocalVariableDefinitions;
-		PluginVersion = InPluginVersion;
-	}
+	explicit FShidenScenarioStruct(const UShidenScenario* InScenario, const FString& InPluginVersion);
 
-	FShidenScenarioStruct()
-	{
-	}
+	FShidenScenarioStruct() = default;
 };

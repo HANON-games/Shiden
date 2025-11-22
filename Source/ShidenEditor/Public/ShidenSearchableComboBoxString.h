@@ -15,7 +15,7 @@
 #include "SSearchableComboBox.h"
 #include "ShidenSearchableComboBoxString.generated.h"
 
-UCLASS(meta = (DisplayName = "SearchableComboBox (String)"))
+UCLASS()
 class SHIDENEDITOR_API UShidenSearchableComboBoxString : public UWidget
 {
 	GENERATED_UCLASS_BODY()

@@ -16,3 +16,8 @@ TSharedRef<SWidget> UShidenSvgWidget::RebuildWidget()
 		.Image(SvgBrush.Get())
 		.Visibility(SvgBrush ? EVisibility::Visible : EVisibility::Collapsed);
 }
+
+const FText UShidenSvgWidget::GetPaletteCategory()
+{
+	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
+}

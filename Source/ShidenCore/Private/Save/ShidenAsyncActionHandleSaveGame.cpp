@@ -53,7 +53,7 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 			FOnSaveCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 		return;
 	default:
-		UE_LOG(LogScript, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
+		UE_LOG(LogTemp, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
 		UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
 	}
 }

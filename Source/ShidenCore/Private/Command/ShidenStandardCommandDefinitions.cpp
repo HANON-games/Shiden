@@ -172,7 +172,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("TextKey", "Text"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -236,7 +236,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language2Key", "Language 2"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -244,7 +244,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Key", "Language 3"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -252,7 +252,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Key", "Language 4"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -260,7 +260,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Key", "Language 5"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -268,7 +268,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Key", "Language 6"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -276,7 +276,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Key", "Language 7"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -284,7 +284,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Key", "Language 8"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -292,7 +292,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Key", "Language 9"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -300,7 +300,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Key", "Language 10"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -573,46 +573,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Option 1"),
-						LOCTEXT("Option1Key", "Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
-					},
-					{
-						TEXT("Option 2"),
-						LOCTEXT("Option2Key", "Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
-					},
-					{
-						TEXT("Option 3"),
-						LOCTEXT("Option3Key", "Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
-					},
-					{
-						TEXT("Option 4"),
-						LOCTEXT("Option4Key", "Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
-					},
-					{
-						TEXT("Option 5"),
-						LOCTEXT("Option5Key", "Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
-					},
-					{
 						TEXT("DestinationVariableKind"),
 						LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
 						TEXT("UserVariable"),
@@ -626,9 +586,9 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
-							{TEXT("VariableKindSourceIndex"), TEXT("5")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
-							{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer")}
+								{TEXT("VariableKindSourceIndex"), TEXT("5")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
+								{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer")}
 						},
 						false
 					},
@@ -641,11 +601,51 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						false
 					},
 					{
+						TEXT("Option 1"),
+						LOCTEXT("Option1Key", "Option 1"),
+						TEXT(""),
+						TextInputTemplate,
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
+						false
+					},
+					{
+						TEXT("Option 2"),
+						LOCTEXT("Option2Key", "Option 2"),
+						TEXT(""),
+						TextInputTemplate,
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
+						false
+					},
+					{
+						TEXT("Option 3"),
+						LOCTEXT("Option3Key", "Option 3"),
+						TEXT(""),
+						TextInputTemplate,
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
+						false
+					},
+					{
+						TEXT("Option 4"),
+						LOCTEXT("Option4Key", "Option 4"),
+						TEXT(""),
+						TextInputTemplate,
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
+						false
+					},
+					{
+						TEXT("Option 5"),
+						LOCTEXT("Option5Key", "Option 5"),
+						TEXT(""),
+						TextInputTemplate,
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
+						false
+					},
+					{
 						TEXT("Language 2 Option 1"),
 						LOCTEXT("Language2Option1Key", "Language 2 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -653,7 +653,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language2Option2Key", "Language 2 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -661,7 +661,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language2Option3Key", "Language 2 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -669,7 +669,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language2Option4Key", "Language 2 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -677,7 +677,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language2Option5Key", "Language 2 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -685,7 +685,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Option1Key", "Language 3 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -693,7 +693,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Option2Key", "Language 3 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -701,7 +701,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Option3Key", "Language 3 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -709,7 +709,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Option4Key", "Language 3 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -717,7 +717,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language3Option5Key", "Language 3 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -725,7 +725,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Option1Key", "Language 4 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -733,7 +733,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Option2Key", "Language 4 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -741,7 +741,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Option3Key", "Language 4 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -749,7 +749,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Option4Key", "Language 4 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -757,7 +757,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language4Option5Key", "Language 4 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -765,7 +765,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Option1Key", "Language 5 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -773,7 +773,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Option2Key", "Language 5 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -781,7 +781,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Option3Key", "Language 5 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -789,7 +789,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Option4Key", "Language 5 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -797,7 +797,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language5Option5Key", "Language 5 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -805,7 +805,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Option1Key", "Language 6 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -813,7 +813,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Option2Key", "Language 6 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -821,7 +821,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Option3Key", "Language 6 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -829,7 +829,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Option4Key", "Language 6 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -837,7 +837,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language6Option5Key", "Language 6 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -845,7 +845,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Option1Key", "Language 7 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -853,7 +853,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Option2Key", "Language 7 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -861,7 +861,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Option3Key", "Language 7 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -869,7 +869,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Option4Key", "Language 7 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -877,7 +877,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language7Option5Key", "Language 7 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -885,7 +885,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Option1Key", "Language 8 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -893,7 +893,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Option2Key", "Language 8 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -901,7 +901,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Option3Key", "Language 8 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -909,7 +909,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Option4Key", "Language 8 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -917,7 +917,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language8Option5Key", "Language 8 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -925,7 +925,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Option1Key", "Language 9 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -933,7 +933,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Option2Key", "Language 9 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -941,7 +941,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Option3Key", "Language 9 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -949,7 +949,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Option4Key", "Language 9 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -957,7 +957,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language9Option5Key", "Language 9 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -965,7 +965,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Option1Key", "Language 10 Option 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -973,7 +973,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Option2Key", "Language 10 Option 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -981,7 +981,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Option3Key", "Language 10 Option 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -989,7 +989,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Option4Key", "Language 10 Option 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -997,7 +997,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Language10Option5Key", "Language 10 Option 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 				}
@@ -1043,7 +1043,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("DefaultTextKey", "DefaultText"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1051,7 +1051,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("HintTextKey", "HintText"),
 						TEXT(""),
 						MultilineTextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1162,7 +1162,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ExpressionKey", "Expression"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -1340,7 +1340,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ExpressionKey", "Expression"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -1362,7 +1362,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ExpressionKey", "Expression"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -1453,7 +1453,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ExpressionKey", "Expression"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -1694,7 +1694,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg1Key", "Arg 1"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1702,7 +1702,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg2Key", "Arg 2"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1710,7 +1710,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg3Key", "Arg 3"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1718,7 +1718,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg4Key", "Arg 4"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1726,7 +1726,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg5Key", "Arg 5"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1734,7 +1734,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg6Key", "Arg 6"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1742,7 +1742,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg7Key", "Arg 7"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1750,7 +1750,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg8Key", "Arg 8"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1758,7 +1758,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg9Key", "Arg 9"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -1766,7 +1766,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("Arg10Key", "Arg 10"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
@@ -2429,7 +2429,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ReasonKey", "Reason"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					},
 					{
@@ -2468,7 +2468,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ContentKey", "Content"),
 						TEXT(""),
 						TextInputTemplate,
-						{},
+						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
 						false
 					}
 				}
