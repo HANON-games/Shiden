@@ -171,9 +171,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Expression", meta = (DisplayName = "Evaluate Expression Raw (Vector3)"))
 	static UPARAM(DisplayName = "Success") bool TryEvaluateExpressionVector3Raw(const FString& Expression, FVector& Result, FString& ErrorMessage);
 
-private:
 	static FString ReplaceVariablesInExpression(const FString& ProcessName, const FString& Expression);
 
+private:
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
 
 	static FString EscapeStringForExpression(const FString& StringValue);

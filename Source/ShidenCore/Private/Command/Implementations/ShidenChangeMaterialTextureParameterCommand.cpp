@@ -56,13 +56,6 @@ void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implement
 	{
 		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
 
-		if (TargetType.IsEmpty() || TargetName.IsEmpty() || ParameterName.IsEmpty())
-		{
-			ErrorMessage = FString::Printf(TEXT("Failed to restore from save data. Invalid scenario property key: %s"), *Pair.Key);
-			Status = EShidenInitFromSaveDataStatus::Error;
-			return;
-		}
-
 		Args = FChangeTextureParameterCommandArgs
 		{
 			.Target = TargetType,

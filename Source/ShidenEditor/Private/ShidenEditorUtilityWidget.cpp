@@ -13,3 +13,8 @@ void UShidenEditorUtilityWidget::PostEditUndo()
 
 	ReceivePostUndo();
 }
+
+const FText UShidenEditorUtilityWidget::GetPaletteCategory()
+{
+	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
+}

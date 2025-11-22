@@ -20,6 +20,8 @@ public:
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
+	
+	virtual const FText GetPaletteCategory() override;
 
 private:
 	TUniquePtr<FSlateVectorImageBrush> SvgBrush;

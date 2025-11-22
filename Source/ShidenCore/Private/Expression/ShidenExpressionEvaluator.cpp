@@ -8,7 +8,7 @@ bool FShidenExpressionValue::TryToNumeric(float& OutValue, FString& ErrorMessage
 	switch (Type)
 	{
 	case EShidenExpressionValueType::Integer:
-		OutValue = static_cast<double>(IntValue);
+		OutValue = static_cast<float>(IntValue);
 		return true;
 
 	case EShidenExpressionValueType::Float:
@@ -16,7 +16,7 @@ bool FShidenExpressionValue::TryToNumeric(float& OutValue, FString& ErrorMessage
 		return true;
 
 	case EShidenExpressionValueType::Boolean:
-		OutValue = BoolValue ? 1.0 : 0.0;
+		OutValue = BoolValue ? 1.0f : 0.0f;
 		return true;
 
 	default:
@@ -1243,6 +1243,11 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 
 	if (Operator == TEXT("%"))
 	{
+		if (FMath::IsNearlyZero(RightValue))
+		{
+			ErrorMessage = TEXT("Modulo by zero");
+			return false;
+		}
 		const float Result = FMath::Fmod(LeftValue, RightValue);
 		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
 		{

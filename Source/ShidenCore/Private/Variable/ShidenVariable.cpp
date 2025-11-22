@@ -255,7 +255,6 @@ SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShiden
 		UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Type), *Name);
 		return false;
 	}
-	return false;
 }
 
 SHIDENCORE_API void FShidenVariable::ResetAll()

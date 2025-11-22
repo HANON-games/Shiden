@@ -90,6 +90,11 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 	case EShidenSoundType::Voice:
 		CachedVoiceInfo.Add(SoundInfo.TrackId, SoundInfo);
 		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		Duration = 0.0f;
+		bSuccess = false;
+		return;
 	}
 
 	Duration = SoundAsset->Duration;
@@ -113,9 +118,15 @@ void UShidenPreviewManager::StopSound_Implementation(const int32& TrackId, const
 
 void UShidenPreviewManager::StopVoices_Implementation()
 {
-	for (const auto& Pair : CachedVoiceInfo)
+	TArray<int32> KeysToRemove;
+	for (const TPair<int32, FShidenSoundInfo>& Pair : CachedVoiceInfo)
 	{
-		StopSound_Implementation(Pair.Key, EShidenSoundType::Voice);
+		KeysToRemove.Add(Pair.Key);
+	}
+
+	for (const int32 Key : KeysToRemove)
+	{
+		StopSound_Implementation(Key, EShidenSoundType::Voice);
 	}
 }
 
@@ -168,4 +179,9 @@ void UShidenPreviewManager::ClearSoundInfo()
 	CachedBGMInfo.Empty();
 	CachedSEInfo.Empty();
 	CachedVoiceInfo.Empty();
+}
+
+const FText UShidenPreviewManager::GetPaletteCategory()
+{
+	return NSLOCTEXT("ShidenNamespace", "Shiden Editor", "Shiden Editor");
 }

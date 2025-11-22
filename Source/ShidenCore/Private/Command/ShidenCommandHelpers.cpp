@@ -163,9 +163,11 @@ namespace ShidenConditionalCommandHelpers
 				}
 				return UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValueVec3, bResult, ErrorMessage);
 			}
+		default:
+			UE_LOG(LogTemp, Warning, TEXT("TryEvaluateVariableCondition: Unknown variable type for variable '%s'."), *Args.VariableName);
+			ErrorMessage = FString::Printf(TEXT("Unknown variable type for variable '%s'."), *Args.VariableName);
+			return false;
 		}
-
-		return false;
 	}
 
 	bool TryParseExpressionCondition(const FShidenCommand& Command, FExpressionConditionArgs& Args, FString& ErrorMessage)

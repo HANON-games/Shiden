@@ -2158,6 +2158,12 @@ void ShidenExpressionEvaluatorEdgeCaseTest::GetTests(TArray<FString>& OutBeautif
 	OutBeautifiedNames.Add("DivisionByZero_ShouldFail");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 / 0"), TEXT(""), false).ToString());
 
+	OutBeautifiedNames.Add("ModuloByZero_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5 % 0"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ModuloByZeroFloat_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5.5 % 0.0"), TEXT(""), false).ToString());
+
 	OutBeautifiedNames.Add("SqrtNegative_ShouldFail");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(-1)"), TEXT(""), false).ToString());
 

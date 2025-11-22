@@ -106,6 +106,9 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(
 					WorldContextObject, Args.VariableName, bResult ? TEXT("true") : TEXT("false"));
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
 		}
 	case EShidenVariableType::AssetPath:
@@ -126,8 +129,10 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalString(ProcessName, Args.VariableName, Result, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, Result);
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Integer:
 		{
@@ -146,8 +151,10 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(ProcessName, Args.VariableName, Result, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::FromInt(Result));
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Float:
 		{
@@ -166,8 +173,10 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalFloat(ProcessName, Args.VariableName, Result, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::SanitizeFloat(Result));
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Vector2:
 		{
@@ -186,8 +195,10 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector2(ProcessName, Args.VariableName, Result, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, Result.ToString());
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Vector3:
 		{
@@ -206,8 +217,10 @@ bool UShidenAssignExpressionCommand::TryEvaluateAndAssign(const UObject* WorldCo
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector3(ProcessName, Args.VariableName, Result, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, Result.ToString());
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	default:
 		ErrorMessage = TEXT("Unsupported expression value type.");

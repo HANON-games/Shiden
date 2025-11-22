@@ -183,4 +183,7 @@ public:
 
 private:
 	static void SaveProjectConfigChanges(TObjectPtr<UShidenProjectConfig> Config);
+
+	template<typename T>
+	static T* LoadSoftObjectIfNeeded(const TSoftObjectPtr<T>& SoftObject);
 };

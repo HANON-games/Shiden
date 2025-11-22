@@ -183,6 +183,9 @@ SHIDENCORE_API void UShidenWidget::CaptureScreenToTexture2D(UTexture2D*& ResultT
 	case EShidenCaptureScreenMode::FullSceneWithoutTextBaseLayer:
 		TakeScreenshot(false, ResultTexture);
 		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("UShidenWidget::CaptureScreenToTexture2D: Unknown CaptureScreenMode %d."), static_cast<int32>(CaptureScreenMode));
+		break;
 	}
 }
 
@@ -1009,6 +1012,10 @@ SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, c
 			break;
 		case ESlateVisibility::SelfHitTestInvisible:
 			VisibilityStr = TEXT("Not Hit-Testable (Self Only)");
+			break;
+		default:
+			UE_LOG(LogTemp, Warning, TEXT("UShidenWidget::TrySetVisibility: Unknown ESlateVisibility value %d. Defaulting to 'Visible'."), static_cast<int32>(NewVisibility));
+			VisibilityStr = TEXT("Visible");
 			break;
 		}
 

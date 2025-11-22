@@ -20,39 +20,15 @@ struct SHIDENEDITOR_API FShidenPluginVersion
 
 	FShidenPluginVersion() = default;
 
-	FShidenPluginVersion(const int32 InMajor, const int32 InMinor, const int32 InPatch)
-		: Major(InMajor), Minor(InMinor), Patch(InPatch)
-	{
-	}
+	FShidenPluginVersion(const int32 InMajor, const int32 InMinor, const int32 InPatch);
 
-	bool operator==(const FShidenPluginVersion& That) const noexcept
-	{
-		return Major == That.Major
-			&& Minor == That.Minor
-			&& Patch == That.Patch;
-	}
+	bool operator==(const FShidenPluginVersion& That) const noexcept;
 
-	bool operator!=(const FShidenPluginVersion& That) const noexcept
-	{
-		return !(*this == That);
-	}
+	bool operator!=(const FShidenPluginVersion& That) const noexcept;
 
-	bool operator<(const FShidenPluginVersion& That) const noexcept
-	{
-		return Major < That.Major
-			|| (Major == That.Major && Minor < That.Minor)
-			|| (Major == That.Major && Minor == That.Minor && Patch < That.Patch);
-	}
+	bool operator<(const FShidenPluginVersion& That) const noexcept;
 
-	bool operator>(const FShidenPluginVersion& That) const noexcept
-	{
-		return Major > That.Major
-			|| (Major == That.Major && Minor > That.Minor)
-			|| (Major == That.Major && Minor == That.Minor && Patch > That.Patch);
-	}
+	bool operator>(const FShidenPluginVersion& That) const noexcept;
 
-	FString ToString() const noexcept
-	{
-		return FString::Printf(TEXT("%d.%d.%d"), Major, Minor, Patch);
-	}
+	FString ToString() const noexcept;
 };

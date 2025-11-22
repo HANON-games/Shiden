@@ -52,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SVNInternal")
 	void ClearSoundInfo();
 
+protected:
+	virtual const FText GetPaletteCategory() override;
+
 private:
 	UPROPERTY()
 	TMap<int32, FShidenSoundInfo> CachedBGMInfo;

@@ -94,8 +94,10 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalString(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue);
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Integer:
 		{
@@ -116,8 +118,10 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalInteger(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::FromInt(ResultValue));
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Float:
 		{
@@ -138,8 +142,10 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalFloat(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, FString::SanitizeFloat(ResultValue));
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Vector2:
 		{
@@ -165,8 +171,10 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector2(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString());
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
 	case EShidenVariableType::Vector3:
 		{
@@ -192,13 +200,15 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 				return UShidenVariableBlueprintLibrary::TryUpdateLocalVector3(ProcessName, Args.VariableName, ResultValue, ErrorMessage);
 			case EShidenVariableKind::PredefinedSystemVariable:
 				return UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVariableByString(WorldContextObject, Args.VariableName, ResultValue.ToString());
+			default:
+				ErrorMessage = FString::Printf(TEXT("Unknown variable kind: %d"), static_cast<int32>(Args.VariableKind));
+				return false;
 			}
-			return false;
 		}
+	default:
+		ErrorMessage = TEXT("Unknown variable type.");
+		return false;
 	}
-
-	ErrorMessage = TEXT("Unknown variable type.");
-	return false;
 }
 
 bool UShidenCalculationCommand::CalculateFloat(const FString& Operator, const float& A, const float& B, float& Result, FString& ErrorMessage)
@@ -296,7 +306,8 @@ bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result = B.X == 0 || B.Y == 0 ? FVector2D::ZeroVector : A / B;
+		Result.X = B.X == 0 ? 0.0f : A.X / B.X;
+		Result.Y = B.Y == 0 ? 0.0f : A.Y / B.Y;
 		return true;
 	}
 
@@ -326,7 +337,9 @@ bool UShidenCalculationCommand::CalculateVector3(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result = B.X == 0 || B.Y == 0 || B.Z == 0 ? FVector::ZeroVector : A / B;
+		Result.X = B.X == 0 ? 0.0f : A.X / B.X;
+		Result.Y = B.Y == 0 ? 0.0f : A.Y / B.Y;
+		Result.Z = B.Z == 0 ? 0.0f : A.Z / B.Z;
 		return true;
 	}
 
