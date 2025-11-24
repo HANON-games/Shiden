@@ -6,6 +6,7 @@
 #include "System/ShidenBlueprintLibrary.h"
 #include "Sound/SoundBase.h"
 #include "Command/ShidenCommandHelpers.h"
+#include "Engine/Engine.h"
 
 bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundCommandArgs& Args, FString& ErrorMessage)
 {
@@ -167,8 +168,9 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 		}
 	}
 
-	const float ResultStartVolume = Args.FadeType == TEXT("FadeIn") ? 0.0f : Args.Volume;
-	const float ResultEndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
+	const bool bIsFadeIn = IsFadeIn(Args.FadeType);
+	const float ResultStartVolume = bIsFadeIn ? 0.0f : Args.Volume;
+	const float ResultEndVolume = bIsFadeIn ? Args.Volume : 0.0f;
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
 
@@ -212,7 +214,7 @@ void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		}
 		else
 		{
-			const float EndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
+			const float EndVolume = IsFadeIn(Args.FadeType) ? Args.Volume : 0.0f;
 			UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackIdStr, {
 				                                                                 {TEXT("Path"), Args.SoundSourcePath},
 				                                                                 {TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
@@ -247,8 +249,9 @@ void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 	}
 
 	float ResultDuration = 0.f;
-	const float ResultStartVolume = Args.FadeType == TEXT("FadeIn") ? 0.0f : Args.Volume;
-	const float ResultEndVolume = Args.FadeType == TEXT("FadeIn") ? Args.Volume : 0.0f;
+	const bool bIsFadeIn = IsFadeIn(Args.FadeType);
+	const float ResultStartVolume = bIsFadeIn ? 0.0f : Args.Volume;
+	const float ResultEndVolume = bIsFadeIn ? Args.Volume : 0.0f;
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
 	bool bSuccess;
@@ -297,6 +300,11 @@ bool UShidenSoundCommand::TryConvertToShidenSoundType(const FString& SoundTypeSt
 
 	ErrorMessage = FString::Printf(TEXT("Failed to convert %s to EShidenSoundType."), *SoundTypeStr);
 	return false;
+}
+
+bool UShidenSoundCommand::IsFadeIn(const FString& FadeTypeStr)
+{
+	return FadeTypeStr.Compare(TEXT("FadeIn"), ESearchCase::IgnoreCase) == 0;
 }
 
 UInputAction* UShidenSoundCommand::LoadInputActionFromPath(const FString& Path)

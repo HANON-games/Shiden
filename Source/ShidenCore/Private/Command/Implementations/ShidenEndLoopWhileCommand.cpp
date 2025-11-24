@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenEndLoopWhileCommand.h"
+#include "Engine/Engine.h"
 
 void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,

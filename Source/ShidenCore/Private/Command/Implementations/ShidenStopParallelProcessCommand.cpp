@@ -3,6 +3,7 @@
 #include "Command/Implementations/ShidenStopParallelProcessCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "Engine/Engine.h"
 
 bool UShidenStopParallelProcessCommand::TryParseCommand(const FShidenCommand& Command, FStopParallelProcessArgs& Args, FString& ErrorMessage)
 {

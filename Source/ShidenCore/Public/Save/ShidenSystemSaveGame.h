@@ -6,7 +6,7 @@
 #include "Variable/ShidenVariable.h"
 #include "ShidenSystemSaveGame.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class SHIDENCORE_API UShidenSystemSaveGame : public UShidenBaseSaveGame
 {
 	GENERATED_BODY()
@@ -14,4 +14,19 @@ class SHIDENCORE_API UShidenSystemSaveGame : public UShidenBaseSaveGame
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	FShidenVariable SystemVariable;
+
+	static TObjectPtr<UShidenSystemSaveGame> GetOrCreate();
+	
+	void Apply() const;
+
+	void Prepare();
+
+	bool TryCommit();
+
+	static bool DoesExist();
+	
+	static bool TryDelete();
+
+private:
+	constexpr static TCHAR SystemDataSlotName[] = TEXT("ShidenSystemData");
 };

@@ -3,7 +3,10 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/AssetManager.h"
-#include "System/ShidenLoadingAssetInfo.h"
+#include "Engine/Engine.h"
+#include "Variable/ShidenVariableBlueprintLibrary.h"
+#include "Serialization/JsonSerializer.h"
+#include "AssetRegistry/AssetData.h"
 
 SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryConvertToStringArray(const FShidenScenarioProperty& Property, TArray<FString>& Result)
 {

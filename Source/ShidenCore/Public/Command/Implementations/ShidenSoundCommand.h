@@ -50,6 +50,8 @@ class SHIDENCORE_API UShidenSoundCommand : public UShidenCommandObject
 
 	static bool TryConvertToShidenSoundType(const FString& SoundTypeStr, EShidenSoundType& SoundType, FString& ErrorMessage);
 
+	static bool IsFadeIn(const FString& FadeTypeStr);
+
 	static UInputAction* LoadInputActionFromPath(const FString& Path);
 
 	static bool TryParseCommand(const FShidenCommand& Command, FSoundCommandArgs& Args, FString& ErrorMessage);

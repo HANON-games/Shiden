@@ -2,20 +2,15 @@
 
 #pragma once
 
-#include "Engine/Engine.h"
-#include "HAL/PlatformFilemanager.h"
 #include "Internationalization/Regex.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "Misc/FileHelper.h"
-#include "Misc/Paths.h"
 #include "System/ShidenBacklogItem.h"
 #include "Command/ShidenCommand.h"
-#include "System/ShidenSubsystem.h"
-#include "UnrealClient.h"
-#include "Widgets/SWindow.h"
-#include "AssetRegistry/AssetData.h"
 #include "UI/ShidenTextType.h"
 #include "ShidenBlueprintLibrary.generated.h"
+
+struct FShidenCommandDefinition;
+enum class EShidenSoundType : uint8;
 
 UCLASS()
 class SHIDENCORE_API UShidenBlueprintLibrary : public UBlueprintFunctionLibrary

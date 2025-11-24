@@ -5,7 +5,7 @@
 #include "GameFramework/SaveGame.h"
 #include "ShidenBaseSaveGame.generated.h"
 
-UCLASS(Abstract)
+UCLASS(NotBlueprintable, Abstract)
 class SHIDENCORE_API UShidenBaseSaveGame : public USaveGame
 {
 	GENERATED_BODY()

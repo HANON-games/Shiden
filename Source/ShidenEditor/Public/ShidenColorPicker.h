@@ -39,7 +39,7 @@ protected:
 private:
 	TSharedPtr<SColorBlock> ColorBlockWidget;
 
-	FReply HandleColorBlockMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
+	FReply HandleColorBlockMouseButtonDown(const FPointerEvent& MouseEvent);
 	
 	void OnColorPickerColorChanged(FLinearColor NewColor);
 

@@ -7,17 +7,17 @@
 TSharedRef<SWidget> UShidenColorPicker::RebuildWidget()
 {
 	ColorBlockWidget = SNew(SColorBlock)
-		.Color_Lambda([this]() { return Color; })
+		.Color_Lambda([this] { return Color; })
 		.Size(Size)
-		.OnMouseButtonDown_Lambda([this](const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+		.OnMouseButtonDown_Lambda([this](const FGeometry&, const FPointerEvent& MouseEvent)
 		{
-			return HandleColorBlockMouseButtonDown(MyGeometry, MouseEvent);
+			return HandleColorBlockMouseButtonDown(MouseEvent);
 		});
 
 	return ColorBlockWidget.ToSharedRef();
 }
 
-FReply UShidenColorPicker::HandleColorBlockMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply UShidenColorPicker::HandleColorBlockMouseButtonDown(const FPointerEvent& MouseEvent)
 {
 	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{

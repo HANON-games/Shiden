@@ -15,6 +15,9 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	TArray<FSoftObjectPath> CommandRedirectors;
 
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
+	FString ScenarioFilterPath;
+
+	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	FString EditScenarioPath;
 
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
@@ -23,8 +26,7 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	float ShidenDebuggerRefreshInterval;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ConfigRestartRequired = true))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference", Meta = (ConfigRestartRequired = true))
 	bool bAutoSaveScenario;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
@@ -32,6 +34,14 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 
 	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
 	FShidenPluginVersion PluginVersion;
+
+	/**
+	 * Sets the scenario filter path.
+	 * 
+	 * @param Path The new scenario filter path
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
+	static void SetScenarioFilterPath(const FString& Path);
 
 	/**
 	 * Sets the path of the scenario currently being edited.

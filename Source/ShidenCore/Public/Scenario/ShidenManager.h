@@ -5,15 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Scenario/ShidenManagerInterface.h"
-#include "InputMappingContext.h"
 #include "ShidenParallelProcessManagerInterface.h"
-#include "Audio/ShidenSoundInfo.h"
 #include "UI/ShidenWidget.h"
-#include "Engine/Texture2D.h"
-#include "Engine/World.h"
-#include "Sound/SoundBase.h"
-#include "Runtime/Launch/Resources/Version.h"
 #include "ShidenManager.generated.h"
+
+class USoundBase;
 
 UCLASS(BlueprintType, Blueprintable)
 class SHIDENCORE_API AShidenManager : public AActor, public IShidenManagerInterface
