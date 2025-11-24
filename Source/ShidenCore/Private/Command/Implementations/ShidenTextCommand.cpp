@@ -4,6 +4,7 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "Engine/Engine.h"
 
 void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs)
 {

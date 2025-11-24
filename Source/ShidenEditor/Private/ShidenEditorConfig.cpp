@@ -4,6 +4,7 @@
 
 SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	  , ScenarioFilterPath("")
 	  , EditScenarioPath("")
 	  , bPreviewSound(false)
 	  , ShidenDebuggerRefreshInterval(0.1f)
@@ -20,6 +21,11 @@ void UShidenEditorConfig::UpdateConfig(TMember UShidenEditorConfig::* MemberPtr,
 	Config->*MemberPtr = Value;
 	Config->SaveConfig(CPF_Config, *Config->GetDefaultConfigFilename());
 	Config->TryUpdateDefaultConfigFile();
+}
+
+SHIDENEDITOR_API void UShidenEditorConfig::SetScenarioFilterPath(const FString& Path)
+{
+	UpdateConfig(&UShidenEditorConfig::ScenarioFilterPath, Path);
 }
 
 SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& PackageName)

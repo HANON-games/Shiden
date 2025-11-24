@@ -1,7 +1,6 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenEditorMultiLineEditableTextBox.h"
-#include "Styling/SlateStyle.h"
 #include "Styling/AppStyle.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 
@@ -54,6 +53,12 @@ void UShidenEditorMultiLineEditableTextBox::InsertTextAtLocation(const int32 Lin
 
 	TArray<FString> Lines;
 	CurrentString.ParseIntoArrayLines(Lines, false);
+
+	// Handle empty text case - add an empty line so we can insert at LineIndex 0
+	if (Lines.Num() == 0)
+	{
+		Lines.Add(FString());
+	}
 
 	if (!Lines.IsValidIndex(LineIndex))
 	{

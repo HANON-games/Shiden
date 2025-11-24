@@ -1,8 +1,8 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Config/ShidenProjectConfig.h"
-#include "Sound/SoundClass.h"
-#include "Sound/SoundMix.h"
+#include "Save/ShidenUserSaveGame.h"
+#include "Save/ShidenSystemSaveGame.h"
 
 SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -10,6 +10,8 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	  , ScenarioDirectoryPath("/Game/Shiden/Scenarios/")
 	  , MacroDirectoryPath("/Game/Shiden/Macros/")
 	  , bAutoSaveOnMobileAppWillDeactivate(true)
+	  , UserSaveGameClass(UShidenUserSaveGame::StaticClass())
+	  , SystemSaveGameClass(UShidenSystemSaveGame::StaticClass())
 {
 	ScenarioPaths = TMap<FGuid, FString>();
 	WidgetClass = Cast<UClass>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")).TryLoad());

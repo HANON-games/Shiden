@@ -2,6 +2,7 @@
 
 #include "Command/Implementations/ShidenDelayCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "Engine/Engine.h"
 
 void UShidenDelayCommand::ParseFromCommand(const FShidenCommand& Command, FDelayCommandArgs& Args)
 {

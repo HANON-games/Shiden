@@ -32,12 +32,10 @@ struct SHIDENCORE_API FShidenSaveSlot
 	{
 	}
 
-	FShidenSaveSlot()
-	{
-	}
+	FShidenSaveSlot() = default;
 };
 
-UCLASS()
+UCLASS(NotBlueprintable)
 class SHIDENCORE_API UShidenSaveSlotsSaveGame : public USaveGame
 {
 	GENERATED_BODY()
@@ -45,4 +43,17 @@ class SHIDENCORE_API UShidenSaveSlotsSaveGame : public USaveGame
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FString, FShidenSaveSlot> SaveSlots;
+	
+	static TObjectPtr<UShidenSaveSlotsSaveGame> GetOrCreate();
+	
+	void Prepare(const FString& SlotName, const FShidenSaveTexture& SaveTexture, const TMap<FString, FString>& SaveSlotMetadata);
+
+	bool TryCommit();
+
+	static bool DoesExist();
+	
+	static bool TryDelete(const FString& SlotName);
+
+private:
+	constexpr static TCHAR SaveSlotsName[] = TEXT("ShidenSaveSlots");
 };

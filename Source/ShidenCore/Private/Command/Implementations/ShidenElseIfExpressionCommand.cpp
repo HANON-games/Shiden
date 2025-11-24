@@ -4,6 +4,7 @@
 #include "Command/ShidenCommandHelpers.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "Engine/Engine.h"
 
 void UShidenElseIfExpressionCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                                    UShidenWidget* ShidenWidget,

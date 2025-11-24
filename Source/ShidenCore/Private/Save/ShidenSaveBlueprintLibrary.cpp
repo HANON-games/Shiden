@@ -1,8 +1,6 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Save/ShidenSaveBlueprintLibrary.h"
-#include "AudioDevice.h"
-#include "Kismet/GameplayStatics.h"
 #include "Save/ShidenSystemSaveGame.h"
 #include "Save/ShidenUserSaveGame.h"
 #include "System/ShidenSubsystem.h"
@@ -11,6 +9,8 @@
 #include "Engine/Engine.h"
 #include "Save/ShidenPredefinedSystemSaveGame.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
+
+using namespace UE::Tasks;
 
 FPipe UShidenSaveBlueprintLibrary::SaveGamePipe = FPipe{TEXT("SaveGamePipe")};
 
@@ -51,40 +51,6 @@ SHIDENCORE_API UTexture2D* UShidenSaveBlueprintLibrary::ConvertSaveTextureToText
 	return Texture;
 }
 
-TObjectPtr<UShidenUserSaveGame> CreateOrUpdateUserSaveGame(const FString& SlotName)
-{
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
-
-	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenSaveBlueprintLibrary::DoesUserDataExist(SlotName)
-		                                                         ? Cast<UShidenUserSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0))
-		                                                         : Cast<UShidenUserSaveGame>(
-			                                                         UGameplayStatics::CreateSaveGameObject(UShidenUserSaveGame::StaticClass()));
-	SaveGameInstance->ScenarioProperties = ShidenSubsystem->ScenarioProperties;
-	SaveGameInstance->UserVariable = ShidenSubsystem->UserVariable;
-	SaveGameInstance->LocalVariable = ShidenSubsystem->LocalVariable;
-	SaveGameInstance->ScenarioProgressStack = ShidenSubsystem->ScenarioProgressStack;
-	if (SaveGameInstance->CreatedAt == FDateTime::MinValue())
-	{
-		SaveGameInstance->CreatedAt = FDateTime::UtcNow();
-	}
-	SaveGameInstance->UpdatedAt = FDateTime::UtcNow();
-
-	return SaveGameInstance;
-}
-
-TObjectPtr<UShidenSaveSlotsSaveGame> CreateOrUpdateSaveSlots(const FString& SlotName, const FShidenSaveTexture& SaveTexture,
-                                                             const TMap<FString, FString>& SaveSlotMetadata)
-{
-	TMap<FString, FShidenSaveSlot> SaveSlots = UShidenSaveBlueprintLibrary::AcquireSaveSlots();
-	const FDateTime CreatedAt = SaveSlots.Contains(SlotName) ? SaveSlots[SlotName].CreatedAt : FDateTime::UtcNow();
-	SaveSlots.Add(SlotName, FShidenSaveSlot{SlotName, SaveSlotMetadata, SaveTexture, CreatedAt, FDateTime::UtcNow()});
-	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(
-		UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()));
-	SaveSlotsInstance->SaveSlots = SaveSlots;
-	return SaveSlotsInstance;
-}
-
 void UShidenSaveBlueprintLibrary::WaitUntilEmpty()
 {
 	while (SaveGamePipe.HasWork())
@@ -94,70 +60,57 @@ void UShidenSaveBlueprintLibrary::WaitUntilEmpty()
 	}
 }
 
-bool UShidenSaveBlueprintLibrary::DoesSaveSlotsExist()
+bool UShidenSaveBlueprintLibrary::DoSaveSlotsExist()
 {
 	WaitUntilEmpty();
-
-	return UGameplayStatics::DoesSaveGameExist(TEXT("ShidenSaveSlots"), 0);
+	return UShidenSaveSlotsSaveGame::DoesExist();
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
 {
-	if (SlotName == TEXT("ShidenSystemData"))
+	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSystemData\" as user save slot name"));
-		return false;
-	}
-
-	if (SlotName == TEXT("ShidenSaveSlots"))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSaveSlots\" as user save slot name"));
 		return false;
 	}
 
 	WaitUntilEmpty();
 
-	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = CreateOrUpdateUserSaveGame(SlotName);
-	const bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, 0);
-
-	if (!bSuccess)
+	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+	SaveGameInstance->Prepare();
+	if (!SaveGameInstance->TryCommit())
 	{
 		return false;
 	}
 
 	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail);
-	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = CreateOrUpdateSaveSlots(SlotName, SaveTexture, SlotMetadata);
-	return UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
+	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
+	SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
+	return SaveSlotsInstance->TryCommit();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, UTexture2D* Thumbnail,
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, const TObjectPtr<UTexture2D> Thumbnail,
                                                                    const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
 {
-	if (SlotName == TEXT("ShidenSystemData"))
+	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSystemData\" as user save slot name"));
-		// ReSharper disable once CppExpressionWithoutSideEffects
-		SavedDelegate.ExecuteIfBound(false);
-		return;
-	}
-
-	if (SlotName == TEXT("ShidenSaveSlots"))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSaveSlots\" as user save slot name"));
 		// ReSharper disable once CppExpressionWithoutSideEffects
 		SavedDelegate.ExecuteIfBound(false);
 		return;
 	}
 
 	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail);
-	TObjectPtr<UShidenUserSaveGame> SaveGameInstance = CreateOrUpdateUserSaveGame(SlotName);
-	TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = CreateOrUpdateSaveSlots(SlotName, SaveTexture, SlotMetadata);
-
-	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, SaveSlotsInstance, SaveGameInstance, SavedDelegate]
+	
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, SaveTexture, SlotMetadata, SavedDelegate]
 	{
-		if (const bool bSaveSlotSuccess = UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0))
+		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
+		SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
+
+		if (const bool bSaveSlotSuccess = SaveSlotsInstance->TryCommit())
 		{
-			const bool bSaveUserDataSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, 0);
+			const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+			SaveGameInstance->Prepare();
+
+			const bool bSaveUserDataSuccess = SaveGameInstance->TryCommit();
 			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveUserDataSuccess]
 			{
 				// ReSharper disable once CppExpressionWithoutSideEffects
@@ -175,66 +128,83 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString
 	});
 }
 
-TObjectPtr<UShidenSystemSaveGame> CreateOrUpdateSystemSaveGame()
-{
-	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(
-		UGameplayStatics::CreateSaveGameObject(UShidenSystemSaveGame::StaticClass()));
-
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	check(ShidenSubsystem);
-
-	SaveGameInstance->SystemVariable = ShidenSubsystem->SystemVariable;
-	if (SaveGameInstance->CreatedAt == FDateTime::MinValue())
-	{
-		SaveGameInstance->CreatedAt = FDateTime::UtcNow();
-	}
-	SaveGameInstance->UpdatedAt = FDateTime::UtcNow();
-
-	return SaveGameInstance;
-}
-
-
-TObjectPtr<UShidenPredefinedSystemSaveGame> CreateOrUpdatePredefinedSystemSaveGame()
-{
-	const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = Cast<UShidenPredefinedSystemSaveGame>(
-		UGameplayStatics::CreateSaveGameObject(UShidenPredefinedSystemSaveGame::StaticClass()));
-
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	check(ShidenSubsystem);
-
-	SaveGameInstance->PredefinedSystemVariable = ShidenSubsystem->PredefinedSystemVariable;
-	SaveGameInstance->ScenarioReadLines = ShidenSubsystem->ScenarioReadLines;
-	if (SaveGameInstance->CreatedAt == FDateTime::MinValue())
-	{
-		SaveGameInstance->CreatedAt = FDateTime::UtcNow();
-	}
-	SaveGameInstance->UpdatedAt = FDateTime::UtcNow();
-
-	return SaveGameInstance;
-}
-
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveSystemData()
 {
 	WaitUntilEmpty();
-	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = CreateOrUpdateSystemSaveGame();
-	return UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
+	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
+	SaveGameInstance->Prepare();
+	return SaveGameInstance->TryCommit();
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySavePredefinedSystemData()
 {
 	WaitUntilEmpty();
-	const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = CreateOrUpdatePredefinedSystemSaveGame();
-	return UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenPredefinedSystemData"), 0);
+	const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = UShidenPredefinedSystemSaveGame::GetOrCreate();
+	SaveGameInstance->Prepare();
+	return SaveGameInstance->TryCommit();
+}
+
+SHIDENCORE_API UShidenUserSaveGame* UShidenSaveBlueprintLibrary::PrepareUserData(const FString& SlotName)
+{
+	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
+	{
+		return nullptr;
+	}
+
+	WaitUntilEmpty();
+
+	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+	SaveGameInstance->Prepare();
+	return SaveGameInstance;
+}
+
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitUserData(UShidenUserSaveGame* SaveGame, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+{
+	if (!SaveGame || !UShidenUserSaveGame::IsValidSlotName(SaveGame->SlotName))
+	{
+		return false;
+	}
+
+	WaitUntilEmpty();
+
+	if (!SaveGame->TryCommit())
+	{
+		return false;
+	}
+
+	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail);
+	const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
+	SaveSlotsInstance->Prepare(SaveGame->SlotName, SaveTexture, SlotMetadata);
+	return SaveSlotsInstance->TryCommit();
+}
+
+SHIDENCORE_API UShidenSystemSaveGame* UShidenSaveBlueprintLibrary::PrepareSystemData()
+{
+	WaitUntilEmpty();
+
+	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
+	SaveGameInstance->Prepare();
+	return SaveGameInstance;
+}
+
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitSystemData(UShidenSystemSaveGame* SaveGame)
+{
+	if (!SaveGame)
+	{
+		return false;
+	}
+
+	WaitUntilEmpty();
+	return SaveGame->TryCommit();
 }
 
 SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FOnSaveCompletedDelegate SavedDelegate)
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
-		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = CreateOrUpdateSystemSaveGame();
-		const bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenSystemData"), 0);
+		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
+		SaveGameInstance->Prepare();
+		const bool bSuccess = SaveGameInstance->TryCommit();
 		AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSuccess]
 		{
 			// ReSharper disable once CppExpressionWithoutSideEffects
@@ -247,10 +217,74 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(F
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
-		const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = CreateOrUpdatePredefinedSystemSaveGame();
-		const bool bSuccess = UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("ShidenPredefinedSystemData"), 0);
+		const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = UShidenPredefinedSystemSaveGame::GetOrCreate();
+		SaveGameInstance->Prepare();
+		const bool bSuccess = SaveGameInstance->TryCommit();
 		AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSuccess]
 		{
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			SavedDelegate.ExecuteIfBound(bSuccess);
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitUserData(const TObjectPtr<UShidenUserSaveGame> SaveGame, const TObjectPtr<UTexture2D> Thumbnail,
+                                                                     const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
+{
+	if (!SaveGame || !UShidenUserSaveGame::IsValidSlotName(SaveGame->SlotName))
+	{
+		// ReSharper disable once CppExpressionWithoutSideEffects
+		SavedDelegate.ExecuteIfBound(false);
+		return;
+	}
+
+	const FString SlotName = SaveGame->SlotName;
+	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail.Get());
+
+	SaveGame->AddToRoot();
+
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SaveGame, SlotName, SaveTexture, SlotMetadata, SavedDelegate]
+	{
+		if (!SaveGame->TryCommit())
+		{
+			AsyncTask(ENamedThreads::GameThread, [SaveGame, SavedDelegate]
+			{
+				SaveGame->RemoveFromRoot();
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				SavedDelegate.ExecuteIfBound(false);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
+		SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
+		const bool bSuccess = SaveSlotsInstance->TryCommit();
+		AsyncTask(ENamedThreads::GameThread, [SaveGame, SavedDelegate, bSuccess]
+		{
+			SaveGame->RemoveFromRoot();
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			SavedDelegate.ExecuteIfBound(bSuccess);
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitSystemData(const TObjectPtr<UShidenSystemSaveGame>& SaveGame, FOnSaveCompletedDelegate SavedDelegate)
+{
+	if (!SaveGame)
+	{
+		// ReSharper disable once CppExpressionWithoutSideEffects
+		SavedDelegate.ExecuteIfBound(false);
+		return;
+	}
+
+	SaveGame->AddToRoot();
+
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SaveGame, SavedDelegate]
+	{
+		const bool bSuccess = SaveGame->TryCommit();
+		AsyncTask(ENamedThreads::GameThread, [SaveGame, SavedDelegate, bSuccess]
+		{
+			SaveGame->RemoveFromRoot();
 			// ReSharper disable once CppExpressionWithoutSideEffects
 			SavedDelegate.ExecuteIfBound(bSuccess);
 		});
@@ -260,40 +294,226 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(F
 SHIDENCORE_API TMap<FString, FShidenSaveSlot>& UShidenSaveBlueprintLibrary::AcquireSaveSlots()
 {
 	WaitUntilEmpty();
-
-	if (!DoesSaveSlotsExist())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
-		return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShidenSaveSlotsSaveGame::StaticClass()))->SaveSlots;
-	}
-
-	return Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0))->SaveSlots;
+	return UShidenSaveSlotsSaveGame::GetOrCreate()->SaveSlots;
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::LoadUserData(const FString& SlotName)
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadUserData(const FString& SlotName)
 {
 	WaitUntilEmpty();
 
-	if (!DoesUserDataExist(SlotName))
+	if (!UShidenUserSaveGame::DoesExist(SlotName))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("User data does not exist for slot name: %s"), *SlotName);
+		return false;
+	}
+
+	UShidenUserSaveGame::GetOrCreate(SlotName)->Apply();
+	return true;
+}
+
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveUserData(const FString& SlotName, UShidenUserSaveGame*& SaveGame)
+{
+	WaitUntilEmpty();
+
+	SaveGame = nullptr;
+
+	if (!UShidenUserSaveGame::DoesExist(SlotName))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("User data does not exist for slot name: %s"), *SlotName);
+		return false;
+	}
+
+	SaveGame = UShidenUserSaveGame::GetOrCreate(SlotName);
+	return true;
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplyUserData(UShidenUserSaveGame* SaveGame)
+{
+	if (!SaveGame)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot apply null user save game"));
 		return;
 	}
 
-	const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = Cast<UShidenUserSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+	SaveGame->Apply();
+}
 
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveSystemData(UShidenSystemSaveGame*& SaveGame)
+{
+	WaitUntilEmpty();
 
-	check(ShidenSubsystem);
+	SaveGame = nullptr;
 
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+	if (!UShidenSystemSaveGame::DoesExist())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
+		return false;
+	}
 
-	ShidenSubsystem->ScenarioProperties = SaveGameInstance->ScenarioProperties;
-	ShidenSubsystem->UserVariable = SaveGameInstance->UserVariable;
-	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ShidenProjectConfig->UserVariableDefinitions);
-	ShidenSubsystem->ScenarioProgressStack = SaveGameInstance->ScenarioProgressStack;
-	ShidenSubsystem->LocalVariable = SaveGameInstance->LocalVariable;
-	ShidenSubsystem->LocalVariable.UpdateVariableDefinitions();
+	SaveGame = UShidenSystemSaveGame::GetOrCreate();
+	return true;
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplySystemData(UShidenSystemSaveGame* SaveGame)
+{
+	if (!SaveGame)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot apply null system save game"));
+		return;
+	}
+
+	SaveGame->Apply();
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadUserData(const FString& SlotName, FOnLoadCompletedDelegate LoadedDelegate)
+{
+	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
+	{
+		// ReSharper disable once CppExpressionWithoutSideEffects
+		LoadedDelegate.ExecuteIfBound(false);
+		return;
+	}
+
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, LoadedDelegate]
+	{
+		const bool bExists = UShidenUserSaveGame::DoesExist(SlotName);
+		if (!bExists)
+		{
+			AsyncTask(ENamedThreads::GameThread, [LoadedDelegate]
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				LoadedDelegate.ExecuteIfBound(false);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+		SaveGameInstance->AddToRoot();
+		AsyncTask(ENamedThreads::GameThread, [SaveGameInstance, LoadedDelegate]
+		{
+			SaveGameInstance->Apply();
+			SaveGameInstance->RemoveFromRoot();
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			LoadedDelegate.ExecuteIfBound(true);
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadSystemData(FOnLoadCompletedDelegate LoadedDelegate)
+{
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [LoadedDelegate]
+	{
+		const bool bExists = UShidenSystemSaveGame::DoesExist();
+		if (!bExists)
+		{
+			AsyncTask(ENamedThreads::GameThread, [LoadedDelegate]
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				LoadedDelegate.ExecuteIfBound(false);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
+		SaveGameInstance->AddToRoot();
+		AsyncTask(ENamedThreads::GameThread, [SaveGameInstance, LoadedDelegate]
+		{
+			SaveGameInstance->Apply();
+			SaveGameInstance->RemoveFromRoot();
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			LoadedDelegate.ExecuteIfBound(true);
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(const TObjectPtr<UObject>& WorldContextObject, FOnLoadCompletedDelegate LoadedDelegate)
+{
+	if (!WorldContextObject)
+	{
+		// ReSharper disable once CppExpressionWithoutSideEffects
+		LoadedDelegate.ExecuteIfBound(false);
+		return;
+	}
+	
+	WorldContextObject->AddToRoot();
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [WorldContextObject, LoadedDelegate]
+	{
+		const bool bExists = UShidenPredefinedSystemSaveGame::DoesExist();
+		if (!bExists)
+		{
+			WorldContextObject->RemoveFromRoot();
+			AsyncTask(ENamedThreads::GameThread, [LoadedDelegate]
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				LoadedDelegate.ExecuteIfBound(false);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = UShidenPredefinedSystemSaveGame::GetOrCreate();
+		AsyncTask(ENamedThreads::GameThread, [SaveGameInstance, WorldContextObject, LoadedDelegate]
+		{
+			SaveGameInstance->Apply(WorldContextObject);
+			WorldContextObject->RemoveFromRoot();
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			LoadedDelegate.ExecuteIfBound(true);
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(const FString& SlotName, FOnRetrieveUserDataCompletedDelegate RetrievedDelegate)
+{
+	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
+	{
+		// ReSharper disable once CppExpressionWithoutSideEffects
+		RetrievedDelegate.ExecuteIfBound(false, nullptr);
+		return;
+	}
+
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, RetrievedDelegate]
+	{
+		const bool bExists = UShidenUserSaveGame::DoesExist(SlotName);
+		if (!bExists)
+		{
+			AsyncTask(ENamedThreads::GameThread, [RetrievedDelegate]
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				RetrievedDelegate.ExecuteIfBound(false, nullptr);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+		AsyncTask(ENamedThreads::GameThread, [SaveGameInstance, RetrievedDelegate]
+		{
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			RetrievedDelegate.ExecuteIfBound(true, SaveGameInstance.Get());
+		});
+	});
+}
+
+SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveSystemData(FOnRetrieveSystemDataCompletedDelegate RetrievedDelegate)
+{
+	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [RetrievedDelegate]
+	{
+		const bool bExists = UShidenSystemSaveGame::DoesExist();
+		if (!bExists)
+		{
+			AsyncTask(ENamedThreads::GameThread, [RetrievedDelegate]
+			{
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				RetrievedDelegate.ExecuteIfBound(false, nullptr);
+			});
+			return;
+		}
+
+		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
+		AsyncTask(ENamedThreads::GameThread, [SaveGameInstance, RetrievedDelegate]
+		{
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			RetrievedDelegate.ExecuteIfBound(true, SaveGameInstance.Get());
+		});
+	});
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FString& SlotName)
@@ -326,161 +546,98 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FS
 	return true;
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::LoadSystemData()
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadSystemData()
 {
 	WaitUntilEmpty();
 
-	if (!DoesSystemDataExist())
+	if (!UShidenSystemSaveGame::DoesExist())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
-		return;
+		return false;
 	}
 
-	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = Cast<UShidenSystemSaveGame>(
-		UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSystemData"), 0));
-
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	check(ShidenSubsystem);
-
-	ShidenSubsystem->SystemVariable = SaveGameInstance->SystemVariable;
+	UShidenSystemSaveGame::GetOrCreate()->Apply();
+	return true;
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::LoadPredefinedSystemData(const UObject* WorldContextObject)
+SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadPredefinedSystemData(const UObject* WorldContextObject)
 {
 	WaitUntilEmpty();
 
-	if (!DoesPredefinedSystemDataExist())
+	if (!UShidenPredefinedSystemSaveGame::DoesExist())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Predefined system data does not exist"));
-		return;
+		return false;
 	}
 
-	const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = Cast<UShidenPredefinedSystemSaveGame>(
-		UGameplayStatics::LoadGameFromSlot(TEXT("ShidenPredefinedSystemData"), 0));
-
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	check(ShidenSubsystem);
-
-	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-
-	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ShidenProjectConfig->SystemVariableDefinitions);
-	ShidenSubsystem->PredefinedSystemVariable = FShidenPredefinedSystemVariable(SaveGameInstance->PredefinedSystemVariable);
-	ShidenSubsystem->ScenarioReadLines = SaveGameInstance->ScenarioReadLines;
-
-	// Apply volume rate
-	if (!GEngine || !GEngine->UseSound())
-	{
-		return;
-	}
-
-	const TObjectPtr<UWorld> ThisWorld = WorldContextObject->GetWorld();
-	if (!ThisWorld || !ThisWorld->bAllowAudioPlayback)
-	{
-		return;
-	}
-
-	if (FAudioDeviceHandle AudioDevice = ThisWorld->GetAudioDevice())
-	{
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
-		                                      ShidenSubsystem->PredefinedSystemVariable.MasterVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
-		                                      ShidenSubsystem->PredefinedSystemVariable.BGMVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
-		                                      ShidenSubsystem->PredefinedSystemVariable.SEVolume, 1.0, 0.0, true);
-		AudioDevice->SetSoundMixClassOverride(ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
-		                                      ShidenSubsystem->PredefinedSystemVariable.VoiceVolume, 1.0, 0.0, true);
-		AudioDevice->PushSoundMixModifier(ShidenProjectConfig->GetSoundClassMix());
-	}
+	UShidenPredefinedSystemSaveGame::GetOrCreate()->Apply(WorldContextObject);
+	return true;
 }
 
 void UShidenSaveBlueprintLibrary::DeleteUserData(const FString& SlotName)
 {
 	WaitUntilEmpty();
 
-	if (DoesUserDataExist(SlotName))
+	if (UShidenUserSaveGame::DoesExist(SlotName))
 	{
-		UGameplayStatics::DeleteGameInSlot(SlotName, 0);
+		UShidenUserSaveGame::TryDelete(SlotName);
 	}
 
-	if (DoesSaveSlotsExist())
+	if (UShidenSaveSlotsSaveGame::DoesExist())
 	{
-		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = Cast<UShidenSaveSlotsSaveGame>(
-			UGameplayStatics::LoadGameFromSlot(TEXT("ShidenSaveSlots"), 0));
-		SaveSlotsInstance->SaveSlots.Remove(SlotName);
-		UGameplayStatics::SaveGameToSlot(SaveSlotsInstance, TEXT("ShidenSaveSlots"), 0);
+		UShidenSaveSlotsSaveGame::TryDelete(SlotName);
 	}
 }
 
 SHIDENCORE_API void UShidenSaveBlueprintLibrary::DeleteSystemData()
 {
 	WaitUntilEmpty();
-
-	if (DoesSystemDataExist())
-	{
-		UGameplayStatics::DeleteGameInSlot(TEXT("ShidenSystemData"), 0);
-	}
+	UShidenSystemSaveGame::TryDelete();
 }
 
 void UShidenSaveBlueprintLibrary::DeletePredefinedSystemData()
 {
 	WaitUntilEmpty();
-
-	if (DoesPredefinedSystemDataExist())
-	{
-		UGameplayStatics::DeleteGameInSlot(TEXT("ShidenPredefinedSystemData"), 0);
-	}
+	UShidenPredefinedSystemSaveGame::TryDelete();
 }
 
 bool UShidenSaveBlueprintLibrary::DoesAnyUserDataExist()
 {
 	WaitUntilEmpty();
-
-	return DoesSaveSlotsExist() && AcquireSaveSlots().Num() > 0;
+	return UShidenSaveSlotsSaveGame::DoesExist() && AcquireSaveSlots().Num() > 0;
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesUserDataExist(const FString& SlotName)
 {
 	WaitUntilEmpty();
-
-	return UGameplayStatics::DoesSaveGameExist(SlotName, 0);
+	return UShidenUserSaveGame::DoesExist(SlotName);
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesSystemDataExist()
 {
 	WaitUntilEmpty();
-
-	return UGameplayStatics::DoesSaveGameExist(TEXT("ShidenSystemData"), 0);
+	return UShidenSystemSaveGame::DoesExist();
 }
 
 SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesPredefinedSystemDataExist()
 {
 	WaitUntilEmpty();
-
-	return UGameplayStatics::DoesSaveGameExist(TEXT("ShidenPredefinedSystemData"), 0);
+	return UShidenPredefinedSystemSaveGame::DoesExist();
 }
 
 SHIDENCORE_API void UShidenSaveBlueprintLibrary::ClearLoadedSystemData()
 {
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
-
 	UShidenVariableBlueprintLibrary::ResetSystemVariables();
 }
 
 SHIDENCORE_API void UShidenSaveBlueprintLibrary::ClearLoadedPredefinedSystemData(const UObject* WorldContextObject)
 {
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
-
 	UShidenVariableBlueprintLibrary::ResetPredefinedSystemVariables(WorldContextObject);
 }
 
 void UShidenSaveBlueprintLibrary::ClearLoadedUserData()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	UShidenVariableBlueprintLibrary::ResetUserVariables();
 	UShidenVariableBlueprintLibrary::ResetAllLocalVariables();

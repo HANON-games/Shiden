@@ -3,6 +3,7 @@
 #include "Command/Implementations/ShidenJumpCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "Engine/Engine.h"
 
 void UShidenJumpCommand::ParseFromCommand(const FShidenCommand& Command, FJumpCommandArgs& Args)
 {

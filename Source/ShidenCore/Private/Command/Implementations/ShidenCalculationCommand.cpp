@@ -306,8 +306,8 @@ bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result.X = B.X == 0 ? 0.0f : A.X / B.X;
-		Result.Y = B.Y == 0 ? 0.0f : A.Y / B.Y;
+		Result.X = FMath::IsNearlyZero(B.X) ? 0.0f : A.X / B.X;
+		Result.Y = FMath::IsNearlyZero(B.Y) ? 0.0f : A.Y / B.Y;
 		return true;
 	}
 
@@ -337,9 +337,9 @@ bool UShidenCalculationCommand::CalculateVector3(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result.X = B.X == 0 ? 0.0f : A.X / B.X;
-		Result.Y = B.Y == 0 ? 0.0f : A.Y / B.Y;
-		Result.Z = B.Z == 0 ? 0.0f : A.Z / B.Z;
+		Result.X = FMath::IsNearlyZero(B.X) ? 0.0f : A.X / B.X;
+		Result.Y = FMath::IsNearlyZero(B.Y) ? 0.0f : A.Y / B.Y;
+		Result.Z = FMath::IsNearlyZero(B.Z) ? 0.0f : A.Z / B.Z;
 		return true;
 	}
 

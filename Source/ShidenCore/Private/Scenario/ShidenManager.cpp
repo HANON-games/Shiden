@@ -5,14 +5,17 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Config/ShidenProjectConfig.h"
+#include "Engine/Texture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Save/ShidenSaveBlueprintLibrary.h"
 #include "GameFramework/ForceFeedbackEffect.h"
 #include "Scenario/ShidenParallelProcessManagerInterface.h"
 #include "DSP/VolumeFader.h"
 #include "Engine/TimerHandle.h"
+#include "Sound/SoundBase.h"
 #include "TimerManager.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "System/ShidenBlueprintLibrary.h"
 
 AShidenManager::AShidenManager(): ShidenWidget(nullptr)
 {
@@ -490,6 +493,7 @@ void AShidenManager::CallMacroAsParallel_Implementation(const FString& NewProces
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Name = FName(*NewProcessName);
+	SpawnParams.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Requested;
 
 	if (AActor* Manager = World->SpawnActor<AActor>(ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
 	{
@@ -539,6 +543,8 @@ void AShidenManager::Destroy_Implementation()
 	{
 		StopSound_Implementation(Key, EShidenSoundType::Voice);
 	}
+
+	AActor::Destroy();
 }
 
 void AShidenManager::OnApplicationWillDeactivate() const

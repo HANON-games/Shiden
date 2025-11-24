@@ -9,6 +9,9 @@
 #include "Scenario/ShidenManagerInterface.h"
 #include "ShidenHookInterface.generated.h"
 
+class UShidenUserSaveGame;
+class UShidenSystemSaveGame;
+
 UINTERFACE(MinimalAPI, Blueprintable)
 class UShidenHookInterface : public UInterface
 {
@@ -94,4 +97,19 @@ public:
 	                          const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                          const float DeltaTime, const EShidenProcessStatus Status, const FString& NextScenarioName,
 	                          const FString& BreakReason, const FString& ErrorMessage);
+
+	/**
+	 * Called after user data is retrieved from a save slot.
+	 * @param SlotName The name of the save slot that was retrieved from
+	 * @param UserSaveGame The retrieved user save game instance, or nullptr if retrieval failed
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Hook")
+	void OnUserDataRetrieved(const FString& SlotName, UShidenUserSaveGame* UserSaveGame);
+
+	/**
+	 * Called after system data is retrieved.
+	 * @param SystemSaveGame The retrieved system save game instance, or nullptr if retrieval failed
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Hook")
+	void OnSystemDataRetrieved(UShidenSystemSaveGame* SystemSaveGame);
 };

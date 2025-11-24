@@ -4,6 +4,7 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "Variable/ShidenVariableBlueprintLibrary.h"
 
 void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                            UShidenWidget* ShidenWidget,

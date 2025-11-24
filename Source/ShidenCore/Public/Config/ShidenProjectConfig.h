@@ -7,7 +7,12 @@
 #include "UI/ShidenTextType.h"
 #include "UI/ShidenWidget.h"
 #include "Variable/ShidenVariableDefinition.h"
+#include "Sound/SoundClass.h"
+#include "Sound/SoundMix.h"
 #include "ShidenProjectConfig.generated.h"
+
+class UShidenUserSaveGame;
+class UShidenSystemSaveGame;
 
 UCLASS(config = Game, defaultconfig, Category = "Shiden Visual Novel|Config")
 class SHIDENCORE_API UShidenProjectConfig : public UObject
@@ -64,6 +69,12 @@ public:
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	bool bAutoSaveOnMobileAppWillDeactivate;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
+	TSubclassOf<UShidenUserSaveGame> UserSaveGameClass;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
+	TSubclassOf<UShidenSystemSaveGame> SystemSaveGameClass;
 
 	/**
 	 * Adds a scenario path mapping for a specific scenario ID.

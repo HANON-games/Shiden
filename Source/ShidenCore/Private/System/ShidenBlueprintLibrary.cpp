@@ -7,12 +7,13 @@
 #include "DelayAction.h"
 #include "Command/ShidenCommandDefinitions.h"
 #include "Engine/AssetManager.h"
+#include "Engine/Engine.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "System/ShidenBacklogItem.h"
 #include "Async/Async.h"
-#include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Sound/SoundClass.h"
 #include "Sound/SoundBase.h"
+#include "System/ShidenSubsystem.h"
 
 SHIDENCORE_API void UShidenBlueprintLibrary::CopyToClipboard(const FString& Text)
 {

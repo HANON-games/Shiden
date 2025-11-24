@@ -11,7 +11,7 @@ UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUse
                                                                                       const TMap<FString, FString>& SlotMetadata)
 {
 	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
-	Action->Operation = EShidenSaveOperation::User;
+	Action->Operation = EShidenSaveLoadOperation::SaveUser;
 	Action->SlotName = SlotName;
 	Action->Thumbnail = Thumbnail;
 	Action->SlotMetadata = SlotMetadata;
@@ -22,7 +22,7 @@ UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveUse
 UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveSystemData(UObject* WorldContextObject)
 {
 	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
-	Action->Operation = EShidenSaveOperation::System;
+	Action->Operation = EShidenSaveLoadOperation::SaveSystem;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
 }
@@ -30,7 +30,33 @@ UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSaveSys
 UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncSavePredefinedSystemData(UObject* WorldContextObject)
 {
 	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
-	Action->Operation = EShidenSaveOperation::PredefinedSystem;
+	Action->Operation = EShidenSaveLoadOperation::SavePredefinedSystem;
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
+}
+
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncLoadUserData(UObject* WorldContextObject, const FString& SlotName)
+{
+	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
+	Action->Operation = EShidenSaveLoadOperation::LoadUser;
+	Action->SlotName = SlotName;
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
+}
+
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncLoadSystemData(UObject* WorldContextObject)
+{
+	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
+	Action->Operation = EShidenSaveLoadOperation::LoadSystem;
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
+}
+
+UShidenAsyncActionHandleSaveGame* UShidenAsyncActionHandleSaveGame::AsyncLoadPredefinedSystemData(UObject* WorldContextObject)
+{
+	const TObjectPtr<UShidenAsyncActionHandleSaveGame> Action = NewObject<UShidenAsyncActionHandleSaveGame>();
+	Action->Operation = EShidenSaveLoadOperation::LoadPredefinedSystem;
+	Action->WorldContextObject = WorldContextObject;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
 }
@@ -39,22 +65,49 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 {
 	switch (Operation)
 	{
-	case EShidenSaveOperation::User:
-		UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata,
-		                                               FOnSaveCompletedDelegate::CreateUObject(
-			                                               this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
-		return;
-	case EShidenSaveOperation::System:
-		UShidenSaveBlueprintLibrary::AsyncSaveSystemData(
-			FOnSaveCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
-		return;
-	case EShidenSaveOperation::PredefinedSystem:
-		UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(
-			FOnSaveCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
-		return;
+	case EShidenSaveLoadOperation::SaveUser:
+		{
+			UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata,
+														   FOnSaveCompletedDelegate::CreateUObject(
+															   this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
+	case EShidenSaveLoadOperation::SaveSystem:
+		{
+			UShidenSaveBlueprintLibrary::AsyncSaveSystemData(
+				FOnSaveCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
+	case EShidenSaveLoadOperation::SavePredefinedSystem:
+		{
+			UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(
+				FOnSaveCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
+	case EShidenSaveLoadOperation::LoadUser:
+		{
+			UShidenSaveBlueprintLibrary::AsyncLoadUserData(SlotName,
+														   FOnLoadCompletedDelegate::CreateUObject(
+															   this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
+	case EShidenSaveLoadOperation::LoadSystem:
+		{
+			UShidenSaveBlueprintLibrary::AsyncLoadSystemData(
+				FOnLoadCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
+	case EShidenSaveLoadOperation::LoadPredefinedSystem:
+		{
+			UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(WorldContextObject,
+			                                                           FOnLoadCompletedDelegate::CreateUObject(this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			return;
+		}
 	default:
-		UE_LOG(LogTemp, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
-		UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
+		{
+			UE_LOG(LogTemp, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
+			UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
+		}
 	}
 }
 

@@ -13,6 +13,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Engine/Texture2D.h"
+#include "Engine/Engine.h"
 
 TArray<FColor> ResizeBitmap(const TArray<FColor>& OriginalBitmap, const int32 OriginalWidth, const int32 OriginalHeight, const int32 TargetWidth,
                             const int32 TargetHeight)
@@ -89,7 +90,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 	const TSharedRef<SWidget> WidgetRef = TakeWidget();
 	FWidgetRenderer* WidgetRenderer = new FWidgetRenderer(true, false);
 
-	const FVector2D OutSize = FVector2D(WidgetRef->GetDesiredSize().X, WidgetRef->GetDesiredSize().Y);
+	const FVector2D OutSize = GetCachedGeometry().GetLocalSize();
 	constexpr TextureFilter Filter = TF_Bilinear;
 
 	if (const TObjectPtr<UTextureRenderTarget2D> RenderTarget = FWidgetRenderer::CreateTargetFor(OutSize, Filter, true))
@@ -116,6 +117,12 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 		if (!bShowTextBaseLayer)
 		{
 			TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
+		}
+
+		// Force Slate to process the visibility restoration
+		if (const TSharedPtr<SWindow> ActiveWindow = FSlateApplication::Get().GetActiveTopLevelWindow())
+		{
+			FSlateApplication::Get().ForceRedrawWindow(ActiveWindow.ToSharedRef());
 		}
 
 		if (TArray<FColor> Bitmap; RenderTarget->GameThread_GetRenderTargetResource()->ReadPixels(Bitmap, FReadSurfaceDataFlags()))
@@ -158,6 +165,12 @@ SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer,
 	if (!bShowTextBaseLayer)
 	{
 		TextBaseLayer->SetVisibility(TextBaseLayerVisibilityBeforeCapture);
+	}
+
+	// Force Slate to process the visibility restoration
+	if (const TSharedPtr<SWindow> ActiveWindow = FSlateApplication::Get().GetActiveTopLevelWindow())
+	{
+		FSlateApplication::Get().ForceRedrawWindow(ActiveWindow.ToSharedRef());
 	}
 
 	if (bScreenshotSuccessful)

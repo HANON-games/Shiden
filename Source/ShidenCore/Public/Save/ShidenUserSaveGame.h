@@ -9,7 +9,7 @@
 #include "Variable/ShidenLocalVariable.h"
 #include "ShidenUserSaveGame.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class SHIDENCORE_API UShidenUserSaveGame : public UShidenBaseSaveGame
 {
 	GENERATED_BODY()
@@ -26,4 +26,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Save Game")
 	TMap<FString, FShidenScenarioProperties> ScenarioProperties;
+
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Save Game")
+	static bool IsValidSlotName(const FString& SlotName);
+	
+	static TObjectPtr<UShidenUserSaveGame> GetOrCreate(const FString& InSlotName);
+	
+	void Apply() const;
+
+	void Prepare();
+
+	bool TryCommit();
+
+	static bool DoesExist(const FString& SlotName);
+	
+	static bool TryDelete(const FString& SlotName);
+
+	/** The slot name this save game is associated with. Set by GetOrCreate(). Not serialized. */
+	UPROPERTY(Transient)
+	FString SlotName;
 };

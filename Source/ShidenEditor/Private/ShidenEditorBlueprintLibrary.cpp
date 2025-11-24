@@ -21,6 +21,7 @@
 #include "Serialization/Csv/CsvParser.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "Variable/ShidenVariableBlueprintLibrary.h"
 
 #define LOCTEXT_NAMESPACE "AssetTools"
 

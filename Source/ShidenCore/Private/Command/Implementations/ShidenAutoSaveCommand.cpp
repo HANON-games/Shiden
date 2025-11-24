@@ -4,6 +4,8 @@
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "Engine/Texture2D.h"
+#include "Brushes/SlateNoResource.h"
+#include "Engine/Engine.h"
 
 void UShidenAutoSaveCommand::ParseFromCommand(const FShidenCommand& Command, FAutoSaveCommandArgs& Args)
 {

@@ -9,11 +9,17 @@ FShidenSaveTexture::FShidenSaveTexture(UTexture2D* Texture)
 		return;
 	}
 
+	FTexturePlatformData* PlatformData = Texture->GetPlatformData();
+	if (!PlatformData || PlatformData->Mips.Num() == 0)
+	{
+		return;
+	}
+
 	Width = Texture->GetSizeX();
 	Height = Texture->GetSizeY();
 	Format = Texture->GetPixelFormat();
 
-	FTexture2DMipMap& Mip = Texture->GetPlatformData()->Mips[0];
+	FTexture2DMipMap& Mip = PlatformData->Mips[0];
 	const void* TextureData = Mip.BulkData.Lock(LOCK_READ_ONLY);
 	Pixels.SetNum(Mip.BulkData.GetBulkDataSize());
 	FMemory::Memcpy(Pixels.GetData(), TextureData, Pixels.Num());

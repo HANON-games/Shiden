@@ -53,7 +53,7 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
 		}
-		const FString ImagePath = PropertyMap[TEXT("Path")];
+		const FString& ImagePath = *PathStr;
 		const bool bImagePathIsEmpty = ImagePath.IsEmpty() || ImagePath == TEXT("None");
 		if (!bImagePathIsEmpty)
 		{
