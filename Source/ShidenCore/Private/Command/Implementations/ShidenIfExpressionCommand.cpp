@@ -103,6 +103,12 @@ bool UShidenIfExpressionCommand::TryExecuteCommand(const ShidenConditionalComman
 
 	if (CommandName == TEXT("ElseIfExpression"))
 	{
+		if (!Scenario->Commands.IsValidIndex(ResultIndex))
+		{
+			ErrorMessage = FString::Printf(TEXT("ResultIndex %d is out of bounds for Commands array (size: %d)."), ResultIndex, Scenario->Commands.Num());
+			return false;
+		}
+
 		ShidenConditionalCommandHelpers::FExpressionConditionArgs NewArgs;
 		if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(Scenario->Commands[ResultIndex], NewArgs, ErrorMessage))
 		{
@@ -123,6 +129,12 @@ bool UShidenIfExpressionCommand::TryExecuteCommand(const ShidenConditionalComman
 
 bool UShidenIfExpressionCommand::TryExecuteElseIf(const FString& ProcessName, const int32 ResultIndex, UShidenScenario* Scenario, FString& ErrorMessage)
 {
+	if (!Scenario->Commands.IsValidIndex(ResultIndex))
+	{
+		ErrorMessage = FString::Printf(TEXT("ResultIndex %d is out of bounds for Commands array (size: %d)."), ResultIndex, Scenario->Commands.Num());
+		return false;
+	}
+
 	FShidenCommand ConstructedCommand;
 	UShidenScenarioBlueprintLibrary::ConstructCommand(ProcessName, Scenario->Commands[ResultIndex], ConstructedCommand);
 
@@ -158,6 +170,12 @@ bool UShidenIfExpressionCommand::TryExecuteElseIf(const FString& ProcessName, co
 
 	if (CommandName == TEXT("ElseIfExpression"))
 	{
+		if (!Scenario->Commands.IsValidIndex(NextResultIndex))
+		{
+			ErrorMessage = FString::Printf(TEXT("NextResultIndex %d is out of bounds for Commands array (size: %d)."), NextResultIndex, Scenario->Commands.Num());
+			return false;
+		}
+
 		ShidenConditionalCommandHelpers::FExpressionConditionArgs NewArgs;
 		if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(Scenario->Commands[NextResultIndex], NewArgs, ErrorMessage))
 		{

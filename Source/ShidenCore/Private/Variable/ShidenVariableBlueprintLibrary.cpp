@@ -3,6 +3,7 @@
 // ReSharper disable CppRedundantParentheses
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 #include "AudioDevice.h"
+#include "Config/ShidenProjectConfig.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 
 SHIDENCORE_API FString UShidenVariableBlueprintLibrary::MakeUpdateErrorMessage(const TObjectPtr<UShidenSubsystem> ShidenSubsystem,

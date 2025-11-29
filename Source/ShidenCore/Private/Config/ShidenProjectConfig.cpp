@@ -3,6 +3,12 @@
 #include "Config/ShidenProjectConfig.h"
 #include "Save/ShidenUserSaveGame.h"
 #include "Save/ShidenSystemSaveGame.h"
+#include "Save/ShidenSaveSlotsSaveGame.h"
+#include "Save/ShidenPredefinedSystemSaveGame.h"
+
+#if WITH_EDITOR
+#include "Misc/MessageDialog.h"
+#endif
 
 SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,7 +20,7 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	  , SystemSaveGameClass(UShidenSystemSaveGame::StaticClass())
 {
 	ScenarioPaths = TMap<FGuid, FString>();
-	WidgetClass = Cast<UClass>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")).TryLoad());
+	DefaultWidgetClass = Cast<UClass>(FSoftObjectPath(TEXT("/Shiden/Samples/WBP_ShidenWidgetSample.WBP_ShidenWidgetSample_C")).TryLoad());
 	MasterSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenMaster.SC_ShidenMaster"));
 	BGMSoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenBGM.SC_ShidenBGM"));
 	SESoundClass = FSoftObjectPath(TEXT("/Shiden/Misc/Audio/SC_ShidenSE.SC_ShidenSE"));
@@ -143,3 +149,82 @@ void UShidenProjectConfig::SaveProjectConfigChanges(const TObjectPtr<UShidenProj
 		Config->TryUpdateDefaultConfigFile();
 	}
 }
+
+#if WITH_EDITOR
+void UShidenProjectConfig::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName PropertyName = PropertyChangedEvent.GetPropertyName();
+
+	// Handle UserSaveGameClass changes
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenProjectConfig, UserSaveGameClass))
+	{
+		// Check if user save data exists
+		bool bHasUserSaveData = false;
+		TArray<FString> UserSlotNames;
+
+		if (UShidenSaveSlotsSaveGame::DoesExist())
+		{
+			const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlots = UShidenSaveSlotsSaveGame::GetOrCreate();
+			if (SaveSlots && SaveSlots->SaveSlots.Num() > 0)
+			{
+				bHasUserSaveData = true;
+				SaveSlots->SaveSlots.GetKeys(UserSlotNames);
+			}
+		}
+
+		// Display warning and delete if user confirms
+		if (bHasUserSaveData)
+		{
+			const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "UserSaveDataClassChangeTitle", "User Save Data Class Change");
+			const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "UserSaveDataClassChangeMessage",
+				"Changing the user save data class may prevent existing save data from being read or written properly.\n\n"
+				"Do you want to delete all existing user save data?");
+
+			const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, WarningMessage, WarningTitle);
+
+			if (Response == EAppReturnType::Yes)
+			{
+				for (const FString& SlotName : UserSlotNames)
+				{
+					UShidenUserSaveGame::TryDelete(SlotName);
+					UShidenSaveSlotsSaveGame::TryDelete(SlotName);
+				}
+
+				// Display completion message
+				const FText CompletionTitle = NSLOCTEXT("ShidenNamespace", "DeletionCompleteTitle", "Deletion Complete");
+				const FText CompletionMessage = FText::Format(
+					NSLOCTEXT("ShidenNamespace", "UserSaveDataDeletionMessage", "Deleted {0} user save data."),
+					FText::AsNumber(UserSlotNames.Num())
+				);
+				FMessageDialog::Open(EAppMsgType::Ok, CompletionMessage, CompletionTitle);
+			}
+		}
+	}
+	// Handle SystemSaveGameClass changes
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenProjectConfig, SystemSaveGameClass))
+	{
+		// Display warning and delete if user confirms
+		if (UShidenSystemSaveGame::DoesExist())
+		{
+			const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeTitle", "System Save Data Class Change");
+			const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeMessage",
+				"Changing the system save data class may prevent existing save data from being read or written properly.\n\n"
+				"Do you want to delete all existing system save data?");
+
+			const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, WarningMessage, WarningTitle);
+
+			if (Response == EAppReturnType::Yes)
+			{
+				UShidenSystemSaveGame::TryDelete();
+
+				// Display completion message
+				const FText CompletionTitle = NSLOCTEXT("ShidenNamespace", "DeletionCompleteTitle", "Deletion Complete");
+				const FText CompletionMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataDeletionMessage", "System save data has been deleted.");
+				FMessageDialog::Open(EAppMsgType::Ok, CompletionMessage, CompletionTitle);
+			}
+		}
+	}
+}
+#endif

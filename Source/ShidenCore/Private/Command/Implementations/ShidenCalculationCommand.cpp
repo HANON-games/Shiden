@@ -83,6 +83,13 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
 	case EShidenVariableType::AssetPath:
 	case EShidenVariableType::String:
 		{
+			// String type only supports concatenation (+=)
+			if (Args.Operator != TEXT("+="))
+			{
+				ErrorMessage = FString::Printf(TEXT("Operator '%s' is not supported for String type. Only '+=' is supported for string concatenation."), *Args.Operator);
+				return false;
+			}
+
 			const FString ResultValue = StringValue + Args.Value;
 			switch (Args.VariableKind)
 			{

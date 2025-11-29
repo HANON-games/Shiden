@@ -85,7 +85,7 @@ bool UShidenEndLoopWhileCommand::TryFindLoopWhileIndexWithoutCheckCondition(cons
 				ResultIndex = 0;
 				return false;
 			}
-			return TryFindLoopWhileIndexWithoutCheckCondition(ProcessName, ResultIndex, Commands, ResultIndex, ErrorMessage);
+			Index = ResultIndex;
 		}
 	}
 

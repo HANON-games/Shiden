@@ -59,7 +59,7 @@ public:
 	TMap<FString, FShidenTextType> AdditionalTextTypes;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
-	TSubclassOf<UShidenWidget> WidgetClass;
+	TSubclassOf<UShidenWidget> DefaultWidgetClass;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config")
 	TArray<FShidenVariableDefinition> UserVariableDefinitions;
@@ -197,4 +197,8 @@ private:
 
 	template<typename T>
 	static T* LoadSoftObjectIfNeeded(const TSoftObjectPtr<T>& SoftObject);
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };

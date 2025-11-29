@@ -1777,7 +1777,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("FadeNoteKey",
-				                "The larger the value of z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 100: in front of movie\r\nGreater than 150: in front of menus"),
+				                "The larger the value of ZOrder, the more it will appear in the foreground.\r\nWhen UseGlobalFade is true, ZOrder may not preview correctly.\r\n\r\nWhen using the ShidenWidget Sample as is and UseGlobalFade is false,\r\nthe ZOrder values are as follows:\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 100: in front of movie\r\nGreater than 150: in front of menus"),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenFadeCommand")),
@@ -1852,6 +1852,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						LOCTEXT("ZOrderKey", "ZOrder"),
 						TEXT("250"),
 						IntegerInputTemplate,
+						{},
+						false
+					},
+					{
+						TEXT("UseGlobalFade"),
+						LOCTEXT("UseGlobalFadeKey", "UseGlobalFade"),
+						TEXT("false"),
+						BooleanInputTemplate,
 						{},
 						false
 					}
@@ -2167,7 +2175,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("PlayMediaNoteKey",
-				                "It is recommended to use ElectraPlayer for the Player of MediaSource.\r\nThe larger the value of Z-order, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 150: in front of menus\r\nThis command is not supported in preview."),
+				                "It is recommended to use ElectraPlayer for the Player of MediaSource.\r\nThe larger the value of ZOrder, the more it will appear in the foreground.\r\nGreater than 0: in front of images\r\nGreater than 50: in front of text\r\nGreater than 150: in front of menus\r\nThis command is not supported in preview."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenPlayMediaCommand")),

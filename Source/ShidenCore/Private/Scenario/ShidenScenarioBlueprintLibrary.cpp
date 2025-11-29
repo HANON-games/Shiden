@@ -7,6 +7,7 @@
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 #include "Serialization/JsonSerializer.h"
 #include "AssetRegistry/AssetData.h"
+#include "Config/ShidenProjectConfig.h"
 
 SHIDENCORE_API bool UShidenScenarioBlueprintLibrary::TryConvertToStringArray(const FShidenScenarioProperty& Property, TArray<FString>& Result)
 {

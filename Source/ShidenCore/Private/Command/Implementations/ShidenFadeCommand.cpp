@@ -3,6 +3,9 @@
 #include "Command/Implementations/ShidenFadeCommand.h"
 #include "Command/ShidenCommandHelpers.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "System/ShidenBlueprintLibrary.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/LocalPlayer.h"
 
 bool UShidenFadeCommand::TryParseCommand(const FShidenCommand& Command, FFadeCommandArgs& Args, FString& ErrorMessage)
 {
@@ -15,6 +18,7 @@ bool UShidenFadeCommand::TryParseCommand(const FShidenCommand& Command, FFadeCom
 	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
 	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 	Args.ZOrder = Command.GetArgAsInt(TEXT("ZOrder"));
+	Args.bUseGlobalFade = Command.GetArgAsBool(TEXT("UseGlobalFade"));
 
 	return ShidenCommandHelpers::TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
@@ -48,6 +52,8 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 		}
 
 		const FString ZOrderStr = PropertyMap.FindRef(TEXT("ZOrder"));
+		const FString UseGlobalFadeStr = PropertyMap.FindRef(TEXT("UseGlobalFade"));
+		const bool bUseGlobalFade = UseGlobalFadeStr.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 
 		Args = FFadeCommandArgs
 		{
@@ -59,7 +65,8 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 			.Steps = 2,
 			.BlendExp = 2.0f,
 			.bWaitForCompletion = true,
-			.ZOrder = FCString::Atoi(*ZOrderStr)
+			.ZOrder = FCString::Atoi(*ZOrderStr),
+			.bUseGlobalFade = bUseGlobalFade
 		};
 
 		if (!TryStartFade(Args, ShidenWidget, TEXT("Default"), ErrorMessage))
@@ -90,10 +97,17 @@ void UShidenFadeCommand::ProcessCommand_Implementation(const FString& ProcessNam
                                                        const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                        FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	if (Args.bWaitForCompletion && !ShidenWidget->IsFadeCompleted(Args.LayerName))
+	if (Args.bWaitForCompletion)
 	{
-		Status = EShidenProcessStatus::DelayUntilNextTick;
-		return;
+		const bool bIsFadeCompleted = Args.bUseGlobalFade
+			                              ? UShidenBlueprintLibrary::IsScreenFadeCompleted(Args.LayerName)
+			                              : ShidenWidget->IsFadeCompleted(Args.LayerName);
+
+		if (!bIsFadeCompleted)
+		{
+			Status = EShidenProcessStatus::DelayUntilNextTick;
+			return;
+		}
 	}
 
 	const bool bIsFadeOut = IsFadeOut(Args.FadeType);
@@ -103,6 +117,7 @@ void UShidenFadeCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	                                                                 {
 		                                                                 {TEXT("Color"), TargetColor.ToString()},
 		                                                                 {TEXT("ZOrder"), FString::FromInt(Args.ZOrder)},
+		                                                                 {TEXT("UseGlobalFade"), Args.bUseGlobalFade ? TEXT("true") : TEXT("false")},
 	                                                                 });
 
 	Status = EShidenProcessStatus::Next;
@@ -131,6 +146,18 @@ bool UShidenFadeCommand::TryStartFade(const FFadeCommandArgs& Args, UShidenWidge
                                       FString& ErrorMessage)
 {
 	const bool bIsFadeOut = IsFadeOut(Args.FadeType);
+
+	if (Args.bUseGlobalFade)
+	{
+		const FLinearColor TargetColorLinear(Args.TargetColor.X, Args.TargetColor.Y, Args.TargetColor.Z);
+
+#if WITH_EDITOR
+		return UShidenBlueprintLibrary::TryStartScreenFadePreview(ShidenWidget, Args.LayerName, Args.FadeDuration, Args.FadeFunction, TargetColorLinear, bIsFadeOut, Args.Steps, Args.BlendExp, Args.ZOrder);
+#else
+		return UShidenBlueprintLibrary::TryStartScreenFade(ShidenWidget, Args.LayerName, Args.FadeDuration, Args.FadeFunction, TargetColorLinear, bIsFadeOut, Args.Steps, Args.BlendExp, Args.ZOrder);
+#endif
+	}
+
 	return ShidenWidget->TryStartFade(Args.LayerName, Args.FadeFunction, Args.FadeDuration, FLinearColor(Args.TargetColor), bIsFadeOut, Args.BlendExp,
 	                                  Args.Steps, OwnerProcessName, Args.ZOrder, ErrorMessage);
 }

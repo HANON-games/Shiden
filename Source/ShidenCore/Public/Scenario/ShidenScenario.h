@@ -4,8 +4,10 @@
 
 #include "Command/ShidenCommand.h"
 #include "Engine/DataAsset.h"
+#include "UI/ShidenWidget.h"
 #include "Variable/ShidenMacroParameter.h"
 #include "Variable/ShidenVariableDefinition.h"
+
 #include "ShidenScenario.generated.h"
 
 UCLASS(Blueprintable)
@@ -28,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	TSubclassOf<UShidenWidget> WidgetClassOverride;
 
 	UShidenScenario()
 		: ScenarioId(FGuid::NewGuid())
