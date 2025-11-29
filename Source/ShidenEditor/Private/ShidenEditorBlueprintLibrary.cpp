@@ -14,6 +14,7 @@
 #include "ShidenEditorConfig.h"
 #include "ShidenEditorConstants.h"
 #include "Command/ShidenStandardCommandDefinitions.h"
+#include "Config/ShidenProjectConfig.h"
 #include "Interfaces/IMainFrameModule.h"
 #include "Save/ShidenSaveBlueprintLibrary.h"
 #include "Scenario/ShidenScenario.h"
@@ -202,7 +203,7 @@ FString EscapeCsvItem(const FString& Item)
 UShidenScenario* ExpandPresets(const UShidenScenario* SourceScenario)
 {
 	const TMap<FString, FShidenCommandDefinition> CommandDefinitions = UShidenBlueprintLibrary::GetCommandDefinitionsCache();
-	const UShidenProjectConfig* Config = GetDefault<UShidenProjectConfig>();
+	const TObjectPtr<const UShidenProjectConfig> Config = GetDefault<UShidenProjectConfig>();
 	TObjectPtr<UShidenScenario> ExpandedScenario = NewObject<UShidenScenario>();
 	ExpandedScenario->ScenarioId = SourceScenario->ScenarioId;
 	ExpandedScenario->Note = SourceScenario->Note;
@@ -248,11 +249,8 @@ UShidenScenario* ExpandPresets(const UShidenScenario* SourceScenario)
 UShidenScenario* RemovePresetValues(const UShidenScenario* SourceScenario)
 {
 	const TObjectPtr<const UShidenProjectConfig> Config = GetDefault<UShidenProjectConfig>();
-	const TObjectPtr<UShidenScenario> RemovedScenario = NewObject<UShidenScenario>();
-	RemovedScenario->ScenarioId = SourceScenario->ScenarioId;
-	RemovedScenario->Note = SourceScenario->Note;
-	RemovedScenario->MacroParameterDefinitions = SourceScenario->MacroParameterDefinitions;
-	RemovedScenario->LocalVariableDefinitions = SourceScenario->LocalVariableDefinitions;
+	const TObjectPtr<UShidenScenario> RemovedScenario = DuplicateObject(SourceScenario, GetTransientPackage());
+	RemovedScenario->Commands.Empty();
 	for (const auto& [CommandId, bEnabled, CommandName, PresetName, Args] : SourceScenario->Commands)
 	{
 		FShidenCommand RemovedCommand;
@@ -315,6 +313,19 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 		                       ? ScenarioId
 		                       : FGuid::NewGuid();
 	Scenario->Note = Comments.Contains(TEXT("Note")) ? Comments[TEXT("Note")] : TEXT("");
+
+	// Parse WidgetClassOverride
+	if (Comments.Contains(TEXT("WidgetClassOverride")))
+	{
+		const FString& WidgetClassPath = Comments[TEXT("WidgetClassOverride")];
+		if (!WidgetClassPath.IsEmpty())
+		{
+			if (TObjectPtr<UClass> WidgetClass = LoadObject<UClass>(nullptr, *WidgetClassPath))
+			{
+				Scenario->WidgetClassOverride = WidgetClass;
+			}
+		}
+	}
 
 	for (int32 Index = 1; Comments.Contains(TEXT("MacroParameter") + FString::FromInt(Index) + TEXT("Name")); Index++)
 	{
@@ -448,6 +459,10 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	// Add comments
 	CsvRows.Add(TEXT("#ScenarioId ") + Scenario->ScenarioId.ToString());
 	CsvRows.Add(TEXT("#Note ") + Scenario->Note);
+	if (Scenario->WidgetClassOverride)
+	{
+		CsvRows.Add(TEXT("#WidgetClassOverride ") + Scenario->WidgetClassOverride->GetPathName());
+	}
 	if (FShidenPluginVersion Version; TryGetCurrentPluginVersion(Version))
 	{
 		CsvRows.Add(TEXT("#PluginVersion ") + Version.ToString());

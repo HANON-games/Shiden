@@ -5,11 +5,15 @@
 #if WITH_EDITOR
 #include "Editor.h"
 #endif
+
 #include "ShidenReadLines.h"
 #include "Subsystems/EngineSubsystem.h"
+#include "Containers/Ticker.h"
+#include "Components/Border.h"
+#include "Widgets/SWidget.h"
+#include "UI/ShidenFadeParams.h"
 #include "Variable/ShidenVariable.h"
 #include "Variable/ShidenPredefinedSystemVariable.h"
-#include "Config/ShidenProjectConfig.h"
 #include "Scenario/ShidenScenarioProgressStack.h"
 #include "Scenario/ShidenScenarioProperties.h"
 #include "Scenario/ShidenScenario.h"
@@ -20,6 +24,18 @@
 #include "UObject/Object.h"
 #include "Variable/ShidenLocalVariable.h"
 #include "ShidenSubsystem.generated.h"
+
+USTRUCT()
+struct SHIDENCORE_API FShidenScreenFadeLayer
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TObjectPtr<UBorder> Widget;
+
+	UPROPERTY()
+	FShidenFadeParams Params;
+};
 
 UCLASS(Category = "Shiden Visual Novel|Subsystem")
 class SHIDENCORE_API UShidenSubsystem : public UEngineSubsystem
@@ -66,41 +82,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	bool bAutoTextMode = false;
 
-	UFUNCTION()
-	void SetDefaultPredefinedSystemVariables()
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		PredefinedSystemVariable = FShidenPredefinedSystemVariable(ShidenProjectConfig->PredefinedSystemVariable);
-	}
+	UPROPERTY()
+	TMap<FString, FShidenScreenFadeLayer> ScreenFadeLayers;
+
+	FTSTicker::FDelegateHandle TickerHandle;
+
+	bool TickScreenFade(const float DeltaTime);
+
+	bool IsScreenFadeCompleted(const FString& LayerName) const;
+
+	void ResetScreenFadeLayers();
+
+	void SetDefaultPredefinedSystemVariables();
 
 #if WITH_EDITOR
-	void BeginPlay(bool)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);
-		UserVariable = FShidenVariable(ShidenProjectConfig->UserVariableDefinitions);
-		LocalVariable = FShidenLocalVariable();
-		ScenarioProperties = TMap<FString, FShidenScenarioProperties>();
-		ScenarioProgressStack = TMap<FString, FShidenScenarioProgressStack>();
-		BacklogItems = TArray<FShidenBacklogItem>();
-		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
-		SetDefaultPredefinedSystemVariables();
-	}
+	void BeginPlay(bool);
 #endif
 
-	UShidenSubsystem()
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		SystemVariable = FShidenVariable(ShidenProjectConfig->SystemVariableDefinitions);
-		UserVariable = FShidenVariable(ShidenProjectConfig->UserVariableDefinitions);
-		LocalVariable = FShidenLocalVariable();
-		ScenarioProperties = TMap<FString, FShidenScenarioProperties>();
-		ScenarioProgressStack = TMap<FString, FShidenScenarioProgressStack>();
-		BacklogItems = TArray<FShidenBacklogItem>();
-		ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
-		SetDefaultPredefinedSystemVariables();
-#if WITH_EDITOR
-		FEditorDelegates::PreBeginPIE.AddUObject(this, &UShidenSubsystem::BeginPlay);
-#endif
-	}
+	UShidenSubsystem();
 };

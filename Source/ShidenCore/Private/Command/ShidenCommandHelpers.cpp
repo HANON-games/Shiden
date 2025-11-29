@@ -324,7 +324,11 @@ namespace ShidenConditionalCommandHelpers
 				continue;
 			}
 
-			if (Command.CommandName == TEXT("EndLoopWhile"))
+			if (Command.CommandName == TEXT("LoopWhile") || Command.CommandName == TEXT("LoopWhileExpression"))
+			{
+				Depth++;
+			}
+			else if (Command.CommandName == TEXT("EndLoopWhile"))
 			{
 				if (Depth == 0)
 				{
@@ -332,10 +336,6 @@ namespace ShidenConditionalCommandHelpers
 					return true;
 				}
 				Depth--;
-			}
-			else if (Command.CommandName == TEXT("LoopWhile") || Command.CommandName == TEXT("LoopWhileExpression"))
-			{
-				Depth++;
 			}
 		}
 

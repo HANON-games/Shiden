@@ -32,6 +32,9 @@ struct SHIDENEDITOR_API FShidenScenarioStruct
 	UPROPERTY()
 	TArray<FShidenVariableDefinition> LocalVariableDefinitions;
 
+	UPROPERTY()
+	FString WidgetClassOverride;
+
 	UShidenScenario* ToShidenScenario();
 
 	explicit FShidenScenarioStruct(const UShidenScenario* InScenario, const FString& InPluginVersion);

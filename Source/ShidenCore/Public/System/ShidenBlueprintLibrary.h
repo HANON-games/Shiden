@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "System/ShidenBacklogItem.h"
 #include "Command/ShidenCommand.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "UI/ShidenTextType.h"
 #include "ShidenBlueprintLibrary.generated.h"
 
@@ -110,6 +111,87 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Utility")
 	static void ClearAllCache();
+
+	/**
+	 * Fades the screen out to a specified color.
+	 * This function uses a global fade widget and does not require ShidenWidget.
+	 *
+	 * @param WorldContextObject World context object
+	 * @param LatentInfo Latent action info
+	 * @param LayerName The name of the fade layer
+	 * @param FadeDuration The duration of the fade effect in seconds
+	 * @param FadeFunction The easing function type for the fade animation
+	 * @param TargetColor The color to fade to
+	 * @param Steps The number of animation steps for precision
+	 * @param BlendExp The blend exponent for certain easing functions
+	 * @param ZOrder The Z-order for the fade widget
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Fade", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", LayerName = "Default"))
+	static void FadeOutScreen(const UObject* WorldContextObject, FLatentActionInfo LatentInfo, const FString& LayerName, float FadeDuration,
+	                          EEasingFunc::Type FadeFunction, FLinearColor TargetColor, int32 Steps = 2, float BlendExp = 2.0f, int32 ZOrder = 250);
+
+	/**
+	 * Fades the screen in from the current fade color.
+	 * This function uses a global fade widget and does not require ShidenWidget.
+	 *
+	 * @param WorldContextObject World context object
+	 * @param LatentInfo Latent action info
+	 * @param LayerName The name of the fade layer
+	 * @param FadeDuration The duration of the fade effect in seconds
+	 * @param FadeFunction The easing function type for the fade animation
+	 * @param TargetColor The color to fade from, used when creating new widget
+	 * @param Steps The number of animation steps for precision
+	 * @param BlendExp The blend exponent for certain easing functions
+	 * @param ZOrder The Z-order for the fade widget
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Fade", meta = (Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo", LayerName = "Default"))
+	static void FadeInScreen(const UObject* WorldContextObject, FLatentActionInfo LatentInfo, const FString& LayerName, float FadeDuration,
+	                         EEasingFunc::Type FadeFunction, FLinearColor TargetColor, int32 Steps = 2, float BlendExp = 2.0f, int32 ZOrder = 250);
+
+	/**
+	 * Starts a screen fade animation (unified function for both fade in and fade out).
+	 * This function uses a global fade widget and does not require ShidenWidget.
+	 *
+	 * @param WorldContextObject World context object
+	 * @param LayerName The name of the fade layer
+	 * @param FadeDuration The duration of the fade effect in seconds
+	 * @param FadeFunction The easing function type for the fade animation
+	 * @param TargetColor The target color for the fade
+	 * @param bIsFadeOut True for fade out, false for fade in
+	 * @param Steps The number of animation steps for precision
+	 * @param BlendExp The blend exponent for certain easing functions
+	 * @param ZOrder The Z-order for the fade widget
+	 * @return True if the fade was successfully started
+	 */
+	static bool TryStartScreenFade(const TObjectPtr<const UObject> WorldContextObject, const FString& LayerName, float FadeDuration,
+	                               EEasingFunc::Type FadeFunction, FLinearColor TargetColor, bool bIsFadeOut,
+	                               int32 Steps = 2, float BlendExp = 2.0f, int32 ZOrder = 250);
+
+	/**
+	 * Checks if the global screen fade has completed.
+	 *
+	 * @param LayerName The name of the fade layer to check
+	 * @return True if the screen fade has completed
+	 */
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Fade")
+	static bool IsScreenFadeCompleted(const FString& LayerName);
+
+	/**
+	 * Resets all screen fade layers.
+	 * This will stop all ongoing fades and clear all fade layers.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Fade")
+	static void ResetScreenFadeLayers();
+
+#if WITH_EDITOR
+	/**
+	 * Editor-only: Starts a screen fade animation for preview (unified function for both fade in and fade out).
+	 * Uses ShidenWidget's BaseLayer to display the fade.
+	 */
+	static bool TryStartScreenFadePreview(const TObjectPtr<const class UShidenWidget> ShidenWidget, const FString& LayerName, float FadeDuration,
+	                                      EEasingFunc::Type FadeFunction, FLinearColor TargetColor, bool bIsFadeOut,
+	                                      int32 Steps = 2, float BlendExp = 2.0f, int32 ZOrder = 250);
+#endif
 
 	// internal functions
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")

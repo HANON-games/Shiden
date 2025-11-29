@@ -10,6 +10,16 @@ UShidenScenario* FShidenScenarioStruct::ToShidenScenario()
 	Scenario->Commands = Commands;
 	Scenario->MacroParameterDefinitions = MacroParameterDefinitions;
 	Scenario->LocalVariableDefinitions = LocalVariableDefinitions;
+
+	// Convert WidgetClassOverride string to TSubclassOf
+	if (!WidgetClassOverride.IsEmpty())
+	{
+		if (TObjectPtr<UClass> WidgetClass = LoadObject<UClass>(nullptr, *WidgetClassOverride))
+		{
+			Scenario->WidgetClassOverride = WidgetClass;
+		}
+	}
+
 	return Scenario;
 }
 
@@ -21,4 +31,10 @@ FShidenScenarioStruct::FShidenScenarioStruct(const UShidenScenario* InScenario, 
 	MacroParameterDefinitions = InScenario->MacroParameterDefinitions;
 	LocalVariableDefinitions = InScenario->LocalVariableDefinitions;
 	PluginVersion = InPluginVersion;
+
+	// Convert WidgetClassOverride to string
+	if (InScenario->WidgetClassOverride)
+	{
+		WidgetClassOverride = InScenario->WidgetClassOverride->GetPathName();
+	}
 }

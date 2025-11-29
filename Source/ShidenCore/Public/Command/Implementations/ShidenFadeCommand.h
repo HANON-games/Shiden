@@ -22,6 +22,7 @@ class SHIDENCORE_API UShidenFadeCommand : public UShidenCommandObject
 		float BlendExp;
 		bool bWaitForCompletion;
 		int32 ZOrder;
+		bool bUseGlobalFade;
 	};
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties,

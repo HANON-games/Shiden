@@ -2,18 +2,58 @@
 
 // ReSharper disable CppExpressionWithoutSideEffects
 #include "System/ShidenBlueprintLibrary.h"
-#include "Dom/JsonObject.h"
-#include "Serialization/JsonReader.h"
 #include "DelayAction.h"
+#include "LatentActions.h"
+#include "Async/Async.h"
 #include "Command/ShidenCommandDefinitions.h"
+#include "Components/Border.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Config/ShidenProjectConfig.h"
+#include "Dom/JsonObject.h"
 #include "Engine/AssetManager.h"
 #include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/LocalPlayer.h"
+#include "GameFramework/PlayerController.h"
 #include "HAL/PlatformApplicationMisc.h"
-#include "System/ShidenBacklogItem.h"
-#include "Async/Async.h"
-#include "Sound/SoundClass.h"
+#include "Runtime/Launch/Resources/Version.h"
+#include "Serialization/JsonReader.h"
 #include "Sound/SoundBase.h"
+#include "Sound/SoundClass.h"
+#include "System/ShidenBacklogItem.h"
 #include "System/ShidenSubsystem.h"
+#include "UI/ShidenWidget.h"
+
+// Latent action for waiting screen fade to complete
+class FScreenFadeLatentAction final : public FPendingLatentAction
+{
+public:
+	FString LayerName;
+	FName ExecutionFunction;
+	int32 OutputLink;
+	FWeakObjectPtr CallbackTarget;
+
+	FScreenFadeLatentAction(const FString& InLayerName, const FLatentActionInfo& LatentInfo)
+		: LayerName(InLayerName)
+		  , ExecutionFunction(LatentInfo.ExecutionFunction)
+		  , OutputLink(LatentInfo.Linkage)
+		  , CallbackTarget(LatentInfo.CallbackTarget)
+	{
+	}
+
+	virtual void UpdateOperation(FLatentResponse& Response) override
+	{
+		const bool bIsCompleted = UShidenBlueprintLibrary::IsScreenFadeCompleted(LayerName);
+		Response.FinishAndTriggerIf(bIsCompleted, ExecutionFunction, OutputLink, CallbackTarget);
+	}
+
+#if WITH_EDITOR
+	virtual FString GetDescription() const override
+	{
+		return FString::Printf(TEXT("Waiting for screen fade (%s) to complete"), *LayerName);
+	}
+#endif
+};
 
 SHIDENCORE_API void UShidenBlueprintLibrary::CopyToClipboard(const FString& Text)
 {
@@ -568,6 +608,167 @@ SHIDENCORE_API void UShidenBlueprintLibrary::SetAutoTextMode(const bool bEnabled
 	ShidenSubsystem->bAutoTextMode = bEnabled;
 }
 
+SHIDENCORE_API void UShidenBlueprintLibrary::FadeOutScreen(const UObject* WorldContextObject, const FLatentActionInfo LatentInfo, const FString& LayerName,
+                                                           const float FadeDuration, const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor,
+                                                           const int32 Steps, const float BlendExp, const int32 ZOrder)
+{
+	if (!WorldContextObject)
+	{
+		return;
+	}
+
+	if (!TryStartScreenFade(WorldContextObject, LayerName, FadeDuration, FadeFunction, TargetColor, true, Steps, BlendExp, ZOrder))
+	{
+		return;
+	}
+
+	// Add latent action to wait for completion
+	if (const TObjectPtr<UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (!LatentActionManager.FindExistingAction<FScreenFadeLatentAction>(LatentInfo.CallbackTarget, LatentInfo.UUID))
+		{
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FScreenFadeLatentAction(LayerName, LatentInfo));
+		}
+	}
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::FadeInScreen(const UObject* WorldContextObject, const FLatentActionInfo LatentInfo, const FString& LayerName,
+                                                          const float FadeDuration, const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor,
+                                                          const int32 Steps, const float BlendExp, const int32 ZOrder)
+{
+	if (!WorldContextObject)
+	{
+		return;
+	}
+
+	if (!TryStartScreenFade(WorldContextObject, LayerName, FadeDuration, FadeFunction, TargetColor, false, Steps, BlendExp, ZOrder))
+	{
+		return;
+	}
+
+	// Add latent action to wait for completion
+	if (const TObjectPtr<UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (!LatentActionManager.FindExistingAction<FScreenFadeLatentAction>(LatentInfo.CallbackTarget, LatentInfo.UUID))
+		{
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, new FScreenFadeLatentAction(LayerName, LatentInfo));
+		}
+	}
+}
+
+SHIDENCORE_API bool UShidenBlueprintLibrary::TryStartScreenFade(const TObjectPtr<const UObject> WorldContextObject, const FString& LayerName, const float FadeDuration,
+                                                                const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
+                                                                const int32 Steps, const float BlendExp, const int32 ZOrder)
+{
+	if (!WorldContextObject)
+	{
+		return false;
+	}
+
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+	// Get GameViewport from LocalPlayer (supports custom GameViewport)
+	TObjectPtr<UGameViewportClient> GameViewport = nullptr;
+	if (const TObjectPtr<const UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		if (const APlayerController* PlayerController = World->GetFirstPlayerController())
+		{
+			if (const TObjectPtr<ULocalPlayer> LocalPlayer = PlayerController->GetLocalPlayer())
+			{
+				GameViewport = LocalPlayer->ViewportClient;
+			}
+		}
+	}
+
+	if (!GameViewport)
+	{
+		return false;
+	}
+
+	// Create or get the fade layer
+	FShidenScreenFadeLayer& Layer = ShidenSubsystem->ScreenFadeLayers.FindOrAdd(LayerName);
+	
+	TObjectPtr<UBorder> FadeWidget = Layer.Widget;
+	if (!FadeWidget)
+	{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION <= 6
+		FadeWidget = NewObject<UBorder>(GetTransientPackage());
+#else
+		FadeWidget = NewObject<UBorder>(GetTransientPackageAsObject());
+#endif
+		FadeWidget->SetBrushColor(FLinearColor::Transparent);
+
+		const TSharedRef<SWidget> SlateWidget = FadeWidget->TakeWidget();
+		GameViewport->AddViewportWidgetContent(SlateWidget, ZOrder);
+		Layer.Widget = FadeWidget;
+	}
+	else
+	{
+		// Update ZOrder for existing widget
+		const TSharedPtr<SWidget> CachedWidget = FadeWidget->GetCachedWidget();
+		if (CachedWidget.IsValid())
+		{
+			// For GameViewport, need to remove and re-add with new ZOrder
+			GameViewport->RemoveViewportWidgetContent(CachedWidget.ToSharedRef());
+			GameViewport->AddViewportWidgetContent(CachedWidget.ToSharedRef(), ZOrder);
+		}
+	}
+
+	FadeWidget->SetVisibility(ESlateVisibility::Visible);
+	
+	// Set up fade parameters
+	const FLinearColor StartColor = FadeWidget->GetBrushColor().A == 0
+		                                ? FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, bIsFadeOut ? 0 : 1)
+		                                : FadeWidget->GetBrushColor();
+	const FLinearColor ActualTargetColor = FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, bIsFadeOut ? 1 : 0);
+
+	Layer.Params = FShidenFadeParams{
+		.FadeDuration = FadeDuration,
+		.StartColor = StartColor,
+		.TargetColor = ActualTargetColor,
+		.bIsFadeOut = bIsFadeOut,
+		.EasingAlpha = 0.0f,
+		.FadeFunction = FadeFunction,
+		.BlendExp = BlendExp,
+		.Steps = Steps,
+		.OwnerProcessName = TEXT("")
+	};
+
+	// Handle instant fade (Duration == 0)
+	if (FadeDuration == 0)
+	{
+		FadeWidget->SetBrushColor(FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, ActualTargetColor.A));
+		if (!bIsFadeOut)
+		{
+			FadeWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		// Set EasingAlpha to 1.0f to mark as completed
+		Layer.Params.EasingAlpha = 1.0f;
+		return true;
+	}
+
+	// Start ticker if not already running
+	if (!ShidenSubsystem->TickerHandle.IsValid())
+	{
+		ShidenSubsystem->TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
+			FTickerDelegate::CreateUObject(ShidenSubsystem, &UShidenSubsystem::TickScreenFade));
+	}
+
+	return true;
+}
+
+SHIDENCORE_API bool UShidenBlueprintLibrary::IsScreenFadeCompleted(const FString& LayerName)
+{
+	return GEngine->GetEngineSubsystem<UShidenSubsystem>()->IsScreenFadeCompleted(LayerName);
+}
+
+SHIDENCORE_API void UShidenBlueprintLibrary::ResetScreenFadeLayers()
+{
+	GEngine->GetEngineSubsystem<UShidenSubsystem>()->ResetScreenFadeLayers();
+}
+
 FRegexPattern& UShidenBlueprintLibrary::GetSelfClosingTagPattern()
 {
 	static FRegexPattern SelfClosingTagPattern(TEXT("<((?:[\\w\\d\\.-]+))(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?/>"));
@@ -585,3 +786,91 @@ FRegexPattern& UShidenBlueprintLibrary::GetWaitTimePattern()
 	static FRegexPattern WaitTimePattern(TEXT("<wait\\stime=\"([\\d.]+)\"/>$"));
 	return WaitTimePattern;
 }
+
+#if WITH_EDITOR
+SHIDENCORE_API bool UShidenBlueprintLibrary::TryStartScreenFadePreview(const TObjectPtr<const UShidenWidget> ShidenWidget, const FString& LayerName, const float FadeDuration,
+                                                                       const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
+                                                                       const int32 Steps, const float BlendExp, const int32 ZOrder)
+{
+	if (!ShidenWidget || !ShidenWidget->BaseLayer)
+	{
+		return false;
+	}
+
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	// Create or get the fade layer
+	FShidenScreenFadeLayer& Layer = ShidenSubsystem->ScreenFadeLayers.FindOrAdd(LayerName);
+
+	TObjectPtr<UBorder> FadeWidget = Layer.Widget;
+	if (!FadeWidget)
+	{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION <= 6
+		FadeWidget = NewObject<UBorder>(GetTransientPackage());
+#else
+		FadeWidget = NewObject<UBorder>(GetTransientPackageAsObject());
+#endif
+		FadeWidget->SetBrushColor(FLinearColor::Transparent);
+
+		ShidenWidget->BaseLayer->AddChild(FadeWidget);
+		if (const TObjectPtr<UCanvasPanelSlot> CanvasPanelSlot = Cast<UCanvasPanelSlot>(FadeWidget->Slot))
+		{
+			CanvasPanelSlot->SetAnchors(FAnchors(0, 0, 1, 1));
+			CanvasPanelSlot->SetOffsets(FMargin(0, 0, 0, 0));
+			CanvasPanelSlot->SetZOrder(ZOrder);
+		}
+
+		Layer.Widget = FadeWidget;
+	}
+	else
+	{
+		// Update ZOrder for existing widget
+		if (const TObjectPtr<UCanvasPanelSlot> CanvasPanelSlot = Cast<UCanvasPanelSlot>(FadeWidget->Slot))
+		{
+			CanvasPanelSlot->SetZOrder(ZOrder);
+		}
+	}
+
+	FadeWidget->SetVisibility(ESlateVisibility::Visible);
+	
+	// Set up fade parameters
+	const FLinearColor StartColor = FadeWidget->GetBrushColor().A == 0
+		                                ? FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, bIsFadeOut ? 0 : 1)
+		                                : Layer.Params.TargetColor;
+	const FLinearColor ActualTargetColor = FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, bIsFadeOut ? 1 : 0);
+
+	Layer.Params = FShidenFadeParams{
+		.FadeDuration = FadeDuration,
+		.StartColor = StartColor,
+		.TargetColor = ActualTargetColor,
+		.bIsFadeOut = bIsFadeOut,
+		.EasingAlpha = 0.0f,
+		.FadeFunction = FadeFunction,
+		.BlendExp = BlendExp,
+		.Steps = Steps,
+		.OwnerProcessName = TEXT("")
+	};
+
+	// Handle instant fade (Duration == 0)
+	if (FadeDuration == 0)
+	{
+		FadeWidget->SetBrushColor(FLinearColor(TargetColor.R, TargetColor.G, TargetColor.B, ActualTargetColor.A));
+		if (!bIsFadeOut)
+		{
+			FadeWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		// Set EasingAlpha to 1.0f to mark as completed
+		Layer.Params.EasingAlpha = 1.0f;
+		return true;
+	}
+
+	// Start ticker if not already running
+	if (!ShidenSubsystem->TickerHandle.IsValid())
+	{
+		ShidenSubsystem->TickerHandle = FTSTicker::GetCoreTicker().AddTicker(
+			FTickerDelegate::CreateUObject(ShidenSubsystem, &UShidenSubsystem::TickScreenFade));
+	}
+
+	return true;
+}
+#endif

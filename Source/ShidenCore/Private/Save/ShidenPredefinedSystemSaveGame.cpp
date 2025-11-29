@@ -2,6 +2,7 @@
 
 #include "Save/ShidenPredefinedSystemSaveGame.h"
 #include "AudioDevice.h"
+#include "Config/ShidenProjectConfig.h"
 #include "System/ShidenSubsystem.h"
 #include "Engine/Engine.h"
 
