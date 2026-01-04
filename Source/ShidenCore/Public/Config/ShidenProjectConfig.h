@@ -186,7 +186,7 @@ public:
 
 	/**
 	 * Gets the sound mix used for managing audio class volumes.
-	 * 
+	 *
 	 * @return The sound mix asset
 	 */
 	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Config")

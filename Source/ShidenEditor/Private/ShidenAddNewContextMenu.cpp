@@ -298,6 +298,10 @@ UObject* UShidenAddNewContextMenu::CreateAsset(const FString& Path, const FStrin
 	}
 
 	const TObjectPtr<UEditorAssetSubsystem> EditorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+	if (!EditorAssetSubsystem)
+	{
+		return nullptr;
+	}
 	return EditorAssetSubsystem->DuplicateAsset(Path, PackageName);
 }
 

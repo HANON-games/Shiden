@@ -186,6 +186,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 		return true;
 	}
 
+	ErrorMessage = FString::Printf(TEXT("Invalid target type %s."), *Args.Target);
 	return false;
 }
 
