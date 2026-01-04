@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenEditorBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 #include "AssetViewUtils.h"
 #include "IContentBrowserSingleton.h"
 #include "ContentBrowserModule.h"
@@ -8,6 +9,7 @@
 #include "IContentBrowserDataModule.h"
 #include "IDesktopPlatform.h"
 #include "ISettingsModule.h"
+#include "Internationalization/Regex.h"
 #include "JsonObjectConverter.h"
 #include "Command/ShidenCommandDefinition.h"
 #include "ShidenCommandRedirector.h"
@@ -15,6 +17,7 @@
 #include "ShidenEditorConstants.h"
 #include "Command/ShidenStandardCommandDefinitions.h"
 #include "Config/ShidenProjectConfig.h"
+#include "Expression/ShidenExpressionEvaluator.h"
 #include "Interfaces/IMainFrameModule.h"
 #include "Save/ShidenSaveBlueprintLibrary.h"
 #include "Scenario/ShidenScenario.h"
@@ -22,6 +25,7 @@
 #include "Serialization/Csv/CsvParser.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "System/ShidenSubsystem.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 
 #define LOCTEXT_NAMESPACE "AssetTools"
@@ -165,6 +169,12 @@ SHIDENEDITOR_API void UShidenEditorBlueprintLibrary::ParseCsvContent(const FStri
 
 	for (const TArray<const TCHAR*>& Row : Rows)
 	{
+		// Skip empty rows
+		if (Row.Num() == 0)
+		{
+			continue;
+		}
+
 		// Skip comment lines like "# comment"
 		if (!bCommentEnd && FString(Row[0]).TrimStart().TrimEnd().StartsWith("#"))
 		{
@@ -220,15 +230,14 @@ UShidenScenario* ExpandPresets(const UShidenScenario* SourceScenario)
 			const FShidenPreset* CommandPreset = Config->Presets.Find(PresetName);
 			if (CommandPreset && CommandPreset->CommandName == CommandName)
 			{
-				for (const auto& [ArgName, DisplayName, DefaultValue, TemplateWidget, Parameters, bIsAssetToBeLoaded] : CommandDefinitions[
-					     CommandName].Args)
+				for (const FShidenCommandArgument& Arg : CommandDefinitions[CommandName].Args)
 				{
-					FString Key = ArgName.ToString();
+					FString Key = Arg.ArgName.ToString();
 					FString Value = Args.Contains(Key) && !Args[Key].IsEmpty()
 						                ? Args[Key]
 						                : CommandPreset->Args.Contains(Key)
 						                ? CommandPreset->Args[Key]
-						                : DefaultValue;
+						                : Arg.DefaultValue;
 					ExpandedCommand.Args.Add(Key, Value);
 				}
 			}
@@ -249,7 +258,10 @@ UShidenScenario* ExpandPresets(const UShidenScenario* SourceScenario)
 UShidenScenario* RemovePresetValues(const UShidenScenario* SourceScenario)
 {
 	const TObjectPtr<const UShidenProjectConfig> Config = GetDefault<UShidenProjectConfig>();
+	const FGuid ScenarioId = SourceScenario->ScenarioId;
 	const TObjectPtr<UShidenScenario> RemovedScenario = DuplicateObject(SourceScenario, GetTransientPackage());
+	// Scenario ID was lost during duplication, so restore it.
+	RemovedScenario->ScenarioId = ScenarioId;
 	RemovedScenario->Commands.Empty();
 	for (const auto& [CommandId, bEnabled, CommandName, PresetName, Args] : SourceScenario->Commands)
 	{
@@ -382,7 +394,6 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 	}
 
 	// Parse rows
-	TMap<FString, TObjectPtr<UShidenScenario>> MacroScenarioCache;
 	const TMap<FString, FShidenCommandDefinition>& CommandDefinitions = UShidenBlueprintLibrary::GetCommandDefinitionsCache();
 	TArray<FShidenCsvParsedRow> CsvParsedRow;
 	ParseCsvContent(CsvString, CsvParsedRow);
@@ -396,6 +407,14 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 			continue;
 		}
 		TArray<FString> Row = ParsedRow.Row;
+
+		// Skip rows with insufficient columns (need at least: CommandId, bEnabled, CommandName, PresetName)
+		if (Row.Num() < 4)
+		{
+			SHIDEN_WARNING("Skipping CSV row with insufficient columns (expected at least 4, got {num}).", Row.Num());
+			continue;
+		}
+
 		FShidenCommand Command;
 		FGuid CommandId;
 		Command.CommandId = FGuid::Parse(Row[0], CommandId) ? CommandId : FGuid::NewGuid();
@@ -405,7 +424,7 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 
 		if (!CommandDefinitions.Contains(Command.CommandName))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CommandName %s is not found in CommandDefinitions."), *Command.CommandName);
+			SHIDEN_WARNING("CommandName {name} is not found in CommandDefinitions.", *Command.CommandName);
 			continue;
 		}
 
@@ -416,21 +435,11 @@ SHIDENEDITOR_API UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenar
 			Command.Args.Add(Args[Index].ArgName.ToString(), Value);
 
 			// If the HasAdditionalArgs Property of Args[Index] is true, add MacroArguments
-			if (!Value.IsEmpty() && Args[Index].TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
+			if (!Value.IsEmpty() && Args[Index].EditorSettings.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 			{
-				if (!MacroScenarioCache.Contains(Value))
-				{
-					// Load Macro Scenario
-					FGuid MacroScenarioId;
-					UShidenScenario* MacroScenario;
-					if (UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(Value, MacroScenarioId, MacroScenario))
-					{
-						MacroScenarioCache.Add(Value, MacroScenario);
-					}
-				}
-
-				const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache.FindRef(Value);
-				if (!MacroScenario)
+				FGuid MacroScenarioId;
+				UShidenScenario* MacroScenario;
+				if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(Value, MacroScenarioId, MacroScenario))
 				{
 					continue;
 				}
@@ -519,7 +528,6 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 	const TMap<FString, FShidenCommandDefinition> CommandDefinitions = UShidenBlueprintLibrary::GetCommandDefinitionsCache();
 
 	// Add rows
-	TMap<FString, TObjectPtr<UShidenScenario>> MacroScenarioCache;
 	for (const auto& [CommandId, bEnabled, CommandName, PresetName, Args] : Scenario->Commands)
 	{
 		FString Row = CommandId.ToString() + TEXT(",") + (bEnabled ? TEXT("true") : TEXT("false")) + TEXT(",") + EscapeCsvItem(CommandName) +
@@ -527,7 +535,7 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 
 		if (!CommandDefinitions.Contains(CommandName))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CommandName %s is not found in CommandDefinitions."), *CommandName);
+			SHIDEN_WARNING("CommandName {name} is not found in CommandDefinitions.", *CommandName);
 			for (const auto& [Key, Value] : Args)
 			{
 				Row += TEXT(",") + EscapeCsvItem(Value);
@@ -545,21 +553,11 @@ SHIDENEDITOR_API FString UShidenEditorBlueprintLibrary::ConvertToCsvFromScenario
 				Row += TEXT(",") + EscapeCsvItem(Arg);
 
 				// If the HasAdditionalArgs Property of CommandArguments[Index] is true, add MacroArguments
-				if (!Arg.IsEmpty() && CommandArguments[Index].TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
+				if (!Arg.IsEmpty() && CommandArguments[Index].EditorSettings.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 				{
-					if (!MacroScenarioCache.Contains(Arg))
-					{
-						// Load Macro Scenario
-						FGuid MacroScenarioId;
-						UShidenScenario* MacroScenario;
-						if (UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(Arg, MacroScenarioId, MacroScenario))
-						{
-							MacroScenarioCache.Add(Arg, MacroScenario);
-						}
-					}
-
-					const TObjectPtr<UShidenScenario> MacroScenario = MacroScenarioCache.FindRef(Arg);
-					if (!MacroScenario)
+					FGuid MacroScenarioId;
+					UShidenScenario* MacroScenario;
+					if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(Arg, MacroScenarioId, MacroScenario))
 					{
 						continue;
 					}
@@ -645,7 +643,6 @@ SHIDENEDITOR_API bool UShidenEditorBlueprintLibrary::TryConvertToJsonFromScenari
 void UShidenEditorBlueprintLibrary::ListUserVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->UserVariable.ListDescriptors(VariableDescriptors);
 }
@@ -653,7 +650,6 @@ void UShidenEditorBlueprintLibrary::ListUserVariableDescriptors(TArray<FShidenVa
 void UShidenEditorBlueprintLibrary::ListPredefinedSystemVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->PredefinedSystemVariable.ListDescriptors(VariableDescriptors);
 }
@@ -661,7 +657,6 @@ void UShidenEditorBlueprintLibrary::ListPredefinedSystemVariableDescriptors(TArr
 void UShidenEditorBlueprintLibrary::ListSystemVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable.ListDescriptors(VariableDescriptors);
 }
@@ -669,7 +664,6 @@ void UShidenEditorBlueprintLibrary::ListSystemVariableDescriptors(TArray<FShiden
 void UShidenEditorBlueprintLibrary::ListLocalVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->LocalVariable.ListDescriptors(VariableDescriptors);
 }
@@ -702,7 +696,6 @@ void UShidenEditorBlueprintLibrary::AddUserVariableDefinition(const FShidenVaria
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
@@ -716,7 +709,6 @@ void UShidenEditorBlueprintLibrary::UpdateUserVariableDefinitions(const TArray<F
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
@@ -744,7 +736,6 @@ void UShidenEditorBlueprintLibrary::UpdateUserVariableDefinition(const FString& 
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
@@ -761,7 +752,6 @@ void UShidenEditorBlueprintLibrary::RemoveUserVariableDefinition(const FString& 
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ProjectConfig->UserVariableDefinitions);
 }
@@ -789,7 +779,6 @@ void UShidenEditorBlueprintLibrary::AddSystemVariableDefinition(const FShidenVar
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
@@ -803,7 +792,6 @@ void UShidenEditorBlueprintLibrary::UpdateSystemVariableDefinitions(const TArray
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
@@ -831,7 +819,6 @@ void UShidenEditorBlueprintLibrary::UpdateSystemVariableDefinition(const FString
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
@@ -848,7 +835,6 @@ void UShidenEditorBlueprintLibrary::RemoveSystemVariableDefinition(const FString
 	ProjectConfig->TryUpdateDefaultConfigFile();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ProjectConfig->SystemVariableDefinitions);
 }
@@ -856,7 +842,6 @@ void UShidenEditorBlueprintLibrary::RemoveSystemVariableDefinition(const FString
 void UShidenEditorBlueprintLibrary::GetPredefinedSystemVariableDefinitions(TArray<FShidenVariableDefinition>& VariableDefinitions)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	VariableDefinitions.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : ShidenSubsystem->PredefinedSystemVariable.Definitions)
@@ -865,13 +850,35 @@ void UShidenEditorBlueprintLibrary::GetPredefinedSystemVariableDefinitions(TArra
 	}
 }
 
+bool UShidenEditorBlueprintLibrary::TryParseVersionString(const FString& VersionStr, FShidenPluginVersion& OutVersion)
+{
+	// Strip pre-release suffix first (e.g., "1.10.0-beta1" -> "1.10.0")
+	FString CleanVersionStr = VersionStr;
+	int32 HyphenIndex;
+	if (CleanVersionStr.FindChar(TEXT('-'), HyphenIndex))
+	{
+		CleanVersionStr = CleanVersionStr.Left(HyphenIndex);
+	}
+
+	TArray<FString> Parts;
+	CleanVersionStr.ParseIntoArray(Parts, TEXT("."));
+	if (Parts.Num() >= 3)
+	{
+		OutVersion.Major = FCString::Atoi(*Parts[0]);
+		OutVersion.Minor = FCString::Atoi(*Parts[1]);
+		OutVersion.Patch = FCString::Atoi(*Parts[2]);
+		return true;
+	}
+	return false;
+}
+
 bool UShidenEditorBlueprintLibrary::TryGetCurrentPluginVersion(FShidenPluginVersion& PluginVersion)
 {
 	const FString PluginPath = FPaths::Combine(FPaths::ProjectPluginsDir(), ShidenEditorConstants::PluginRelativePath);
 	FString JsonString;
 	if (!FFileHelper::LoadFileToString(JsonString, *PluginPath))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load plugin file: %s"), *PluginPath);
+		SHIDEN_ERROR("Failed to load plugin file: {path}", *PluginPath);
 		return false;
 	}
 
@@ -880,34 +887,30 @@ bool UShidenEditorBlueprintLibrary::TryGetCurrentPluginVersion(FShidenPluginVers
 
 	if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON from plugin file: %s"), *PluginPath);
+		SHIDEN_ERROR("Failed to parse JSON from plugin file: {path}", *PluginPath);
 		return false;
 	}
 
 	if (JsonObject->HasField(TEXT("VersionName")))
 	{
 		const FString VersionName = JsonObject->GetStringField(TEXT("VersionName"));
-		TArray<FString> Versions;
-		VersionName.ParseIntoArray(Versions, TEXT("."));
-		if (Versions.Num() >= 3)
+
+		if (TryParseVersionString(VersionName, PluginVersion))
 		{
-			PluginVersion.Major = FCString::Atoi(*Versions[0]);
-			PluginVersion.Minor = FCString::Atoi(*Versions[1]);
-			PluginVersion.Patch = FCString::Atoi(*Versions[2]);
 			return true;
 		}
 
-		UE_LOG(LogTemp, Error, TEXT("Invalid VersionName format: %s"), *VersionName);
+		SHIDEN_ERROR("Invalid VersionName format: {version}", *VersionName);
 		return false;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("No VersionName field found"));
+	SHIDEN_WARNING("No VersionName field found");
 	return false;
 }
 
-void UShidenEditorBlueprintLibrary::RedirectCommands(UShidenScenario* Scenario, bool& AnyCommandUpdated)
+void UShidenEditorBlueprintLibrary::RedirectCommands(UShidenScenario* Scenario, const FShidenPluginVersion& SourcePluginVersion, bool& AnyCommandUpdated)
 {
-	static const TArray<FShidenCommandRedirector> Redirects = GetRedirectDefinitions();
+	const TArray<FShidenCommandRedirector> Redirects = GetRedirectDefinitions(SourcePluginVersion);
 
 	if (Redirects.Num() == 0)
 	{
@@ -972,10 +975,14 @@ void UShidenEditorBlueprintLibrary::RedirectLocalVariables(UShidenScenario* Scen
 	{
 		for (const FShidenCommandArgument& Arg : CommandDefinition.Args)
 		{
-			if (Arg.TemplateWidget == UShidenStandardCommandDefinitions::VariableNameInputTemplate
-				&& Arg.TemplateParameters.Contains(TEXT("VariableKindSourceIndex")))
+			if (Arg.EditorSettings.TemplateWidget == UShidenStandardCommandDefinitions::VariableNameInputTemplate
+				&& Arg.EditorSettings.TemplateParameters.Contains(TEXT("VariableKindSourceArgName")))
 			{
-				const int32 VariableKindIndex = FCString::Atoi(*Arg.TemplateParameters[TEXT("VariableKindSourceIndex")]);
+				const FString VariableKindArgName = Arg.EditorSettings.TemplateParameters[TEXT("VariableKindSourceArgName")];
+				const int32 VariableKindIndex = CommandDefinition.Args.IndexOfByPredicate([&VariableKindArgName](const FShidenCommandArgument& ArgItem)
+				{
+					return ArgItem.ArgName.ToString() == VariableKindArgName;
+				});
 				if (CommandDefinition.Args.IsValidIndex(VariableKindIndex))
 				{
 					const FShidenCommandArgument& VariableKindArg = CommandDefinition.Args[VariableKindIndex];
@@ -991,23 +998,21 @@ void UShidenEditorBlueprintLibrary::RedirectLocalVariables(UShidenScenario* Scen
 
 	for (FShidenCommand& Command : Scenario->Commands)
 	{
-		TArray<FString> ArgKeys;
-		Command.Args.GetKeys(ArgKeys);
-		for (int32 i = 0; i < ArgKeys.Num(); i++)
+		for (TPair<FString, FString>& Pair : Command.Args)
 		{
-			const FString Key = ArgKeys[i];
-			if (!Command.Args[Key].Contains(TEXT("{")) || !Command.Args[Key].Contains(TEXT("}")))
+			FString& Value = Pair.Value;
+			if (!Value.Contains(TEXT("{")) || !Value.Contains(TEXT("}")))
 			{
 				continue;
 			}
-			FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Command.Args[Key]);
+			FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Value);
 			while (Matcher.FindNext())
 			{
 				const FString Str = Matcher.GetCaptureGroup(1);
 				const FString VariableName = Str.Mid(1, Str.Len() - 2).TrimStartAndEnd();
 				if (VariableName == OldVariableNameWithPrefix)
 				{
-					Command.Args[Key].ReplaceInline(*Str, *NewReplacementVariableName, ESearchCase::CaseSensitive);
+					Value.ReplaceInline(*Str, *NewReplacementVariableName, ESearchCase::CaseSensitive);
 					AnyCommandUpdated = true;
 				}
 			}
@@ -1015,8 +1020,8 @@ void UShidenEditorBlueprintLibrary::RedirectLocalVariables(UShidenScenario* Scen
 
 		if (TargetCommand.Contains(Command.CommandName))
 		{
-			if (Command.Args.FindRef(TargetCommand[Command.CommandName].Get<0>()) == TEXT("LocalVariable")
-				&& Command.Args.FindRef(TargetCommand[Command.CommandName].Get<1>()) == OldVariableName)
+			if (Command.GetArg(TargetCommand[Command.CommandName].Get<0>()) == TEXT("LocalVariable")
+				&& Command.GetArg(TargetCommand[Command.CommandName].Get<1>()) == OldVariableName)
 			{
 				Command.Args[TargetCommand[Command.CommandName].Get<1>()] = NewVariableName;
 			}
@@ -1040,8 +1045,8 @@ void UShidenEditorBlueprintLibrary::RedirectAllMacroParameters(const UShidenScen
 	{
 		for (const FShidenCommandArgument& Arg : CommandDefinition.Args)
 		{
-			if (Arg.TemplateWidget == UShidenStandardCommandDefinitions::ScenarioInputTemplate
-				&& Arg.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
+			if (Arg.EditorSettings.TemplateWidget == UShidenStandardCommandDefinitions::ScenarioInputTemplate
+				&& Arg.EditorSettings.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 			{
 				TargetCommand.Add(CommandName, Arg.ArgName.ToString());
 				break;
@@ -1123,10 +1128,14 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 	{
 		for (const FShidenCommandArgument& Arg : CommandDefinition.Args)
 		{
-			if (Arg.TemplateWidget == UShidenStandardCommandDefinitions::VariableNameInputTemplate
-				&& Arg.TemplateParameters.Contains(TEXT("VariableKindSourceIndex")))
+			if (Arg.EditorSettings.TemplateWidget == UShidenStandardCommandDefinitions::VariableNameInputTemplate
+				&& Arg.EditorSettings.TemplateParameters.Contains(TEXT("VariableKindSourceArgName")))
 			{
-				const int32 VariableKindIndex = FCString::Atoi(*Arg.TemplateParameters[TEXT("VariableKindSourceIndex")]);
+				const FString VariableKindArgName = Arg.EditorSettings.TemplateParameters[TEXT("VariableKindSourceArgName")];
+				const int32 VariableKindIndex = CommandDefinition.Args.IndexOfByPredicate([&VariableKindArgName](const FShidenCommandArgument& ArgItem)
+				{
+					return ArgItem.ArgName.ToString() == VariableKindArgName;
+				});
 				if (CommandDefinition.Args.IsValidIndex(VariableKindIndex))
 				{
 					const FShidenCommandArgument& VariableKindArg = CommandDefinition.Args[VariableKindIndex];
@@ -1154,7 +1163,7 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 		NewReplacementVariableName = FString::Printf(TEXT("{%s}"), *NewReplacementVariableName);
 		break;
 	case EShidenVariableKind::LocalVariable:
-		UE_LOG(LogTemp, Warning, TEXT("Replace local variables is not supported."));
+		SHIDEN_WARNING("Replace local variables is not supported.");
 		return;
 	case EShidenVariableKind::SystemVariable:
 		OldVariableNameWithPrefix = FString::Printf(TEXT("System::%s"), *OldVariableName);
@@ -1178,24 +1187,22 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 			bool bChanged = false;
 			for (FShidenCommand& Command : Scenario->Commands)
 			{
-				TArray<FString> ArgKeys;
-				Command.Args.GetKeys(ArgKeys);
-				for (int32 i = 0; i < ArgKeys.Num(); i++)
+				for (TPair<FString, FString>& Pair : Command.Args)
 				{
-					const FString Key = ArgKeys[i];
-					if (!Command.Args[Key].Contains(TEXT("{")) || !Command.Args[Key].Contains(TEXT("}")))
+					FString& Value = Pair.Value;
+					if (!Value.Contains(TEXT("{")) || !Value.Contains(TEXT("}")))
 					{
 						continue;
 					}
 
-					FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Command.Args[Key]);
+					FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Value);
 					while (Matcher.FindNext())
 					{
 						const FString Str = Matcher.GetCaptureGroup(1);
 						const FString VariableName = Str.Mid(1, Str.Len() - 2).TrimStartAndEnd();
 						if (VariableName == OldVariableNameWithPrefix)
 						{
-							Command.Args[Key].ReplaceInline(*Str, *NewReplacementVariableName, ESearchCase::CaseSensitive);
+							Value.ReplaceInline(*Str, *NewReplacementVariableName, ESearchCase::CaseSensitive);
 							bChanged = true;
 						}
 					}
@@ -1203,8 +1210,8 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 
 				if (TargetCommand.Contains(Command.CommandName))
 				{
-					const FString& CommandVariableKindValue = Command.Args.FindRef(TargetCommand[Command.CommandName].Get<0>());
-					const FString& CommandVariableNameValue = Command.Args.FindRef(TargetCommand[Command.CommandName].Get<1>());
+					const FString CommandVariableKindValue = Command.GetArg(TargetCommand[Command.CommandName].Get<0>());
+					const FString CommandVariableNameValue = Command.GetArg(TargetCommand[Command.CommandName].Get<1>());
 					if (CommandVariableKindValue == VariableKindStr && CommandVariableNameValue == OldVariableName)
 					{
 						Command.Args[TargetCommand[Command.CommandName].Get<1>()] = NewVariableName;
@@ -1268,7 +1275,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 			if (TObjectPtr<UShidenScenario> Scenario = Cast<UShidenScenario>(Asset.GetAsset()); IsValid(Scenario))
 			{
 				bool bChanged = false;
-				RedirectCommands(Scenario, bChanged);
+				RedirectCommands(Scenario, CurrentVersion, bChanged);
 				for (FShidenVariableDefinition& Definition : Scenario->LocalVariableDefinitions)
 				{
 					if (Definition.Type == EShidenVariableType::AssetPath && Definition.AssetPathType == EShidenAssetPathType::None)
@@ -1306,11 +1313,28 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 		}
 	}
 
+	// if (CurrentVersion < FShidenPluginVersion(1, 10, 0))
+	// {
+	// 	const FText DialogTitle = NSLOCTEXT("ShidenNamespace", "AdvancedModeTitle", "Enable Advanced Mode");
+	// 	const FText DialogMessage = NSLOCTEXT("ShidenNamespace", "AdvancedModeMessage",
+	// 	                                      "Do you want to enable advanced mode?\r\n\r\n"
+	// 	                                      "In advanced mode, all editing items in Shiden Visual Novel Editor are displayed.");
+	//
+	// 	const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, DialogMessage, DialogTitle);
+	//
+	// 	if (Response == EAppReturnType::No)
+	// 	{
+	// 		EditorConfig->bUseAdvancedMode = false;
+	// 		EditorConfig->SaveConfig(CPF_Config, *EditorConfig->GetDefaultConfigFilename());
+	// 		EditorConfig->TryUpdateDefaultConfigFile();
+	// 	}
+	// }
+
 	// Update pluginVersion
 	FShidenPluginVersion NewVersion;
 	if (!TryGetCurrentPluginVersion(NewVersion))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get current plugin version"));
+		SHIDEN_ERROR("Failed to get current plugin version");
 		return false;
 	}
 
@@ -1328,10 +1352,234 @@ void UShidenEditorBlueprintLibrary::OpenSettings(const FName& ContainerName, con
 	}
 }
 
-TArray<FShidenCommandRedirector> UShidenEditorBlueprintLibrary::GetRedirectDefinitions()
+FString UShidenEditorBlueprintLibrary::ReplaceArgumentReferences(const TMap<FString, FString>& CommandArgs, const FString& Expression)
+{
+	FString Result = Expression;
+
+	// Replace each argument reference {ArgName} or { ArgName } with its value
+	for (const TPair<FString, FString>& Arg : CommandArgs)
+	{
+		// Create regex pattern to match {  ArgName  } with optional whitespace
+		const FString Pattern = FString::Printf(TEXT("\\{\\s*%s\\s*\\}"), *Arg.Key);
+		FRegexPattern RegexPattern(Pattern);
+
+		while (true)
+		{
+			FRegexMatcher Matcher(RegexPattern, Result);
+			if (!Matcher.FindNext())
+			{
+				break;
+			}
+
+			const int32 BeginIndex = Matcher.GetMatchBeginning();
+			const int32 EndIndex = Matcher.GetMatchEnding();
+
+			Result = Result.Left(BeginIndex) + "\"" + Arg.Value + "\"" + Result.Mid(EndIndex);
+		}
+	}
+
+	return Result;
+}
+
+bool UShidenEditorBlueprintLibrary::TryEvaluateConditionalMessages(const FShidenExpressionVariableDefinitionContext& Context, const TMap<FString, FString>& CommandArgs, const TArray<FShidenConditionalMessage>& ConditionalMessages,
+                                                                   TArray<FText>& OutMessages, FString& ErrorMessage)
+{
+	OutMessages.Empty();
+
+	for (const FShidenConditionalMessage& ConditionalMessage : ConditionalMessages)
+	{
+		if (ConditionalMessage.Condition.IsEmpty())
+		{
+			continue;
+		}
+
+		const FString ReplacedExpression = ReplaceArgumentReferences(CommandArgs, ConditionalMessage.Condition);
+
+		const FShidenExpressionEvaluator Evaluator(Context);
+		FShidenExpressionValue Result;
+		if (!Evaluator.TryEvaluate(ReplacedExpression, Result, ErrorMessage))
+		{
+			ErrorMessage = FString::Printf(TEXT("Failed to evaluate condition '%s': %s"), *ConditionalMessage.Condition, *ErrorMessage);
+			return false;
+		}
+
+		if (Result.Type != EShidenExpressionValueType::Boolean)
+		{
+			ErrorMessage = FString::Printf(TEXT("Condition must evaluate to a boolean value, got '%s'"), *ReplacedExpression);
+			return false;
+		}
+
+		if (Result.BoolValue)
+		{
+			OutMessages.Add(ConditionalMessage.Message);
+		}
+	}
+
+	return true;
+}
+
+bool UShidenEditorBlueprintLibrary::TryEvaluateConditionalMessages(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition, const TMap<FString, FString>& CommandArgs,
+                                                                   const FName& ArgName, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages, FString& ErrorMessage)
+{
+	OutWarningMessages.Empty();
+	OutErrorMessages.Empty();
+
+	// Build context once for all validations
+	const FShidenExpressionVariableDefinitionContext Context = BuildExpressionContext(Scenario);
+
+	const FShidenCommandArgument* Arg = CommandDefinition.Args.FindByPredicate([&ArgName](const FShidenCommandArgument& InArg)
+	{
+		return InArg.ArgName == ArgName;
+	});
+
+	if (!Arg)
+	{
+		ErrorMessage = FString::Printf(TEXT("Argument '%s' not found in command definition"), *ArgName.ToString());
+		return false;
+	}
+
+	TArray<FText> WarningMessages;
+	FString WarningErrorMessage;
+	if (!TryEvaluateConditionalMessages(Context, CommandArgs, Arg->EditorSettings.WarningMessages, WarningMessages, WarningErrorMessage))
+	{
+		ErrorMessage = WarningErrorMessage;
+		return false;
+	}
+	OutWarningMessages.Append(WarningMessages);
+
+	TArray<FText> ErrorMessages;
+	FString ErrorErrorMessage;
+	if (!TryEvaluateConditionalMessages(Context, CommandArgs, Arg->EditorSettings.ErrorMessages, ErrorMessages, ErrorErrorMessage))
+	{
+		ErrorMessage = ErrorErrorMessage;
+		return false;
+	}
+	OutErrorMessages.Append(ErrorMessages);
+
+	return true;
+}
+
+bool UShidenEditorBlueprintLibrary::TryValidateCommand(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition,
+                                                       const TMap<FString, FString>& CommandArgs, bool& HasWarning, bool& HasError, FString& ErrorMessage)
+{
+	for (const FShidenCommandArgument& Arg : CommandDefinition.Args)
+	{
+		TArray<FText> ArgWarningMessages;
+		TArray<FText> ArgErrorMessages;
+		FString ArgErrorMessage;
+
+		if (!TryEvaluateConditionalMessages(Scenario, CommandDefinition, CommandArgs, Arg.ArgName, ArgWarningMessages, ArgErrorMessages, ArgErrorMessage))
+		{
+			ErrorMessage = ArgErrorMessage;
+			return false;
+		}
+
+		if (ArgWarningMessages.Num() > 0)
+		{
+			HasWarning = true;
+		}
+
+		if (ArgErrorMessages.Num() > 0)
+		{
+			HasError = true;
+		}
+	}
+
+	return true;
+}
+
+bool UShidenEditorBlueprintLibrary::TryEvaluateInputVisibility(const UShidenScenario* Scenario, const FShidenCommand& Command, const FString& EditorVisibilityCondition,
+                                                               bool& OutShouldShow, FString& ErrorMessage)
+{
+	// Empty condition means always visible
+	if (EditorVisibilityCondition.IsEmpty())
+	{
+		OutShouldShow = true;
+		return true;
+	}
+
+	const FShidenExpressionVariableDefinitionContext Context = BuildExpressionContext(Scenario);
+
+	const FString ReplacedExpression = ReplaceArgumentReferences(Command.Args, EditorVisibilityCondition);
+
+	const FShidenExpressionEvaluator Evaluator(Context);
+	FShidenExpressionValue Result;
+	if (!Evaluator.TryEvaluate(ReplacedExpression, Result, ErrorMessage))
+	{
+		OutShouldShow = false;
+		return false;
+	}
+
+	if (Result.Type != EShidenExpressionValueType::Boolean)
+	{
+		ErrorMessage = FString::Printf(TEXT("EditorVisibilityCondition must evaluate to a boolean value, got %s"), *ReplacedExpression);
+		OutShouldShow = false;
+		return false;
+	}
+
+	OutShouldShow = Result.BoolValue;
+	return true;
+}
+
+FShidenExpressionVariableDefinitionContext UShidenEditorBlueprintLibrary::BuildExpressionContext(const UShidenScenario* Scenario)
+{
+	FShidenExpressionVariableDefinitionContext Context;
+
+	// Add global variable definitions
+	if (const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>())
+	{
+		TArray<FShidenVariableDescriptor> UserVariableDescriptors;
+		ShidenSubsystem->UserVariable.ListDescriptors(UserVariableDescriptors);
+		for (const FShidenVariableDescriptor& Descriptor : UserVariableDescriptors)
+		{
+			FShidenVariableDefinition Def
+			{
+				.Name = Descriptor.Name,
+				.Type = Descriptor.Type,
+				.AssetPathType = Descriptor.AssetPathType,
+				.DefaultValue = Descriptor.DefaultValue,
+				.bIsReadOnly = Descriptor.bIsReadOnly,
+			};
+			Context.UserVariables.Add(Descriptor.Name, Def);
+		}
+
+		TArray<FShidenVariableDescriptor> SystemVariableDescriptors;
+		ShidenSubsystem->SystemVariable.ListDescriptors(SystemVariableDescriptors);
+		for (const FShidenVariableDescriptor& Descriptor : SystemVariableDescriptors)
+		{
+			FShidenVariableDefinition Def
+			{
+				.Name = Descriptor.Name,
+				.Type = Descriptor.Type,
+				.AssetPathType = Descriptor.AssetPathType,
+				.DefaultValue = Descriptor.DefaultValue,
+				.bIsReadOnly = Descriptor.bIsReadOnly,
+			};
+			Context.SystemVariables.Add(Descriptor.Name, Def);
+		}
+	}
+
+	// Add scenario-specific variables if provided
+	if (IsValid(Scenario))
+	{
+		for (const FShidenVariableDefinition& Def : Scenario->LocalVariableDefinitions)
+		{
+			Context.LocalVariables.Add(Def.Name, Def);
+		}
+
+		for (const FShidenMacroParameter& Param : Scenario->MacroParameterDefinitions)
+		{
+			Context.MacroParameters.Add(Param.Name, Param);
+		}
+	}
+
+	return Context;
+}
+
+TArray<FShidenCommandRedirector> UShidenEditorBlueprintLibrary::GetRedirectDefinitions(const FShidenPluginVersion& SourcePluginVersion)
 {
 	const TObjectPtr<const UShidenEditorConfig> EditorConfig = GetDefault<UShidenEditorConfig>();
-	TArray<FShidenCommandRedirector> Redirects = UShidenCommandRedirectors::GetBuiltIn(EditorConfig->PluginVersion);
+	TArray<FShidenCommandRedirector> Redirects = UShidenCommandRedirectors::GetBuiltIn(SourcePluginVersion);
 	for (const FSoftObjectPath& RedirectorPath : EditorConfig->CommandRedirectors)
 	{
 		if (const TObjectPtr<UShidenCommandRedirectors> RedirectAsset = Cast<UShidenCommandRedirectors>(RedirectorPath.TryLoad()))

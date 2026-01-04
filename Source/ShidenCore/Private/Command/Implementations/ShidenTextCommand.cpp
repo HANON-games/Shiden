@@ -4,6 +4,7 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "System/ShidenStructuredLog.h"
 #include "Engine/Engine.h"
 
 void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs)
@@ -18,7 +19,7 @@ void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextComman
 	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool("DisableAutoStopPreviousVoices");
 	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool("ContinueFromThePreviousText");
 
-	OutArgs.Texts.Empty();
+	OutArgs.Texts.SetNum(MaxLanguageCount);
 	static const TArray<FString> LanguageArgs = {
 		"Text",
 		"Language 2",
@@ -31,9 +32,9 @@ void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextComman
 		"Language 9",
 		"Language 10"
 	};
-	for (int32 i = 0; i < LanguageArgs.Num(); i++)
+	for (int32 i = 0; i < MaxLanguageCount; i++)
 	{
-		OutArgs.Texts.Add(Command.GetArg(LanguageArgs[i]));
+		OutArgs.Texts[i] = Command.GetArg(LanguageArgs[i]);
 	}
 }
 
@@ -108,7 +109,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 
 		CurrentTextIndex = UShidenBlueprintLibrary::GetParsedLength(PreviousText);
 		CurrentTexts.Empty();
-		for (int32 i = 0; i < Args.Texts.Num(); i++)
+		for (int32 i = 0; i < MaxLanguageCount; i++)
 		{
 			CurrentTexts.Add(FString::Printf(TEXT("%s%s"), *GetTextByLanguageIndex(PreviousTexts, i), *GetTextByLanguageIndex(Args.Texts, i)));
 		}
@@ -155,7 +156,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 
 	if (ShouldStopVoice(Args.VoicePath, Args.bDisableAutoStopPreviousVoices))
 	{
-		ShidenManager->Execute_StopVoices(ShidenManager.GetObject());
+		ShidenManager->Execute_StopSounds(ShidenManager.GetObject(), EShidenSoundType::Voice);
 	}
 
 	if (ShouldPlayVoice(Args.VoicePath, CurrentVoiceState))
@@ -333,7 +334,6 @@ bool UShidenTextCommand::ShouldPlayTextBlip(const FString& TextBlipPath, const F
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	if (IsAssetPathEmpty(VoicePath) && !IsAssetPathEmpty(TextBlipPath))
 	{
@@ -344,7 +344,7 @@ bool UShidenTextCommand::ShouldPlayTextBlip(const FString& TextBlipPath, const F
 		case EShidenTextBlipTriggerMode::CharacterInterval:
 			return TextBlipCharacterCount <= 0;
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("Unknown TextBlipTriggerMode: %d"), static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode));
+			SHIDEN_WARNING("Unknown TextBlipTriggerMode: {mode}", static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode));
 			return false;
 		}
 	}
@@ -443,7 +443,6 @@ bool UShidenTextCommand::ShouldPauseTextProcess(const UShidenWidget* ShidenWidge
 bool UShidenTextCommand::ShouldStopVoice(const FString& VoicePath, const bool bDisableAutoStopPreviousVoices)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	switch (ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition)
 	{
@@ -454,6 +453,7 @@ bool UShidenTextCommand::ShouldStopVoice(const FString& VoicePath, const bool bD
 	case EShidenVoiceStopCondition::NextVoice:
 		return !bDisableAutoStopPreviousVoices && !IsAssetPathEmpty(VoicePath);
 	default:
+		SHIDEN_WARNING("Unknown VoiceStopCondition value: {value}", static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition));
 		return false;
 	}
 }
@@ -533,7 +533,6 @@ bool UShidenTextCommand::TryProcessTextBlipPlayback(const FString& TextBlipPath,
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->PredefinedSystemVariable.TextBlipTriggerMode == EShidenTextBlipTriggerMode::TimeInterval)
 	{
@@ -550,7 +549,6 @@ bool UShidenTextCommand::TryUpdateTextProgress(const FString& TextWidgetName, co
                                                UShidenWidget* ShidenWidget, const float DeltaTime, bool& bTextUpdated, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	UShidenTextWidget* TextWidget;
 	if (!TryFindTextWidget(ShidenWidget, TextWidgetName, TextWidget, ErrorMessage))
@@ -690,7 +688,6 @@ void UShidenTextCommand::UpdateTalkState(const TScriptInterface<IShidenManagerIn
 float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	if (CurrentIndex == TextLength)
 	{
@@ -715,12 +712,11 @@ float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 bool UShidenTextCommand::TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
-	if (LanguageIndex < 0 || LanguageIndex >= 10)
+	if (LanguageIndex < 0 || LanguageIndex >= MaxLanguageCount)
 	{
-		ErrorMessage = FString::Printf(TEXT("Invalid language index: %d."), LanguageIndex);
+		ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, MaxLanguageCount - 1);
 		return false;
 	}
 	return true;

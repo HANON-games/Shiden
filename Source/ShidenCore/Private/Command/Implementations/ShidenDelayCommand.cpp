@@ -35,7 +35,6 @@ void UShidenDelayCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), InputAction, bValue, bSuccess);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	ElapsedTime += bSuccess && bValue && UShidenScenarioBlueprintLibrary::CanSkipCommand()
 		               ? DeltaTime * ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate

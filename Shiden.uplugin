@@ -1,9 +1,9 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.9.1",
+	"VersionName": "1.10.0",
 	"FriendlyName": "Shiden Visual Novel Editor",
-	"Description": "A simple visual novel editor",
+	"Description": "The definitive Visual Novel Editor for Unreal Engine 5",
 	"Category": "Visual Novel",
 	"CreatedBy": "HANON",
 	"CreatedByURL": "https://twitter.com/HanonHeartKnows",

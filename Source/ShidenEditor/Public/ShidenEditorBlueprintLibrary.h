@@ -8,6 +8,8 @@
 #include "Variable/ShidenVariableDescriptor.h"
 #include "ShidenCommandRedirector.h"
 #include "ShidenPluginVersion.h"
+#include "Command/ShidenCommandDefinition.h"
+#include "Expression/ShidenExpressionEvaluator.h"
 #include "Variable/ShidenVariableKind.h"
 #include "ShidenEditorBlueprintLibrary.generated.h"
 
@@ -93,8 +95,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config", meta = (DisplayName = "Get Current Plugin Version"))
 	static UPARAM(DisplayName = "Success") bool TryGetCurrentPluginVersion(FShidenPluginVersion& PluginVersion);
 
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config", meta = (DisplayName = "Parse Version String"))
+	static UPARAM(DisplayName = "Success") bool TryParseVersionString(const FString& VersionStr, FShidenPluginVersion& OutVersion);
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
-	static void RedirectCommands(UShidenScenario* Scenario, bool& AnyCommandUpdated);
+	static void RedirectCommands(UShidenScenario* Scenario, const FShidenPluginVersion& SourcePluginVersion, bool& AnyCommandUpdated);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
 	static void RedirectLocalVariables(UShidenScenario* Scenario, const FString& OldVariableName, const FString& NewVariableName, bool& AnyCommandUpdated);
@@ -112,8 +117,27 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SvnInternal|EditorUtility|Config", meta=(AutoCreateRefTerm="ContainerName, CategoryName, SectionName"))
 	static void OpenSettings(const FName& ContainerName, const FName& CategoryName, const FName& SectionName);
 
-	static TArray<FShidenCommandRedirector> GetRedirectDefinitions();
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Evaluate Input Visibility"))
+	static UPARAM(DisplayName = "Success") bool TryEvaluateInputVisibility(const UShidenScenario* Scenario, const FShidenCommand& Command, const FString& EditorVisibilityCondition,
+	                                                                       bool& OutShouldShow, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Evaluate Conditional Messages"))
+	static UPARAM(DisplayName = "Success") bool TryEvaluateConditionalMessages(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition, const TMap<FString, FString>& CommandArgs,
+	                                                                           const FName& ArgName, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Validate Command"))
+	static UPARAM(DisplayName = "Success") bool TryValidateCommand(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition,
+	                                                               const TMap<FString, FString>& CommandArgs, bool& HasWarning, bool& HasError, FString& ErrorMessage);
 
 private:
+	static bool TryEvaluateConditionalMessages(const FShidenExpressionVariableDefinitionContext& Context, const TMap<FString, FString>& CommandArgs, const TArray<FShidenConditionalMessage>& ConditionalMessages,
+	                                           TArray<FText>& OutMessages, FString& ErrorMessage);
+
+	static TArray<FShidenCommandRedirector> GetRedirectDefinitions(const FShidenPluginVersion& SourcePluginVersion);
+
 	static void ParseCsvContent(const FString& CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);
+
+	static FString ReplaceArgumentReferences(const TMap<FString, FString>& CommandArgs, const FString& Expression);
+
+	static FShidenExpressionVariableDefinitionContext BuildExpressionContext(const UShidenScenario* Scenario);
 };

@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Save/ShidenSystemSaveGame.h"
+#include "System/ShidenStructuredLog.h"
 #include "System/ShidenSubsystem.h"
 #include "Config/ShidenProjectConfig.h"
 #include "Engine/Engine.h"
@@ -16,9 +17,9 @@ TObjectPtr<UShidenSystemSaveGame> UShidenSystemSaveGame::GetOrCreate()
 		// If it differs from save game class, issue a warning
 		if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Loaded ShidenSystemSaveGame is not of the expected class. Expected %s but got %s."),
-				   *SaveGameClass->GetName(),
-				   *SaveGame->GetClass()->GetName());
+			SHIDEN_WARNING("Loaded ShidenSystemSaveGame is not of the expected class. Expected {expected} but got {actual}.",
+			               *SaveGameClass->GetName(),
+			               *SaveGame->GetClass()->GetName());
 		}
 		return Cast<UShidenSystemSaveGame>(SaveGame);
 	}

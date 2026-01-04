@@ -1,9 +1,12 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenSoundCommand.h"
+
+#include "Audio/ShidenSoundFadeType.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 #include "Sound/SoundBase.h"
 #include "Command/ShidenCommandHelpers.h"
 #include "Engine/Engine.h"
@@ -22,6 +25,7 @@ bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundC
 	Args.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices"));
 	Args.bWaitForFadeCompletion = Command.GetArgAsBool(TEXT("WaitForFadeCompletion"));
 	Args.bWaitForSoundCompletion = Command.GetArgAsBool(TEXT("WaitForSoundCompletion"));
+	Args.bUseGlobalBGM = Command.GetArgAsBool(TEXT("UseGlobalBGM"));
 
 	if (!TryConvertToShidenSoundType(Args.SoundTypeStr, Args.SoundType, ErrorMessage))
 	{
@@ -88,8 +92,6 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Property : ScenarioProperties)
 	{
-		FString SoundTrackStr = Property.Key;
-
 		TMap<FString, FString> Values;
 		if (!Property.Value.TryConvertToStringMap(Values))
 		{
@@ -113,7 +115,12 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			ErrorMessage = TEXT("Failed to find Path.");
 			return;
 		}
-		const int32 TrackId = FCString::Atoi(*SoundTrackStr);
+
+		const FString UseGlobalBGMStr = Values.FindRef(TEXT("UseGlobalBGM"));
+		const bool bUseGlobalBGM = UseGlobalBGMStr.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+		const int32 TrackId = bUseGlobalBGM && Property.Key.StartsWith(TEXT("Global$"))
+			? FCString::Atoi(*Property.Key.RightChop(7))
+			: FCString::Atoi(*Property.Key);
 		const float Volume = FCString::Atof(**VolumeStr);
 		const float Pitch = FCString::Atof(**PitchStr);
 		const float StartTime = FCString::Atof(**StartTimeStr);
@@ -122,7 +129,31 @@ void UShidenSoundCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 
 		float ResultDuration = 0.0f;
 		bool bSuccess;
-		ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
+		if (bUseGlobalBGM)
+		{
+			UObject* SoundObject;
+			if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(*Path, SoundObject))
+			{
+				Status = EShidenInitFromSaveDataStatus::Error;
+				ErrorMessage = FString::Printf(TEXT("Failed to load sound asset from path: %s"), **Path);
+				return;
+			}
+
+			USoundBase* SoundBase = Cast<USoundBase>(SoundObject);
+			if (!SoundBase)
+			{
+				Status = EShidenInitFromSaveDataStatus::Error;
+				ErrorMessage = FString::Printf(TEXT("Failed to cast to USoundBase: %s"), **Path);
+				return;
+			}
+			// Pass false to skip re-saving during restoration
+			bSuccess = UShidenBlueprintLibrary::TryPlayGlobalBGM(CallerObject, TrackId, SoundBase, EShidenSoundFadeType::FadeIn,
+				Volume, Pitch,StartTime,0.0f, EAudioFaderCurve::Linear, false, ResultDuration);
+		}
+		else
+		{
+			ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
+		}
 		if (!bSuccess)
 		{
 			Status = EShidenInitFromSaveDataStatus::Error;
@@ -149,7 +180,7 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 
 	if (Args.SoundType == EShidenSoundType::Voice && ShouldStopVoice(Args.bDisableAutoStopPreviousVoices))
 	{
-		ShidenManager->Execute_StopVoices(ShidenManager.GetObject());
+		ShidenManager->Execute_StopSounds(ShidenManager.GetObject(), EShidenSoundType::Voice);
 	}
 
 	if ((Args.SoundType == EShidenSoundType::SE || Args.SoundType == EShidenSoundType::Voice)
@@ -175,7 +206,26 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
 
 	bool bSuccess;
-	ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, SoundDuration, bSuccess);
+	if (Args.bUseGlobalBGM && Args.SoundType == EShidenSoundType::BGM)
+	{
+		// Load sound asset for TryPlayGlobalBGM
+		USoundBase* SoundAsset = nullptr;
+		if (!Args.SoundSourcePath.IsEmpty() && Args.SoundSourcePath != TEXT("None"))
+		{
+			UObject* SoundObject;
+			if (UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.SoundSourcePath, SoundObject))
+			{
+				SoundAsset = Cast<USoundBase>(SoundObject);
+			}
+		}
+		// Pass false - scenario property will be saved in ProcessCommand
+		bSuccess = UShidenBlueprintLibrary::TryPlayGlobalBGM(CallerObject, Args.TrackId, SoundAsset, bIsFadeIn ? EShidenSoundFadeType::FadeIn : EShidenSoundFadeType::FadeOut,
+			ResultEndVolume, Args.Pitch, Args.StartTime, Args.FadeDuration, Args.FadeFunction, false, SoundDuration);
+	}
+	else
+	{
+		ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, SoundDuration, bSuccess);
+	}
 	if (!bSuccess)
 	{
 		Status = EShidenPreProcessStatus::Error;
@@ -207,20 +257,24 @@ void UShidenSoundCommand::ProcessCommand_Implementation(const FString& ProcessNa
 
 	if (Args.SoundType == EShidenSoundType::BGM)
 	{
-		const FString TrackIdStr = FString::FromInt(Args.TrackId);
+		const FString TrackKey = Args.bUseGlobalBGM
+			? TEXT("Global$") + FString::FromInt(Args.TrackId)
+			: FString::FromInt(Args.TrackId);
+
 		if (Args.SoundSourcePath.IsEmpty() || Args.SoundSourcePath == TEXT("None"))
 		{
-			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, TrackIdStr);
+			UShidenScenarioBlueprintLibrary::RemoveScenarioProperty(Command.CommandName, TrackKey);
 		}
 		else
 		{
 			const float EndVolume = IsFadeIn(Args.FadeType) ? Args.Volume : 0.0f;
-			UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackIdStr, {
-				                                                                 {TEXT("Path"), Args.SoundSourcePath},
-				                                                                 {TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
-				                                                                 {TEXT("Pitch"), FString::SanitizeFloat(Args.Pitch)},
-				                                                                 {TEXT("StartTime"), FString::SanitizeFloat(Args.StartTime)}
-			                                                                 });
+			UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, TrackKey, {
+				{TEXT("Path"), Args.SoundSourcePath},
+				{TEXT("Volume"), FString::SanitizeFloat(EndVolume)},
+				{TEXT("Pitch"), FString::SanitizeFloat(Args.Pitch)},
+				{TEXT("StartTime"), FString::SanitizeFloat(Args.StartTime)},
+				{TEXT("UseGlobalBGM"), Args.bUseGlobalBGM ? TEXT("true") : TEXT("false")}
+			});
 		}
 	}
 
@@ -255,7 +309,25 @@ void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 	const FShidenSoundInfo SoundInfo(Args.TrackId, Args.SoundType, Args.SoundSourcePath, ResultStartVolume, ResultEndVolume, Args.Pitch,
 	                                 Args.StartTime, Args.FadeFunction, Args.FadeDuration);
 	bool bSuccess;
-	ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
+	if (Args.bUseGlobalBGM && Args.SoundType == EShidenSoundType::BGM)
+	{
+		// Load sound asset for TryPlayGlobalBGM
+		USoundBase* SoundAsset = nullptr;
+		if (!Args.SoundSourcePath.IsEmpty() && Args.SoundSourcePath != TEXT("None"))
+		{
+			UObject* SoundObject;
+			if (UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.SoundSourcePath, SoundObject))
+			{
+				SoundAsset = Cast<USoundBase>(SoundObject);
+			}
+		}
+		bSuccess = UShidenBlueprintLibrary::TryPlayGlobalBGM(ShidenWidget, Args.TrackId, SoundAsset, bIsFadeIn ? EShidenSoundFadeType::FadeIn : EShidenSoundFadeType::FadeOut,
+			ResultEndVolume, Args.Pitch, Args.StartTime, Args.FadeDuration, Args.FadeFunction, false, ResultDuration);
+	}
+	else
+	{
+		ShidenManager->Execute_PlaySound(ShidenManager.GetObject(), SoundInfo, true, ResultDuration, bSuccess);
+	}
 	if (!bSuccess)
 	{
 		Status = EShidenPreviewStatus::Error;
@@ -269,7 +341,6 @@ void UShidenSoundCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 bool UShidenSoundCommand::ShouldStopVoice(const bool bDisableAutoStopPreviousVoices)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	switch (ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition)
 	{
@@ -279,7 +350,7 @@ bool UShidenSoundCommand::ShouldStopVoice(const bool bDisableAutoStopPreviousVoi
 	case EShidenVoiceStopCondition::NextVoice:
 		return !bDisableAutoStopPreviousVoices;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown VoiceStopCondition value: %d"), static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition));
+		SHIDEN_WARNING("Unknown VoiceStopCondition value: {value}", static_cast<int32>(ShidenSubsystem->PredefinedSystemVariable.VoiceStopCondition));
 		return false;
 	}
 }

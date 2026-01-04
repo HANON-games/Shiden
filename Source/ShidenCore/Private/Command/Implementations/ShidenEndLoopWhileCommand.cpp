@@ -10,7 +10,6 @@ void UShidenEndLoopWhileCommand::ProcessCommand_Implementation(const FString& Pr
                                                                FString& NextScenarioName, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (!ProgressStack || ProgressStack->IsEmpty())

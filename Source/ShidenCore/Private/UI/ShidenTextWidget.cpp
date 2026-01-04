@@ -72,7 +72,6 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 		if (TextTypePtr->bShouldShowClickWaitingGlyph && ParsedLength <= Length)
 		{
 			const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-			check(ShidenSubsystem);
 			ParsedText = ParsedText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
 		}
 	}
@@ -140,7 +139,6 @@ void UShidenTextWidget::PreviewText_Implementation(const FString& TextType, cons
 		if (TextTypePtr->bShouldShowClickWaitingGlyph)
 		{
 			const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-			check(ShidenSubsystem);
 			ResultText = ResultText.Append(ShidenSubsystem->PredefinedSystemVariable.ClickWaitingGlyph);
 		}
 	}

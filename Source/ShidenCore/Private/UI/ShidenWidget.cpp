@@ -3,6 +3,7 @@
 #include "UI/ShidenWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "System/ShidenBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 #include "Runtime/MediaAssets/Public/MediaSource.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -23,6 +24,14 @@ TArray<FColor> ResizeBitmap(const TArray<FColor>& OriginalBitmap, const int32 Or
 	// Prevent division by zero
 	if (TargetWidth <= 0 || TargetHeight <= 0)
 	{
+		return ResizedBitmap;
+	}
+
+	// Validate parameter consistency to prevent out-of-bounds array access
+	if (OriginalWidth <= 0 || OriginalHeight <= 0 || OriginalBitmap.Num() != OriginalWidth * OriginalHeight)
+	{
+		SHIDEN_ERROR("Invalid parameters. OriginalBitmap size ({num}) does not match OriginalWidth ({width}) * OriginalHeight ({height})",
+		             OriginalBitmap.Num(), OriginalWidth, OriginalHeight);
 		return ResizedBitmap;
 	}
 
@@ -98,6 +107,13 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 		RenderTarget->bForceLinearGamma = true;
 		RenderTarget->UpdateResourceImmediate();
 
+		if (!TextBaseLayer || !MenuBaseLayer)
+		{
+			SHIDEN_WARNING("TextBaseLayer or MenuBaseLayer is null. Skipping widget capture.");
+			BeginCleanup(WidgetRenderer);
+			return;
+		}
+
 		const ESlateVisibility TextBaseLayerVisibilityBeforeCapture = TextBaseLayer->GetVisibility();
 		const ESlateVisibility MenuBaseLayerVisibilityBeforeCapture = MenuBaseLayer->GetVisibility();
 
@@ -142,6 +158,12 @@ SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer,
 {
 	if (!FSlateApplication::IsInitialized())
 	{
+		return;
+	}
+
+	if (!TextBaseLayer || !MenuBaseLayer)
+	{
+		SHIDEN_WARNING("TextBaseLayer or MenuBaseLayer is null. Skipping screenshot.");
 		return;
 	}
 
@@ -197,7 +219,7 @@ SHIDENCORE_API void UShidenWidget::CaptureScreenToTexture2D(UTexture2D*& ResultT
 		TakeScreenshot(false, ResultTexture);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("UShidenWidget::CaptureScreenToTexture2D: Unknown CaptureScreenMode %d."), static_cast<int32>(CaptureScreenMode));
+		SHIDEN_WARNING("Unknown CaptureScreenMode {mode}.", static_cast<int32>(CaptureScreenMode));
 		break;
 	}
 }
@@ -209,7 +231,6 @@ SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const
 	const bool bIsSkippedResult = bIsSkipped && UShidenScenarioBlueprintLibrary::CanSkipCommand();
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	const float DeltaTimeToUse = bIsSkippedResult
 		                             ? DeltaTime * ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
@@ -558,6 +579,11 @@ SHIDENCORE_API bool UShidenWidget::TryStartFade(const FString& LayerName, const 
 		FadeWidget->SetBrushColor(FLinearColor(0, 0, 0, 0));
 		BaseLayer->AddChild(FadeWidget);
 		CanvasPanelSlot = Cast<UCanvasPanelSlot>(FadeWidget->Slot);
+		if (!CanvasPanelSlot)
+		{
+			ErrorMessage = TEXT("Failed to cast FadeWidget slot to UCanvasPanelSlot. Ensure BaseLayer is a UCanvasPanel.");
+			return false;
+		}
 		CanvasPanelSlot->SetAnchors(FAnchors(0, 0, 1, 1));
 		CanvasPanelSlot->SetOffsets(FMargin(0, 0));
 		FadeWidgets.Add(LayerName, FadeWidget);
@@ -570,6 +596,11 @@ SHIDENCORE_API bool UShidenWidget::TryStartFade(const FString& LayerName, const 
 			return false;
 		}
 		CanvasPanelSlot = Cast<UCanvasPanelSlot>(FadeWidget->Slot);
+		if (!CanvasPanelSlot)
+		{
+			ErrorMessage = TEXT("Failed to cast FadeWidget slot to UCanvasPanelSlot. Ensure BaseLayer is a UCanvasPanel.");
+			return false;
+		}
 	}
 
 	FadeWidget->SetVisibility(ESlateVisibility::Visible);
@@ -630,7 +661,23 @@ SHIDENCORE_API bool UShidenWidget::IsOptionSelected() const noexcept
 
 SHIDENCORE_API bool UShidenWidget::TryPlayMedia(const FString& MediaSourcePath, const bool bCanOpenPauseMenu, const int32 MediaZOrder)
 {
-	Cast<UCanvasPanelSlot>(MediaLayer->Slot)->SetZOrder(MediaZOrder);
+	if (!MediaPlayer)
+	{
+		SHIDEN_WARNING("MediaPlayer is null. Ensure it is set in the widget designer.");
+		return false;
+	}
+	if (!MediaLayer)
+	{
+		SHIDEN_WARNING("MediaLayer is null. Ensure it is bound in the widget designer.");
+		return false;
+	}
+	const TObjectPtr<UCanvasPanelSlot> CanvasPanelSlot = Cast<UCanvasPanelSlot>(MediaLayer->Slot);
+	if (!CanvasPanelSlot)
+	{
+		SHIDEN_WARNING("Failed to cast MediaLayer slot to UCanvasPanelSlot.");
+		return false;
+	}
+	CanvasPanelSlot->SetZOrder(MediaZOrder);
 	MediaLayer->SetVisibility(ESlateVisibility::Visible);
 	UObject* Asset = nullptr;
 	if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(MediaSourcePath, Asset))
@@ -902,7 +949,7 @@ SHIDENCORE_API void UShidenWidget::ResetAllAnimations()
 
 SHIDENCORE_API void UShidenWidget::SetInputModeTextInput_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeTextInput function of Shiden Widget!"));
+	SHIDEN_WARNING("Please override SetInputModeTextInput function of Shiden Widget!");
 }
 
 SHIDENCORE_API bool UShidenWidget::IsTextSubmitted() const noexcept
@@ -912,21 +959,31 @@ SHIDENCORE_API bool UShidenWidget::IsTextSubmitted() const noexcept
 
 SHIDENCORE_API void UShidenWidget::SetInputModeOptionSelection_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Please override SetInputModeOptionSelection function of Shiden Widget!"));
+	SHIDEN_WARNING("Please override SetInputModeOptionSelection function of Shiden Widget!");
 }
 
 SHIDENCORE_API void UShidenWidget::InitTextInput_Implementation(const FShidenTextInputProperties& Properties)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Please override InitTextInput function of Shiden Widget!"));
+	SHIDEN_WARNING("Please override InitTextInput function of Shiden Widget!");
 }
 
 SHIDENCORE_API void UShidenWidget::SetInputModeGameAndUI_Implementation()
 {
-	FInputModeGameAndUI InputMode = FInputModeGameAndUI();
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(true);
-	UGameplayStatics::GetPlayerController(this->GetWorld(), 0)->SetInputMode(InputMode);
-	FSlateApplication::Get().SetAllUserFocusToGameViewport();
+	if (const TObjectPtr<UWorld> World = this->GetWorld())
+	{
+		const TObjectPtr<APlayerController> PlayerController = UGameplayStatics::GetPlayerController(World, 0);
+		if (!PlayerController)
+		{
+			SHIDEN_WARNING("PlayerController is null.");
+			return;
+		}
+
+		FInputModeGameAndUI InputMode = FInputModeGameAndUI();
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(true);
+		PlayerController->SetInputMode(InputMode);
+		FSlateApplication::Get().SetAllUserFocusToGameViewport();
+	}
 }
 
 SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result)
@@ -984,7 +1041,7 @@ SHIDENCORE_API bool UShidenWidget::IsSkipPressed() const noexcept
 
 SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const
 {
-	if (const TObjectPtr<UWidget> Widget = AllWidgets[Name])
+	if (const TObjectPtr<UWidget> Widget = AllWidgets.FindRef(Name))
 	{
 		Result = Widget->GetVisibility();
 	}
@@ -1027,7 +1084,7 @@ SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, c
 			VisibilityStr = TEXT("Not Hit-Testable (Self Only)");
 			break;
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("UShidenWidget::TrySetVisibility: Unknown ESlateVisibility value %d. Defaulting to 'Visible'."), static_cast<int32>(NewVisibility));
+			SHIDEN_WARNING("Unknown ESlateVisibility value {visibility}. Defaulting to 'Visible'.", static_cast<int32>(NewVisibility));
 			VisibilityStr = TEXT("Visible");
 			break;
 		}
@@ -1039,12 +1096,13 @@ SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, c
 
 SHIDENCORE_API bool UShidenWidget::IsMenuOpen() const
 {
-	if (!MenuBaseLayer->IsVisible())
+	if (!MenuBaseLayer || !MenuBaseLayer->IsVisible())
 	{
 		return false;
 	}
 
-	for (TArray<UWidget*> Children = MenuBaseLayer->GetAllChildren(); const TObjectPtr<UWidget> Child : Children)
+	TArray<UWidget*> Children = MenuBaseLayer->GetAllChildren();
+	for (const TObjectPtr<UWidget> Child : Children)
 	{
 		if (Child->IsVisible())
 		{
@@ -1070,9 +1128,7 @@ SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, 
 		const FString ChildName = Child->GetName();
 		if (ChildName.Contains(TEXT(".")))
 		{
-			UE_LOG(LogTemp, Warning,
-			       TEXT("Widget name \"%s\" contains a period. Please avoid using periods in widget names."),
-			       *ChildName);
+			SHIDEN_WARNING("Widget name '{name}' contains a period. Please avoid using periods in widget names.", *ChildName);
 		}
 
 		const FString WidgetPath = Prefix.IsEmpty() ? ChildName : Prefix + TEXT(".") + ChildName;
@@ -1190,6 +1246,12 @@ SHIDENCORE_API bool UShidenWidget::TryFindRetainerBoxMaterialScalarParams(const 
 
 SHIDENCORE_API bool UShidenWidget::IsTextVisible() const
 {
+	if (!TextLayer || !OptionLayer || !TextInputLayer)
+	{
+		SHIDEN_WARNING("TextLayer, OptionLayer, or TextInputLayer is null.");
+		return false;
+	}
+
 	if (!TextLayer->IsVisible() && !OptionLayer->IsVisible() && !TextInputLayer->IsVisible())
 	{
 		return false;
@@ -1201,7 +1263,7 @@ SHIDENCORE_API bool UShidenWidget::IsTextVisible() const
 	}
 
 	const TArray<UWidget*> Children = TextLayer->GetAllChildren();
-	for (const UWidget* Child : Children)
+	for (const TObjectPtr<UWidget> Child : Children)
 	{
 		if (Child->IsVisible())
 		{

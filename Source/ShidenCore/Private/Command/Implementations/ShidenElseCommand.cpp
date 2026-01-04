@@ -24,7 +24,6 @@ void UShidenElseCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 bool UShidenElseCommand::TryFindAndSetEndIfIndex(const FString& ProcessName, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (!ProgressStack || ProgressStack->IsEmpty())

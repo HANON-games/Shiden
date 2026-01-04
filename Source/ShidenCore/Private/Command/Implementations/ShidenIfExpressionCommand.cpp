@@ -73,7 +73,6 @@ bool UShidenIfExpressionCommand::TryExecuteCommand(const ShidenConditionalComman
 	UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (!ProgressStack || ProgressStack->IsEmpty())
@@ -94,7 +93,7 @@ bool UShidenIfExpressionCommand::TryExecuteCommand(const ShidenConditionalComman
 	FString CommandName;
 	int32 ResultIndex;
 	if (!ShidenConditionalCommandHelpers::TrySkipToNextIfBranch(ProcessName, ScenarioProgress.CurrentIndex, CommandName, ResultIndex,
-	                                                                    ErrorMessage))
+	                                                            ErrorMessage))
 	{
 		return false;
 	}

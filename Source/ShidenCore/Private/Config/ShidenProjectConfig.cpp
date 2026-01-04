@@ -106,7 +106,7 @@ SHIDENCORE_API void UShidenProjectConfig::SetSystemVariableDefinitions(const TAr
 	SaveProjectConfigChanges(ProjectConfig);
 }
 
-template<typename T>
+template <typename T>
 T* UShidenProjectConfig::LoadSoftObjectIfNeeded(const TSoftObjectPtr<T>& SoftObject)
 {
 	if (SoftObject.IsValid())
@@ -160,43 +160,35 @@ void UShidenProjectConfig::PostEditChangeProperty(FPropertyChangedEvent& Propert
 	// Handle UserSaveGameClass changes
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenProjectConfig, UserSaveGameClass))
 	{
-		// Check if user save data exists
-		bool bHasUserSaveData = false;
-		TArray<FString> UserSlotNames;
-
-		if (UShidenSaveSlotsSaveGame::DoesExist())
+		if (!UShidenSaveSlotsSaveGame::DoesExist())
 		{
-			const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlots = UShidenSaveSlotsSaveGame::GetOrCreate();
-			if (SaveSlots && SaveSlots->SaveSlots.Num() > 0)
-			{
-				bHasUserSaveData = true;
-				SaveSlots->SaveSlots.GetKeys(UserSlotNames);
-			}
+			return;
 		}
 
-		// Display warning and delete if user confirms
-		if (bHasUserSaveData)
+		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlots = UShidenSaveSlotsSaveGame::GetOrCreate();
+		const int32 PreviousNumSlots = SaveSlots->SaveSlots.Num();
+		if (PreviousNumSlots > 0)
 		{
 			const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "UserSaveDataClassChangeTitle", "User Save Data Class Change");
 			const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "UserSaveDataClassChangeMessage",
-				"Changing the user save data class may prevent existing save data from being read or written properly.\n\n"
-				"Do you want to delete all existing user save data?");
+			                                       "Changing the user save data class may prevent existing save data from being read or written properly.\n\n"
+			                                       "Do you want to delete all existing user save data?");
 
 			const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, WarningMessage, WarningTitle);
 
 			if (Response == EAppReturnType::Yes)
 			{
-				for (const FString& SlotName : UserSlotNames)
+				for (const TPair<FString, FShidenSaveSlot>& Pair : SaveSlots->SaveSlots)
 				{
-					UShidenUserSaveGame::TryDelete(SlotName);
-					UShidenSaveSlotsSaveGame::TryDelete(SlotName);
+					UShidenUserSaveGame::TryDelete(Pair.Key);
+					UShidenSaveSlotsSaveGame::TryDelete(Pair.Key);
 				}
 
 				// Display completion message
 				const FText CompletionTitle = NSLOCTEXT("ShidenNamespace", "DeletionCompleteTitle", "Deletion Complete");
 				const FText CompletionMessage = FText::Format(
 					NSLOCTEXT("ShidenNamespace", "UserSaveDataDeletionMessage", "Deleted {0} user save data."),
-					FText::AsNumber(UserSlotNames.Num())
+					FText::AsNumber(PreviousNumSlots)
 				);
 				FMessageDialog::Open(EAppMsgType::Ok, CompletionMessage, CompletionTitle);
 			}
@@ -205,25 +197,26 @@ void UShidenProjectConfig::PostEditChangeProperty(FPropertyChangedEvent& Propert
 	// Handle SystemSaveGameClass changes
 	else if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenProjectConfig, SystemSaveGameClass))
 	{
-		// Display warning and delete if user confirms
-		if (UShidenSystemSaveGame::DoesExist())
+		if (!UShidenSystemSaveGame::DoesExist())
 		{
-			const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeTitle", "System Save Data Class Change");
-			const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeMessage",
-				"Changing the system save data class may prevent existing save data from being read or written properly.\n\n"
-				"Do you want to delete all existing system save data?");
+			return;
+		}
 
-			const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, WarningMessage, WarningTitle);
+		const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeTitle", "System Save Data Class Change");
+		const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataClassChangeMessage",
+		                                       "Changing the system save data class may prevent existing save data from being read or written properly.\n\n"
+		                                       "Do you want to delete all existing system save data?");
 
-			if (Response == EAppReturnType::Yes)
-			{
-				UShidenSystemSaveGame::TryDelete();
+		const EAppReturnType::Type Response = FMessageDialog::Open(EAppMsgType::YesNo, WarningMessage, WarningTitle);
 
-				// Display completion message
-				const FText CompletionTitle = NSLOCTEXT("ShidenNamespace", "DeletionCompleteTitle", "Deletion Complete");
-				const FText CompletionMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataDeletionMessage", "System save data has been deleted.");
-				FMessageDialog::Open(EAppMsgType::Ok, CompletionMessage, CompletionTitle);
-			}
+		if (Response == EAppReturnType::Yes)
+		{
+			UShidenSystemSaveGame::TryDelete();
+
+			// Display completion message
+			const FText CompletionTitle = NSLOCTEXT("ShidenNamespace", "DeletionCompleteTitle", "Deletion Complete");
+			const FText CompletionMessage = NSLOCTEXT("ShidenNamespace", "SystemSaveDataDeletionMessage", "System save data has been deleted.");
+			FMessageDialog::Open(EAppMsgType::Ok, CompletionMessage, CompletionTitle);
 		}
 	}
 }

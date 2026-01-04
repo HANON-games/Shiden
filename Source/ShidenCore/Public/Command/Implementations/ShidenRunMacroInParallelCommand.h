@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
 #include "Scenario/ShidenScenario.h"
-#include "ShidenRunMacroAsParallelCommand.generated.h"
+#include "ShidenRunMacroInParallelCommand.generated.h"
 
 UCLASS()
-class SHIDENCORE_API UShidenRunMacroAsParallelCommand : public UShidenCommandObject
+class SHIDENCORE_API UShidenRunMacroInParallelCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 
-	struct FRunMacroAsParallelCommandArgs
+	struct FRunMacroInParallelCommandArgs
 	{
 		FString NewProcessName;
 		UShidenScenario* Scenario;
@@ -24,7 +24,7 @@ class SHIDENCORE_API UShidenRunMacroAsParallelCommand : public UShidenCommandObj
 	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	static bool TryParseCommand(const FShidenCommand& Command, FRunMacroAsParallelCommandArgs& Args, FString& ErrorMessage);
+	static bool TryParseCommand(const FShidenCommand& Command, FRunMacroInParallelCommandArgs& Args, FString& ErrorMessage);
 
-	FRunMacroAsParallelCommandArgs Args;
+	FRunMacroInParallelCommandArgs Args;
 };

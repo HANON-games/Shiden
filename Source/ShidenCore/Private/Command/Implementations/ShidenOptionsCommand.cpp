@@ -9,7 +9,7 @@
 bool UShidenOptionsCommand::TryParseCommand(const FShidenCommand& Command, FOptionsCommandArgs& Args, FString& ErrorMessage)
 {
 	Args.LocalizedOptions.Empty();
-	for (int32 i = 0; i < 10; i++)
+	for (int32 i = 0; i < MaxLanguageCount; i++)
 	{
 		const FString Prefix = i == 0 ? TEXT("") : FString::Printf(TEXT("Language %d "), i + 1);
 		Args.LocalizedOptions.Add(FOptions{
@@ -117,7 +117,6 @@ bool UShidenOptionsCommand::TrySetupOptions(const FOptionsCommandArgs& Args, USh
                                             FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	const int32 LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
 
@@ -151,7 +150,6 @@ bool UShidenOptionsCommand::TryUpdateVariable(const FString& ProcessName, const 
                                               FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	switch (VariableKind)
 	{

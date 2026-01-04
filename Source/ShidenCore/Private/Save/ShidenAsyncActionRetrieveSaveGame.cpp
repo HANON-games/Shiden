@@ -18,7 +18,7 @@ UShidenAsyncActionRetrieveUserData* UShidenAsyncActionRetrieveUserData::AsyncRet
 void UShidenAsyncActionRetrieveUserData::Activate()
 {
 	UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(SlotName,
-		FOnRetrieveUserDataCompletedDelegate::CreateUObject(this, &UShidenAsyncActionRetrieveUserData::ExecuteCompleted));
+	                                                   FOnRetrieveUserDataCompletedDelegate::CreateUObject(this, &UShidenAsyncActionRetrieveUserData::ExecuteCompleted));
 }
 
 void UShidenAsyncActionRetrieveUserData::ExecuteCompleted(const bool bSuccess, UShidenUserSaveGame* SaveGame)

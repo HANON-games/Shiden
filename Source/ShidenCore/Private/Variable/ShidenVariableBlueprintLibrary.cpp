@@ -5,6 +5,7 @@
 #include "AudioDevice.h"
 #include "Config/ShidenProjectConfig.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 
 SHIDENCORE_API FString UShidenVariableBlueprintLibrary::MakeUpdateErrorMessage(const TObjectPtr<UShidenSubsystem> ShidenSubsystem,
                                                                                const FString& Name, const EShidenVariableType& Type)
@@ -244,9 +245,12 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryCreateScopeKey(const FSt
 {
 	if (const FShidenScenarioProgressStack* Stack = GEngine->GetEngineSubsystem<UShidenSubsystem>()->ScenarioProgressStack.Find(ProcessName))
 	{
-		const int32 LastIndex = Stack->Stack.Num() - 1;
-		ScenarioKey = FString::Printf(TEXT("%s$%d"), *ProcessName, LastIndex);
-		return true;
+		if (!Stack->IsEmpty())
+		{
+			const int32 LastIndex = Stack->Stack.Num() - 1;
+			ScenarioKey = FString::Printf(TEXT("%s$%d"), *ProcessName, LastIndex);
+			return true;
+		}
 	}
 #if WITH_EDITOR
 	if (const TObjectPtr<UGameViewportClient> GameViewport = GEngine->GameViewport)
@@ -255,12 +259,12 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryCreateScopeKey(const FSt
 		{
 			if (World->WorldType == EWorldType::PIE)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Scenario not found: Process Name \"%s\""), *ProcessName);
+				SHIDEN_WARNING("Scenario not found: Process Name '{name}'", *ProcessName);
 			}
 		}
 	}
 #else
-	UE_LOG(LogTemp, Warning, TEXT("Scenario not found: Process Name \"%s\""), *ProcessName);
+	SHIDEN_WARNING("Scenario not found: Process Name '{name}'", *ProcessName);
 #endif
 	ScenarioKey = FString();
 	return false;
@@ -312,7 +316,7 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::InitLocalVariable(const FSt
 					FVector2D Vector2Value;
 					if (!Vector2Value.InitFromString(Arguments[Definition.Name]))
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector2D."), *Arguments[Definition.Name]);
+						SHIDEN_WARNING("Failed to convert {value} to FVector2D.", *Arguments[Definition.Name]);
 					}
 					ShidenSubsystem->LocalVariable.TryUpdate(ScopeKey, Definition.Name, Vector2Value, true);
 					break;
@@ -322,7 +326,7 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::InitLocalVariable(const FSt
 					FVector Vector3Value;
 					if (!Vector3Value.InitFromString(Arguments[Definition.Name]))
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector."), *Arguments[Definition.Name]);
+						SHIDEN_WARNING("Failed to convert {value} to FVector.", *Arguments[Definition.Name]);
 					}
 					ShidenSubsystem->LocalVariable.TryUpdate(ScopeKey, Definition.Name, Vector3Value, true);
 					break;
@@ -484,30 +488,7 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedSystemVa
 		return false;
 	}
 
-	if (Name.Compare(TEXT("MasterVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.MasterVolume);
-	}
-	else if (Name.Compare(TEXT("BGMVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.BGMVolume);
-	}
-	else if (Name.Compare(TEXT("SEVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.SEVolume);
-	}
-	else if (Name.Compare(TEXT("VoiceVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.VoiceVolume);
-	}
+	ApplyVolumeIfNeeded(WorldContextObject, Name);
 
 	return true;
 }
@@ -559,32 +540,6 @@ SHIDENCORE_API void UShidenVariableBlueprintLibrary::SetVoiceVolume(const UObjec
 		ShidenSubsystem->PredefinedSystemVariable.VoiceVolume = Value;
 		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(), Value);
-	}
-}
-
-SHIDENCORE_API void UShidenVariableBlueprintLibrary::ApplyVolumeRate(const UObject* WorldContextObject, USoundMix* TargetSoundMix,
-                                                                     USoundClass* TargetSoundClass, const float TargetVolumeRate)
-{
-	if (!GEngine || !GEngine->UseSound())
-	{
-		return;
-	}
-
-	if (!TargetSoundMix || !TargetSoundClass)
-	{
-		return;
-	}
-
-	const TObjectPtr<UWorld> ThisWorld = WorldContextObject->GetWorld();
-	if (!ThisWorld || !ThisWorld->bAllowAudioPlayback)
-	{
-		return;
-	}
-
-	if (FAudioDeviceHandle AudioDevice = ThisWorld->GetAudioDevice())
-	{
-		AudioDevice->SetSoundMixClassOverride(TargetSoundMix, TargetSoundClass, TargetVolumeRate, 1.0, 0.0, true);
-		AudioDevice->PushSoundMixModifier(TargetSoundMix);
 	}
 }
 
@@ -708,14 +663,13 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceVariablesF
 {
 	FShidenCommand Result = Command;
 	Result.Args.Empty();
-	TArray<FString> Keys;
-	Command.Args.GetKeys(Keys);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
-	for (const FString& Key : Keys)
+	for (const TPair<FString, FString>& Pair : Command.Args)
 	{
-		FString Value = Command.Args.FindRef(Key);
+		const FString& Key = Pair.Key;
+		FString Value = Pair.Value;
 
 		if (!Value.Contains(TEXT("{")) || !Value.Contains(TEXT("}")))
 		{
@@ -795,11 +749,10 @@ SHIDENCORE_API FShidenCommand UShidenVariableBlueprintLibrary::ReplaceAllVariabl
 {
 	FShidenCommand Result = Command;
 	Result.Args.Empty();
-	TArray<FString> Keys;
-	Command.Args.GetKeys(Keys);
-	for (const FString& Key : Keys)
+	for (const TPair<FString, FString>& Pair : Command.Args)
 	{
-		const FString Value = Command.Args.FindRef(Key);
+		const FString& Key = Pair.Key;
+		const FString& Value = Pair.Value;
 		if (Value == TEXT("{EMPTY}"))
 		{
 			continue;
@@ -1060,30 +1013,8 @@ bool UShidenVariableBlueprintLibrary::TryUpdatePredefinedVariable(const UObject*
 		return false;
 	}
 
-	if (Name.Compare(TEXT("MasterVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetMasterSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.MasterVolume);
-	}
-	else if (Name.Compare(TEXT("BGMVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetBGMSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.BGMVolume);
-	}
-	else if (Name.Compare(TEXT("SEVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetSESoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.SEVolume);
-	}
-	else if (Name.Compare(TEXT("VoiceVolume"), ESearchCase::IgnoreCase) == 0)
-	{
-		const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
-		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(), ShidenProjectConfig->GetVoiceSoundClass(),
-		                ShidenSubsystem->PredefinedSystemVariable.VoiceVolume);
-	}
+	ApplyVolumeIfNeeded(WorldContextObject, Name);
+
 	return true;
 }
 
@@ -1262,13 +1193,13 @@ SHIDENCORE_API bool UShidenVariableBlueprintLibrary::TryFindVariable(const FStri
 				case EShidenVariableType::Vector2:
 					if (!Vector2Value.InitFromString(Value))
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector2D."), *Value);
+						SHIDEN_WARNING("Failed to convert {value} to FVector2D.", *Value);
 					}
 					break;
 				case EShidenVariableType::Vector3:
 					if (!Vector3Value.InitFromString(Value))
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Failed to convert %s to FVector."), *Value);
+						SHIDEN_WARNING("Failed to convert {value} to FVector.", *Value);
 					}
 					break;
 				default:
@@ -1401,5 +1332,62 @@ bool UShidenVariableBlueprintLibrary::TryEvaluateCondition(const EShidenVariable
 	default:
 		ErrorMessage = FString::Printf(TEXT("Unknown variable type: %d"), static_cast<int32>(Type));
 		return false;
+	}
+}
+
+void UShidenVariableBlueprintLibrary::ApplyVolumeRate(const UObject* WorldContextObject, USoundMix* TargetSoundMix,
+                                                      USoundClass* TargetSoundClass, const float TargetVolumeRate)
+{
+	if (!GEngine || !GEngine->UseSound())
+	{
+		return;
+	}
+
+	if (!TargetSoundMix || !TargetSoundClass)
+	{
+		return;
+	}
+
+	const TObjectPtr<UWorld> ThisWorld = WorldContextObject->GetWorld();
+	if (!ThisWorld || !ThisWorld->bAllowAudioPlayback)
+	{
+		return;
+	}
+
+	if (FAudioDeviceHandle AudioDevice = ThisWorld->GetAudioDevice())
+	{
+		AudioDevice->SetSoundMixClassOverride(TargetSoundMix, TargetSoundClass, TargetVolumeRate, 1.0, 0.0, true);
+		AudioDevice->PushSoundMixModifier(TargetSoundMix);
+	}
+}
+
+void UShidenVariableBlueprintLibrary::ApplyVolumeIfNeeded(const UObject* WorldContextObject, const FString& VariableName)
+{
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+
+	if (VariableName.Compare(TEXT("MasterVolume"), ESearchCase::IgnoreCase) == 0)
+	{
+		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(),
+		                ShidenProjectConfig->GetMasterSoundClass(),
+		                ShidenSubsystem->PredefinedSystemVariable.MasterVolume);
+	}
+	else if (VariableName.Compare(TEXT("BGMVolume"), ESearchCase::IgnoreCase) == 0)
+	{
+		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(),
+		                ShidenProjectConfig->GetBGMSoundClass(),
+		                ShidenSubsystem->PredefinedSystemVariable.BGMVolume);
+	}
+	else if (VariableName.Compare(TEXT("SEVolume"), ESearchCase::IgnoreCase) == 0)
+	{
+		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(),
+		                ShidenProjectConfig->GetSESoundClass(),
+		                ShidenSubsystem->PredefinedSystemVariable.SEVolume);
+	}
+	else if (VariableName.Compare(TEXT("VoiceVolume"), ESearchCase::IgnoreCase) == 0)
+	{
+		ApplyVolumeRate(WorldContextObject, ShidenProjectConfig->GetSoundClassMix(),
+		                ShidenProjectConfig->GetVoiceSoundClass(),
+		                ShidenSubsystem->PredefinedSystemVariable.VoiceVolume);
 	}
 }

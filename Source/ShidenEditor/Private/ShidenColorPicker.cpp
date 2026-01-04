@@ -26,25 +26,45 @@ FReply UShidenColorPicker::HandleColorBlockMouseButtonDown(const FPointerEvent& 
 		PickerArgs.bOnlyRefreshOnMouseUp = false;
 		PickerArgs.bOnlyRefreshOnOk = false;
 		PickerArgs.InitialColor = Color;
-		PickerArgs.OnColorCommitted = FOnLinearColorValueChanged::CreateUObject(this, &UShidenColorPicker::OnColorPickerColorChanged);
-		PickerArgs.OnColorPickerCancelled = FOnColorPickerCancelled::CreateUObject(this, &UShidenColorPicker::OnColorPickerCancelled);
+		PickerArgs.OnColorCommitted = FOnLinearColorValueChanged::CreateUObject(this, &UShidenColorPicker::HandleColorPickerColorChanged);
+		PickerArgs.OnColorPickerCancelled = FOnColorPickerCancelled::CreateUObject(this, &UShidenColorPicker::HandleColorPickerCancelled);
+		PickerArgs.OnColorPickerWindowClosed = FOnWindowClosed::CreateUObject(this, &UShidenColorPicker::HandleColorPickerWindowClosed);
+		PickerArgs.OnInteractivePickBegin = FSimpleDelegate::CreateUObject(this, &UShidenColorPicker::HandleInteractivePickBegin);
+		PickerArgs.OnInteractivePickEnd = FSimpleDelegate::CreateUObject(this, &UShidenColorPicker::HandleInteractivePickEnd);
 
 		OpenColorPicker(PickerArgs);
 
 		return FReply::Handled();
 	}
-	
+
 	return FReply::Unhandled();
 }
 
-void UShidenColorPicker::OnColorPickerColorChanged(const FLinearColor NewColor)
+void UShidenColorPicker::HandleColorPickerColorChanged(const FLinearColor NewColor)
 {
 	SetColor(NewColor);
 }
 
-void UShidenColorPicker::OnColorPickerCancelled(const FLinearColor OriginalColor)
+void UShidenColorPicker::HandleColorPickerCancelled(const FLinearColor OriginalColor)
 {
 	SetColor(OriginalColor);
+}
+
+void UShidenColorPicker::HandleColorPickerWindowClosed(const TSharedRef<SWindow>&) const
+{
+	OnColorPickerWindowClosed.Broadcast();
+}
+
+void UShidenColorPicker::HandleInteractivePickBegin()
+{
+	bIsPicking = true;
+	OnInteractivePickBegin.Broadcast();
+}
+
+void UShidenColorPicker::HandleInteractivePickEnd()
+{
+	bIsPicking = false;
+	OnInteractivePickEnd.Broadcast();
 }
 
 void UShidenColorPicker::ReleaseSlateResources(const bool bReleaseChildren)
@@ -62,6 +82,11 @@ void UShidenColorPicker::SetColor(const FLinearColor NewColor)
 FLinearColor UShidenColorPicker::GetColor() const
 {
 	return Color;
+}
+
+bool UShidenColorPicker::IsPicking() const
+{
+	return bIsPicking;
 }
 
 const FText UShidenColorPicker::GetPaletteCategory()

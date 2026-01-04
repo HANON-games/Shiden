@@ -1,11 +1,11 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
-#include "Command/Implementations/ShidenRunMacroAsParallelCommand.h"
+#include "Command/Implementations/ShidenRunMacroInParallelCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 
-bool UShidenRunMacroAsParallelCommand::TryParseCommand(const FShidenCommand& Command, FRunMacroAsParallelCommandArgs& Args, FString& ErrorMessage)
+bool UShidenRunMacroInParallelCommand::TryParseCommand(const FShidenCommand& Command, FRunMacroInParallelCommandArgs& Args, FString& ErrorMessage)
 {
 	Args.NewProcessName = Command.GetArg("NewProcessName");
 	const FString MacroIdOrPath = Command.GetArg("MacroName");
@@ -17,7 +17,6 @@ bool UShidenRunMacroAsParallelCommand::TryParseCommand(const FShidenCommand& Com
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	if (ShidenSubsystem->ScenarioProgressStack.Contains(Args.NewProcessName))
 	{
@@ -34,7 +33,7 @@ bool UShidenRunMacroAsParallelCommand::TryParseCommand(const FShidenCommand& Com
 	return true;
 }
 
-void UShidenRunMacroAsParallelCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+void UShidenRunMacroInParallelCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
                                                                      UShidenWidget* ShidenWidget,
                                                                      const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                      const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,

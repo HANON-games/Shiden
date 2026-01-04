@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Expression/ShidenExpressionBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 #include "Expression/ShidenExpressionEvaluator.h"
 #include "Internationalization/Regex.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
@@ -42,13 +43,13 @@ bool UShidenExpressionBlueprintLibrary::TryValidateExpression(const FString& Pro
 
 bool UShidenExpressionBlueprintLibrary::TryValidateExpressionRaw(const FString& Expression, FString& ErrorMessage)
 {
-	return FShidenExpressionEvaluator::TryValidate(Expression, ErrorMessage);
+	return FShidenExpressionEvaluator().TryValidate(Expression, ErrorMessage);
 }
 
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionIntegerRaw(const FString& Expression, int32& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -59,7 +60,7 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionIntegerRaw(const FS
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionFloatRaw(const FString& Expression, float& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -70,7 +71,7 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionFloatRaw(const FStr
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionBooleanRaw(const FString& Expression, bool& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -81,7 +82,7 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionBooleanRaw(const FS
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionStringRaw(const FString& Expression, FString& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -93,7 +94,7 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionStringRaw(const FSt
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionVector2Raw(const FString& Expression, FVector2D& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -111,7 +112,7 @@ bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionVector2Raw(const FS
 bool UShidenExpressionBlueprintLibrary::TryEvaluateExpressionVector3Raw(const FString& Expression, FVector& Result, FString& ErrorMessage)
 {
 	FShidenExpressionValue Value;
-	if (!FShidenExpressionEvaluator::TryEvaluate(Expression, Value, ErrorMessage))
+	if (!FShidenExpressionEvaluator().TryEvaluate(Expression, Value, ErrorMessage))
 	{
 		return false;
 	}
@@ -130,9 +131,12 @@ bool UShidenExpressionBlueprintLibrary::TryCreateScopeKey(const FString& Process
 {
 	if (const FShidenScenarioProgressStack* Stack = GEngine->GetEngineSubsystem<UShidenSubsystem>()->ScenarioProgressStack.Find(ProcessName))
 	{
-		const int32 LastIndex = Stack->Stack.Num() - 1;
-		ScenarioKey = FString::Printf(TEXT("%s$%d"), *ProcessName, LastIndex);
-		return true;
+		if (!Stack->IsEmpty())
+		{
+			const int32 LastIndex = Stack->Stack.Num() - 1;
+			ScenarioKey = FString::Printf(TEXT("%s$%d"), *ProcessName, LastIndex);
+			return true;
+		}
 	}
 
 #if WITH_EDITOR
@@ -142,12 +146,12 @@ bool UShidenExpressionBlueprintLibrary::TryCreateScopeKey(const FString& Process
 		{
 			if (World->WorldType == EWorldType::PIE)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Scenario not found: Process Name \"%s\""), *ProcessName);
+				SHIDEN_WARNING("Scenario not found: Process Name '{name}'", ProcessName);
 			}
 		}
 	}
 #else
-	UE_LOG(LogTemp, Warning, TEXT("Scenario not found: Process Name \"%s\""), *ProcessName);
+	SHIDEN_WARNING("Scenario not found: Process Name '{name}'", *ProcessName);
 #endif
 
 	ScenarioKey = FString();
@@ -195,59 +199,7 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			}
 			else
 			{
-				switch (VariableDefinition.Type)
-				{
-				case EShidenVariableType::Vector2:
-					{
-						FVector2D Vector2DValue;
-						if (ShidenSubsystem->UserVariable.TryGet(VariableDefinition.Name, Vector2DValue))
-						{
-							// Vector2Dを[X, Y]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g]"), Vector2DValue.X, Vector2DValue.Y);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::Vector3:
-					{
-						FVector VectorValue;
-						if (ShidenSubsystem->UserVariable.TryGet(VariableDefinition.Name, VectorValue))
-						{
-							// Vector3を[X, Y, Z]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g, %g]"), VectorValue.X, VectorValue.Y, VectorValue.Z);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::String:
-					{
-						FString StringValue;
-						if (ShidenSubsystem->UserVariable.TryGet(VariableDefinition.Name, StringValue))
-						{
-							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				default:
-					{
-						EShidenVariableType Type;
-						if (!ShidenSubsystem->UserVariable.TryGetAsString(VariableDefinition.Name, Type, ReplacementText))
-						{
-							ReplacementText = TEXT("Error");
-						}
-					}
-				}
+				ReplacementText = TryGetVariableValueAsExpressionString(ShidenSubsystem->UserVariable, VariableDefinition);
 			}
 		}
 		else if (VariableKind == TEXT("System"))
@@ -258,59 +210,7 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			}
 			else
 			{
-				switch (VariableDefinition.Type)
-				{
-				case EShidenVariableType::Vector2:
-					{
-						FVector2D Vector2DValue;
-						if (ShidenSubsystem->SystemVariable.TryGet(VariableDefinition.Name, Vector2DValue))
-						{
-							// Vector2Dを[X, Y]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g]"), Vector2DValue.X, Vector2DValue.Y);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::Vector3:
-					{
-						FVector VectorValue;
-						if (ShidenSubsystem->SystemVariable.TryGet(VariableDefinition.Name, VectorValue))
-						{
-							// Vector3を[X, Y, Z]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g, %g]"), VectorValue.X, VectorValue.Y, VectorValue.Z);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::String:
-					{
-						FString StringValue;
-						if (ShidenSubsystem->SystemVariable.TryGet(VariableDefinition.Name, StringValue))
-						{
-							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				default:
-					{
-						EShidenVariableType Type;
-						if (!ShidenSubsystem->SystemVariable.TryGetAsString(VariableDefinition.Name, Type, ReplacementText))
-						{
-							ReplacementText = TEXT("Error");
-						}
-					}
-				}
+				ReplacementText = TryGetVariableValueAsExpressionString(ShidenSubsystem->SystemVariable, VariableDefinition);
 			}
 		}
 		else if (VariableKind == TEXT("Local"))
@@ -323,59 +223,7 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			}
 			else
 			{
-				switch (VariableDefinition.Type)
-				{
-				case EShidenVariableType::Vector2:
-					{
-						FVector2D Vector2DValue;
-						if (ShidenSubsystem->LocalVariable.TryGet(ScopeKey, VariableDefinition.Name, Vector2DValue))
-						{
-							// Vector2Dを[X, Y]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g]"), Vector2DValue.X, Vector2DValue.Y);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::Vector3:
-					{
-						FVector VectorValue;
-						if (ShidenSubsystem->LocalVariable.TryGet(ScopeKey, VariableDefinition.Name, VectorValue))
-						{
-							// Vector3を[X, Y, Z]形式に置き換え
-							ReplacementText = FString::Printf(TEXT("[%g, %g, %g]"), VectorValue.X, VectorValue.Y, VectorValue.Z);
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				case EShidenVariableType::String:
-					{
-						FString StringValue;
-						if (ShidenSubsystem->LocalVariable.TryGet(ScopeKey, VariableDefinition.Name, StringValue))
-						{
-							// 文字列をダブルクオーテーションで囲む（特殊文字をエスケープ）
-							ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
-						}
-						else
-						{
-							ReplacementText = TEXT("Error");
-						}
-						break;
-					}
-				default:
-					{
-						EShidenVariableType Type;
-						if (!ShidenSubsystem->LocalVariable.TryGetAsString(ScopeKey, VariableDefinition.Name, Type, ReplacementText))
-						{
-							ReplacementText = TEXT("Error");
-						}
-					}
-				}
+				ReplacementText = TryGetLocalVariableValueAsExpressionString(ShidenSubsystem->LocalVariable, ScopeKey, VariableDefinition);
 			}
 		}
 		else if (VariableKind == TEXT("Predefined"))
@@ -420,4 +268,99 @@ FString UShidenExpressionBlueprintLibrary::EscapeStringForExpression(const FStri
 	EscapedString.ReplaceInline(TEXT("\\"), TEXT("\\\\"));
 	EscapedString.ReplaceInline(TEXT("\""), TEXT("\\\""));
 	return EscapedString;
+}
+
+template <typename TVariable>
+FString UShidenExpressionBlueprintLibrary::TryGetVariableValueAsExpressionString(TVariable& Variable, const FShidenVariableDefinition& Definition)
+{
+	switch (Definition.Type)
+	{
+	case EShidenVariableType::Vector2:
+		{
+			FVector2D Vector2DValue;
+			if (Variable.TryGet(Definition.Name, Vector2DValue))
+			{
+				// Vector2D is replaced in [X, Y] format
+				return FString::Printf(TEXT("[%g, %g]"), Vector2DValue.X, Vector2DValue.Y);
+			}
+			return TEXT("Error");
+		}
+	case EShidenVariableType::Vector3:
+		{
+			FVector VectorValue;
+			if (Variable.TryGet(Definition.Name, VectorValue))
+			{
+				// Vector3 is replaced in [X, Y, Z] format
+				return FString::Printf(TEXT("[%g, %g, %g]"), VectorValue.X, VectorValue.Y, VectorValue.Z);
+			}
+			return TEXT("Error");
+		}
+	case EShidenVariableType::String:
+		{
+			FString StringValue;
+			if (Variable.TryGet(Definition.Name, StringValue))
+			{
+				// Enclose the string in double quotes (escape special characters)
+				return FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
+			}
+			return TEXT("Error");
+		}
+	default:
+		{
+			EShidenVariableType Type;
+			FString ReplacementText;
+			if (Variable.TryGetAsString(Definition.Name, Type, ReplacementText))
+			{
+				return ReplacementText;
+			}
+			return TEXT("Error");
+		}
+	}
+}
+
+FString UShidenExpressionBlueprintLibrary::TryGetLocalVariableValueAsExpressionString(FShidenLocalVariable& LocalVariable, const FString& ScopeKey, const FShidenVariableDefinition& Definition)
+{
+	switch (Definition.Type)
+	{
+	case EShidenVariableType::Vector2:
+		{
+			FVector2D Vector2DValue;
+			if (LocalVariable.TryGet(ScopeKey, Definition.Name, Vector2DValue))
+			{
+				// Vector2D is replaced in [X, Y] format
+				return FString::Printf(TEXT("[%g, %g]"), Vector2DValue.X, Vector2DValue.Y);
+			}
+			return TEXT("Error");
+		}
+	case EShidenVariableType::Vector3:
+		{
+			FVector VectorValue;
+			if (LocalVariable.TryGet(ScopeKey, Definition.Name, VectorValue))
+			{
+				// Vector3 is replaced in [X, Y, Z] format
+				return FString::Printf(TEXT("[%g, %g, %g]"), VectorValue.X, VectorValue.Y, VectorValue.Z);
+			}
+			return TEXT("Error");
+		}
+	case EShidenVariableType::String:
+		{
+			FString StringValue;
+			if (LocalVariable.TryGet(ScopeKey, Definition.Name, StringValue))
+			{
+				// Enclose the string in double quotes (escape special characters)
+				return FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(StringValue));
+			}
+			return TEXT("Error");
+		}
+	default:
+		{
+			EShidenVariableType Type;
+			FString ReplacementText;
+			if (LocalVariable.TryGetAsString(ScopeKey, Definition.Name, Type, ReplacementText))
+			{
+				return ReplacementText;
+			}
+			return TEXT("Error");
+		}
+	}
 }

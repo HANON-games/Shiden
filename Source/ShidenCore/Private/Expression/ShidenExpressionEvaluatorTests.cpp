@@ -231,7 +231,7 @@ bool ShidenExpressionEvaluatorArithmeticTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 
 	if (bSuccess != Params.bShouldSucceed)
 	{
@@ -385,7 +385,7 @@ bool ShidenExpressionEvaluatorPowerTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -498,7 +498,7 @@ bool ShidenExpressionEvaluatorStringTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -715,7 +715,7 @@ bool ShidenExpressionEvaluatorComparisonTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -886,7 +886,7 @@ bool ShidenExpressionEvaluatorBitwiseTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1186,7 +1186,7 @@ bool ShidenExpressionEvaluatorVectorTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1212,175 +1212,175 @@ void ShidenExpressionEvaluatorMathFunctionTest::GetTests(TArray<FString>& OutBea
 {
 	// Abs tests
 	OutBeautifiedNames.Add("Abs_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Abs_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Abs_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Abs_Float");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-3.5)"), TEXT("3.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-3.5)"), TEXT("3.5")).ToString());
 
 	OutBeautifiedNames.Add("Abs_LargeNumber");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-10000)"), TEXT("10000")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-10000)"), TEXT("10000")).ToString());
 
 	// Sqrt tests
 	OutBeautifiedNames.Add("Sqrt_Perfect");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(16)"), TEXT("4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(16)"), TEXT("4")).ToString());
 
 	OutBeautifiedNames.Add("Sqrt_NonPerfect");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(2)"), TEXT("1.414214")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(2)"), TEXT("1.414214")).ToString());
 
 	OutBeautifiedNames.Add("Sqrt_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Sqrt_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(1)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(1)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Sqrt_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(100)"), TEXT("10")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(100)"), TEXT("10")).ToString());
 
 	OutBeautifiedNames.Add("Sqrt_Decimal");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(0.25)"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(0.25)"), TEXT("0.5")).ToString());
 
 	// Pow tests
 	OutBeautifiedNames.Add("Pow_Basic");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(2, 3)"), TEXT("8")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(2, 3)"), TEXT("8")).ToString());
 
 	OutBeautifiedNames.Add("Pow_ZeroExponent");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(5, 0)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(5, 0)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Pow_OneExponent");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(5, 1)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(5, 1)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Pow_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(2, -1)"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(2, -1)"), TEXT("0.5")).ToString());
 
 	OutBeautifiedNames.Add("Pow_Fractional");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(4, 0.5)"), TEXT("2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(4, 0.5)"), TEXT("2")).ToString());
 
 	OutBeautifiedNames.Add("Pow_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(10, 3)"), TEXT("1000")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(10, 3)"), TEXT("1000")).ToString());
 
 	// Min tests
 	OutBeautifiedNames.Add("Min_Basic");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(5, 3)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(5, 3)"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("Min_Equal");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(5, 5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(5, 5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Min_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(-5, -3)"), TEXT("-5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(-5, -3)"), TEXT("-5")).ToString());
 
 	OutBeautifiedNames.Add("Min_Mixed");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(-5, 3)"), TEXT("-5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(-5, 3)"), TEXT("-5")).ToString());
 
 	OutBeautifiedNames.Add("Min_Float");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(3.5, 3.2)"), TEXT("3.2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(3.5, 3.2)"), TEXT("3.2")).ToString());
 
 	OutBeautifiedNames.Add("Min_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("min(0, 5)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Min(0, 5)"), TEXT("0")).ToString());
 
 	// Max tests
 	OutBeautifiedNames.Add("Max_Basic");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(5, 3)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(5, 3)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Max_Equal");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(5, 5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(5, 5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Max_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(-5, -3)"), TEXT("-3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(-5, -3)"), TEXT("-3")).ToString());
 
 	OutBeautifiedNames.Add("Max_Mixed");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(-5, 3)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(-5, 3)"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("Max_Float");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(3.5, 3.2)"), TEXT("3.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(3.5, 3.2)"), TEXT("3.5")).ToString());
 
 	OutBeautifiedNames.Add("Max_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(0, 5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(0, 5)"), TEXT("5")).ToString());
 
 	// Floor tests
 	OutBeautifiedNames.Add("Floor_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(3.7)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(3.7)"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("Floor_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(-3.2)"), TEXT("-4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(-3.2)"), TEXT("-4")).ToString());
 
 	OutBeautifiedNames.Add("Floor_Integer");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Floor_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(0.5)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(0.5)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Floor_NearInteger");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(3.99)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(3.99)"), TEXT("3")).ToString());
 
 	// Ceil tests
 	OutBeautifiedNames.Add("Ceil_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ceil(3.2)"), TEXT("4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Ceil(3.2)"), TEXT("4")).ToString());
 
 	OutBeautifiedNames.Add("Ceil_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ceil(-3.7)"), TEXT("-3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Ceil(-3.7)"), TEXT("-3")).ToString());
 
 	OutBeautifiedNames.Add("Ceil_Integer");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ceil(5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Ceil(5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Ceil_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ceil(0.1)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Ceil(0.1)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Ceil_NearInteger");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ceil(3.01)"), TEXT("4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Ceil(3.01)"), TEXT("4")).ToString());
 
 	// Round tests
 	OutBeautifiedNames.Add("Round_Up");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(3.5)"), TEXT("4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(3.5)"), TEXT("4")).ToString());
 
 	OutBeautifiedNames.Add("Round_Down");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(3.4)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(3.4)"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("Round_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(-3.5)"), TEXT("-3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(-3.5)"), TEXT("-3")).ToString());
 
 	OutBeautifiedNames.Add("Round_Integer");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Round_Exact");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(2.5)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(2.5)"), TEXT("3")).ToString());
 
 	// Clamp tests
 	OutBeautifiedNames.Add("Clamp_Above");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(15, 0, 10)"), TEXT("10")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(15, 0, 10)"), TEXT("10")).ToString());
 
 	OutBeautifiedNames.Add("Clamp_Below");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(-5, 0, 10)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(-5, 0, 10)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Clamp_Within");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(5, 0, 10)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(5, 0, 10)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Clamp_AtMin");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(0, 0, 10)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(0, 0, 10)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Clamp_AtMax");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(10, 0, 10)"), TEXT("10")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(10, 0, 10)"), TEXT("10")).ToString());
 
 	OutBeautifiedNames.Add("Clamp_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("clamp(-10, -5, 5)"), TEXT("-5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Clamp(-10, -5, 5)"), TEXT("-5")).ToString());
 
 	// Combined function tests
 	OutBeautifiedNames.Add("CombinedFunctions1");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(min(-5, -3))"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(Min(-5, -3))"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("CombinedFunctions2");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(sqrt(10))"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(Sqrt(10))"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("CombinedFunctions3");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(abs(-5), abs(-3))"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(Abs(-5), Abs(-3))"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("CombinedFunctions4");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("round(pow(2, 3.5))"), TEXT("11")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Round(Pow(2, 3.5))"), TEXT("11")).ToString());
 }
 
 bool ShidenExpressionEvaluatorMathFunctionTest::RunTest(const FString& Parameters)
@@ -1389,7 +1389,7 @@ bool ShidenExpressionEvaluatorMathFunctionTest::RunTest(const FString& Parameter
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1535,7 +1535,7 @@ bool ShidenExpressionEvaluatorStringComparisonTest::RunTest(const FString& Param
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1675,7 +1675,7 @@ bool ShidenExpressionEvaluatorBooleanComparisonTest::RunTest(const FString& Para
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1746,7 +1746,7 @@ bool ShidenExpressionEvaluatorVectorComparisonTest::RunTest(const FString& Param
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1824,7 +1824,7 @@ bool ShidenExpressionEvaluatorUnaryOperatorTest::RunTest(const FString& Paramete
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1876,22 +1876,22 @@ IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorNestedFunctionTest, "
 void ShidenExpressionEvaluatorNestedFunctionTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
 {
 	OutBeautifiedNames.Add("NestedAbs");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(abs(-5))"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(Abs(-5))"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("NestedMinMax");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("max(min(10, 5), 3)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Max(Min(10, 5), 3)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("NestedSqrtPow");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(pow(4, 2))"), TEXT("4")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(Pow(4, 2))"), TEXT("4")).ToString());
 
 	OutBeautifiedNames.Add("ComplexNested");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("floor(abs(min(-10.5, -5.3)))"), TEXT("10")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Floor(Abs(Min(-10.5, -5.3)))"), TEXT("10")).ToString());
 
 	OutBeautifiedNames.Add("NestedWithArithmetic");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-5) + max(3, 7)"), TEXT("12")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-5) + Max(3, 7)"), TEXT("12")).ToString());
 
 	OutBeautifiedNames.Add("TripleNested");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(min(max(1, 2), 3))"), TEXT("2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(Min(Max(1, 2), 3))"), TEXT("2")).ToString());
 }
 
 bool ShidenExpressionEvaluatorNestedFunctionTest::RunTest(const FString& Parameters)
@@ -1900,7 +1900,7 @@ bool ShidenExpressionEvaluatorNestedFunctionTest::RunTest(const FString& Paramet
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -1930,113 +1930,113 @@ void ShidenExpressionEvaluatorTrigonometricTest::GetTests(TArray<FString>& OutBe
 {
 	// Sin tests
 	OutBeautifiedNames.Add("Sin_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Sin_Pi");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(3.14159)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(3.14159)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Sin_PiOver2");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(1.5708)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(1.5708)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Sin_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(-1.5708)"), TEXT("-1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(-1.5708)"), TEXT("-1")).ToString());
 
 	OutBeautifiedNames.Add("Sin_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(0.5)"), TEXT("0.479426")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(0.5)"), TEXT("0.479426")).ToString());
 
 	// Cos tests
 	OutBeautifiedNames.Add("Cos_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(0)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(0)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Cos_Pi");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(3.14159)"), TEXT("-1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(3.14159)"), TEXT("-1")).ToString());
 
 	OutBeautifiedNames.Add("Cos_PiOver2");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(1.5708)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(1.5708)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Cos_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(-1.5708)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(-1.5708)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Cos_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(0.5)"), TEXT("0.877583")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(0.5)"), TEXT("0.877583")).ToString());
 
 	// Tan tests
 	OutBeautifiedNames.Add("Tan_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("tan(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Tan(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Tan_PiOver4");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("tan(0.7854)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Tan(0.7854)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Tan_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("tan(-0.7854)"), TEXT("-1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Tan(-0.7854)"), TEXT("-1")).ToString());
 
 	OutBeautifiedNames.Add("Tan_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("tan(0.5)"), TEXT("0.546302")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Tan(0.5)"), TEXT("0.546302")).ToString());
 
 	// Asin tests
 	OutBeautifiedNames.Add("Asin_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("asin(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Asin(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Asin_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("asin(1)"), TEXT("1.5708")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Asin(1)"), TEXT("1.5708")).ToString());
 
 	OutBeautifiedNames.Add("Asin_MinusOne");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("asin(-1)"), TEXT("-1.5708")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Asin(-1)"), TEXT("-1.5708")).ToString());
 
 	OutBeautifiedNames.Add("Asin_Half");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("asin(0.5)"), TEXT("0.523599")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Asin(0.5)"), TEXT("0.523599")).ToString());
 
 	// Acos tests
 	OutBeautifiedNames.Add("Acos_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("acos(1)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Acos(1)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Acos_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("acos(0)"), TEXT("1.5708")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Acos(0)"), TEXT("1.5708")).ToString());
 
 	OutBeautifiedNames.Add("Acos_MinusOne");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("acos(-1)"), TEXT("3.14159")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Acos(-1)"), TEXT("3.14159")).ToString());
 
 	OutBeautifiedNames.Add("Acos_Half");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("acos(0.5)"), TEXT("1.0472")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Acos(0.5)"), TEXT("1.0472")).ToString());
 
 	// Atan tests
 	OutBeautifiedNames.Add("Atan_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Atan_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan(1)"), TEXT("0.785398")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan(1)"), TEXT("0.785398")).ToString());
 
 	OutBeautifiedNames.Add("Atan_MinusOne");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan(-1)"), TEXT("-0.785398")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan(-1)"), TEXT("-0.785398")).ToString());
 
 	OutBeautifiedNames.Add("Atan_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan(100)"), TEXT("1.5608")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan(100)"), TEXT("1.5608")).ToString());
 
 	// Atan2 tests
 	OutBeautifiedNames.Add("Atan2_ZeroOne");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan2(0, 1)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan2(0, 1)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Atan2_OneZero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan2(1, 0)"), TEXT("1.5708")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan2(1, 0)"), TEXT("1.5708")).ToString());
 
 	OutBeautifiedNames.Add("Atan2_OneOne");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan2(1, 1)"), TEXT("0.785398")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan2(1, 1)"), TEXT("0.785398")).ToString());
 
 	OutBeautifiedNames.Add("Atan2_NegativeY");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan2(-1, 1)"), TEXT("-0.785398")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan2(-1, 1)"), TEXT("-0.785398")).ToString());
 
 	OutBeautifiedNames.Add("Atan2_NegativeX");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("atan2(1, -1)"), TEXT("2.35619")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Atan2(1, -1)"), TEXT("2.35619")).ToString());
 
 	// Combined trig functions
 	OutBeautifiedNames.Add("TrigCombined1");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(asin(0.5))"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(Asin(0.5))"), TEXT("0.5")).ToString());
 
 	OutBeautifiedNames.Add("TrigCombined2");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("cos(acos(0.5))"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Cos(Acos(0.5))"), TEXT("0.5")).ToString());
 
 	OutBeautifiedNames.Add("TrigCombined3");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("tan(atan(1))"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Tan(Atan(1))"), TEXT("1")).ToString());
 }
 
 bool ShidenExpressionEvaluatorTrigonometricTest::RunTest(const FString& Parameters)
@@ -2045,7 +2045,7 @@ bool ShidenExpressionEvaluatorTrigonometricTest::RunTest(const FString& Paramete
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -2080,7 +2080,7 @@ void ShidenExpressionEvaluatorComplexExpressionTest::GetTests(TArray<FString>& O
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("(5 > 3) && (10 < 20) || false"), TEXT("true")).ToString());
 
 	OutBeautifiedNames.Add("MixedOperations");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-10) + max(5, 3) * 2 - min(2, 1)"), TEXT("19")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-10) + Max(5, 3) * 2 - Min(2, 1)"), TEXT("19")).ToString());
 
 	OutBeautifiedNames.Add("StringAndNumberComparison");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("\"a\" < \"b\" && 5 > 3"), TEXT("true")).ToString());
@@ -2092,7 +2092,7 @@ void ShidenExpressionEvaluatorComplexExpressionTest::GetTests(TArray<FString>& O
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("(5 & 3) + (10 | 2)"), TEXT("11")).ToString());
 
 	OutBeautifiedNames.Add("PowerAndRoot");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(pow(3, 2) + pow(4, 2))"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(Pow(3, 2) + Pow(4, 2))"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("ComplexPrecedence");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2 + 3 * 4 ** 2 / 8 - 1"), TEXT("7")).ToString());
@@ -2104,7 +2104,7 @@ bool ShidenExpressionEvaluatorComplexExpressionTest::RunTest(const FString& Para
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -2165,21 +2165,21 @@ void ShidenExpressionEvaluatorEdgeCaseTest::GetTests(TArray<FString>& OutBeautif
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("5.5 % 0.0"), TEXT(""), false).ToString());
 
 	OutBeautifiedNames.Add("SqrtNegative_ShouldFail");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(-1)"), TEXT(""), false).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(-1)"), TEXT(""), false).ToString());
 
 	OutBeautifiedNames.Add("LogNegative_ShouldFail");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(-1)"), TEXT(""), false).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(-1)"), TEXT(""), false).ToString());
 
 	OutBeautifiedNames.Add("LogZero_ShouldFail");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(0)"), TEXT(""), false).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(0)"), TEXT(""), false).ToString());
 
 	OutBeautifiedNames.Add("AsinOutOfRange");
-	// Asin input must be in the range [-1, 1], asin(2) is treated as asin(1)
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("asin(2)"), TEXT("1.570796")).ToString());
+	// Asin input must be in the range [-1, 1], Asin(2) is treated as Asin(1)
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Asin(2)"), TEXT("1.570796")).ToString());
 
 	OutBeautifiedNames.Add("AcosOutOfRange");
-	// Acos input must be in the range [-1, 1], acos(2) is treated as acos(1)
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("acos(2)"), TEXT("0")).ToString());
+	// Acos input must be in the range [-1, 1], Acos(2) is treated as Acos(1)
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Acos(2)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("VeryLargeNumber");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("999999999 + 1"), TEXT("1000000000")).ToString());
@@ -2241,7 +2241,7 @@ bool ShidenExpressionEvaluatorEdgeCaseTest::RunTest(const FString& Parameters)
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 
 	if (bSuccess != Params.bShouldSucceed)
 	{
@@ -2299,137 +2299,137 @@ void ShidenExpressionEvaluatorAdditionalMathTest::GetTests(TArray<FString>& OutB
 {
 	// Exp tests
 	OutBeautifiedNames.Add("Exp_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(0)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(0)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Exp_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(1)"), TEXT("2.71828")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(1)"), TEXT("2.71828")).ToString());
 
 	OutBeautifiedNames.Add("Exp_Two");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(2)"), TEXT("7.38906")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(2)"), TEXT("7.38906")).ToString());
 
 	OutBeautifiedNames.Add("Exp_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(-1)"), TEXT("0.367879")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(-1)"), TEXT("0.367879")).ToString());
 
 	OutBeautifiedNames.Add("Exp_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(0.5)"), TEXT("1.64872")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(0.5)"), TEXT("1.64872")).ToString());
 
 	// Log tests
 	OutBeautifiedNames.Add("Log_e");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(2.71828)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(2.71828)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Log_One");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(1)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(1)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Log_Ten");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(10)"), TEXT("2.30259")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(10)"), TEXT("2.30259")).ToString());
 
 	OutBeautifiedNames.Add("Log_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(100)"), TEXT("4.60517")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(100)"), TEXT("4.60517")).ToString());
 
 	OutBeautifiedNames.Add("Log_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("log(0.5)"), TEXT("-0.693147")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Log(0.5)"), TEXT("-0.693147")).ToString());
 
 	// Sign tests
 	OutBeautifiedNames.Add("Sign_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(5)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(5)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Sign_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(-5)"), TEXT("-1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(-5)"), TEXT("-1")).ToString());
 
 	OutBeautifiedNames.Add("Sign_Zero");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Sign_PositiveFloat");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(3.5)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(3.5)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("Sign_NegativeFloat");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(-3.5)"), TEXT("-1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(-3.5)"), TEXT("-1")).ToString());
 
 	OutBeautifiedNames.Add("Sign_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(0.001)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(0.001)"), TEXT("1")).ToString());
 
 	// Frac tests
 	OutBeautifiedNames.Add("Frac_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("frac(3.7)"), TEXT("0.7")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Frac(3.7)"), TEXT("0.7")).ToString());
 
 	OutBeautifiedNames.Add("Frac_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("frac(-3.7)"), TEXT("0.3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Frac(-3.7)"), TEXT("0.3")).ToString());
 
 	OutBeautifiedNames.Add("Frac_Integer");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("frac(5)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Frac(5)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Frac_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("frac(0.123)"), TEXT("0.123")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Frac(0.123)"), TEXT("0.123")).ToString());
 
 	OutBeautifiedNames.Add("Frac_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("frac(100.999)"), TEXT("0.999")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Frac(100.999)"), TEXT("0.999")).ToString());
 
 	// Trunc tests
 	OutBeautifiedNames.Add("Trunc_Positive");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(3.7)"), TEXT("3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(3.7)"), TEXT("3")).ToString());
 
 	OutBeautifiedNames.Add("Trunc_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(-3.7)"), TEXT("-3")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(-3.7)"), TEXT("-3")).ToString());
 
 	OutBeautifiedNames.Add("Trunc_Integer");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Trunc_Small");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(0.999)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(0.999)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Trunc_Large");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(999.1)"), TEXT("999")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(999.1)"), TEXT("999")).ToString());
 
 	// Lerp tests
 	OutBeautifiedNames.Add("Lerp_Middle");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(0, 10, 0.5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(0, 10, 0.5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("Lerp_Start");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(0, 10, 0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(0, 10, 0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Lerp_End");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(0, 10, 1)"), TEXT("10")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(0, 10, 1)"), TEXT("10")).ToString());
 
 	OutBeautifiedNames.Add("Lerp_Quarter");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(0, 10, 0.25)"), TEXT("2.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(0, 10, 0.25)"), TEXT("2.5")).ToString());
 
 	OutBeautifiedNames.Add("Lerp_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(-10, 10, 0.5)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(-10, 10, 0.5)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("Lerp_Extrapolate");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("lerp(0, 10, 2)"), TEXT("20")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Lerp(0, 10, 2)"), TEXT("20")).ToString());
 
 	// InvLerp tests
 	OutBeautifiedNames.Add("InvLerp_Middle");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(0, 10, 5)"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(0, 10, 5)"), TEXT("0.5")).ToString());
 
 	OutBeautifiedNames.Add("InvLerp_Start");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(0, 10, 0)"), TEXT("0")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(0, 10, 0)"), TEXT("0")).ToString());
 
 	OutBeautifiedNames.Add("InvLerp_End");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(0, 10, 10)"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(0, 10, 10)"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("InvLerp_Quarter");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(0, 10, 2.5)"), TEXT("0.25")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(0, 10, 2.5)"), TEXT("0.25")).ToString());
 
 	OutBeautifiedNames.Add("InvLerp_Negative");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(-10, 10, 0)"), TEXT("0.5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(-10, 10, 0)"), TEXT("0.5")).ToString());
 
 	OutBeautifiedNames.Add("InvLerp_Outside");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("invlerp(0, 10, 20)"), TEXT("2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("InvLerp(0, 10, 20)"), TEXT("2")).ToString());
 
 	// Combined additional math functions
 	OutBeautifiedNames.Add("CombinedAdditional1");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sign(frac(3.7))"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sign(Frac(3.7))"), TEXT("1")).ToString());
 
 	OutBeautifiedNames.Add("CombinedAdditional2");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("trunc(lerp(0, 100, 0.756))"), TEXT("75")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Trunc(Lerp(0, 100, 0.756))"), TEXT("75")).ToString());
 
 	OutBeautifiedNames.Add("CombinedAdditional3");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("exp(log(5))"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Exp(Log(5))"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("CombinedAdditional4");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(sign(-5))"), TEXT("1")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(Sign(-5))"), TEXT("1")).ToString());
 }
 
 bool ShidenExpressionEvaluatorAdditionalMathTest::RunTest(const FString& Parameters)
@@ -2438,7 +2438,7 @@ bool ShidenExpressionEvaluatorAdditionalMathTest::RunTest(const FString& Paramet
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -2520,22 +2520,22 @@ void ShidenExpressionEvaluatorUnformattedStringTest::GetTests(TArray<FString>& O
 
 	// Spaces in function calls
 	OutBeautifiedNames.Add("FunctionNoSpace");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(-5)"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(-5)"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("FunctionWithSpace");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs( -5 )"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs( -5 )"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("FunctionWithExtraSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("abs(  -5  )"), TEXT("5")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Abs(  -5  )"), TEXT("5")).ToString());
 
 	OutBeautifiedNames.Add("FunctionMultipleArgsNoSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(2,3)"), TEXT("8")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(2,3)"), TEXT("8")).ToString());
 
 	OutBeautifiedNames.Add("FunctionMultipleArgsWithSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow( 2 , 3 )"), TEXT("8")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow( 2 , 3 )"), TEXT("8")).ToString());
 
 	OutBeautifiedNames.Add("FunctionMultipleArgsExtraSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("pow(  2  ,  3  )"), TEXT("8")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Pow(  2  ,  3  )"), TEXT("8")).ToString());
 
 	// Mixed formatting
 	OutBeautifiedNames.Add("MixedFormatting1");
@@ -2545,7 +2545,7 @@ void ShidenExpressionEvaluatorUnformattedStringTest::GetTests(TArray<FString>& O
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("(2+3)*4-1  "), TEXT("19")).ToString());
 
 	OutBeautifiedNames.Add("MixedFormatting3");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("  abs(  -5  )+pow(2,3)  "), TEXT("13")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("  Abs(  -5  )+Pow(2,3)  "), TEXT("13")).ToString());
 
 	OutBeautifiedNames.Add("MixedFormatting4");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2  +3*  4-(  5  /2)"), TEXT("11.5")).ToString());
@@ -2559,13 +2559,13 @@ void ShidenExpressionEvaluatorUnformattedStringTest::GetTests(TArray<FString>& O
 
 	// Unformatted complex expressions
 	OutBeautifiedNames.Add("ComplexNoSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sin(3.14159/2)+cos(0)"), TEXT("2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sin(3.14159/2)+Cos(0)"), TEXT("2")).ToString());
 
 	OutBeautifiedNames.Add("ComplexExtraSpaces");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("  sin(  3.14159  /  2  )  +  cos(  0  )  "), TEXT("2")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("  Sin(  3.14159  /  2  )  +  Cos(  0  )  "), TEXT("2")).ToString());
 
 	OutBeautifiedNames.Add("ComplexMixedFormatting");
-	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("sqrt(16)+abs(-4)  *2"), TEXT("12")).ToString());
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Sqrt(16)+Abs(-4)  *2"), TEXT("12")).ToString());
 }
 
 bool ShidenExpressionEvaluatorUnformattedStringTest::RunTest(const FString& Parameters)
@@ -2574,7 +2574,7 @@ bool ShidenExpressionEvaluatorUnformattedStringTest::RunTest(const FString& Para
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -2688,7 +2688,7 @@ bool ShidenExpressionEvaluatorEscapeSequenceTest::RunTest(const FString& Paramet
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
-	const bool bSuccess = FShidenExpressionEvaluator::TryEvaluate(Params.Expression, Result, ErrorMessage);
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
 	if (!bSuccess)
 	{
 		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
@@ -2710,3 +2710,1086 @@ bool ShidenExpressionEvaluatorEscapeSequenceTest::RunTest(const FString& Paramet
 	AddError(FString::Printf(TEXT("Expression '%s' did not evaluate to a string type"), *Params.Expression));
 	return false;
 }
+
+// Type conversion function tests (toString, toInt, toFloat, toBool, toVector2, toVector3)
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorTypeConversionTest, "ShidenExpressionEvaluator.TypeConversion",
+                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+void ShidenExpressionEvaluatorTypeConversionTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+	// ==========================================
+	// toString tests
+	// ==========================================
+
+	// toString with integer
+	OutBeautifiedNames.Add("ToString_Integer_Positive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(42)"), TEXT("42")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Integer_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(-123)"), TEXT("-123")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Integer_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(0)"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Integer_Large");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(1000000)"), TEXT("1000000")).ToString());
+
+	// toString with float
+	OutBeautifiedNames.Add("ToString_Float_Positive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(3.14)"), TEXT("3.140000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Float_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(-2.5)"), TEXT("-2.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Float_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(0.0)"), TEXT("0.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Float_Small");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(0.001)"), TEXT("0.001000")).ToString());
+
+	// toString with boolean
+	OutBeautifiedNames.Add("ToString_Boolean_True");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(true)"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Boolean_False");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(false)"), TEXT("false")).ToString());
+
+	// toString with string (passthrough)
+	OutBeautifiedNames.Add("ToString_String_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(\"Hello\")"), TEXT("Hello")).ToString());
+
+	OutBeautifiedNames.Add("ToString_String_Empty");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(\"\")"), TEXT("")).ToString());
+
+	OutBeautifiedNames.Add("ToString_String_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(\"Hello World\")"), TEXT("Hello World")).ToString());
+
+	// toString with Vector2
+	OutBeautifiedNames.Add("ToString_Vector2_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([1, 2])"), TEXT("X=1.000000 Y=2.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Vector2_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([-1.5, 2.5])"), TEXT("X=-1.500000 Y=2.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Vector2_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([0, 0])"), TEXT("X=0.000000 Y=0.000000")).ToString());
+
+	// toString with Vector3
+	OutBeautifiedNames.Add("ToString_Vector3_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([1, 2, 3])"), TEXT("X=1.000000 Y=2.000000 Z=3.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Vector3_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([-1.5, 2.5, -3.5])"), TEXT("X=-1.500000 Y=2.500000 Z=-3.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Vector3_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString([0, 0, 0])"), TEXT("X=0.000000 Y=0.000000 Z=0.000000")).ToString());
+
+	// toString with expression result
+	OutBeautifiedNames.Add("ToString_Expression_Arithmetic");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(2 + 3)"), TEXT("5")).ToString());
+
+	OutBeautifiedNames.Add("ToString_Expression_Comparison");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(5 > 3)"), TEXT("true")).ToString());
+
+	// toString wrong argument count
+	OutBeautifiedNames.Add("ToString_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToString_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToString(1, 2)"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// toInt tests
+	// ==========================================
+
+	// toInt with valid integer strings
+	OutBeautifiedNames.Add("ToInt_Positive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"42\")"), TEXT("42")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"-123\")"), TEXT("-123")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"0\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_Large");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"1000000\")"), TEXT("1000000")).ToString());
+
+	// toInt with invalid strings (returns 0)
+	OutBeautifiedNames.Add("ToInt_InvalidString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"abc\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_FloatString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"3.14\")"), TEXT("3")).ToString());
+
+	OutBeautifiedNames.Add("ToInt_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"  42  \")"), TEXT("42")).ToString());
+
+	// toInt with non-string should fail
+	OutBeautifiedNames.Add("ToInt_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToInt_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToInt_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(true)"), TEXT(""), false).ToString());
+
+	// toInt wrong argument count
+	OutBeautifiedNames.Add("ToInt_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToInt_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"1\", \"2\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// toFloat tests
+	// ==========================================
+
+	// toFloat with valid float strings
+	OutBeautifiedNames.Add("ToFloat_Positive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"3.14\")"), TEXT("3.14")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"-2.5\")"), TEXT("-2.5")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"0.0\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_Integer");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"42\")"), TEXT("42")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_Small");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"0.001\")"), TEXT("0.001")).ToString());
+
+	// toFloat with invalid strings (returns 0)
+	OutBeautifiedNames.Add("ToFloat_InvalidString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"abc\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"  3.14  \")"), TEXT("3.14")).ToString());
+
+	// toFloat with non-string should fail
+	OutBeautifiedNames.Add("ToFloat_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(true)"), TEXT(""), false).ToString());
+
+	// toFloat wrong argument count
+	OutBeautifiedNames.Add("ToFloat_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToFloat_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"1.0\", \"2.0\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// toBool tests
+	// ==========================================
+
+	// toBool with valid boolean strings
+	OutBeautifiedNames.Add("ToBool_True_Lowercase");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"true\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_True_Uppercase");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"TRUE\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_True_MixedCase");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"True\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_One");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"1\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_False_Lowercase");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"false\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_False_Uppercase");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"FALSE\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"0\")"), TEXT("false")).ToString());
+
+	// toBool with invalid strings (returns false)
+	OutBeautifiedNames.Add("ToBool_InvalidString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"abc\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("ToBool_Number");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"42\")"), TEXT("false")).ToString());
+
+	// toBool with non-string should fail
+	OutBeautifiedNames.Add("ToBool_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToBool_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToBool_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(true)"), TEXT(""), false).ToString());
+
+	// toBool wrong argument count
+	OutBeautifiedNames.Add("ToBool_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToBool_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(\"true\", \"false\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// toVector2 tests
+	// ==========================================
+
+	// toVector2 with valid strings
+	OutBeautifiedNames.Add("ToVector2_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"X=1 Y=2\")"), TEXT("X=1.000000 Y=2.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"X=-1.5 Y=2.5\")"), TEXT("X=-1.500000 Y=2.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"X=0 Y=0\")"), TEXT("X=0.000000 Y=0.000000")).ToString());
+
+	// toVector2 with array format "[1, 2]"
+	OutBeautifiedNames.Add("ToVector2_ArrayFormat_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"[1, 2]\")"), TEXT("X=1.000000 Y=2.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_ArrayFormat_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"[-1.5, 2.5]\")"), TEXT("X=-1.500000 Y=2.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_ArrayFormat_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"[0, 0]\")"), TEXT("X=0.000000 Y=0.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_ArrayFormat_NoSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"[3,4]\")"), TEXT("X=3.000000 Y=4.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_ArrayFormat_ExtraSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"[ 5 , 6 ]\")"), TEXT("X=5.000000 Y=6.000000")).ToString());
+
+	// toVector2 with invalid strings (returns ZeroVector)
+	OutBeautifiedNames.Add("ToVector2_InvalidString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"abc\")"), TEXT("X=0.000000 Y=0.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"\")"), TEXT("X=0.000000 Y=0.000000")).ToString());
+
+	// toVector2 with non-string should fail
+	OutBeautifiedNames.Add("ToVector2_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_Vector2Arg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2([1, 2])"), TEXT(""), false).ToString());
+
+	// toVector2 wrong argument count
+	OutBeautifiedNames.Add("ToVector2_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToVector2_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector2(\"X=1 Y=2\", \"X=3 Y=4\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// toVector3 tests
+	// ==========================================
+
+	// toVector3 with valid strings
+	OutBeautifiedNames.Add("ToVector3_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"X=1 Y=2 Z=3\")"), TEXT("X=1.000000 Y=2.000000 Z=3.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"X=-1.5 Y=2.5 Z=-3.5\")"), TEXT("X=-1.500000 Y=2.500000 Z=-3.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"X=0 Y=0 Z=0\")"), TEXT("X=0.000000 Y=0.000000 Z=0.000000")).ToString());
+
+	// toVector3 with array format "[1, 2, 3]"
+	OutBeautifiedNames.Add("ToVector3_ArrayFormat_Simple");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"[1, 2, 3]\")"), TEXT("X=1.000000 Y=2.000000 Z=3.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_ArrayFormat_Negative");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"[-1.5, 2.5, -3.5]\")"), TEXT("X=-1.500000 Y=2.500000 Z=-3.500000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_ArrayFormat_Zero");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"[0, 0, 0]\")"), TEXT("X=0.000000 Y=0.000000 Z=0.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_ArrayFormat_NoSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"[4,5,6]\")"), TEXT("X=4.000000 Y=5.000000 Z=6.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_ArrayFormat_ExtraSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"[ 7 , 8 , 9 ]\")"), TEXT("X=7.000000 Y=8.000000 Z=9.000000")).ToString());
+
+	// toVector3 with invalid strings (returns ZeroVector)
+	OutBeautifiedNames.Add("ToVector3_InvalidString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"abc\")"), TEXT("X=0.000000 Y=0.000000 Z=0.000000")).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"\")"), TEXT("X=0.000000 Y=0.000000 Z=0.000000")).ToString());
+
+	// toVector3 with non-string should fail
+	OutBeautifiedNames.Add("ToVector3_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_Vector3Arg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3([1, 2, 3])"), TEXT(""), false).ToString());
+
+	// toVector3 wrong argument count
+	OutBeautifiedNames.Add("ToVector3_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("ToVector3_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToVector3(\"X=1 Y=2 Z=3\", \"X=4 Y=5 Z=6\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// Combined conversion tests
+	// ==========================================
+
+	// toString then toInt
+	OutBeautifiedNames.Add("Combined_ToStringToInt");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(ToString(42))"), TEXT("42")).ToString());
+
+	// toString then toFloat
+	OutBeautifiedNames.Add("Combined_ToStringToFloat");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(ToString(3.14))"), TEXT("3.14")).ToString());
+
+	// toString then toBool
+	OutBeautifiedNames.Add("Combined_ToStringToBool");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToBool(ToString(true))"), TEXT("true")).ToString());
+
+	// Arithmetic with converted values
+	OutBeautifiedNames.Add("Combined_ArithmeticWithToInt");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToInt(\"10\") + ToInt(\"20\")"), TEXT("30")).ToString());
+
+	OutBeautifiedNames.Add("Combined_ArithmeticWithToFloat");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("ToFloat(\"1.5\") * ToFloat(\"2.0\")"), TEXT("3")).ToString());
+}
+
+bool ShidenExpressionEvaluatorTypeConversionTest::RunTest(const FString& Parameters)
+{
+	const FShidenExpressionTestParameters Params(Parameters);
+	FShidenExpressionValue Result;
+	FString ErrorMessage;
+
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
+
+	if (bSuccess != Params.bShouldSucceed)
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' evaluation returned %s, expected %s. Error: %s"),
+		                         *Params.Expression,
+		                         bSuccess ? TEXT("success") : TEXT("failure"),
+		                         Params.bShouldSucceed ? TEXT("success") : TEXT("failure"),
+		                         *ErrorMessage));
+		return false;
+	}
+
+	if (bSuccess && !Params.ExpectedResult.IsEmpty())
+	{
+		// For string comparisons (including Vector2/Vector3 string representations)
+		if (Result.Type == EShidenExpressionValueType::String ||
+			Result.Type == EShidenExpressionValueType::Vector2 ||
+			Result.Type == EShidenExpressionValueType::Vector3)
+		{
+			const FString ResultStr = Result.ToString();
+			if (ResultStr != Params.ExpectedResult)
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' evaluated to '%s', expected '%s'"),
+				                         *Params.Expression, *ResultStr, *Params.ExpectedResult));
+				return false;
+			}
+			return true;
+		}
+
+		// For boolean comparisons
+		if (Result.Type == EShidenExpressionValueType::Boolean)
+		{
+			bool bResultBool;
+			if (!Result.TryToBoolean(bResultBool, ErrorMessage))
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' could not convert to boolean: %s"),
+				                         *Params.Expression, *ErrorMessage));
+				return false;
+			}
+
+			const bool bExpected = Params.ExpectedResult.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+			if (bResultBool != bExpected)
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' evaluated to %s, expected %s"),
+				                         *Params.Expression,
+				                         bResultBool ? TEXT("true") : TEXT("false"),
+				                         bExpected ? TEXT("true") : TEXT("false")));
+				return false;
+			}
+			return true;
+		}
+
+		// For numeric comparisons
+		float ResultValue, ExpectedValue;
+		if (Result.TryToNumeric(ResultValue, ErrorMessage) &&
+			FDefaultValueHelper::ParseFloat(Params.ExpectedResult, ExpectedValue))
+		{
+			if (!FMath::IsNearlyEqual(ResultValue, ExpectedValue, 0.0001))
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' evaluated to %f, expected %f"),
+				                         *Params.Expression, ResultValue, ExpectedValue));
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+// String utility function tests
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorStringUtilityTest, "ShidenExpressionEvaluator.StringUtility",
+                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+void ShidenExpressionEvaluatorStringUtilityTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+	// ==========================================
+	// hasSpace tests
+	// ==========================================
+
+	// Basic hasSpace tests
+	OutBeautifiedNames.Add("HasSpace_WithSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello world\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_NoSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_OnlySpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"  \")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_SingleSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\" \")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_LeadingSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\" hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_TrailingSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello \")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_MultipleSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello   world\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_WithTab");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello\\tworld\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_WithNewline");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello\\nworld\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_MixedWhitespace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello world\\t\")"), TEXT("true")).ToString());
+
+	// hasSpace with non-string should fail
+	OutBeautifiedNames.Add("HasSpace_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(true)"), TEXT(""), false).ToString());
+
+	// hasSpace wrong argument count
+	OutBeautifiedNames.Add("HasSpace_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("HasSpace_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("HasSpace(\"hello\", \"world\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// Contains tests
+	// ==========================================
+
+	// Basic Contains tests
+	OutBeautifiedNames.Add("Contains_Found");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello world\", \"world\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_NotFound");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello\", \"world\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("Contains_EmptySubstring");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test\", \"\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"\", \"test\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("Contains_BothEmpty");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"\", \"\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_ExactMatch");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_AtBeginning");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello world\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_AtEnd");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello world\", \"world\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_InMiddle");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello world\", \"lo wo\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_CaseSensitive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"Hello World\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("Contains_SingleChar");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test\", \"t\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_SpecialChars");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test@example.com\", \"@\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_MultipleOccurrences");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello hello\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("Contains_LongerSubstring");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hi\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("Contains_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"the quick brown fox\", \"quick brown\")"), TEXT("true")).ToString());
+
+	// Contains with non-string arguments should fail
+	OutBeautifiedNames.Add("Contains_IntegerFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(42, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_IntegerSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test\", 42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_BoolFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(true, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_BoolSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test\", false)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_FloatFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(3.14, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_FloatSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"test\", 3.14)"), TEXT(""), false).ToString());
+
+	// Contains wrong argument count
+	OutBeautifiedNames.Add("Contains_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_OneArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Contains_ThreeArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello\", \"world\", \"extra\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// StartsWith tests
+	// ==========================================
+
+	// Basic StartsWith tests
+	OutBeautifiedNames.Add("StartsWith_Match");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hello world\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_NoMatch");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hello world\", \"world\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_EmptyPrefix");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"test\", \"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"\", \"test\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_BothEmpty");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"\", \"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_ExactMatch");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hello\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_CaseSensitive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"Hello World\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_SingleChar");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"test\", \"t\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_LongerPrefix");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hi\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"the quick brown fox\", \"the quick\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_SpecialChars");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"@test\", \"@\")"), TEXT("true")).ToString());
+
+	// StartsWith with non-string arguments should fail
+	OutBeautifiedNames.Add("StartsWith_IntegerFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(42, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_IntegerSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"test\", 42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_BoolFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(true, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_BoolSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"test\", false)"), TEXT(""), false).ToString());
+
+	// StartsWith wrong argument count
+	OutBeautifiedNames.Add("StartsWith_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_OneArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hello\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("StartsWith_ThreeArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("StartsWith(\"hello\", \"world\", \"extra\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// EndsWith tests
+	// ==========================================
+
+	// Basic EndsWith tests
+	OutBeautifiedNames.Add("EndsWith_Match");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello world\", \"world\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_NoMatch");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello world\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_EmptySuffix");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"test\", \"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"\", \"test\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_BothEmpty");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"\", \"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_ExactMatch");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello\", \"hello\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_CaseSensitive");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"Hello World\", \"WORLD\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_SingleChar");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"test\", \"t\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_LongerSuffix");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hi\", \"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"the quick brown fox\", \"brown fox\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_SpecialChars");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"test.txt\", \".txt\")"), TEXT("true")).ToString());
+
+	// EndsWith with non-string arguments should fail
+	OutBeautifiedNames.Add("EndsWith_IntegerFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(42, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_IntegerSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"test\", 42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_BoolFirstArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(true, \"test\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_BoolSecondArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"test\", false)"), TEXT(""), false).ToString());
+
+	// EndsWith wrong argument count
+	OutBeautifiedNames.Add("EndsWith_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_OneArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello\")"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("EndsWith_ThreeArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello\", \"world\", \"extra\")"), TEXT(""), false).ToString());
+}
+
+bool ShidenExpressionEvaluatorStringUtilityTest::RunTest(const FString& Parameters)
+{
+	const FShidenExpressionTestParameters Params(Parameters);
+	FShidenExpressionValue Result;
+	FString ErrorMessage;
+
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
+
+	if (bSuccess != Params.bShouldSucceed)
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' evaluation returned %s, expected %s. Error: %s"),
+		                         *Params.Expression,
+		                         bSuccess ? TEXT("success") : TEXT("failure"),
+		                         Params.bShouldSucceed ? TEXT("success") : TEXT("failure"),
+		                         *ErrorMessage));
+		return false;
+	}
+
+	if (bSuccess && !Params.ExpectedResult.IsEmpty())
+	{
+		// For boolean comparisons
+		if (Result.Type == EShidenExpressionValueType::Boolean)
+		{
+			bool bResultBool;
+			if (!Result.TryToBoolean(bResultBool, ErrorMessage))
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' could not convert to boolean: %s"),
+				                         *Params.Expression, *ErrorMessage));
+				return false;
+			}
+
+			const bool bExpected = Params.ExpectedResult.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+			if (bResultBool != bExpected)
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' evaluated to %s, expected %s"),
+				                         *Params.Expression,
+				                         bResultBool ? TEXT("true") : TEXT("false"),
+				                         bExpected ? TEXT("true") : TEXT("false")));
+				return false;
+			}
+			return true;
+		}
+	}
+
+	return true;
+}
+
+// =============================================================================
+// Editor-Only Function Tests
+// =============================================================================
+
+#if WITH_EDITOR
+
+struct FEditorFunctionTestParameters
+{
+	FString Expression;
+	FString ExpectedResult;
+	bool bShouldSucceed;
+	TMap<FString, FShidenVariableDefinition> UserVariables;
+	TMap<FString, FShidenVariableDefinition> SystemVariables;
+	TMap<FString, FShidenVariableDefinition> LocalVariables;
+
+	FString ToString() const
+	{
+		const FString EncodedExpression = FBase64::Encode(Expression);
+		const FString EncodedExpectedResult = FBase64::Encode(ExpectedResult);
+		const FString EncodedUserVars = FBase64::Encode(SerializeVariables(UserVariables));
+		const FString EncodedSystemVars = FBase64::Encode(SerializeVariables(SystemVariables));
+		const FString EncodedLocalVars = FBase64::Encode(SerializeVariables(LocalVariables));
+		return FString::Printf(TEXT("%s\t%s\t%d\t%s\t%s\t%s"), *EncodedExpression, *EncodedExpectedResult, bShouldSucceed ? 1 : 0,
+		                       *EncodedUserVars, *EncodedSystemVars, *EncodedLocalVars);
+	}
+
+	FEditorFunctionTestParameters(const FString& InExpression, const FString& InExpectedResult, const bool bInShouldSucceed = true)
+		: Expression(InExpression), ExpectedResult(InExpectedResult), bShouldSucceed(bInShouldSucceed)
+	{
+	}
+
+	explicit FEditorFunctionTestParameters(const FString& Parameters)
+		: Expression(TEXT("")), ExpectedResult(TEXT("")), bShouldSucceed(true)
+	{
+		TArray<FString> Parts;
+		Parameters.ParseIntoArray(Parts, TEXT("\t"), false);
+		if (Parts.Num() >= 6)
+		{
+			FBase64::Decode(Parts[0], Expression);
+			FBase64::Decode(Parts[1], ExpectedResult);
+			bShouldSucceed = FCString::Atoi(*Parts[2]) != 0;
+			FString UserVarsStr, SystemVarsStr, LocalVarsStr;
+			FBase64::Decode(Parts[3], UserVarsStr);
+			FBase64::Decode(Parts[4], SystemVarsStr);
+			FBase64::Decode(Parts[5], LocalVarsStr);
+			UserVariables = DeserializeVariables(UserVarsStr);
+			SystemVariables = DeserializeVariables(SystemVarsStr);
+			LocalVariables = DeserializeVariables(LocalVarsStr);
+		}
+	}
+
+	FEditorFunctionTestParameters& AddUserVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue,
+	                                               const bool bIsReadOnly = false)
+	{
+		FShidenVariableDefinition Def;
+		Def.Name = Name;
+		Def.Type = Type;
+		Def.DefaultValue = DefaultValue;
+		Def.bIsReadOnly = bIsReadOnly;
+		UserVariables.Add(Name, Def);
+		return *this;
+	}
+
+	FEditorFunctionTestParameters& AddSystemVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue,
+	                                                 const bool bIsReadOnly = false)
+	{
+		FShidenVariableDefinition Def;
+		Def.Name = Name;
+		Def.Type = Type;
+		Def.DefaultValue = DefaultValue;
+		Def.bIsReadOnly = bIsReadOnly;
+		SystemVariables.Add(Name, Def);
+		return *this;
+	}
+
+	FEditorFunctionTestParameters& AddLocalVariable(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue,
+	                                                const bool bIsReadOnly = false)
+	{
+		FShidenVariableDefinition Def;
+		Def.Name = Name;
+		Def.Type = Type;
+		Def.DefaultValue = DefaultValue;
+		Def.bIsReadOnly = bIsReadOnly;
+		LocalVariables.Add(Name, Def);
+		return *this;
+	}
+
+private:
+	static FString SerializeVariables(const TMap<FString, FShidenVariableDefinition>& Variables)
+	{
+		TArray<FString> Items;
+		for (const auto& Pair : Variables)
+		{
+			Items.Add(FString::Printf(TEXT("%s:%d:%s:%d"), *Pair.Value.Name, static_cast<int32>(Pair.Value.Type), *Pair.Value.DefaultValue,
+			                          Pair.Value.bIsReadOnly ? 1 : 0));
+		}
+		return FString::Join(Items, TEXT(";"));
+	}
+
+	static TMap<FString, FShidenVariableDefinition> DeserializeVariables(const FString& Str)
+	{
+		TMap<FString, FShidenVariableDefinition> Result;
+		if (Str.IsEmpty())
+		{
+			return Result;
+		}
+
+		TArray<FString> Items;
+		Str.ParseIntoArray(Items, TEXT(";"));
+		for (const FString& Item : Items)
+		{
+			TArray<FString> Parts;
+			Item.ParseIntoArray(Parts, TEXT(":"));
+			if (Parts.Num() >= 4)
+			{
+				FShidenVariableDefinition Def;
+				Def.Name = Parts[0];
+				Def.Type = static_cast<EShidenVariableType>(FCString::Atoi(*Parts[1]));
+				Def.DefaultValue = Parts[2];
+				Def.bIsReadOnly = FCString::Atoi(*Parts[3]) != 0;
+				Result.Add(Def.Name, Def);
+			}
+		}
+		return Result;
+	}
+};
+
+// Variable definition functions tests (IsReadOnlyVariable, IsWritableVariable, GetVariableType, GetVariableDefaultValue)
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorEditorFunctionTest, "ShidenExpressionEvaluator.EditorFunction",
+                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+void ShidenExpressionEvaluatorEditorFunctionTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+	// IsReadOnlyVariable tests
+	OutBeautifiedNames.Add("IsReadOnlyVariable.UserVariable_ReadOnly");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"{TestVar}\")"), TEXT("true"))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("test"), true)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsReadOnlyVariable.UserVariable_Writable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"{TestVar}\")"), TEXT("false"))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("test"), false)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsReadOnlyVariable.SystemVariable_ReadOnly");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"{System::SysVar}\")"), TEXT("true"))
+	                    .AddSystemVariable(TEXT("SysVar"), EShidenVariableType::Integer, TEXT("100"), true)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsReadOnlyVariable.LocalVariable_Writable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"{Local::LocVar}\")"), TEXT("false"))
+	                    .AddLocalVariable(TEXT("LocVar"), EShidenVariableType::Float, TEXT("1.5"), false)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsReadOnlyVariable.NotAVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"plain text\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsReadOnlyVariable.VariableNotFound_Error");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsReadOnlyVariable(\"{NonExistent}\")"), TEXT(""), false).ToString());
+
+	// IsWritableVariable tests
+	OutBeautifiedNames.Add("IsWritableVariable.UserVariable_Writable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"{TestVar}\")"), TEXT("true"))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("test"), false)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsWritableVariable.UserVariable_ReadOnly");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"{TestVar}\")"), TEXT("false"))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("test"), true)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsWritableVariable.SystemVariable_Writable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"{System::SysVar}\")"), TEXT("true"))
+	                    .AddSystemVariable(TEXT("SysVar"), EShidenVariableType::Integer, TEXT("100"), false)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsWritableVariable.LocalVariable_ReadOnly");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"{Local::LocVar}\")"), TEXT("false"))
+	                    .AddLocalVariable(TEXT("LocVar"), EShidenVariableType::Float, TEXT("1.5"), true)
+	                    .ToString());
+
+	OutBeautifiedNames.Add("IsWritableVariable.NotAVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"plain text\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsWritableVariable.VariableNotFound_Error");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsWritableVariable(\"{NonExistent}\")"), TEXT("false"), false).ToString());
+
+	// GetVariableType tests
+	OutBeautifiedNames.Add("GetVariableType.UserVariable_String");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{StrVar}\")"), TEXT("String"))
+	                    .AddUserVariable(TEXT("StrVar"), EShidenVariableType::String, TEXT("test"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.SystemVariable_Integer");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{System::IntVar}\")"), TEXT("Integer"))
+	                    .AddSystemVariable(TEXT("IntVar"), EShidenVariableType::Integer, TEXT("42"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.LocalVariable_Float");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{Local::FloatVar}\")"), TEXT("Float"))
+	                    .AddLocalVariable(TEXT("FloatVar"), EShidenVariableType::Float, TEXT("3.14"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.UserVariable_Boolean");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{BoolVar}\")"), TEXT("Boolean"))
+	                    .AddUserVariable(TEXT("BoolVar"), EShidenVariableType::Boolean, TEXT("true"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.UserVariable_Vector2");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{Vec2Var}\")"), TEXT("Vector2"))
+	                    .AddUserVariable(TEXT("Vec2Var"), EShidenVariableType::Vector2, TEXT("X=1 Y=2"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.UserVariable_Vector3");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{Vec3Var}\")"), TEXT("Vector3"))
+	                    .AddUserVariable(TEXT("Vec3Var"), EShidenVariableType::Vector3, TEXT("X=1 Y=2 Z=3"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableType.VariableNotFound_Error");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{NonExistent}\")"), TEXT(""), false).ToString());
+
+	// GetVariableDefaultValue tests
+	OutBeautifiedNames.Add("GetVariableDefaultValue.UserVariable_String");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{TestVar}\")"), TEXT("test value"))
+	                    .AddUserVariable(TEXT("TestVar"), EShidenVariableType::String, TEXT("test value"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableDefaultValue.SystemVariable_Integer");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{System::IntVar}\")"), TEXT("42"))
+	                    .AddSystemVariable(TEXT("IntVar"), EShidenVariableType::Integer, TEXT("42"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableDefaultValue.LocalVariable_Float");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{Local::FloatVar}\")"), TEXT("3.14"))
+	                    .AddLocalVariable(TEXT("FloatVar"), EShidenVariableType::Float, TEXT("3.14"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableDefaultValue.UserVariable_Boolean");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{BoolVar}\")"), TEXT("true"))
+	                    .AddUserVariable(TEXT("BoolVar"), EShidenVariableType::Boolean, TEXT("true"))
+	                    .ToString());
+
+	OutBeautifiedNames.Add("GetVariableDefaultValue.NotAVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"plain text\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("GetVariableDefaultValue.VariableNotFound_Error");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{NonExistent}\")"), TEXT(""), false).ToString());
+
+	// HasVariable tests
+	OutBeautifiedNames.Add("HasVariable.WithVariable_Single");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"{TestVar}\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.WithVariable_WithText");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"hello {TestVar} \")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.WithoutVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"no variables\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.InvalidPattern_BracesOnly");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"}...{\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.EscapedBraces");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"\\\\{escaped\\\\}\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.EmptyString");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("HasVariable.MultipleVariables");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("HasVariable(\"{var1} and {var2}\")"), TEXT("true")).ToString());
+
+	// IsVariable tests
+	OutBeautifiedNames.Add("IsSingleVariable.PureVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{TestVar}\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.VariableWithText");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"hello {TestVar} \")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.PlainText");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"plain text\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.EmptyString");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.SystemVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{System::test}\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.LocalVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{Local::var}\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.VariableWithSpaces");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"  {TestVar}  \")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.TextBeforeVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"prefix {TestVar}\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.TextAfterVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{TestVar} suffix\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsSingleVariable.MultipleVariables");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{TestVar}{System::test}\")"), TEXT("false")).ToString());
+}
+
+bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Parameters)
+{
+	const FEditorFunctionTestParameters Params(Parameters);
+
+	FShidenExpressionVariableDefinitionContext Context;
+	Context.UserVariables = Params.UserVariables;
+	Context.SystemVariables = Params.SystemVariables;
+	Context.LocalVariables = Params.LocalVariables;
+
+	const FShidenExpressionEvaluator Evaluator(Context);
+	FShidenExpressionValue Result;
+	FString ErrorMessage;
+
+	const bool bSuccess = Evaluator.TryEvaluate(Params.Expression, Result, ErrorMessage);
+
+	if (bSuccess != Params.bShouldSucceed)
+	{
+		AddError(FString::Printf(TEXT("Expected %s, got %s. Expression: '%s', Error: '%s'"),
+		                         Params.bShouldSucceed ? TEXT("success") : TEXT("failure"),
+		                         bSuccess ? TEXT("success") : TEXT("failure"),
+		                         *Params.Expression, *ErrorMessage));
+		return false;
+	}
+
+	if (bSuccess && Result.ToString() != Params.ExpectedResult)
+	{
+		AddError(FString::Printf(TEXT("Expected '%s', got '%s' for expression '%s'"),
+		                         *Params.ExpectedResult, *Result.ToString(), *Params.Expression));
+		return false;
+	}
+
+	return true;
+}
+
+#endif // WITH_EDITOR

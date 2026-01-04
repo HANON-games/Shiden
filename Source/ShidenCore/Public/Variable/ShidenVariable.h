@@ -54,6 +54,8 @@ struct SHIDENCORE_API FShidenVariable
 
 	void UpdateVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions);
 
+	bool ConvertVariableValueToString(const FShidenVariableDefinition& Definition, const FString& Name, FString& OutValue) const;
+
 	FShidenVariable()
 	{
 	}

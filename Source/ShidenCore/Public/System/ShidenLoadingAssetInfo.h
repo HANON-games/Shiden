@@ -10,6 +10,9 @@ struct SHIDENCORE_API FShidenLoadingAssetInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
+	FGuid ScenarioGuid;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")
 	int32 ScenarioIndex = INDEX_NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SvnInternal")

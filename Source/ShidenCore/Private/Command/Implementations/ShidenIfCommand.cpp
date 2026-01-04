@@ -54,7 +54,6 @@ bool UShidenIfCommand::TryExecuteCommand(const FString& ProcessName, const Shide
 	UShidenScenarioBlueprintLibrary::ToNext(ProcessName, NextIndex);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (!ProgressStack || ProgressStack->IsEmpty())

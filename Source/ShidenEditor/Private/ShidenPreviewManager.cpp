@@ -1,7 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenPreviewManager.h"
-
+#include "System/ShidenStructuredLog.h"
 #include "System/ShidenBlueprintLibrary.h"
 
 UShidenPreviewManager::UShidenPreviewManager(const FObjectInitializer& ObjectInitializer)
@@ -42,7 +42,7 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 	{
 		if (!bRegisterSound)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PlaySound with empty path must have bRegisterSound=true."));
+			SHIDEN_WARNING("PlaySound with empty path must have bRegisterSound=true.");
 			Duration = 0.0f;
 			bSuccess = false;
 			return;
@@ -91,7 +91,7 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 		CachedVoiceInfo.Add(SoundInfo.TrackId, SoundInfo);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(SoundType));
 		Duration = 0.0f;
 		bSuccess = false;
 		return;
@@ -101,12 +101,15 @@ void UShidenPreviewManager::PlaySound_Implementation(const FShidenSoundInfo& Sou
 	bSuccess = true;
 }
 
-void UShidenPreviewManager::StopSound_Implementation(const int32& TrackId, const EShidenSoundType Type)
+void UShidenPreviewManager::StopSound_Implementation(const int32 TrackId, const EShidenSoundType Type)
 {
 	switch (Type)
 	{
 	case EShidenSoundType::BGM:
 		CachedBGMInfo.Remove(TrackId);
+		break;
+	case EShidenSoundType::SE:
+		SHIDEN_WARNING("StopSound for SE is not supported.");
 		break;
 	case EShidenSoundType::Voice:
 		CachedVoiceInfo.Remove(TrackId);
@@ -116,21 +119,46 @@ void UShidenPreviewManager::StopSound_Implementation(const int32& TrackId, const
 	}
 }
 
-void UShidenPreviewManager::StopVoices_Implementation()
+void UShidenPreviewManager::StopSounds_Implementation(const EShidenSoundType Type)
 {
-	TArray<int32> KeysToRemove;
-	for (const TPair<int32, FShidenSoundInfo>& Pair : CachedVoiceInfo)
+	switch (Type)
 	{
-		KeysToRemove.Add(Pair.Key);
-	}
-
-	for (const int32 Key : KeysToRemove)
-	{
-		StopSound_Implementation(Key, EShidenSoundType::Voice);
+	case EShidenSoundType::BGM:
+		{
+			// In Stop Sound, Cached BGM Info is deleted, so get an array of keys before looping
+			TArray<int32> Keys;
+			CachedBGMInfo.GetKeys(Keys);
+			for (const int32& Key : Keys)
+			{
+				StopSound_Implementation(Key, Type);
+			}
+		}
+		break;
+	case EShidenSoundType::SE:
+		SHIDEN_WARNING("StopSounds for SE is not supported.");
+		break;
+	case EShidenSoundType::Voice:
+		{
+			// In Stop Sound, Cached Voice Info is deleted, so get an array of keys before looping
+			TArray<int32> Keys;
+			CachedVoiceInfo.GetKeys(Keys);
+			for (const int32& Key : Keys)
+			{
+				StopSound_Implementation(Key, Type);
+			}
+		}
+		break;
+	default:
+		break;
 	}
 }
 
-void UShidenPreviewManager::AdjustBGMVolume_Implementation(const int32& TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve)
+void UShidenPreviewManager::PauseSound_Implementation(const int32 TrackId, const EShidenSoundType Type, const bool bPause)
+{
+	SHIDEN_ERROR("PauseSound is not implemented.");
+}
+
+void UShidenPreviewManager::AdjustBGMVolume_Implementation(const int32 TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve)
 {
 	if (FShidenSoundInfo* BGMInfo = CachedBGMInfo.Find(TrackId))
 	{
@@ -143,28 +171,28 @@ void UShidenPreviewManager::AdjustBGMVolume_Implementation(const int32& TrackId,
 
 void UShidenPreviewManager::PauseAllSounds_Implementation(const bool bPause)
 {
-	UE_LOG(LogTemp, Error, TEXT("PauseAllSounds is not implemented."));
+	SHIDEN_ERROR("PauseAllSounds is not implemented.");
 }
 
 void UShidenPreviewManager::PlayForceFeedback_Implementation(const FString& ForceFeedbackEffectPath, bool& bSuccess)
 {
-	UE_LOG(LogTemp, Error, TEXT("PlayForceFeedback is not implemented."));
+	SHIDEN_ERROR("PlayForceFeedback is not implemented.");
 	bSuccess = false;
 }
 
 void UShidenPreviewManager::CallMacroAsParallel_Implementation(const FString& NewProcessName, UObject* CallerObject)
 {
-	UE_LOG(LogTemp, Error, TEXT("CallMacroAsParallel is not implemented."));
+	SHIDEN_ERROR("CallMacroAsParallel is not implemented.");
 }
 
 void UShidenPreviewManager::Initialize_Implementation(const UShidenWidget* ShidenWidget)
 {
-	UE_LOG(LogTemp, Error, TEXT("Initialize is not implemented."));
+	SHIDEN_ERROR("Initialize is not implemented.");
 }
 
 void UShidenPreviewManager::Destroy_Implementation()
 {
-	UE_LOG(LogTemp, Error, TEXT("Destroy is not implemented."));
+	SHIDEN_ERROR("Destroy is not implemented.");
 }
 
 void UShidenPreviewManager::GetSoundInfo(TMap<int32, FShidenSoundInfo>& BGMInfo, TArray<FShidenSoundInfo>& SEInfo, TMap<int32, FShidenSoundInfo>& VoiceInfo) const

@@ -23,5 +23,17 @@ TArray<FShidenCommandRedirector> UShidenCommandRedirectors::GetBuiltIn(const FSh
 		});
 	}
 
+	if (CurrentVersion < FShidenPluginVersion(1, 10, 0))
+	{
+		BuiltIn.Add({
+			.TargetCommandName = TEXT("RunMacroAsParallel"),
+			.NewCommandName = TEXT("RunMacroInParallel")
+		});
+		BuiltIn.Add({
+			.TargetCommandName = TEXT("WaitClick"),
+			.NewCommandName = TEXT("WaitForClick")
+		});
+	}
+
 	return BuiltIn;
 }

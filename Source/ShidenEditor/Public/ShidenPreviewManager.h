@@ -30,11 +30,13 @@ public:
 
 	virtual void PlaySound_Implementation(const FShidenSoundInfo& SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess) override;
 
-	virtual void StopSound_Implementation(const int32& TrackId, const EShidenSoundType Type) override;
+	virtual void StopSound_Implementation(const int32 TrackId, const EShidenSoundType Type) override;
 
-	virtual void StopVoices_Implementation() override;
+	virtual void StopSounds_Implementation(const EShidenSoundType Type) override;
+	
+	virtual void AdjustBGMVolume_Implementation(const int32 TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve) override;
 
-	virtual void AdjustBGMVolume_Implementation(const int32& TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve) override;
+	virtual void PauseSound_Implementation(const int32 TrackId, const EShidenSoundType Type, const bool bPause) override;
 
 	virtual void PauseAllSounds_Implementation(const bool bPause) override;
 

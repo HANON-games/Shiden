@@ -3,6 +3,7 @@
 
 #include "Save/ShidenAsyncActionHandleSaveGame.h"
 #include "Save/ShidenSaveBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ShidenAsyncActionHandleSaveGame)
 
@@ -68,8 +69,8 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	case EShidenSaveLoadOperation::SaveUser:
 		{
 			UShidenSaveBlueprintLibrary::AsyncSaveUserData(SlotName, Thumbnail, SlotMetadata,
-														   FOnSaveCompletedDelegate::CreateUObject(
-															   this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			                                               FOnSaveCompletedDelegate::CreateUObject(
+				                                               this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 			return;
 		}
 	case EShidenSaveLoadOperation::SaveSystem:
@@ -87,8 +88,8 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 	case EShidenSaveLoadOperation::LoadUser:
 		{
 			UShidenSaveBlueprintLibrary::AsyncLoadUserData(SlotName,
-														   FOnLoadCompletedDelegate::CreateUObject(
-															   this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
+			                                               FOnLoadCompletedDelegate::CreateUObject(
+				                                               this, &UShidenAsyncActionHandleSaveGame::ExecuteCompleted));
 			return;
 		}
 	case EShidenSaveLoadOperation::LoadSystem:
@@ -105,7 +106,7 @@ void UShidenAsyncActionHandleSaveGame::Activate()
 		}
 	default:
 		{
-			UE_LOG(LogTemp, Error, TEXT("UAsyncActionHandleSaveGame Created with invalid operation!"));
+			SHIDEN_ERROR("UAsyncActionHandleSaveGame Created with invalid operation!");
 			UShidenAsyncActionHandleSaveGame::ExecuteCompleted(false);
 		}
 	}

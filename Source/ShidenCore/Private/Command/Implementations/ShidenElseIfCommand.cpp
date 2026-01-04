@@ -13,7 +13,6 @@ void UShidenElseIfCommand::ProcessCommand_Implementation(const FString& ProcessN
                                                          FString& NextScenarioName, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 	if (!ProgressStack || ProgressStack->IsEmpty())
@@ -40,7 +39,6 @@ void UShidenElseIfCommand::PreviewCommand_Implementation(const FShidenCommand& C
                                                          EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
 	if (!ProgressStack || ProgressStack->IsEmpty())
