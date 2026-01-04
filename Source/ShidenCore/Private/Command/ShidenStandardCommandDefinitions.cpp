@@ -586,7 +586,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						TEXT(""),
 						VariableNameInputTemplate,
 						{
-								{TEXT("VariableKindSourceIndex"), TEXT("5")},
+								{TEXT("VariableKindSourceIndex"), TEXT("0")},
 								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
 								{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer")}
 						},

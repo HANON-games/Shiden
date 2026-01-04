@@ -26,6 +26,7 @@ UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParame
 				FTexture2DMipMap& Mip = PlatformData->Mips[0];
 				if (void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE))
 				{
+					// Texture size is 1x1, so just zero out the single pixel
 					FMemory::Memzero(Data, sizeof(FColor));
 				}
 				Mip.BulkData.Unlock();
