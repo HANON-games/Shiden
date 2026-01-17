@@ -56,7 +56,6 @@ void UShidenStopParallelProcessCommand::ProcessCommand_Implementation(const FStr
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	Status = ShidenSubsystem->ScenarioProgressStack.Contains(Args.ProcessName)
 		         ? EShidenProcessStatus::DelayUntilNextTick

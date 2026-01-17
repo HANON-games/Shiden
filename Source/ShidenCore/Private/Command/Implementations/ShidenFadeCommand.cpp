@@ -20,6 +20,12 @@ bool UShidenFadeCommand::TryParseCommand(const FShidenCommand& Command, FFadeCom
 	Args.ZOrder = Command.GetArgAsInt(TEXT("ZOrder"));
 	Args.bUseGlobalFade = Command.GetArgAsBool(TEXT("UseGlobalFade"));
 
+	if (Args.LayerName.StartsWith(TEXT("Global$")))
+	{
+		ErrorMessage = TEXT("LayerName cannot start with 'Global$' (reserved prefix).");
+		return false;
+	}
+
 	return ShidenCommandHelpers::TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
 
@@ -29,8 +35,6 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 {
 	for (const TTuple<FString, FShidenScenarioProperty>& Property : ScenarioProperties)
 	{
-		const FString SlotName = Property.Key;
-
 		TMap<FString, FString> PropertyMap;
 		if (!Property.Value.TryConvertToStringMap(PropertyMap))
 		{
@@ -54,10 +58,13 @@ void UShidenFadeCommand::RestoreFromSaveData_Implementation(const TMap<FString, 
 		const FString ZOrderStr = PropertyMap.FindRef(TEXT("ZOrder"));
 		const FString UseGlobalFadeStr = PropertyMap.FindRef(TEXT("UseGlobalFade"));
 		const bool bUseGlobalFade = UseGlobalFadeStr.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+		const FString LayerName = bUseGlobalFade && Property.Key.StartsWith(TEXT("Global$"))
+			? Property.Key.RightChop(7)
+			: Property.Key;
 
 		Args = FFadeCommandArgs
 		{
-			.LayerName = SlotName,
+			.LayerName = LayerName,
 			.FadeType = TEXT("FadeOut"),
 			.FadeDuration = 0,
 			.FadeFunction = EEasingFunc::Linear,
@@ -109,16 +116,16 @@ void UShidenFadeCommand::ProcessCommand_Implementation(const FString& ProcessNam
 			return;
 		}
 	}
-
+	
 	const bool bIsFadeOut = IsFadeOut(Args.FadeType);
 	const FLinearColor TargetColor(Args.TargetColor.X, Args.TargetColor.Y, Args.TargetColor.Z, bIsFadeOut ? 1 : 0);
+	const FString LayerKey = Args.bUseGlobalFade ? TEXT("Global$") + Args.LayerName : Args.LayerName;
 
-	UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, Args.LayerName,
-	                                                                 {
-		                                                                 {TEXT("Color"), TargetColor.ToString()},
-		                                                                 {TEXT("ZOrder"), FString::FromInt(Args.ZOrder)},
-		                                                                 {TEXT("UseGlobalFade"), Args.bUseGlobalFade ? TEXT("true") : TEXT("false")},
-	                                                                 });
+	UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, LayerKey, {
+		{TEXT("Color"), TargetColor.ToString()},
+		{TEXT("ZOrder"), FString::FromInt(Args.ZOrder)},
+		{TEXT("UseGlobalFade"), Args.bUseGlobalFade ? TEXT("true") : TEXT("false")}
+	});
 
 	Status = EShidenProcessStatus::Next;
 }
@@ -154,7 +161,7 @@ bool UShidenFadeCommand::TryStartFade(const FFadeCommandArgs& Args, UShidenWidge
 #if WITH_EDITOR
 		return UShidenBlueprintLibrary::TryStartScreenFadePreview(ShidenWidget, Args.LayerName, Args.FadeDuration, Args.FadeFunction, TargetColorLinear, bIsFadeOut, Args.Steps, Args.BlendExp, Args.ZOrder);
 #else
-		return UShidenBlueprintLibrary::TryStartScreenFade(ShidenWidget, Args.LayerName, Args.FadeDuration, Args.FadeFunction, TargetColorLinear, bIsFadeOut, Args.Steps, Args.BlendExp, Args.ZOrder);
+		return UShidenBlueprintLibrary::TryStartScreenFade(ShidenWidget, Args.LayerName, Args.FadeDuration, Args.FadeFunction, TargetColorLinear, bIsFadeOut, Args.Steps, Args.BlendExp, Args.ZOrder, false);
 #endif
 	}
 

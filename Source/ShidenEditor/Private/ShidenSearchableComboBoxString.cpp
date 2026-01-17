@@ -147,7 +147,7 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::FindOptionIndex(const FS
 	{
 		const TSharedPtr<FString>& OptionAtIndex = Options[OptionIndex];
 
-		if (*OptionAtIndex == Option)
+		if (OptionAtIndex.IsValid() && *OptionAtIndex == Option)
 		{
 			return OptionIndex;
 		}
@@ -158,7 +158,7 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::FindOptionIndex(const FS
 
 SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetOptionAtIndex(const int32 Index) const
 {
-	if (Index >= 0 && Index < Options.Num())
+	if (Index >= 0 && Index < Options.Num() && Options[Index].IsValid())
 	{
 		return *Options[Index];
 	}

@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Command/ShidenCommandObject.h"
-#include "ShidenWaitClickCommand.generated.h"
+#include "ShidenWaitForClickCommand.generated.h"
 
 UCLASS()
-class SHIDENCORE_API UShidenWaitClickCommand : public UShidenCommandObject
+class SHIDENCORE_API UShidenWaitForClickCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 
-	struct FWaitClickCommandArgs
+	struct FWaitForClickCommandArgs
 	{
 		bool bCanSkip;
 	};
@@ -26,11 +26,11 @@ class SHIDENCORE_API UShidenWaitClickCommand : public UShidenCommandObject
 	                                           EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	static void ParseFromCommand(const FShidenCommand& Command, FWaitClickCommandArgs& Args);
+	static void ParseFromCommand(const FShidenCommand& Command, FWaitForClickCommandArgs& Args);
 
 	static UInputAction* LoadInputActionFromPath(const FString& Path);
 
-	FWaitClickCommandArgs Args;
+	FWaitForClickCommandArgs Args;
 
 	bool bPressNext = true;
 };

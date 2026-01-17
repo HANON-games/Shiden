@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Variable/ShidenVariable.h"
+#include "System/ShidenStructuredLog.h"
 
 SHIDENCORE_API bool FShidenVariable::TryGetDefinition(const FString& Name, FShidenVariableDefinition& Definition) const
 {
@@ -22,19 +23,19 @@ SHIDENCORE_API bool FShidenVariable::CanUpdate(const FString& Name, const EShide
 	FShidenVariableDefinition Definition;
 	if (!TryGetDefinition(Name, Definition))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Variable %s is not defined."), *Name);
+		SHIDEN_WARNING("Variable {name} is not defined.", *Name);
 		return false;
 	}
 	if (!bForceUpdateReadOnly && Definition.bIsReadOnly)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Variable %s is read only."), *Name);
+		SHIDEN_WARNING("Variable {name} is read only.", *Name);
 		return false;
 	}
 	const EShidenVariableType& TypeA = Definition.Type == EShidenVariableType::AssetPath ? EShidenVariableType::String : Definition.Type;
 	const EShidenVariableType& TypeB = Type == EShidenVariableType::AssetPath ? EShidenVariableType::String : Type;
 	if (TypeA != TypeB)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Variable %s is not %s."), *Name, *StaticEnum<EShidenVariableType>()->GetValueAsString(Type));
+		SHIDEN_WARNING("Variable {name} is not {type}.", *Name, *StaticEnum<EShidenVariableType>()->GetValueAsString(Type));
 		return false;
 	}
 	return true;
@@ -90,14 +91,14 @@ SHIDENCORE_API bool FShidenVariable::CanGet(const FShidenVariableDefinition* Def
 {
 	if (!Definition)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Variable %s is not defined."), *Name);
+		SHIDEN_WARNING("Variable {name} is not defined.", *Name);
 		return false;
 	}
 	const EShidenVariableType& TypeA = Definition->Type == EShidenVariableType::AssetPath ? EShidenVariableType::String : Definition->Type;
 	const EShidenVariableType& TypeB = Type == EShidenVariableType::AssetPath ? EShidenVariableType::String : Type;
 	if (TypeA != TypeB)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Variable %s is not %s."), *Name, *StaticEnum<EShidenVariableType>()->GetValueAsString(Type));
+		SHIDEN_WARNING("Variable {name} is not {type}.", *Name, *StaticEnum<EShidenVariableType>()->GetValueAsString(Type));
 		return false;
 	}
 	return true;
@@ -252,7 +253,73 @@ SHIDENCORE_API bool FShidenVariable::TryGetAsString(const FString& Name, EShiden
 			return false;
 		}
 	default:
-		UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Type), *Name);
+		SHIDEN_ERROR("Unknown variable type {type} for variable: {name}", static_cast<int32>(Type), *Name);
+		return false;
+	}
+}
+
+SHIDENCORE_API bool FShidenVariable::ConvertVariableValueToString(const FShidenVariableDefinition& Definition,
+                                                                  const FString& Name, FString& OutValue) const
+{
+	switch (Definition.Type)
+	{
+	case EShidenVariableType::Boolean:
+		{
+			bool bBooleanValue = false;
+			if (!TryGet(Name, bBooleanValue))
+			{
+				return false;
+			}
+			OutValue = bBooleanValue ? TEXT("true") : TEXT("false");
+			return true;
+		}
+	case EShidenVariableType::String:
+	case EShidenVariableType::AssetPath:
+		{
+			return TryGet(Name, OutValue);
+		}
+	case EShidenVariableType::Integer:
+		{
+			int32 IntegerValue = 0;
+			if (!TryGet(Name, IntegerValue))
+			{
+				return false;
+			}
+			OutValue = FString::FromInt(IntegerValue);
+			return true;
+		}
+	case EShidenVariableType::Float:
+		{
+			float FloatValue = 0.0f;
+			if (!TryGet(Name, FloatValue))
+			{
+				return false;
+			}
+			OutValue = FString::SanitizeFloat(FloatValue);
+			return true;
+		}
+	case EShidenVariableType::Vector2:
+		{
+			FVector2D Vector2Value = FVector2D::ZeroVector;
+			if (!TryGet(Name, Vector2Value))
+			{
+				return false;
+			}
+			OutValue = Vector2Value.ToString();
+			return true;
+		}
+	case EShidenVariableType::Vector3:
+		{
+			FVector Vector3Value = FVector::ZeroVector;
+			if (!TryGet(Name, Vector3Value))
+			{
+				return false;
+			}
+			OutValue = Vector3Value.ToString();
+			return true;
+		}
+	default:
+		SHIDEN_ERROR("Unknown variable type {type} for variable: {name}", static_cast<int32>(Definition.Type), *Name);
 		return false;
 	}
 }
@@ -293,7 +360,7 @@ SHIDENCORE_API bool FShidenVariable::TryReset(const FString& Name)
 			Vector3Variables.Remove(Name);
 			break;
 		default:
-			UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Definition.Type), *Name);
+			SHIDEN_ERROR("Unknown variable type {type} for variable: {name}", static_cast<int32>(Definition.Type), *Name);
 			return false;
 		}
 		return true;
@@ -325,55 +392,11 @@ SHIDENCORE_API void FShidenVariable::ListDescriptors(TArray<FShidenVariableDescr
 		if (FShidenVariableDefinition Definition; TryGetDefinition(Name, Definition))
 		{
 			FString Value;
-			switch (Definition.Type)
+			if (ConvertVariableValueToString(Definition, Name, Value))
 			{
-			case EShidenVariableType::Boolean:
-				{
-					bool bBooleanValue;
-					TryGet(Name, bBooleanValue);
-					Value = bBooleanValue ? TEXT("true") : TEXT("false");
-					break;
-				}
-			case EShidenVariableType::String:
-			case EShidenVariableType::AssetPath:
-				{
-					TryGet(Name, Value);
-					break;
-				}
-			case EShidenVariableType::Integer:
-				{
-					int32 IntegerValue;
-					TryGet(Name, IntegerValue);
-					Value = FString::FromInt(IntegerValue);
-					break;
-				}
-			case EShidenVariableType::Float:
-				{
-					float FloatValue;
-					TryGet(Name, FloatValue);
-					Value = FString::SanitizeFloat(FloatValue);
-					break;
-				}
-			case EShidenVariableType::Vector2:
-				{
-					FVector2D Vector2Value;
-					TryGet(Name, Vector2Value);
-					Value = Vector2Value.ToString();
-					break;
-				}
-			case EShidenVariableType::Vector3:
-				{
-					FVector Vector3Value;
-					TryGet(Name, Vector3Value);
-					Value = Vector3Value.ToString();
-					break;
-				}
-			default:
-				UE_LOG(LogTemp, Error, TEXT("Unknown variable type %d for variable: %s"), static_cast<int32>(Definition.Type), *Name);
-				break;
+				VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Definition.AssetPathType, Value, Definition.DefaultValue,
+				                                                  Definition.bIsReadOnly));
 			}
-			VariableDescriptors.Add(FShidenVariableDescriptor(Name, Definition.Type, Definition.AssetPathType, Value, Definition.DefaultValue,
-			                                                  Definition.bIsReadOnly));
 		}
 	}
 }

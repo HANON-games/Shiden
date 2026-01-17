@@ -152,156 +152,200 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("TextWidgetName"),
-						LOCTEXT("TextWidgetNameKey", "TextWidgetName"),
-						TEXT("Talk"),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TextWidgetName"),
+						.DefaultValue = TEXT("Talk"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TextWidgetNameKey", "TextWidgetName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("TextType"),
-						LOCTEXT("TextTypeKey", "TextType"),
-						TEXT("Default"),
-						TextTypeInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TextType"),
+						.DefaultValue = TEXT("Default"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TextTypeKey", "TextType"),
+							.TemplateWidget = TextTypeInputTemplate
+						}
 					},
 					{
-						TEXT("Text"),
-						LOCTEXT("TextKey", "Text"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Text"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TextKey", "Text"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("WaitForInput"),
-						LOCTEXT("WaitForInputKey", "WaitForInput"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForInput"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForInputKey", "WaitForInput"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("InstantTextDisplay"),
-						LOCTEXT("InstantTextDisplayKey", "InstantTextDisplay"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("InstantTextDisplay"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("InstantTextDisplayKey", "InstantTextDisplay"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("Voice"),
-						LOCTEXT("VoiceKey", "Voice"),
-						TEXT("None"),
-						SoundInputTemplate,
-						{{TEXT("Target"), TEXT("Voice")}},
-						true
+						.ArgName = TEXT("Voice"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VoiceKey", "Voice"),
+							.TemplateWidget = SoundInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("Voice")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ Voice })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("VoiceTrackId"),
-						LOCTEXT("VoiceTrackIdKey", "VoiceTrackId"),
-						TEXT("0"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VoiceTrackId"),
+						.DefaultValue = TEXT("0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VoiceTrackIdKey", "VoiceTrackId"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("TextBlip"),
-						LOCTEXT("DialogueBlipKey", "TextBlip"),
-						TEXT("None"),
-						SoundInputTemplate,
-						{{TEXT("Target"), TEXT("Voice")}},
-						true
+						.ArgName = TEXT("TextBlip"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DialogueBlipKey", "TextBlip"),
+							.TemplateWidget = SoundInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("Voice")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ TextBlip })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("DisableAutoStopPreviousVoices"),
-						LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("DisableAutoStopPreviousVoices"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("ContinueFromThePreviousText"),
-						LOCTEXT("ContinueFromThePreviousTextKey", "ContinueFrom\r\nThePreviousText"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ContinueFromThePreviousText"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ContinueFromThePreviousTextKey", "ContinueFrom\r\nThePreviousText"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("Language 2"),
-						LOCTEXT("Language2Key", "Language 2"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Key", "Language 2"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3"),
-						LOCTEXT("Language3Key", "Language 3"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Key", "Language 3"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4"),
-						LOCTEXT("Language4Key", "Language 4"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Key", "Language 4"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5"),
-						LOCTEXT("Language5Key", "Language 5"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Key", "Language 5"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6"),
-						LOCTEXT("Language6Key", "Language 6"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Key", "Language 6"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7"),
-						LOCTEXT("Language7Key", "Language 7"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Key", "Language 7"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8"),
-						LOCTEXT("Language8Key", "Language 8"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Key", "Language 8"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9"),
-						LOCTEXT("Language9Key", "Language 9"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Key", "Language 9"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10"),
-						LOCTEXT("Language10Key", "Language 10"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Key", "Language 10"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -318,84 +362,108 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("SlotName"),
-						LOCTEXT("SlotNameKey", "SlotName"),
-						TEXT("Background"),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("SlotName"),
+						.DefaultValue = TEXT("Background"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("Image"),
-						LOCTEXT("ImageKey", "Image"),
-						TEXT("None"),
-						AssetInputTemplate,
-						{{TEXT("Target"), TEXT("SlateBrush")}},
-						true
+						.ArgName = TEXT("Image"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ImageKey", "Image"),
+							.TemplateWidget = AssetInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("SlateBrush")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ Image })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("OverwritePosition"),
-						LOCTEXT("OverwritePositionKey", "OverwritePosition"),
-						TEXT(""),
-						Vector2InputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwritePosition"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
+							.TemplateWidget = Vector2InputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("OverwriteSize"),
-						LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
-						TEXT(""),
-						Vector2InputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwriteSize"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
+							.TemplateWidget = Vector2InputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("OverwriteSizeToContent"),
-						LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
-						TEXT(""),
-						BooleanInputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwriteSizeToContent"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
+							.TemplateWidget = BooleanInputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("FadeFunction"),
-						LOCTEXT("FadeFunctionKey", "FadeFunction"),
-						TEXT("Linear"),
-						EasingFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.TemplateWidget = EasingFuncInputTemplate
+						}
 					},
 					{
-						TEXT("FadeDuration"),
-						LOCTEXT("FadeDurationKey", "FadeDuration"),
-						TEXT("0.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeDuration"),
+						.DefaultValue = TEXT("0.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("Steps"),
-						LOCTEXT("StepsKey", "Steps"),
-						TEXT("2"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Steps"),
+						.DefaultValue = TEXT("2"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
+							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Step\"")
+						}
 					},
 					{
-						TEXT("BlendExp"),
-						LOCTEXT("BlendExpKey", "BlendExp"),
-						TEXT("2.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("BlendExp"),
+						.DefaultValue = TEXT("2.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.TemplateWidget = FloatInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Ease In\" || { FadeFunction } == \"Ease Out\" || { FadeFunction } == \"Ease In Out\"")
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -405,107 +473,142 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("SoundNoteKey",
-				                "Track ID is not effective for SE.\r\nYou cannot stop a playing SE midway.\r\nYou can stop it by leaving the sound source field empty.\r\nThe value for DisableAutoStopPreviousVoices is only effective for Voice.\r\nWhen fading out the currently playing BGM or voice, the values of Volume and Pitch are ignored.\r\nFor MetaSound Source, it seems that the Start Time value is not reflected."),
+				                "Track ID is not effective for SE.\r\nYou cannot stop a playing SE midway.\r\nYou can stop it by leaving the sound source field empty.\r\nWhen fading out the currently playing BGM or voice, the values of Volume and Pitch are ignored.\r\nFor MetaSound Source, it seems that the Start Time value is not reflected."),
 				.Style = MediaStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenSoundCommand")),
 				.Args =
 				{
 					{
-						TEXT("SoundType"),
-						LOCTEXT("SoundTypeKey", "SoundType"),
-						TEXT("BGM"),
-						SoundTypeInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("SoundType"),
+						.DefaultValue = TEXT("BGM"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("SoundTypeKey", "SoundType"),
+							.TemplateWidget = SoundTypeInputTemplate
+						}
 					},
 					{
-						TEXT("TrackId"),
-						LOCTEXT("TrackIdKey", "TrackId"),
-						TEXT("0"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TrackId"),
+						.DefaultValue = TEXT("0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}},
+							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } != \"SE\"")
+						}
 					},
 					{
-						TEXT("SoundSource"),
-						LOCTEXT("SoundSourceKey", "SoundSource"),
-						TEXT("None"),
-						SoundInputTemplate,
-						{{TEXT("SoundTypeSourceIndex"), TEXT("0")}},
-						true
+						.ArgName = TEXT("SoundSource"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("SoundSourceKey", "SoundSource"),
+							.TemplateWidget = SoundInputTemplate,
+							.TemplateParameters = {{TEXT("SoundTypeSourceArgName"), TEXT("SoundType")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ SoundSource })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("Volume"),
-						LOCTEXT("VolumeKey", "Volume"),
-						TEXT("1.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Volume"),
+						.DefaultValue = TEXT("1.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("Pitch"),
-						LOCTEXT("PitchKey", "Pitch"),
-						TEXT("1.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Pitch"),
+						.DefaultValue = TEXT("1.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("PitchKey", "Pitch"),
+							.TemplateWidget = FloatInputTemplate
+						}
 					},
 					{
-						TEXT("StartTime"),
-						LOCTEXT("StartTimeKey", "StartTime"),
-						TEXT("0.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("StartTime"),
+						.DefaultValue = TEXT("0.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StartTimeKey", "StartTime"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("FadeType"),
-						LOCTEXT("FadeTypeKey", "FadeType"),
-						TEXT("FadeIn"),
-						FadeTypeInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeType"),
+						.DefaultValue = TEXT("FadeIn"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeTypeKey", "FadeType"),
+							.TemplateWidget = FadeTypeInputTemplate
+						}
 					},
 					{
-						TEXT("FadeFunction"),
-						LOCTEXT("FadeFunctionKey", "FadeFunction"),
-						TEXT("Linear"),
-						BGMFadeFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.TemplateWidget = BGMFadeFuncInputTemplate
+						}
 					},
 					{
-						TEXT("FadeDuration"),
-						LOCTEXT("FadeDurationKey", "FadeDuration"),
-						TEXT("0.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeDuration"),
+						.DefaultValue = TEXT("0.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("DisableAutoStopPreviousVoices"),
-						LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("DisableAutoStopPreviousVoices"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+							.TemplateWidget = BooleanInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } == \"Voice\"")
+						}
 					},
 					{
-						TEXT("WaitForFadeCompletion"),
-						LOCTEXT("WaitForFadeCompletionKey", "WaitForFadeCompletion"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForFadeCompletion"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForFadeCompletionKey", "WaitForFadeCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("WaitForSoundCompletion"),
-						LOCTEXT("WaitForSoundCompletionKey", "WaitForSoundCompletion"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForSoundCompletion"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForSoundCompletionKey", "WaitForSoundCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
+					},
+					{
+						.ArgName = TEXT("UseGlobalBGM"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("UseGlobalBGMKey", "UseGlobalBGM"),
+							.TemplateWidget = BooleanInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } == \"BGM\"")
+						}
 					}
 				}
 			}
@@ -520,44 +623,52 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("TrackId"),
-						LOCTEXT("TrackIdKey", "TrackId"),
-						TEXT("0"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TrackId"),
+						.DefaultValue = TEXT("0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("Volume"),
-						LOCTEXT("VolumeKey", "Volume"),
-						TEXT("1.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Volume"),
+						.DefaultValue = TEXT("1.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("FadeFunction"),
-						LOCTEXT("FadeFunctionKey", "FadeFunction"),
-						TEXT("Linear"),
-						BGMFadeFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.TemplateWidget = BGMFadeFuncInputTemplate
+						}
 					},
 					{
-						TEXT("FadeDuration"),
-						LOCTEXT("FadeDurationKey", "FadeDuration"),
-						TEXT("0.00"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeDuration"),
+						.DefaultValue = TEXT("0.00"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -573,432 +684,536 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("DestinationVariableKind"),
-						LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("DestinationVariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("DestinationVariableName"),
-						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-								{TEXT("VariableKindSourceIndex"), TEXT("0")},
+						.ArgName = TEXT("DestinationVariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("DestinationVariableKind")},
 								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
 								{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer")}
-						},
-						false
+							}
+						}
 					},
 					{
-						TEXT("HideTextLayer"),
-						LOCTEXT("HideTextLayerKey", "HideTextLayer"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("HideTextLayer"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("HideTextLayerKey", "HideTextLayer"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("Option 1"),
-						LOCTEXT("Option1Key", "Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Option1Key", "Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Option 2"),
-						LOCTEXT("Option2Key", "Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Option2Key", "Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Option 3"),
-						LOCTEXT("Option3Key", "Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Option3Key", "Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Option 4"),
-						LOCTEXT("Option4Key", "Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Option4Key", "Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Option 5"),
-						LOCTEXT("Option5Key", "Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Option5Key", "Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 2 Option 1"),
-						LOCTEXT("Language2Option1Key", "Language 2 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Option1Key", "Language 2 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 2 Option 2"),
-						LOCTEXT("Language2Option2Key", "Language 2 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Option2Key", "Language 2 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 2 Option 3"),
-						LOCTEXT("Language2Option3Key", "Language 2 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Option3Key", "Language 2 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 2 Option 4"),
-						LOCTEXT("Language2Option4Key", "Language 2 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Option4Key", "Language 2 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 2 Option 5"),
-						LOCTEXT("Language2Option5Key", "Language 2 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 2 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language2Option5Key", "Language 2 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3 Option 1"),
-						LOCTEXT("Language3Option1Key", "Language 3 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Option1Key", "Language 3 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3 Option 2"),
-						LOCTEXT("Language3Option2Key", "Language 3 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Option2Key", "Language 3 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3 Option 3"),
-						LOCTEXT("Language3Option3Key", "Language 3 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Option3Key", "Language 3 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3 Option 4"),
-						LOCTEXT("Language3Option4Key", "Language 3 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Option4Key", "Language 3 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 3 Option 5"),
-						LOCTEXT("Language3Option5Key", "Language 3 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 3 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language3Option5Key", "Language 3 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4 Option 1"),
-						LOCTEXT("Language4Option1Key", "Language 4 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Option1Key", "Language 4 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4 Option 2"),
-						LOCTEXT("Language4Option2Key", "Language 4 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Option2Key", "Language 4 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4 Option 3"),
-						LOCTEXT("Language4Option3Key", "Language 4 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Option3Key", "Language 4 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4 Option 4"),
-						LOCTEXT("Language4Option4Key", "Language 4 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Option4Key", "Language 4 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 4 Option 5"),
-						LOCTEXT("Language4Option5Key", "Language 4 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 4 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language4Option5Key", "Language 4 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5 Option 1"),
-						LOCTEXT("Language5Option1Key", "Language 5 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Option1Key", "Language 5 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5 Option 2"),
-						LOCTEXT("Language5Option2Key", "Language 5 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Option2Key", "Language 5 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5 Option 3"),
-						LOCTEXT("Language5Option3Key", "Language 5 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Option3Key", "Language 5 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5 Option 4"),
-						LOCTEXT("Language5Option4Key", "Language 5 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Option4Key", "Language 5 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 5 Option 5"),
-						LOCTEXT("Language5Option5Key", "Language 5 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 5 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language5Option5Key", "Language 5 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6 Option 1"),
-						LOCTEXT("Language6Option1Key", "Language 6 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Option1Key", "Language 6 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6 Option 2"),
-						LOCTEXT("Language6Option2Key", "Language 6 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Option2Key", "Language 6 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6 Option 3"),
-						LOCTEXT("Language6Option3Key", "Language 6 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Option3Key", "Language 6 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6 Option 4"),
-						LOCTEXT("Language6Option4Key", "Language 6 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Option4Key", "Language 6 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 6 Option 5"),
-						LOCTEXT("Language6Option5Key", "Language 6 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 6 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language6Option5Key", "Language 6 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7 Option 1"),
-						LOCTEXT("Language7Option1Key", "Language 7 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Option1Key", "Language 7 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7 Option 2"),
-						LOCTEXT("Language7Option2Key", "Language 7 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Option2Key", "Language 7 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7 Option 3"),
-						LOCTEXT("Language7Option3Key", "Language 7 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Option3Key", "Language 7 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7 Option 4"),
-						LOCTEXT("Language7Option4Key", "Language 7 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Option4Key", "Language 7 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 7 Option 5"),
-						LOCTEXT("Language7Option5Key", "Language 7 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 7 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language7Option5Key", "Language 7 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8 Option 1"),
-						LOCTEXT("Language8Option1Key", "Language 8 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Option1Key", "Language 8 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8 Option 2"),
-						LOCTEXT("Language8Option2Key", "Language 8 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Option2Key", "Language 8 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8 Option 3"),
-						LOCTEXT("Language8Option3Key", "Language 8 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Option3Key", "Language 8 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8 Option 4"),
-						LOCTEXT("Language8Option4Key", "Language 8 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Option4Key", "Language 8 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 8 Option 5"),
-						LOCTEXT("Language8Option5Key", "Language 8 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 8 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language8Option5Key", "Language 8 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9 Option 1"),
-						LOCTEXT("Language9Option1Key", "Language 9 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Option1Key", "Language 9 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9 Option 2"),
-						LOCTEXT("Language9Option2Key", "Language 9 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Option2Key", "Language 9 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9 Option 3"),
-						LOCTEXT("Language9Option3Key", "Language 9 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Option3Key", "Language 9 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9 Option 4"),
-						LOCTEXT("Language9Option4Key", "Language 9 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Option4Key", "Language 9 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 9 Option 5"),
-						LOCTEXT("Language9Option5Key", "Language 9 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 9 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language9Option5Key", "Language 9 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10 Option 1"),
-						LOCTEXT("Language10Option1Key", "Language 10 Option 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10 Option 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Option1Key", "Language 10 Option 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10 Option 2"),
-						LOCTEXT("Language10Option2Key", "Language 10 Option 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10 Option 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Option2Key", "Language 10 Option 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10 Option 3"),
-						LOCTEXT("Language10Option3Key", "Language 10 Option 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10 Option 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Option3Key", "Language 10 Option 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10 Option 4"),
-						LOCTEXT("Language10Option4Key", "Language 10 Option 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10 Option 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Option4Key", "Language 10 Option 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Language 10 Option 5"),
-						LOCTEXT("Language10Option5Key", "Language 10 Option 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Language 10 Option 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Language10Option5Key", "Language 10 Option 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 				}
 			}
@@ -1015,71 +1230,91 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("MaxLength"),
-						LOCTEXT("MaxLengthKey", "MaxLength"),
-						TEXT(""),
-						IntegerInputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("MaxLength"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MaxLengthKey", "MaxLength"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {
+								{TEXT("HasToggle"), TEXT("true")},
+								{TEXT("Min"), TEXT("1")}
+							}
+						}
 					},
 					{
-						TEXT("MaxLineCount"),
-						LOCTEXT("MaxLineCountKey", "MaxLineCount"),
-						TEXT("1"),
-						IntegerInputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("MaxLineCount"),
+						.DefaultValue = TEXT("1"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MaxLineCountKey", "MaxLineCount"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {
+								{TEXT("HasToggle"), TEXT("true")},
+								{TEXT("Min"), TEXT("1")}
+							}
+						}
 					},
 					{
-						TEXT("AllowedCharacterRegex"),
-						LOCTEXT("AllowedCharacterRegexKey", "AllowedCharacterRegex"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("AllowedCharacterRegex"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("AllowedCharacterRegexKey", "AllowedCharacterRegex"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("DefaultText"),
-						LOCTEXT("DefaultTextKey", "DefaultText"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("DefaultText"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DefaultTextKey", "DefaultText"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("HintText"),
-						LOCTEXT("HintTextKey", "HintText"),
-						TEXT(""),
-						MultilineTextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("HintText"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("HintTextKey", "HintText"),
+							.TemplateWidget = MultilineTextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("DestinationVariableKind"),
-						LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("DestinationVariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("DestinationVariableName"),
-						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("5")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("DestinationVariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("DestinationVariableKind")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
+							}
+						}
 					},
 					{
-						TEXT("HideTextLayer"),
-						LOCTEXT("HideTextLayerKey", "HideTextLayer"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("HideTextLayer"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("HideTextLayerKey", "HideTextLayer"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -1088,41 +1323,45 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("AssignVariable"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("AssignVariableNoteKey", "Spaces cannot be used in the key."),
 				.Style = DataStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAssignVariableCommand")),
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
+							}
+						}
 					},
 					{
-						TEXT("Value"),
-						LOCTEXT("ValueKey", "Value"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Value"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ValueKey", "Value"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -1139,31 +1378,36 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")}
+							}
+						}
 					},
 					{
-						TEXT("Expression"),
-						LOCTEXT("ExpressionKey", "Expression"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Expression"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -1178,46 +1422,53 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
-							{TEXT("AllowedVariableTypesForLiteral"), TEXT("String,Integer,Float,Vector2,Vector3")}
-						},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
+								{TEXT("AllowedVariableTypesForLiteral"), TEXT("String,Integer,Float,Vector2,Vector3")}
+							}
+						}
 					},
 					{
-						TEXT("Operator"),
-						LOCTEXT("OperatorKey", "Operator"),
-						TEXT(""),
-						FlexCalculationOperatorInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Operator"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.TemplateWidget = FlexCalculationOperatorInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					},
 					{
-						TEXT("Value"),
-						LOCTEXT("ValueKey", "Value"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Value"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ValueKey", "Value"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -1233,42 +1484,49 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
+						}
 					},
 					{
-						TEXT("Operator"),
-						LOCTEXT("OperatorKey", "Operator"),
-						TEXT(""),
-						FlexOperatorInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Operator"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.TemplateWidget = FlexOperatorInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					},
 					{
-						TEXT("RightHandValue"),
-						LOCTEXT("RightHandValueKey", "RightHandValue"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("RightHandValue"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -1284,42 +1542,49 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
+						}
 					},
 					{
-						TEXT("Operator"),
-						LOCTEXT("OperatorKey", "Operator"),
-						TEXT(""),
-						FlexOperatorInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Operator"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.TemplateWidget = FlexOperatorInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					},
 					{
-						TEXT("RightHandValue"),
-						LOCTEXT("RightHandValueKey", "RightHandValue"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("RightHandValue"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -1336,12 +1601,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Expression"),
-						LOCTEXT("ExpressionKey", "Expression"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Expression"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -1358,12 +1625,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Expression"),
-						LOCTEXT("ExpressionKey", "Expression"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Expression"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -1397,42 +1666,49 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
+						}
 					},
 					{
-						TEXT("Operator"),
-						LOCTEXT("OperatorKey", "Operator"),
-						TEXT(""),
-						FlexOperatorInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Operator"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.TemplateWidget = FlexOperatorInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					},
 					{
-						TEXT("RightHandValue"),
-						LOCTEXT("RightHandValueKey", "RightHandValue"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("RightHandValue"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -1449,12 +1725,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Expression"),
-						LOCTEXT("ExpressionKey", "Expression"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Expression"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -1479,12 +1757,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Name"),
-						LOCTEXT("NameKey", "Name"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Name"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("NameKey", "Name"),
+							.TemplateWidget = TextInputTemplate
+						}
 					}
 				}
 			}
@@ -1500,12 +1779,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("DestinationTagName"),
-						LOCTEXT("DestinationTagNameKey", "DestinationTagName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("DestinationTagName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationTagNameKey", "DestinationTagName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					}
 				}
 			}
@@ -1522,15 +1802,17 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("NextScenario"),
-						LOCTEXT("NextScenarioKey", "NextScenario"),
-						TEXT("None"),
-						ScenarioInputTemplate,
-						{
-							{TEXT("Target"), TEXT("Scenario")},
-							{TEXT("HasToggle"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("NextScenario"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("NextScenarioKey", "NextScenario"),
+							.TemplateWidget = ScenarioInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Target"), TEXT("Scenario")},
+								{TEXT("HasToggle"), TEXT("true")}
+							}
+						}
 					}
 				}
 			}
@@ -1546,12 +1828,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("ReasonForInterruption"),
-						LOCTEXT("ReasonForInterruptionKey", "ReasonForInterruption"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ReasonForInterruption"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ReasonForInterruptionKey", "ReasonForInterruption"),
+							.TemplateWidget = TextInputTemplate
+						}
 					}
 				}
 			}
@@ -1566,12 +1849,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Comment"),
-						LOCTEXT("CommentKey", "Comment"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Comment"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("CommentKey", "Comment"),
+							.TemplateWidget = TextInputTemplate
+						}
 					}
 				}
 			}
@@ -1588,64 +1872,75 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("AnimationName"),
-						LOCTEXT("AnimationNameKey", "AnimationName"),
-						TEXT("Shake"),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("AnimationName"),
+						.DefaultValue = TEXT("Shake"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("AnimationNameKey", "AnimationName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("StartTime"),
-						LOCTEXT("StartTimeKey", "StartTime"),
-						TEXT("0.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("StartTime"),
+						.DefaultValue = TEXT("0.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StartTimeKey", "StartTime"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("NumLoopToPlay"),
-						LOCTEXT("NumLoopToPlayKey", "NumLoopToPlay"),
-						TEXT("1"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("NumLoopToPlay"),
+						.DefaultValue = TEXT("1"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("NumLoopToPlayKey", "NumLoopToPlay"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("PlayMode"),
-						LOCTEXT("PlayModeKey", "PlayMode"),
-						TEXT("Forward"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("Forward")},
-							{TEXT("Option2"), TEXT("Reverse")},
-							{TEXT("Option3"), TEXT("Ping Pong")}
-						},
-						false
+						.ArgName = TEXT("PlayMode"),
+						.DefaultValue = TEXT("Forward"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("PlayModeKey", "PlayMode"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("Forward")},
+								{TEXT("Option2"), TEXT("Reverse")},
+								{TEXT("Option3"), TEXT("Ping Pong")}
+							},
+						}
 					},
 					{
-						TEXT("PlaybackSpeed"),
-						LOCTEXT("PlaybackSpeedKey", "PlaybackSpeed"),
-						TEXT("1.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("PlaybackSpeed"),
+						.DefaultValue = TEXT("1.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("PlaybackSpeedKey", "PlaybackSpeed"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("RestoreState"),
-						LOCTEXT("RestoreStateKey", "RestoreState"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("RestoreState"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("RestoreStateKey", "RestoreState"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -1661,12 +1956,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Duration"),
-						LOCTEXT("DurationKey", "Duration"),
-						TEXT("1.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Duration"),
+						.DefaultValue = TEXT("1.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					}
 				}
 			}
@@ -1682,92 +1979,113 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("FunctionName"),
-						LOCTEXT("FunctionNameKey", "FunctionName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FunctionName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FunctionNameKey", "FunctionName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("Arg 1"),
-						LOCTEXT("Arg1Key", "Arg 1"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 1"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg1Key", "Arg 1"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 2"),
-						LOCTEXT("Arg2Key", "Arg 2"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 2"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg2Key", "Arg 2"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 3"),
-						LOCTEXT("Arg3Key", "Arg 3"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 3"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg3Key", "Arg 3"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 4"),
-						LOCTEXT("Arg4Key", "Arg 4"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 4"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg4Key", "Arg 4"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 5"),
-						LOCTEXT("Arg5Key", "Arg 5"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 5"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg5Key", "Arg 5"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 6"),
-						LOCTEXT("Arg6Key", "Arg 6"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 6"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg6Key", "Arg 6"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 7"),
-						LOCTEXT("Arg7Key", "Arg 7"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 7"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg7Key", "Arg 7"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 8"),
-						LOCTEXT("Arg8Key", "Arg 8"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 8"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg8Key", "Arg 8"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 9"),
-						LOCTEXT("Arg9Key", "Arg 9"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 9"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg9Key", "Arg 9"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Arg 10"),
-						LOCTEXT("Arg10Key", "Arg 10"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Arg 10"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("Arg10Key", "Arg 10"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}
@@ -1784,84 +2102,104 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("LayerName"),
-						LOCTEXT("LayerNameKey", "LayerName"),
-						TEXT("Default"),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("LayerName"),
+						.DefaultValue = TEXT("Default"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("LayerNameKey", "LayerName"),
+							.TemplateWidget = TextInputTemplate,
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("StartsWith({ LayerName }, \"Global$\")"),
+									.Message = LOCTEXT("LayerNameGlobalPrefixErrorKey", "LayerName cannot start with 'Global$' (reserved prefix).")
+								}
+							}
+						}
 					},
 					{
-						TEXT("FadeType"),
-						LOCTEXT("FadeTypeKey", "FadeType"),
-						TEXT("FadeOut"),
-						FadeTypeInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeType"),
+						.DefaultValue = TEXT("FadeOut"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeTypeKey", "FadeType"),
+							.TemplateWidget = FadeTypeInputTemplate
+						}
 					},
 					{
-						TEXT("FadeDuration"),
-						LOCTEXT("FadeDurationKey", "FadeDuration"),
-						TEXT("0.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeDuration"),
+						.DefaultValue = TEXT("0.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("FadeFunction"),
-						LOCTEXT("FadeFunctionKey", "FadeFunction"),
-						TEXT("Linear"),
-						EasingFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("FadeFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.TemplateWidget = EasingFuncInputTemplate
+						}
 					},
 					{
-						TEXT("TargetColor"),
-						LOCTEXT("TargetColorKey", "TargetColor"),
-						TEXT("R=0.0 G=0.0 B=0.0"),
-						ColorInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TargetColor"),
+						.DefaultValue = TEXT("R=0.0 G=0.0 B=0.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TargetColorKey", "TargetColor"),
+							.TemplateWidget = ColorInputTemplate
+						}
 					},
 					{
-						TEXT("Steps"),
-						LOCTEXT("StepsKey", "Steps"),
-						TEXT("2"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Steps"),
+						.DefaultValue = TEXT("2"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
+							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Step\"")
+						}
 					},
 					{
-						TEXT("BlendExp"),
-						LOCTEXT("BlendExpKey", "BlendExp"),
-						TEXT("2.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("BlendExp"),
+						.DefaultValue = TEXT("2.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.TemplateWidget = FloatInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Ease In\" || { FadeFunction } == \"Ease Out\" || { FadeFunction } == \"Ease In Out\"")
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("ZOrder"),
-						LOCTEXT("ZOrderKey", "ZOrder"),
-						TEXT("250"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ZOrder"),
+						.DefaultValue = TEXT("250"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ZOrderKey", "ZOrder"),
+							.TemplateWidget = IntegerInputTemplate
+						}
 					},
 					{
-						TEXT("UseGlobalFade"),
-						LOCTEXT("UseGlobalFadeKey", "UseGlobalFade"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("UseGlobalFade"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("UseGlobalFadeKey", "UseGlobalFade"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -1877,20 +2215,22 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Name"),
-						LOCTEXT("NameKey", "Name"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Name"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("NameKey", "Name"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("Visibility"),
-						LOCTEXT("VisibilityKey", "Visibility"),
-						TEXT("Visible"),
-						SlateVisibilityInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Visibility"),
+						.DefaultValue = TEXT("Visible"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VisibilityKey", "Visibility"),
+							.TemplateWidget = SlateVisibilityInputTemplate
+						}
 					}
 				}
 			}
@@ -1907,87 +2247,105 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("SlotName"),
-						LOCTEXT("SlotNameKey", "SlotName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("SlotName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("EasingFunction"),
-						LOCTEXT("EasingFunctionKey", "EasingFunction"),
-						TEXT("Linear"),
-						EasingFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("EasingFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("EasingFunctionKey", "EasingFunction"),
+							.TemplateWidget = EasingFuncInputTemplate
+						}
 					},
 					{
-						TEXT("Duration"),
-						LOCTEXT("DurationKey", "Duration"),
-						TEXT("1.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Duration"),
+						.DefaultValue = TEXT("1.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("ChangeType"),
-						LOCTEXT("ChangeTypeKey", "ChangeType"),
-						TEXT("AbsoluteValue"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("AbsoluteValue")},
-							{TEXT("Option2"), TEXT("AddToCurrent")}
-						},
-						false
+						.ArgName = TEXT("ChangeType"),
+						.DefaultValue = TEXT("AbsoluteValue"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ChangeTypeKey", "ChangeType"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("AbsoluteValue")},
+								{TEXT("Option2"), TEXT("AddToCurrent")}
+							}
+						}
 					},
 					{
-						TEXT("OverwritePosition"),
-						LOCTEXT("OverwritePositionKey", "OverwritePosition"),
-						TEXT("{EMPTY}"),
-						Vector2InputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwritePosition"),
+						.DefaultValue = TEXT("{EMPTY}"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
+							.TemplateWidget = Vector2InputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("OverwriteSize"),
-						LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
-						TEXT("{EMPTY}"),
-						Vector2InputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwriteSize"),
+						.DefaultValue = TEXT("{EMPTY}"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
+							.TemplateWidget = Vector2InputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("OverwriteZOrder"),
-						LOCTEXT("OverwriteZOrderKey", "OverwriteZOrder"),
-						TEXT("{EMPTY}"),
-						IntegerInputTemplate,
-						{{TEXT("HasToggle"), TEXT("true")}},
-						false
+						.ArgName = TEXT("OverwriteZOrder"),
+						.DefaultValue = TEXT("{EMPTY}"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwriteZOrderKey", "OverwriteZOrder"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("Steps"),
-						LOCTEXT("StepsKey", "Steps"),
-						TEXT("2"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Steps"),
+						.DefaultValue = TEXT("2"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
+							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Step\"")
+						}
 					},
 					{
-						TEXT("BlendExp"),
-						LOCTEXT("BlendExpKey", "BlendExp"),
-						TEXT("2.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("BlendExp"),
+						.DefaultValue = TEXT("2.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.TemplateWidget = FloatInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Ease In\" || { EasingFunction } == \"Ease Out\" || { EasingFunction } == \"Ease In Out\"")
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -2003,23 +2361,32 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("SlotName"),
-						LOCTEXT("SlotNameKey", "SlotName"),
-						TEXT("Auto Save"),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("SlotName"),
+						.DefaultValue = TEXT("Auto Save"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("OverwriteThumbnail"),
-						LOCTEXT("OverwriteThumbnailKey", "OverwriteThumbnail"),
-						TEXT("None"),
-						AssetInputTemplate,
-						{
-							{TEXT("Target"), TEXT("Texture")},
-							{TEXT("HasToggle"), TEXT("true")}
-						},
-						true
+						.ArgName = TEXT("OverwriteThumbnail"),
+						.DefaultValue = TEXT("{EMPTY}"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OverwriteThumbnailKey", "OverwriteThumbnail"),
+							.TemplateWidget = AssetInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Target"), TEXT("Texture")},
+								{TEXT("HasToggle"), TEXT("true")}
+							},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ OverwriteThumbnail })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2034,66 +2401,80 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("DestinationVariableName"),
-						LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
-							{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer,Float")}
-						},
-						false
+						.ArgName = TEXT("DestinationVariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("ExcludeReadOnlyFromLiteral"), TEXT("true")},
+								{TEXT("AllowedVariableTypesForLiteral"), TEXT("Integer,Float")}
+							}
+						}
 					},
 					{
-						TEXT("Min"),
-						LOCTEXT("MinKey", "Min"),
-						TEXT("0"),
-						FlexNumberInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Min"),
+						.DefaultValue = TEXT("0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MinKey", "Min"),
+							.TemplateWidget = FlexNumberInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("DestinationVariableName")}
+							}
+						}
 					},
 					{
-						TEXT("Max"),
-						LOCTEXT("MaxKey", "Max"),
-						TEXT("1"),
-						FlexNumberInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Max"),
+						.DefaultValue = TEXT("1"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MaxKey", "Max"),
+							.TemplateWidget = FlexNumberInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("DestinationVariableName")}
+							},
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("!HasVariable({ Min }) && !HasVariable({ Max }) && ToFloat({ Max }) < ToFloat({ Min })"),
+									.Message = LOCTEXT("MaxLessThanMinError", "The Max value must be greater than or equal to the Min value.")
+								}
+							}
+						}
 					}
 				}
 			}
 		},
 		{
-			TEXT("WaitClick"),
+			TEXT("WaitForClick"),
 			FShidenCommandDefinition
 			{
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWaitClickCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWaitForClickCommand")),
 				.Args =
 				{
 					{
-						TEXT("CanSkip"),
-						LOCTEXT("CanSkipKey", "CanSkip"),
-						TEXT("false"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("CanSkip"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("CanSkipKey", "CanSkip"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -2109,42 +2490,49 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("VariableKind"),
-						LOCTEXT("VariableKindKey", "VariableKind"),
-						TEXT("UserVariable"),
-						VariableKindInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("VariableKind"),
+						.DefaultValue = TEXT("UserVariable"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.TemplateWidget = VariableKindInputTemplate
+						}
 					},
 					{
-						TEXT("VariableName"),
-						LOCTEXT("VariableNameKey", "VariableName"),
-						TEXT(""),
-						VariableNameInputTemplate,
-						{{TEXT("VariableKindSourceIndex"), TEXT("0")}},
-						false
+						.ArgName = TEXT("VariableName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.TemplateWidget = VariableNameInputTemplate,
+							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
+						}
 					},
 					{
-						TEXT("Operator"),
-						LOCTEXT("OperatorKey", "Operator"),
-						TEXT(""),
-						FlexOperatorInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("Operator"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.TemplateWidget = FlexOperatorInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					},
 					{
-						TEXT("RightHandValue"),
-						LOCTEXT("RightHandValueKey", "RightHandValue"),
-						TEXT(""),
-						FlexInputTemplate,
-						{
-							{TEXT("VariableKindSourceIndex"), TEXT("0")},
-							{TEXT("VariableNameSourceIndex"), TEXT("1")}
-						},
-						false
+						.ArgName = TEXT("RightHandValue"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.TemplateWidget = FlexInputTemplate,
+							.TemplateParameters = {
+								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
+								{TEXT("VariableNameSourceArgName"), TEXT("VariableName")}
+							}
+						}
 					}
 				}
 			}
@@ -2160,12 +2548,20 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("FeedbackEffect"),
-						LOCTEXT("FeedbackEffectKey", "FeedbackEffect"),
-						TEXT("None"),
-						AssetInputTemplate,
-						{{TEXT("Target"), TEXT("ForceFeedback")}},
-						true
+						.ArgName = TEXT("FeedbackEffect"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("FeedbackEffectKey", "FeedbackEffect"),
+							.TemplateWidget = AssetInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("ForceFeedback")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ FeedbackEffect })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2182,28 +2578,38 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("MediaSource"),
-						LOCTEXT("MediaSourceKey", "MediaSource"),
-						TEXT("None"),
-						AssetInputTemplate,
-						{{TEXT("Target"), TEXT("MediaSource")}},
-						true
+						.ArgName = TEXT("MediaSource"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MediaSourceKey", "MediaSource"),
+							.TemplateWidget = AssetInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("MediaSource")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ MediaSource })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("CanOpenPauseMenu"),
-						LOCTEXT("CanOpenPauseMenuKey", "CanOpenPauseMenu"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("CanOpenPauseMenu"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("CanOpenPauseMenuKey", "CanOpenPauseMenu"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					},
 					{
-						TEXT("MediaZOrder"),
-						LOCTEXT("MediaZOrderKey", "MediaZOrder"),
-						TEXT("100"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("MediaZOrder"),
+						.DefaultValue = TEXT("100"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MediaZOrderKey", "MediaZOrder"),
+							.TemplateWidget = IntegerInputTemplate
+						}
 					}
 				}
 			}
@@ -2220,90 +2626,106 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Target"),
-						LOCTEXT("TargetKey", "Target"),
-						TEXT("Image"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("Image")},
-							{TEXT("Option2"), TEXT("RetainerBox")}
-						},
-						false
+						.ArgName = TEXT("Target"),
+						.DefaultValue = TEXT("Image"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TargetKey", "Target"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("Image")},
+								{TEXT("Option2"), TEXT("RetainerBox")}
+							},
+						}
 					},
 					{
-						TEXT("TargetName"),
-						LOCTEXT("TargetNameKey", "TargetName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TargetName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TargetNameKey", "TargetName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("ParameterName"),
-						LOCTEXT("ParameterNameKey", "ParameterName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ParameterName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ParameterNameKey", "ParameterName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("EasingFunction"),
-						LOCTEXT("EasingFunctionKey", "EasingFunction"),
-						TEXT("Linear"),
-						EasingFuncInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("EasingFunction"),
+						.DefaultValue = TEXT("Linear"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("EasingFunctionKey", "EasingFunction"),
+							.TemplateWidget = EasingFuncInputTemplate
+						}
 					},
 					{
-						TEXT("Duration"),
-						LOCTEXT("DurationKey", "Duration"),
-						TEXT("1.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Duration"),
+						.DefaultValue = TEXT("1.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.TemplateWidget = FloatInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+						}
 					},
 					{
-						TEXT("ChangeType"),
-						LOCTEXT("ChangeTypeKey", "ChangeType"),
-						TEXT("AbsoluteValue"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("AbsoluteValue")},
-							{TEXT("Option2"), TEXT("AddToCurrent")}
-						},
-						false
+						.ArgName = TEXT("ChangeType"),
+						.DefaultValue = TEXT("AbsoluteValue"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ChangeTypeKey", "ChangeType"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("AbsoluteValue")},
+								{TEXT("Option2"), TEXT("AddToCurrent")}
+							},
+						}
 					},
 					{
-						TEXT("EndValue"),
-						LOCTEXT("EndValueKey", "EndValue"),
-						TEXT("0.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("EndValue"),
+						.DefaultValue = TEXT("0.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("EndValueKey", "EndValue"),
+							.TemplateWidget = FloatInputTemplate
+						}
 					},
 					{
-						TEXT("Steps"),
-						LOCTEXT("StepsKey", "Steps"),
-						TEXT("2"),
-						IntegerInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("Steps"),
+						.DefaultValue = TEXT("2"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.TemplateWidget = IntegerInputTemplate,
+							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
+							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Step\"")
+						}
 					},
 					{
-						TEXT("BlendExp"),
-						LOCTEXT("BlendExpKey", "BlendExp"),
-						TEXT("2.0"),
-						FloatInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("BlendExp"),
+						.DefaultValue = TEXT("2.0"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.TemplateWidget = FloatInputTemplate,
+							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Ease In\" || { EasingFunction } == \"Ease Out\" || { EasingFunction } == \"Ease In Out\"")
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -2318,39 +2740,51 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Target"),
-						LOCTEXT("TargetKey", "Target"),
-						TEXT("Image"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("Image")},
-							{TEXT("Option2"), TEXT("RetainerBox")}
-						},
-						false
+						.ArgName = TEXT("Target"),
+						.DefaultValue = TEXT("Image"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TargetKey", "Target"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("Image")},
+								{TEXT("Option2"), TEXT("RetainerBox")}
+							},
+						}
 					},
 					{
-						TEXT("TargetName"),
-						LOCTEXT("TargetNameKey", "TargetName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("TargetName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TargetNameKey", "TargetName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("ParameterName"),
-						LOCTEXT("ParameterNameKey", "ParameterName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ParameterName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ParameterNameKey", "ParameterName"),
+							.TemplateWidget = TextInputTemplate
+						}
 					},
 					{
-						TEXT("Texture"),
-						LOCTEXT("TextureKey", "Texture"),
-						TEXT("None"),
-						AssetInputTemplate,
-						{{TEXT("Target"), TEXT("Texture")}},
-						true
+						.ArgName = TEXT("Texture"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = true,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("TextureKey", "Texture"),
+							.TemplateWidget = AssetInputTemplate,
+							.TemplateParameters = {{TEXT("Target"), TEXT("Texture")}},
+							.WarningMessages = {
+								{
+									.Condition = TEXT("IsWritableVariable({ Texture })"),
+									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2367,48 +2801,63 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("MacroName"),
-						LOCTEXT("MacroNameKey", "MacroName"),
-						TEXT("None"),
-						ScenarioInputTemplate,
-						{
-							{TEXT("Target"), TEXT("macro")},
-							{TEXT("HasAdditionalArgs"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("MacroName"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MacroNameKey", "MacroName"),
+							.TemplateWidget = ScenarioInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Target"), TEXT("macro")},
+								{TEXT("HasAdditionalArgs"), TEXT("true")}
+							},
+						}
 					}
 				}
 			}
 		},
 		{
-			TEXT("RunMacroAsParallel"),
+			TEXT("RunMacroInParallel"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("RunMacroAsParallelNoteKey",
-				                "\"Default\" cannot be used as a process name.\r\nThe arguments passed to the macro are treated as local variables.\r\nThis command is not supported in preview."),
+				.Note = LOCTEXT("RunMacroInParallelNoteKey",
+				                "The arguments passed to the macro are treated as local variables.\r\nThis command is not supported in preview."),
 				.Style = MacroStyle,
 				.bCanCallInMacro = true,
-				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenRunMacroAsParallelCommand")),
+				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenRunMacroInParallelCommand")),
 				.Args =
 				{
 					{
-						TEXT("NewProcessName"),
-						LOCTEXT("NewProcessNameKey", "NewProcessName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("NewProcessName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("NewProcessNameKey", "NewProcessName"),
+							.TemplateWidget = TextInputTemplate,
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("{ NewProcessName } == \"Default\""),
+									.Message = LOCTEXT("NewProcessNameError", "\"Default\" cannot be used as a process name.")
+								},
+								{
+									.Condition = TEXT("IsEmpty({ NewProcessName })"),
+									.Message = LOCTEXT("EmptyProcessNameError", "Please specify the process name.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("MacroName"),
-						LOCTEXT("MacroNameKey", "MacroName"),
-						TEXT("None"),
-						ScenarioInputTemplate,
-						{
-							{TEXT("Target"), TEXT("macro")},
-							{TEXT("HasAdditionalArgs"), TEXT("true")}
-						},
-						false
+						.ArgName = TEXT("MacroName"),
+						.DefaultValue = TEXT("None"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("MacroNameKey", "MacroName"),
+							.TemplateWidget = ScenarioInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Target"), TEXT("macro")},
+								{TEXT("HasAdditionalArgs"), TEXT("true")}
+							},
+						}
 					}
 				}
 			}
@@ -2425,39 +2874,55 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("ProcessName"),
-						LOCTEXT("ProcessNameKey", "ProcessName"),
-						TEXT(""),
-						TextInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("ProcessName"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ProcessNameKey", "ProcessName"),
+							.TemplateWidget = TextInputTemplate,
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("{ NewProcessName } == \"Default\""),
+									.Message = LOCTEXT("NewProcessNameError", "\"Default\" cannot be used as a process name.")
+								},
+								{
+									.Condition = TEXT("IsEmpty({ ProcessName })"),
+									.Message = LOCTEXT("EmptyProcessNameError", "Please specify the process name.")
+								}
+							}
+						}
 					},
 					{
-						TEXT("Reason"),
-						LOCTEXT("ReasonKey", "Reason"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Reason"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ReasonKey", "Reason"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					},
 					{
-						TEXT("StopTiming"),
-						LOCTEXT("StopTimingKey", "StopTiming"),
-						TEXT("Immediately"),
-						ComboBoxInputTemplate,
-						{
-							{TEXT("Option1"), TEXT("Immediately")},
-							{TEXT("Option2"), TEXT("OnCurrentCommandEnd")}
-						},
-						false
+						.ArgName = TEXT("StopTiming"),
+						.DefaultValue = TEXT("Immediately"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("StopTimingKey", "StopTiming"),
+							.TemplateWidget = ComboBoxInputTemplate,
+							.TemplateParameters = {
+								{TEXT("Option1"), TEXT("Immediately")},
+								{TEXT("Option2"), TEXT("OnCurrentCommandEnd")}
+							},
+						}
 					},
 					{
-						TEXT("WaitForCompletion"),
-						LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
-						TEXT("true"),
-						BooleanInputTemplate,
-						{},
-						false
+						.ArgName = TEXT("WaitForCompletion"),
+						.DefaultValue = TEXT("true"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.TemplateWidget = BooleanInputTemplate
+						}
 					}
 				}
 			}
@@ -2472,12 +2937,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				.Args =
 				{
 					{
-						TEXT("Content"),
-						LOCTEXT("ContentKey", "Content"),
-						TEXT(""),
-						TextInputTemplate,
-						{{TEXT("ShowVariableInsertButton"), TEXT("true")}},
-						false
+						.ArgName = TEXT("Content"),
+						.DefaultValue = TEXT(""),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("ContentKey", "Content"),
+							.TemplateWidget = TextInputTemplate,
+							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
+						}
 					}
 				}
 			}

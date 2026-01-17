@@ -5,6 +5,7 @@
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Scenario/ShidenScenario.h"
 #include "System/ShidenSubsystem.h"
+#include "System/ShidenStructuredLog.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 
 namespace ShidenCommandHelpers
@@ -164,7 +165,7 @@ namespace ShidenConditionalCommandHelpers
 				return UShidenVariableBlueprintLibrary::TryEvaluateVector3(Args.Operator, Vector3Value, RightHandValueVec3, bResult, ErrorMessage);
 			}
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("TryEvaluateVariableCondition: Unknown variable type for variable '%s'."), *Args.VariableName);
+			SHIDEN_WARNING("Unknown variable type for variable '{name}'.", *Args.VariableName);
 			ErrorMessage = FString::Printf(TEXT("Unknown variable type for variable '%s'."), *Args.VariableName);
 			return false;
 		}
@@ -192,7 +193,6 @@ namespace ShidenConditionalCommandHelpers
 	                           int32& ResultIndex, FString& ErrorMessage)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
 
 		FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 		if (!ProgressStack || ProgressStack->IsEmpty())
@@ -239,7 +239,15 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				Depth--;
+				if (Depth > 0)
+				{
+					Depth--;
+				}
+				else
+				{
+					ErrorMessage = TEXT("Mismatched If/EndIf structure detected - EndIf without matching If.");
+					return false;
+				}
 			}
 		}
 
@@ -250,7 +258,6 @@ namespace ShidenConditionalCommandHelpers
 	bool TryFindEndIfIndex(const FString& ProcessName, const int32 StartIndex, int32& ResultIndex, FString& ErrorMessage)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
 
 		FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 		if (!ProgressStack || ProgressStack->IsEmpty())
@@ -287,7 +294,15 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				Depth--;
+				if (Depth > 0)
+				{
+					Depth--;
+				}
+				else
+				{
+					ErrorMessage = TEXT("Mismatched If/EndIf structure detected - EndIf without matching If.");
+					return false;
+				}
 			}
 		}
 
@@ -298,7 +313,6 @@ namespace ShidenConditionalCommandHelpers
 	bool TryFindEndLoopWhileIndex(const FString& ProcessName, const int32 StartIndex, int32& ResultIndex, FString& ErrorMessage)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-		check(ShidenSubsystem);
 
 		FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
 		if (!ProgressStack || ProgressStack->IsEmpty())
@@ -335,7 +349,15 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				Depth--;
+				if (Depth > 0)
+				{
+					Depth--;
+				}
+				else
+				{
+					ErrorMessage = TEXT("Mismatched LoopWhile/EndLoopWhile structure detected - EndLoopWhile without matching LoopWhile.");
+					return false;
+				}
 			}
 		}
 

@@ -3,6 +3,11 @@
 #include "Expression/ShidenExpressionEvaluator.h"
 #include "Misc/DefaultValueHelper.h"
 
+#if WITH_EDITOR
+#include "Variable/ShidenVariableBlueprintLibrary.h"
+#include "Internationalization/Regex.h"
+#endif
+
 bool FShidenExpressionValue::TryToNumeric(float& OutValue, FString& ErrorMessage) const
 {
 	switch (Type)
@@ -96,7 +101,7 @@ FString FShidenExpressionValue::ToString() const
 	}
 }
 
-bool FShidenExpressionEvaluator::TryEvaluate(const FString& Expression, FShidenExpressionValue& OutResult, FString& ErrorMessage)
+bool FShidenExpressionEvaluator::TryEvaluate(const FString& Expression, FShidenExpressionValue& OutResult, FString& ErrorMessage) const
 {
 	TArray<FShidenExpressionToken> Tokens;
 	if (!TryTokenize(Expression, Tokens, ErrorMessage))
@@ -125,7 +130,7 @@ bool FShidenExpressionEvaluator::TryEvaluate(const FString& Expression, FShidenE
 	return true;
 }
 
-bool FShidenExpressionEvaluator::TryValidate(const FString& Expression, FString& ErrorMessage)
+bool FShidenExpressionEvaluator::TryValidate(const FString& Expression, FString& ErrorMessage) const
 {
 	FShidenExpressionValue Result;
 	return TryEvaluate(Expression, Result, ErrorMessage);
@@ -347,13 +352,13 @@ bool FShidenExpressionEvaluator::TryParseNumber(const FString& NumberStr, FShide
 }
 
 bool FShidenExpressionEvaluator::TryParseExpression(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                    FString& ErrorMessage)
+                                                    FString& ErrorMessage) const
 {
 	return TryParseLogicalOr(Tokens, Index, OutResult, ErrorMessage);
 }
 
 bool FShidenExpressionEvaluator::TryParseLogicalOr(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                   FString& ErrorMessage)
+                                                   FString& ErrorMessage) const
 {
 	if (!TryParseLogicalAnd(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -382,7 +387,7 @@ bool FShidenExpressionEvaluator::TryParseLogicalOr(const TArray<FShidenExpressio
 }
 
 bool FShidenExpressionEvaluator::TryParseLogicalAnd(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                    FString& ErrorMessage)
+                                                    FString& ErrorMessage) const
 {
 	if (!TryParseBitwiseOr(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -411,7 +416,7 @@ bool FShidenExpressionEvaluator::TryParseLogicalAnd(const TArray<FShidenExpressi
 }
 
 bool FShidenExpressionEvaluator::TryParseBitwiseOr(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                   FString& ErrorMessage)
+                                                   FString& ErrorMessage) const
 {
 	if (!TryParseBitwiseXor(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -437,7 +442,7 @@ bool FShidenExpressionEvaluator::TryParseBitwiseOr(const TArray<FShidenExpressio
 }
 
 bool FShidenExpressionEvaluator::TryParseBitwiseXor(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                    FString& ErrorMessage)
+                                                    FString& ErrorMessage) const
 {
 	if (!TryParseBitwiseAnd(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -463,7 +468,7 @@ bool FShidenExpressionEvaluator::TryParseBitwiseXor(const TArray<FShidenExpressi
 }
 
 bool FShidenExpressionEvaluator::TryParseBitwiseAnd(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                    FString& ErrorMessage)
+                                                    FString& ErrorMessage) const
 {
 	if (!TryParseComparison(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -489,7 +494,7 @@ bool FShidenExpressionEvaluator::TryParseBitwiseAnd(const TArray<FShidenExpressi
 }
 
 bool FShidenExpressionEvaluator::TryParseComparison(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                    FString& ErrorMessage)
+                                                    FString& ErrorMessage) const
 {
 	if (!TryParseShift(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -516,7 +521,7 @@ bool FShidenExpressionEvaluator::TryParseComparison(const TArray<FShidenExpressi
 }
 
 bool FShidenExpressionEvaluator::TryParseShift(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                               FString& ErrorMessage)
+                                               FString& ErrorMessage) const
 {
 	if (!TryParseAddition(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -544,7 +549,7 @@ bool FShidenExpressionEvaluator::TryParseShift(const TArray<FShidenExpressionTok
 }
 
 bool FShidenExpressionEvaluator::TryParseAddition(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                  FString& ErrorMessage)
+                                                  FString& ErrorMessage) const
 {
 	if (!TryParseMultiplication(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -572,7 +577,7 @@ bool FShidenExpressionEvaluator::TryParseAddition(const TArray<FShidenExpression
 }
 
 bool FShidenExpressionEvaluator::TryParseMultiplication(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                        FString& ErrorMessage)
+                                                        FString& ErrorMessage) const
 {
 	if (!TryParsePower(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -600,7 +605,7 @@ bool FShidenExpressionEvaluator::TryParseMultiplication(const TArray<FShidenExpr
 }
 
 bool FShidenExpressionEvaluator::TryParsePower(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                               FString& ErrorMessage)
+                                               FString& ErrorMessage) const
 {
 	if (!TryParseUnary(Tokens, Index, OutResult, ErrorMessage))
 	{
@@ -626,7 +631,7 @@ bool FShidenExpressionEvaluator::TryParsePower(const TArray<FShidenExpressionTok
 }
 
 bool FShidenExpressionEvaluator::TryParseUnary(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                               FString& ErrorMessage)
+                                               FString& ErrorMessage) const
 {
 	if (Index >= Tokens.Num())
 	{
@@ -678,7 +683,7 @@ bool FShidenExpressionEvaluator::TryParseUnary(const TArray<FShidenExpressionTok
 }
 
 bool FShidenExpressionEvaluator::TryParsePrimary(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                 FString& ErrorMessage)
+                                                 FString& ErrorMessage) const
 {
 	if (Index >= Tokens.Num())
 	{
@@ -787,7 +792,7 @@ bool FShidenExpressionEvaluator::TryParsePrimary(const TArray<FShidenExpressionT
 }
 
 bool FShidenExpressionEvaluator::TryParseVector(const TArray<FShidenExpressionToken>& Tokens, int32& Index, FShidenExpressionValue& OutResult,
-                                                FString& ErrorMessage)
+                                                FString& ErrorMessage) const
 {
 	if (Index >= Tokens.Num() || Tokens[Index].Type != EShidenExpressionTokenType::LeftBracket)
 	{
@@ -1363,8 +1368,23 @@ bool FShidenExpressionEvaluator::TryApplyUnaryOperation(const FString& Operator,
 }
 
 bool FShidenExpressionEvaluator::TryEvaluateFunction(const FString& FunctionName, const TArray<FShidenExpressionValue>& Args,
-                                                     FShidenExpressionValue& OutResult, FString& ErrorMessage)
+                                                     FShidenExpressionValue& OutResult, FString& ErrorMessage) const
 {
+#if WITH_EDITOR
+	// If we have a context, try editor functions first
+	if (Context != nullptr)
+	{
+		if (TryEvaluateEditorFunction(FunctionName, Args, OutResult, ErrorMessage))
+		{
+			return true;
+		}
+		if (!ErrorMessage.IsEmpty())
+		{
+			return false;
+		}
+	}
+#endif
+
 	auto CheckArgCount = [&](const int32 Expected) -> bool
 	{
 		if (Args.Num() != Expected)
@@ -1383,6 +1403,80 @@ bool FShidenExpressionEvaluator::TryEvaluateFunction(const FString& FunctionName
 			return false;
 		}
 		return Args[Index].TryToNumeric(OutValue, ErrorMessage);
+	};
+
+	// Helper for converting string to Vector2
+	// Supports both "[1, 2]" and "X=1 Y=2" formats
+	auto ToVector2 = [](const FString& Input) -> FVector2D
+	{
+		FVector2D Result = FVector2D::ZeroVector;
+		FString Trimmed = Input.TrimStartAndEnd();
+
+		// Check for array format "[1, 2]"
+		if (Trimmed.StartsWith(TEXT("[")))
+		{
+			// Remove brackets
+			Trimmed = Trimmed.Mid(1, Trimmed.Len() - 2).TrimStartAndEnd();
+
+			// Split by comma
+			TArray<FString> Components;
+			Trimmed.ParseIntoArray(Components, TEXT(","));
+
+			if (Components.Num() >= 1)
+			{
+				Result.X = FCString::Atof(*Components[0].TrimStartAndEnd());
+			}
+			if (Components.Num() >= 2)
+			{
+				Result.Y = FCString::Atof(*Components[1].TrimStartAndEnd());
+			}
+		}
+		else
+		{
+			// Use standard Unreal Engine format "X=1 Y=2"
+			Result.InitFromString(Trimmed);
+		}
+
+		return Result;
+	};
+
+	// Helper for converting string to Vector3
+	// Supports both "[1, 2, 3]" and "X=1 Y=2 Z=3" formats
+	auto ToVector3 = [](const FString& Input) -> FVector
+	{
+		FVector Result = FVector::ZeroVector;
+		FString Trimmed = Input.TrimStartAndEnd();
+
+		// Check for array format "[1, 2, 3]"
+		if (Trimmed.StartsWith(TEXT("[")))
+		{
+			// Remove brackets
+			Trimmed = Trimmed.Mid(1, Trimmed.Len() - 2).TrimStartAndEnd();
+
+			// Split by comma
+			TArray<FString> Components;
+			Trimmed.ParseIntoArray(Components, TEXT(","));
+
+			if (Components.Num() >= 1)
+			{
+				Result.X = FCString::Atof(*Components[0].TrimStartAndEnd());
+			}
+			if (Components.Num() >= 2)
+			{
+				Result.Y = FCString::Atof(*Components[1].TrimStartAndEnd());
+			}
+			if (Components.Num() >= 3)
+			{
+				Result.Z = FCString::Atof(*Components[2].TrimStartAndEnd());
+			}
+		}
+		else
+		{
+			// Use standard Unreal Engine format "X=1 Y=2 Z=3"
+			Result.InitFromString(Trimmed);
+		}
+
+		return Result;
 	};
 
 	// Helper macros to reduce code duplication
@@ -1467,47 +1561,105 @@ bool FShidenExpressionEvaluator::TryEvaluateFunction(const FString& FunctionName
 			return true; \
 		}
 
+#define STRING_FUNC_1_ARG(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(1)) { return false; } \
+			if (Args[0].Type != EShidenExpressionValueType::String) \
+			{ \
+				ErrorMessage = TEXT(NAME ": argument must be a string"); \
+				return false; \
+			} \
+			const FString& Str = Args[0].StringValue; \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+
+#define STRING_FUNC_2_ARG(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(2)) { return false; } \
+			if (Args[0].Type != EShidenExpressionValueType::String) \
+			{ \
+				ErrorMessage = TEXT(NAME ": first argument must be a string"); \
+				return false; \
+			} \
+			if (Args[1].Type != EShidenExpressionValueType::String) \
+			{ \
+				ErrorMessage = TEXT(NAME ": second argument must be a string"); \
+				return false; \
+			} \
+			const FString& Str1 = Args[0].StringValue; \
+			const FString& Str2 = Args[1].StringValue; \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+
+#define ANY_TYPE_FUNC_1_ARG(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(1)) { return false; } \
+			const FShidenExpressionValue& Arg1 = Args[0]; \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+
 	// Trigonometric functions
-	MATH_FUNC_1_ARG("sin", FMath::Sin(Arg1))
-	MATH_FUNC_1_ARG("cos", FMath::Cos(Arg1))
-	MATH_FUNC_1_ARG("tan", FMath::Tan(Arg1))
-	MATH_FUNC_1_ARG("asin", FMath::Asin(Arg1))
-	MATH_FUNC_1_ARG("acos", FMath::Acos(Arg1))
-	MATH_FUNC_1_ARG("atan", FMath::Atan(Arg1))
-	MATH_FUNC_2_ARG("atan2", FMath::Atan2(Arg1, Arg2))
+	MATH_FUNC_1_ARG("Sin", FMath::Sin(Arg1))
+	MATH_FUNC_1_ARG("Cos", FMath::Cos(Arg1))
+	MATH_FUNC_1_ARG("Tan", FMath::Tan(Arg1))
+	MATH_FUNC_1_ARG("Asin", FMath::Asin(Arg1))
+	MATH_FUNC_1_ARG("Acos", FMath::Acos(Arg1))
+	MATH_FUNC_1_ARG("Atan", FMath::Atan(Arg1))
+	MATH_FUNC_2_ARG("Atan2", FMath::Atan2(Arg1, Arg2))
 
 	// Square root with non-negative validation
-	MATH_FUNC_1_ARG_VALIDATE("sqrt", FMath::Sqrt(Arg1), Arg1 >= 0, "sqrt: argument must be non-negative")
+	MATH_FUNC_1_ARG_VALIDATE("Sqrt", FMath::Sqrt(Arg1), Arg1 >= 0, "Sqrt: argument must be non-negative")
 
 	// Power and exponential functions
-	MATH_FUNC_2_ARG("pow", FMath::Pow(Arg1, Arg2))
-	MATH_FUNC_1_ARG("exp", FMath::Exp(Arg1))
+	MATH_FUNC_2_ARG("Pow", FMath::Pow(Arg1, Arg2))
+	MATH_FUNC_1_ARG("Exp", FMath::Exp(Arg1))
 
 	// Logarithmic functions with positive validation
-	MATH_FUNC_1_ARG_ALIAS_VALIDATE("log", "ln", FMath::Loge(Arg1), Arg1 > 0, "log: argument must be positive")
-	MATH_FUNC_1_ARG_VALIDATE("log10", FMath::LogX(10.0, Arg1), Arg1 > 0, "log10: argument must be positive")
+	MATH_FUNC_1_ARG_ALIAS_VALIDATE("Log", "Ln", FMath::Loge(Arg1), Arg1 > 0, "Log: argument must be positive")
+	MATH_FUNC_1_ARG_VALIDATE("Log10", FMath::LogX(10.0, Arg1), Arg1 > 0, "Log10: argument must be positive")
 
 	// Rounding and absolute value functions
-	MATH_FUNC_1_ARG("abs", FMath::Abs(Arg1))
-	MATH_FUNC_1_ARG("floor", FMath::FloorToDouble(Arg1))
-	MATH_FUNC_1_ARG("ceil", FMath::CeilToDouble(Arg1))
-	MATH_FUNC_1_ARG("round", FMath::RoundToDouble(Arg1))
-	MATH_FUNC_1_ARG("trunc", FMath::TruncToDouble(Arg1))
-	MATH_FUNC_1_ARG("frac", FMath::Frac(Arg1))
+	MATH_FUNC_1_ARG("Abs", FMath::Abs(Arg1))
+	MATH_FUNC_1_ARG("Floor", FMath::FloorToDouble(Arg1))
+	MATH_FUNC_1_ARG("Ceil", FMath::CeilToDouble(Arg1))
+	MATH_FUNC_1_ARG("Round", FMath::RoundToDouble(Arg1))
+	MATH_FUNC_1_ARG("Trunc", FMath::TruncToDouble(Arg1))
+	MATH_FUNC_1_ARG("Frac", FMath::Frac(Arg1))
 
 	// Min/Max/Clamp functions
-	MATH_FUNC_2_ARG("min", FMath::Min(Arg1, Arg2))
-	MATH_FUNC_2_ARG("max", FMath::Max(Arg1, Arg2))
-	MATH_FUNC_3_ARG("clamp", FMath::Clamp(Arg1, Arg2, Arg3))
+	MATH_FUNC_2_ARG("Min", FMath::Min(Arg1, Arg2))
+	MATH_FUNC_2_ARG("Max", FMath::Max(Arg1, Arg2))
+	MATH_FUNC_3_ARG("Clamp", FMath::Clamp(Arg1, Arg2, Arg3))
 
 	// Interpolation and utility functions
-	MATH_FUNC_3_ARG("lerp", FMath::Lerp(Arg1, Arg2, Arg3))
-	MATH_FUNC_3_ARG_VALIDATE("invlerp", (Arg3 - Arg1) / (Arg2 - Arg1), !FMath::IsNearlyEqual(Arg2, Arg1), "invlerp: min and max must be different")
-	MATH_FUNC_1_ARG("sign", FMath::Sign(Arg1))
+	MATH_FUNC_3_ARG("Lerp", FMath::Lerp(Arg1, Arg2, Arg3))
+	MATH_FUNC_3_ARG_VALIDATE("InvLerp", (Arg3 - Arg1) / (Arg2 - Arg1), !FMath::IsNearlyEqual(Arg2, Arg1), "InvLerp: min and max must be different")
+	MATH_FUNC_1_ARG("Sign", FMath::Sign(Arg1))
 
 	// Angle conversion functions
-	MATH_FUNC_1_ARG_ALIAS("radians", "deg2rad", FMath::DegreesToRadians(Arg1))
-	MATH_FUNC_1_ARG_ALIAS("degrees", "rad2deg", FMath::RadiansToDegrees(Arg1))
+	MATH_FUNC_1_ARG_ALIAS("Radians", "Deg2Rad", FMath::DegreesToRadians(Arg1))
+	MATH_FUNC_1_ARG_ALIAS("Degrees", "Rad2Deg", FMath::RadiansToDegrees(Arg1))
+
+	// String functions
+	STRING_FUNC_1_ARG("HasSpace", Str.Contains(TEXT(" ")))
+	STRING_FUNC_1_ARG("IsEmpty", Str.IsEmpty())
+	STRING_FUNC_2_ARG("Contains", Str1.Contains(Str2, ESearchCase::CaseSensitive))
+	STRING_FUNC_2_ARG("StartsWith", Str1.StartsWith(Str2, ESearchCase::CaseSensitive))
+	STRING_FUNC_2_ARG("EndsWith", Str1.EndsWith(Str2, ESearchCase::CaseSensitive))
+
+	// Type conversion functions
+	ANY_TYPE_FUNC_1_ARG("ToString", Arg1.ToString())
+	STRING_FUNC_1_ARG("ToInt", FCString::Atoi(*Str))
+	STRING_FUNC_1_ARG("ToFloat", FCString::Atof(*Str))
+	STRING_FUNC_1_ARG("ToBool", Str.Equals(TEXT("true"), ESearchCase::IgnoreCase) || Str.Equals(TEXT("1")))
+	STRING_FUNC_1_ARG("ToVector2", ToVector2(Str))
+	STRING_FUNC_1_ARG("ToVector3", ToVector3(Str))
 
 	// Clean up macros
 #undef MATH_FUNC_1_ARG
@@ -1517,7 +1669,185 @@ bool FShidenExpressionEvaluator::TryEvaluateFunction(const FString& FunctionName
 #undef MATH_FUNC_1_ARG_VALIDATE
 #undef MATH_FUNC_1_ARG_ALIAS_VALIDATE
 #undef MATH_FUNC_3_ARG_VALIDATE
+#undef STRING_FUNC_1_ARG
+#undef STRING_FUNC_2_ARG
+#undef ANY_TYPE_FUNC_1_ARG
 
 	ErrorMessage = FString::Printf(TEXT("Unknown function: %s"), *FunctionName);
 	return false;
 }
+
+#if WITH_EDITOR
+FShidenExpressionEvaluator::FShidenExpressionEvaluator(const FShidenExpressionVariableDefinitionContext& InContext)
+	: Context(&InContext)
+{
+}
+
+const FShidenVariableDefinition* FShidenExpressionVariableDefinitionContext::FindVariable(const FString& Kind, const FString& Name) const
+{
+	if (Kind == TEXT("User") || Kind.IsEmpty())
+	{
+		return UserVariables.Find(Name);
+	}
+	if (Kind == TEXT("System"))
+	{
+		return SystemVariables.Find(Name);
+	}
+	if (Kind == TEXT("Local"))
+	{
+		// Search in LocalVariables first
+		if (const FShidenVariableDefinition* Found = LocalVariables.Find(Name))
+		{
+			return Found;
+		}
+		// If not found, search in MacroParameters
+		return MacroParameters.Find(Name);
+	}
+	return nullptr;
+}
+
+bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& FunctionName, const TArray<FShidenExpressionValue>& Args,
+                                                           FShidenExpressionValue& OutResult, FString& ErrorMessage) const
+{
+	// Helper to check argument count
+	auto CheckArgCount = [&](const int32 Expected) -> bool
+	{
+		if (Args.Num() != Expected)
+		{
+			ErrorMessage = FString::Printf(TEXT("Function '%s' expects %d argument(s), got %d"), *FunctionName, Expected, Args.Num());
+			return false;
+		}
+		return true;
+	};
+
+	// Helper to extract variable reference from braces: "{System::test}" -> "System::test"
+	auto ExtractVariableRef = [](const FString& Input) -> FString
+	{
+		if (Input.StartsWith(TEXT("{")) && Input.EndsWith(TEXT("}")))
+		{
+			// Remove braces and trim again
+			return Input.Mid(1, Input.Len() - 2).TrimStartAndEnd();
+		}
+		// No braces, return empty
+		return "";
+	};
+
+	// Helper to parse variable reference into Kind and Name
+	auto ParseVariableRef = [](const FString& VariableRef, FString& OutKind, FString& OutName) -> void
+	{
+		if (VariableRef.Contains(TEXT("::")))
+		{
+			VariableRef.Split(TEXT("::"), &OutKind, &OutName, ESearchCase::CaseSensitive);
+			OutKind = OutKind.TrimStartAndEnd();
+			OutName = OutName.TrimStartAndEnd();
+		}
+		else
+		{
+			OutKind = TEXT("User");
+			OutName = VariableRef.TrimStartAndEnd();
+		}
+	};
+
+	// Helper function to convert variable type to string
+	auto GetVariableType = [](const EShidenVariableType Type) -> FString
+	{
+		switch (Type)
+		{
+		case EShidenVariableType::Boolean: return TEXT("Boolean");
+		case EShidenVariableType::Integer: return TEXT("Integer");
+		case EShidenVariableType::Float: return TEXT("Float");
+		case EShidenVariableType::String: return TEXT("String");
+		case EShidenVariableType::Vector2: return TEXT("Vector2");
+		case EShidenVariableType::Vector3: return TEXT("Vector3");
+		case EShidenVariableType::AssetPath: return TEXT("AssetPath");
+		default: return TEXT("Unknown");
+		}
+	};
+
+	// Helper to check if string contains variable references
+	auto HasVariable = [](const FString& Input) -> bool
+	{
+		if (!Input.Contains(TEXT("{")) || !Input.Contains(TEXT("}")))
+		{
+			return false;
+		}
+		FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Input);
+		return Matcher.FindNext();
+	};
+
+	// Helper to check if string is enclosed in braces
+	auto IsSingleVariable = [](const FString& Input) -> bool
+	{
+		if (!Input.StartsWith(TEXT("{")) || !Input.EndsWith(TEXT("}")))
+		{
+			return false;
+		}
+		FRegexMatcher Matcher(UShidenVariableBlueprintLibrary::GetReplaceTextPattern(), Input);
+		if (!Matcher.FindNext())
+		{
+			return false;
+		}
+		return !Matcher.FindNext();
+	};
+
+	// Editor function macros for variable definition queries
+#define EDITOR_VARDEF_FUNC(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(1)) { return false; } \
+			if (Args[0].Type != EShidenExpressionValueType::String) \
+			{ \
+				ErrorMessage = TEXT(NAME ": argument must be a string (e.g., \"{System::test}\" or \"{myvar}\")"); \
+				return false; \
+			} \
+			const FString VariableRef = ExtractVariableRef(Args[0].StringValue); \
+			if (VariableRef.IsEmpty()) \
+			{ \
+				OutResult = FShidenExpressionValue(false); \
+				return true; \
+			} \
+			FString Kind, Name; \
+			ParseVariableRef(VariableRef, Kind, Name); \
+			const FShidenVariableDefinition* VarDef = Context->FindVariable(Kind, Name); \
+			if (VarDef == nullptr) \
+			{ \
+				ErrorMessage = FString::Printf(TEXT(NAME ": variable '%s' not found"), *VariableRef); \
+				return false; \
+			} \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+
+#define EDITOR_STRING_FUNC(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(1)) { return false; } \
+			if (Args[0].Type != EShidenExpressionValueType::String) \
+			{ \
+				ErrorMessage = TEXT(NAME ": argument must be a string"); \
+				return false; \
+			} \
+			const FString& Str = Args[0].StringValue; \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+
+	// Editor variable definition functions
+	EDITOR_VARDEF_FUNC("IsReadOnlyVariable", VarDef->bIsReadOnly)
+	EDITOR_VARDEF_FUNC("IsWritableVariable", !VarDef->bIsReadOnly)
+	EDITOR_VARDEF_FUNC("GetVariableDefaultValue", VarDef->DefaultValue)
+	EDITOR_VARDEF_FUNC("GetVariableType", GetVariableType(VarDef->Type))
+
+	// Editor string functions
+	EDITOR_STRING_FUNC("IsSingleVariable", IsSingleVariable(Str))
+	EDITOR_STRING_FUNC("HasVariable", HasVariable(Str))
+
+	// Clean up macros
+#undef EDITOR_VARDEF_FUNC
+#undef EDITOR_STRING_FUNC
+
+	// Not an editor function
+	return false;
+}
+
+#endif

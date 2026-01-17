@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Scenario/ShidenManager.h"
+#include "System/ShidenStructuredLog.h"
 #include "AudioDevice.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -14,7 +15,6 @@
 #include "Engine/TimerHandle.h"
 #include "Sound/SoundBase.h"
 #include "TimerManager.h"
-#include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenBlueprintLibrary.h"
 
 AShidenManager::AShidenManager(): ShidenWidget(nullptr)
@@ -82,7 +82,13 @@ void AShidenManager::FindShidenAxis3DInput_Implementation(const UInputAction* In
 
 FInputActionValue AShidenManager::GetInputActionValue(const UInputAction* InputAction) const
 {
-	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	const TObjectPtr<const UWorld> World = GetWorld();
+	if (!World)
+	{
+		return FInputActionValue(InputAction->ValueType, FVector::ZeroVector);
+	}
+
+	const TObjectPtr<const ULocalPlayer> LocalPlayer = World->GetFirstLocalPlayerFromController();
 	if (!LocalPlayer)
 	{
 		return FInputActionValue(InputAction->ValueType, FVector::ZeroVector);
@@ -106,7 +112,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 	{
 		if (!bRegisterSound)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PlaySound with empty path must have bRegisterSound=true."));
+			SHIDEN_WARNING("PlaySound with empty path must have bRegisterSound=true.");
 			return;
 		}
 
@@ -122,7 +128,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 			bSuccess = true;
 			return;
 		case EShidenSoundType::SE:
-			UE_LOG(LogTemp, Warning, TEXT("PlaySound with empty path for SE is not implemented."));
+			SHIDEN_WARNING("PlaySound with empty path for SE is not implemented.");
 			return;
 		case EShidenSoundType::Voice:
 			if (const TObjectPtr<UAudioComponent> Component = VoiceComponents.FindRef(SoundInfo.TrackId); Component)
@@ -134,7 +140,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 			bSuccess = true;
 			return;
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundInfo.Type));
+			SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(SoundInfo.Type));
 			return;
 		}
 	}
@@ -168,7 +174,7 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 		PlaySE(SoundInfo, SoundAsset, bRegisterSound);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(SoundType));
 		return;
 	}
 
@@ -176,48 +182,98 @@ void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo,
 	bSuccess = true;
 }
 
-void AShidenManager::StopSound_Implementation(const int32& TrackId, const EShidenSoundType Type)
+void AShidenManager::StopSound_Implementation(const int32 TrackId, const EShidenSoundType Type)
 {
 	switch (Type)
 	{
 	case EShidenSoundType::BGM:
-		if (UAudioComponent* BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
+		if (const TObjectPtr<UAudioComponent> BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
 		{
 			BGMComponent->SetActive(false);
 			BGMComponents.Remove(TrackId);
 		}
 		break;
 	case EShidenSoundType::SE:
-		UE_LOG(LogTemp, Warning, TEXT("StopSound for SE is not implemented."));
+		SHIDEN_WARNING("StopSound for SE is not implemented.");
 		break;
 	case EShidenSoundType::Voice:
-		if (UAudioComponent* VoiceComponent = VoiceComponents.FindRef(TrackId); VoiceComponent)
+		if (const TObjectPtr<UAudioComponent> VoiceComponent = VoiceComponents.FindRef(TrackId); VoiceComponent)
 		{
 			VoiceComponent->SetActive(false);
 			VoiceComponents.Remove(TrackId);
 		}
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(Type));
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(Type));
 		break;
 	}
 }
 
-void AShidenManager::StopVoices_Implementation()
+void AShidenManager::StopSounds_Implementation(const EShidenSoundType Type)
 {
-	TArray<int32> Keys;
-	VoiceComponents.GetKeys(Keys);
-	for (const int32& Key : Keys)
+	switch (Type)
 	{
-		StopSound_Implementation(Key, EShidenSoundType::Voice);
+	case EShidenSoundType::BGM:
+		{
+			// In Stop Sound, BGM component is deleted, so get an array of keys before looping
+			TArray<int32> Keys;
+			BGMComponents.GetKeys(Keys);
+			for (const int32& Key : Keys)
+			{
+				StopSound_Implementation(Key, Type);
+			}
+		}
+		break;
+	case EShidenSoundType::SE:
+		SHIDEN_WARNING("StopSounds for SE is not supported.");
+		break;
+	case EShidenSoundType::Voice:
+		{
+			// In Stop Sound, Voice component is deleted, so get an array of keys before looping
+			TArray<int32> Keys;
+			VoiceComponents.GetKeys(Keys);
+			for (const int32& Key : Keys)
+			{
+				StopSound_Implementation(Key, Type);
+			}
+		}
+		break;
+	default:
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(Type));
+		break;
 	}
 }
 
-void AShidenManager::AdjustBGMVolume_Implementation(const int32& TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FadeCurve)
+void AShidenManager::AdjustBGMVolume_Implementation(const int32 TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FadeCurve)
 {
 	if (UAudioComponent* BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
 	{
 		AdjustVolumeInternal(BGMComponent, VolumeDuration, VolumeLevel, FadeCurve);
+	}
+}
+
+void AShidenManager::PauseSound_Implementation(const int32 TrackId, const EShidenSoundType Type, const bool bPause)
+{
+	switch (Type)
+	{
+	case EShidenSoundType::BGM:
+		if (const TObjectPtr<UAudioComponent> BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
+		{
+			BGMComponent->SetPaused(bPause);
+		}
+		break;
+	case EShidenSoundType::SE:
+		SHIDEN_WARNING("PauseSound for SE is not implemented.");
+		break;
+	case EShidenSoundType::Voice:
+		if (const TObjectPtr<UAudioComponent> VoiceComponent = VoiceComponents.FindRef(TrackId); VoiceComponent)
+		{
+			VoiceComponent->SetPaused(bPause);
+		}
+		break;
+	default:
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(Type));
+		break;
 	}
 }
 
@@ -231,7 +287,7 @@ void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 		}
 	}
 
-	for (UAudioComponent*& Component : SEComponents)
+	for (TObjectPtr<UAudioComponent> Component : SEComponents)
 	{
 		if (Component)
 		{
@@ -252,7 +308,7 @@ void AShidenManager::PlaySE(const FShidenSoundInfo& SoundInfo, USoundBase* Sound
 {
 	if (SoundInfo.Type != EShidenSoundType::SE)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlaySE called with non-SE sound type."));
+		SHIDEN_WARNING("PlaySE called with non-SE sound type.");
 		return;
 	}
 
@@ -294,7 +350,7 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 {
 	if (SoundInfo.Type == EShidenSoundType::SE)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayBGMOrVoice called with SE sound type."));
+		SHIDEN_WARNING("PlayBGMOrVoice called with SE sound type.");
 		return;
 	}
 
@@ -313,11 +369,10 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		if (!bSamePath)
 		{
 			AdjustVolumeInternal(Component, 0.0f, SoundInfo.StartVolumeMultiplier, SoundInfo.AudioFaderCurve);
-		}
-
-		if (CurrentComponent && !bSamePath)
-		{
-			StopSound_Implementation(SoundInfo.TrackId, SoundInfo.Type);
+			if (CurrentComponent)
+			{
+				StopSound_Implementation(SoundInfo.TrackId, SoundInfo.Type);
+			}
 		}
 
 		if (bRegisterSound)
@@ -375,7 +430,7 @@ void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComp
 		{
 			if (Component->Sound && Component->Sound->VirtualizationMode == EVirtualizationMode::Disabled)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BGM finished playing: %s"), *Component->Sound->GetName());
+				SHIDEN_WARNING("BGM finished playing: {name}", *Component->Sound->GetName());
 				RemoveSound(EShidenSoundType::BGM);
 			}
 		});
@@ -389,7 +444,7 @@ void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComp
 		AudioComponent->OnAudioFinishedNative.AddLambda([this](UAudioComponent* _) { RemoveSound(EShidenSoundType::Voice); });
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundInfo.Type));
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(SoundInfo.Type));
 		break;
 	}
 }
@@ -442,7 +497,7 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 			break;
 		}
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Unknown sound type: %d"), static_cast<int32>(SoundType));
+		SHIDEN_WARNING("Unknown sound type: {type}", static_cast<int32>(SoundType));
 		break;
 	}
 }
@@ -458,7 +513,14 @@ void AShidenManager::PlayForceFeedback_Implementation(const FString& ForceFeedba
 
 	if (UForceFeedbackEffect* ForceFeedbackEffect = Cast<UForceFeedbackEffect>(LoadedObject))
 	{
-		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+		const TObjectPtr<const UWorld> World = GetWorld();
+		if (!World)
+		{
+			bSuccess = false;
+			return;
+		}
+
+		if (const TObjectPtr<APlayerController> PlayerController = World->GetFirstPlayerController())
 		{
 			PlayerController->ClientPlayForceFeedback(ForceFeedbackEffect);
 			bSuccess = true;
@@ -473,21 +535,21 @@ void AShidenManager::CallMacroAsParallel_Implementation(const FString& NewProces
 {
 	if (!CallerObject)
 	{
-		UE_LOG(LogTemp, Error, TEXT("CallerObject is null"));
+		SHIDEN_ERROR("CallerObject is null");
 		return;
 	}
 
 	UWorld* World = CallerObject->GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Error, TEXT("CallerObject does not have a valid World"));
+		SHIDEN_ERROR("CallerObject does not have a valid World");
 		return;
 	}
 
 	const TSubclassOf<AActor> ActorClass = GetParallelProcessManagerClass();
 	if (!ActorClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ParallelProcessManagerClass is not loaded"));
+		SHIDEN_ERROR("ParallelProcessManagerClass is not loaded");
 		return;
 	}
 
@@ -503,7 +565,7 @@ void AShidenManager::CallMacroAsParallel_Implementation(const FString& NewProces
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn BP_ShidenParallelProcessManager"));
+		SHIDEN_ERROR("Failed to spawn BP_ShidenParallelProcessManager");
 	}
 }
 
@@ -522,6 +584,7 @@ void AShidenManager::Destroy_Implementation()
 		}
 	}
 
+	// In Stop Sound, BGM component is deleted, so get an array of keys before looping
 	TArray<int32> Keys;
 	BGMComponents.GetKeys(Keys);
 	for (const int32& Key : Keys)
@@ -529,7 +592,7 @@ void AShidenManager::Destroy_Implementation()
 		StopSound_Implementation(Key, EShidenSoundType::BGM);
 	}
 
-	for (UAudioComponent*& Component : SEComponents)
+	for (TObjectPtr<UAudioComponent> Component : SEComponents)
 	{
 		if (Component)
 		{
@@ -538,6 +601,7 @@ void AShidenManager::Destroy_Implementation()
 	}
 	SEComponents.Empty();
 
+	// In Stop Sound, Voice component is deleted, so get an array of keys before looping
 	VoiceComponents.GetKeys(Keys);
 	for (const int32& Key : Keys)
 	{
@@ -549,7 +613,13 @@ void AShidenManager::Destroy_Implementation()
 
 void AShidenManager::OnApplicationWillDeactivate() const
 {
-	UE_LOG(LogTemp, Log, TEXT("Application will deactivate."));
+	SHIDEN_LOG("Application will deactivate.");
+
+	if (!ShidenWidget)
+	{
+		SHIDEN_WARNING("ShidenWidget is not initialized. Skipping auto save.");
+		return;
+	}
 
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	if (!ProjectConfig->bAutoSaveOnMobileAppWillDeactivate)
@@ -562,13 +632,13 @@ void AShidenManager::OnApplicationWillDeactivate() const
 
 	if (!UShidenSaveBlueprintLibrary::TrySaveUserData(TEXT("Auto Save"), Texture2D, ShidenWidget->GetSaveSlotMetadata()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AutoSave failed on application will deactivate."));
+		SHIDEN_WARNING("AutoSave failed on application will deactivate.");
 		return;
 	}
 
 	if (!UShidenSaveBlueprintLibrary::TrySavePredefinedSystemData())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AutoSave predefined system data failed on application will deactivate."));
+		SHIDEN_WARNING("AutoSave predefined system data failed on application will deactivate.");
 		return;
 	}
 
@@ -586,7 +656,7 @@ TSubclassOf<AActor> AShidenManager::GetParallelProcessManagerClass()
 
 		if (!CachedClass)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to load BP_ShidenParallelProcessManager blueprint class from path: %s"), *BlueprintPath);
+			SHIDEN_WARNING("Failed to load BP_ShidenParallelProcessManager blueprint class from path: {path}", *BlueprintPath);
 		}
 	}
 
@@ -595,6 +665,11 @@ TSubclassOf<AActor> AShidenManager::GetParallelProcessManagerClass()
 
 void AShidenManager::AdjustVolumeInternal(UAudioComponent* Component, const float AdjustVolumeDuration, const float AdjustVolumeLevel, const EAudioFaderCurve FadeCurve)
 {
+	if (!Component)
+	{
+		return;
+	}
+	
 	if (!FMath::IsNearlyZero(AdjustVolumeLevel))
 	{
 		if (Component->Sound && Component->Sound->IsLooping() && !Component->IsActive()
@@ -614,31 +689,36 @@ void AShidenManager::AdjustVolumeInternal(UAudioComponent* Component, const floa
 	constexpr float TargetVolumeLevel = UE_SMALL_NUMBER * 10;
 	Component->AdjustVolume(AdjustVolumeDuration, TargetVolumeLevel, FadeCurve);
 
+	const TObjectPtr<UWorld> World = Component->GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
 	FTimerHandle Handle;
-	Component->GetWorld()
-	         ->GetTimerManager()
-	         .SetTimer(Handle, [Component]
-	                   {
-		                   if (!Component->IsActive())
-		                   {
-			                   return;
-		                   }
+	World->GetTimerManager()
+	     .SetTimer(Handle, [Component]
+	               {
+		               if (!Component->IsActive())
+		               {
+			               return;
+		               }
 
-		                   FAudioDevice* AudioDevice = Component->GetAudioDevice();
-		                   if (!AudioDevice)
-		                   {
-			                   return;
-		                   }
+		               FAudioDevice* AudioDevice = Component->GetAudioDevice();
+		               if (!AudioDevice)
+		               {
+			               return;
+		               }
 
-		                   AudioDevice->SendCommandToActiveSounds(
-			                   Component->GetAudioComponentID(), [](FActiveSound& ActiveSound)
-			                   {
-				                   Audio::FVolumeFader& Fader = ActiveSound.ComponentVolumeFader;
-				                   if (Fader.GetTargetVolume() <= TargetVolumeLevel)
-				                   {
-					                   Fader.SetVolume(0.0f);
-				                   }
-			                   });
-	                   }, AdjustVolumeDuration, false
-	         );
+		               AudioDevice->SendCommandToActiveSounds(
+			               Component->GetAudioComponentID(), [](FActiveSound& ActiveSound)
+			               {
+				               Audio::FVolumeFader& Fader = ActiveSound.ComponentVolumeFader;
+				               if (Fader.GetTargetVolume() <= TargetVolumeLevel)
+				               {
+					               Fader.SetVolume(0.0f);
+				               }
+			               });
+	               }, AdjustVolumeDuration, false
+	     );
 }

@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "ShidenCommandDefinitionCustomization.h"
+#include "System/ShidenStructuredLog.h"
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
 #include "PropertyCustomizationHelpers.h"
@@ -25,7 +26,7 @@ void FShidenCommandDefinitionCustomization::CustomizeHeader(const TSharedRef<IPr
 	if (!NoteHandle.IsValid() || !StyleHandle.IsValid() || !CanCallInMacroHandle.IsValid() ||
 		!CommandSoftObjectPathHandle.IsValid() || !ArgsHandle.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to find all required property handles for FShidenCommandDefinition"));
+		SHIDEN_WARNING("Failed to find all required property handles for FShidenCommandDefinition");
 	}
 }
 

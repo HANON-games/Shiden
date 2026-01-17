@@ -29,8 +29,11 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 			{
 				return;
 			}
-			static UEditorUtilityWidgetBlueprint* WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenVisualNovelEditor.EUW_ShidenVisualNovelEditor"));
-			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			static TObjectPtr<UEditorUtilityWidgetBlueprint> WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenVisualNovelEditor.EUW_ShidenVisualNovelEditor"));
+			if (WidgetBP)
+			{
+				GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			}
 		}))
 	);
 
@@ -45,8 +48,11 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 			{
 				return;
 			}
-			static UEditorUtilityWidgetBlueprint* WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenDebugger.EUW_ShidenDebugger"));
-			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			static TObjectPtr<UEditorUtilityWidgetBlueprint> WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenDebugger.EUW_ShidenDebugger"));
+			if (WidgetBP)
+			{
+				GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			}
 		}))
 	);
 
@@ -61,8 +67,11 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 			{
 				return;
 			}
-			static UEditorUtilityWidgetBlueprint* WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenAssetList.EUW_ShidenAssetList"));
-			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			static TObjectPtr<UEditorUtilityWidgetBlueprint> WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenAssetList.EUW_ShidenAssetList"));
+			if (WidgetBP)
+			{
+				GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			}
 		}))
 	);
 
@@ -77,8 +86,11 @@ void UShidenMainMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 			{
 				return;
 			}
-			static UEditorUtilityWidgetBlueprint* WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenVariables.EUW_ShidenVariables"));
-			GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			static TObjectPtr<UEditorUtilityWidgetBlueprint> WidgetBP = LoadObject<UEditorUtilityWidgetBlueprint>(nullptr, TEXT("/Shiden/Editor/Core/EUW_ShidenVariables.EUW_ShidenVariables"));
+			if (WidgetBP)
+			{
+				GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>()->SpawnAndRegisterTab(WidgetBP);
+			}
 		}))
 	);
 }

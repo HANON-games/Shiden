@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Save/ShidenSaveBlueprintLibrary.h"
+#include "System/ShidenStructuredLog.h"
 #include "Save/ShidenSystemSaveGame.h"
 #include "Save/ShidenUserSaveGame.h"
 #include "System/ShidenSubsystem.h"
@@ -99,7 +100,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString
 	}
 
 	const FShidenSaveTexture SaveTexture = FShidenSaveTexture(Thumbnail);
-	
+
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, SaveTexture, SlotMetadata, SavedDelegate]
 	{
 		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
@@ -303,7 +304,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadUserData(const FString& 
 
 	if (!UShidenUserSaveGame::DoesExist(SlotName))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("User data does not exist for slot name: %s"), *SlotName);
+		SHIDEN_WARNING("User data does not exist for slot name: {name}", *SlotName);
 		return false;
 	}
 
@@ -319,7 +320,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveUserData(const FStri
 
 	if (!UShidenUserSaveGame::DoesExist(SlotName))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("User data does not exist for slot name: %s"), *SlotName);
+		SHIDEN_WARNING("User data does not exist for slot name: {name}", *SlotName);
 		return false;
 	}
 
@@ -331,7 +332,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplyUserData(UShidenUserSaveGa
 {
 	if (!SaveGame)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot apply null user save game"));
+		SHIDEN_WARNING("Cannot apply null user save game");
 		return;
 	}
 
@@ -346,7 +347,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveSystemData(UShidenSy
 
 	if (!UShidenSystemSaveGame::DoesExist())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
+		SHIDEN_WARNING("System data does not exist");
 		return false;
 	}
 
@@ -358,7 +359,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplySystemData(UShidenSystemSa
 {
 	if (!SaveGame)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot apply null system save game"));
+		SHIDEN_WARNING("Cannot apply null system save game");
 		return;
 	}
 
@@ -434,7 +435,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(c
 		LoadedDelegate.ExecuteIfBound(false);
 		return;
 	}
-	
+
 	WorldContextObject->AddToRoot();
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [WorldContextObject, LoadedDelegate]
 	{
@@ -522,7 +523,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FS
 
 	if (!DoesAnyUserDataExist())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("User data does not exist."));
+		SHIDEN_WARNING("User data does not exist.");
 		return false;
 	}
 
@@ -552,7 +553,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadSystemData()
 
 	if (!UShidenSystemSaveGame::DoesExist())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("System data does not exist"));
+		SHIDEN_WARNING("System data does not exist");
 		return false;
 	}
 
@@ -566,7 +567,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadPredefinedSystemData(con
 
 	if (!UShidenPredefinedSystemSaveGame::DoesExist())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Predefined system data does not exist"));
+		SHIDEN_WARNING("Predefined system data does not exist");
 		return false;
 	}
 

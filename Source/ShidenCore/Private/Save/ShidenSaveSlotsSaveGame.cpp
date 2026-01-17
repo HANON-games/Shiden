@@ -6,8 +6,8 @@
 TObjectPtr<UShidenSaveSlotsSaveGame> UShidenSaveSlotsSaveGame::GetOrCreate()
 {
 	return DoesExist()
-		   ? Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotsName, 0))
-		   : Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(StaticClass()));
+		       ? Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotsName, 0))
+		       : Cast<UShidenSaveSlotsSaveGame>(UGameplayStatics::CreateSaveGameObject(StaticClass()));
 }
 
 void UShidenSaveSlotsSaveGame::Prepare(const FString& SlotName, const FShidenSaveTexture& SaveTexture, const TMap<FString, FString>& SaveSlotMetadata)

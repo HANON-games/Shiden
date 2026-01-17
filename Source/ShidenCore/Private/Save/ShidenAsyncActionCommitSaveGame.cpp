@@ -8,7 +8,7 @@
 // UShidenAsyncActionCommitUserData
 
 UShidenAsyncActionCommitUserData* UShidenAsyncActionCommitUserData::AsyncCommitUserData(UObject* WorldContextObject, UShidenUserSaveGame* SaveGame,
-                                                                                         UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+                                                                                        UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
 {
 	const TObjectPtr<UShidenAsyncActionCommitUserData> Action = NewObject<UShidenAsyncActionCommitUserData>();
 	Action->UserSaveGame = SaveGame;

@@ -23,7 +23,20 @@
 #include "Engine/World.h"
 #include "UObject/Object.h"
 #include "Variable/ShidenLocalVariable.h"
+#include "Audio/ShidenSoundInfo.h"
 #include "ShidenSubsystem.generated.h"
+
+USTRUCT()
+struct SHIDENCORE_API FShidenGlobalBGMInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> AudioComponent;
+
+	UPROPERTY()
+	FShidenSoundInfo SoundInfo;
+};
 
 USTRUCT()
 struct SHIDENCORE_API FShidenScreenFadeLayer
@@ -85,13 +98,12 @@ public:
 	UPROPERTY()
 	TMap<FString, FShidenScreenFadeLayer> ScreenFadeLayers;
 
+	UPROPERTY()
+	TMap<int32, FShidenGlobalBGMInfo> GlobalBGMComponents;
+
 	FTSTicker::FDelegateHandle TickerHandle;
 
 	bool TickScreenFade(const float DeltaTime);
-
-	bool IsScreenFadeCompleted(const FString& LayerName) const;
-
-	void ResetScreenFadeLayers();
 
 	void SetDefaultPredefinedSystemVariables();
 
@@ -100,4 +112,7 @@ public:
 #endif
 
 	UShidenSubsystem();
+
+private:
+	void InitializeSubsystemState();
 };

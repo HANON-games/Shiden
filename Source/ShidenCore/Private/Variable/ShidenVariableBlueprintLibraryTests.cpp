@@ -102,7 +102,10 @@ private:
 	static TArray<FShidenVariableDefinition> DeserializeDefinitions(const FString& Str)
 	{
 		TArray<FShidenVariableDefinition> Result;
-		if (Str.IsEmpty()) return Result;
+		if (Str.IsEmpty())
+		{
+			return Result;
+		}
 
 		TArray<FString> Items;
 		Str.ParseIntoArray(Items, TEXT(";"));

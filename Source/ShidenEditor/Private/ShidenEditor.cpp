@@ -12,6 +12,7 @@
 #include "ShidenMainMenu.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Config/ShidenProjectConfig.h"
+#include "ShidenScenarioSyncManager.h"
 
 #define LOCTEXT_NAMESPACE "FShidenEditorModule"
 
@@ -48,6 +49,13 @@ void FShidenEditorModule::StartupModule()
 	FEditorDelegates::OnEditorInitialized.AddLambda([](double)
 	{
 		InitializeScenarioPaths();
+
+		// Start scenario sync if enabled
+		const TObjectPtr<const UShidenEditorConfig> EditorConfig = GetDefault<UShidenEditorConfig>();
+		if (EditorConfig && EditorConfig->bEnableScenarioSync)
+		{
+			UShidenScenarioSyncManager::StartWatchingDirectory();
+		}
 	});
 }
 
@@ -55,6 +63,10 @@ void FShidenEditorModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
+
+	// Stop scenario sync watching
+	UShidenScenarioSyncManager::StopWatchingDirectory();
+
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->UnregisterSettings(

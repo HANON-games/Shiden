@@ -21,16 +21,28 @@ bool FShidenPluginVersion::operator!=(const FShidenPluginVersion& That) const no
 
 bool FShidenPluginVersion::operator<(const FShidenPluginVersion& That) const noexcept
 {
-	return Major < That.Major
-		|| (Major == That.Major && Minor < That.Minor)
-		|| (Major == That.Major && Minor == That.Minor && Patch < That.Patch);
+	if (Major != That.Major)
+	{
+		return Major < That.Major;
+	}
+	if (Minor != That.Minor)
+	{
+		return Minor < That.Minor;
+	}
+	return Patch < That.Patch;
 }
 
 bool FShidenPluginVersion::operator>(const FShidenPluginVersion& That) const noexcept
 {
-	return Major > That.Major
-		|| (Major == That.Major && Minor > That.Minor)
-		|| (Major == That.Major && Minor == That.Minor && Patch > That.Patch);
+	if (Major != That.Major)
+	{
+		return Major > That.Major;
+	}
+	if (Minor != That.Minor)
+	{
+		return Minor > That.Minor;
+	}
+	return Patch > That.Patch;
 }
 
 FString FShidenPluginVersion::ToString() const noexcept

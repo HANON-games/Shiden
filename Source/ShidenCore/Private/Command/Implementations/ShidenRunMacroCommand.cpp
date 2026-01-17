@@ -47,7 +47,6 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 	}
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	constexpr int32 MaxStackDepth = 50;
 	const FShidenScenarioProgressStack* InitialProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));

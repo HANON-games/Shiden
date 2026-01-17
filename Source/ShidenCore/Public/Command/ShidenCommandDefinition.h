@@ -6,18 +6,24 @@
 #include "ShidenCommandDefinition.generated.h"
 
 USTRUCT(BlueprintType)
-struct SHIDENCORE_API FShidenCommandArgument
+struct SHIDENCORE_API FShidenConditionalMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command|Editor")
+	FString Condition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command|Editor")
+	FText Message;
+};
+
+USTRUCT(BlueprintType)
+struct SHIDENCORE_API FShidenCommandArgumentEditorSettings
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	FName ArgName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FText DisplayName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	FString DefaultValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command",
 		Meta = (AllowedClasses = "/Script/Blutility.EditorUtilityWidgetBlueprint", ExactClass = false))
@@ -27,22 +33,31 @@ struct SHIDENCORE_API FShidenCommandArgument
 	TMap<FString, FString> TemplateParameters = TMap<FString, FString>();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	FString VisibilityCondition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	TArray<FShidenConditionalMessage> WarningMessages;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	TArray<FShidenConditionalMessage> ErrorMessages;
+};
+
+USTRUCT(BlueprintType)
+struct SHIDENCORE_API FShidenCommandArgument
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	FName ArgName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	FString DefaultValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	bool bIsAssetToBeLoaded = false;
 
-	FShidenCommandArgument()
-	{
-	}
-
-	FShidenCommandArgument(FName ArgName, FText DisplayName, FString DefaultValue, FSoftObjectPath TemplateWidget,
-	                       TMap<FString, FString> TemplateParameters, bool bIsAssetToBeLoaded)
-		: ArgName(ArgName),
-		  DisplayName(DisplayName),
-		  DefaultValue(DefaultValue),
-		  TemplateWidget(TemplateWidget),
-		  TemplateParameters(TemplateParameters),
-		  bIsAssetToBeLoaded(bIsAssetToBeLoaded)
-	{
-	}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command|Editor")
+	FShidenCommandArgumentEditorSettings EditorSettings;
 };
 
 USTRUCT(BlueprintType)

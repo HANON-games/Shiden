@@ -4,9 +4,13 @@
 
 #include "Components/Widget.h"
 #include "Widgets/Colors/SColorBlock.h"
+#include "Widgets/SWindow.h"
 #include "ShidenColorPicker.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnColorChangedDelegate, FLinearColor, NewColor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnColorPickerWindowClosedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractivePickBeginDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractivePickEndDelegate);
 
 UCLASS(BlueprintType)
 class SHIDENEDITOR_API UShidenColorPicker : public UWidget
@@ -23,11 +27,23 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Widget Event")
 	FOnColorChangedDelegate OnColorChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Widget Event")
+	FOnColorPickerWindowClosedDelegate OnColorPickerWindowClosed;
+
+	UPROPERTY(BlueprintAssignable, Category = "Widget Event")
+	FOnInteractivePickBeginDelegate OnInteractivePickBegin;
+
+	UPROPERTY(BlueprintAssignable, Category = "Widget Event")
+	FOnInteractivePickEndDelegate OnInteractivePickEnd;
+
 	UFUNCTION(BlueprintCallable, Category = "Color Preview")
 	void SetColor(const FLinearColor NewColor);
 
 	UFUNCTION(BlueprintCallable, Category = "Color Preview")
 	FLinearColor GetColor() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Color Preview")
+	bool IsPicking() const;
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -37,11 +53,19 @@ protected:
 	virtual const FText GetPaletteCategory() override;
 
 private:
+	bool bIsPicking = false;
+	
 	TSharedPtr<SColorBlock> ColorBlockWidget;
 
 	FReply HandleColorBlockMouseButtonDown(const FPointerEvent& MouseEvent);
 	
-	void OnColorPickerColorChanged(FLinearColor NewColor);
+	void HandleColorPickerColorChanged(FLinearColor NewColor);
 
-	void OnColorPickerCancelled(FLinearColor OriginalColor);
+	void HandleColorPickerCancelled(FLinearColor OriginalColor);
+
+	void HandleColorPickerWindowClosed(const TSharedRef<SWindow>& Window) const;
+
+	void HandleInteractivePickBegin();
+
+	void HandleInteractivePickEnd();
 };

@@ -55,8 +55,10 @@ public class ShidenEditor : ModuleRules
 				"PropertyEditor",
 				"AssetTools",
 				"ToolMenus",
-				"AppFramework"
-				// ... add private dependencies that you statically link with here ...	
+				"AppFramework",
+				"AssetRegistry",
+				"DirectoryWatcher"
+				// ... add private dependencies that you statically link with here ...
 			}
 		);
 

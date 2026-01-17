@@ -3,6 +3,7 @@
 #include "Variable/ShidenLocalVariable.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "System/ShidenSubsystem.h"
+#include "System/ShidenStructuredLog.h"
 
 SHIDENCORE_API bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeKey, const FString& Name, FShidenVariableDefinition& Definition)
 {
@@ -18,7 +19,7 @@ SHIDENCORE_API void FShidenLocalVariable::InitLocalVariable(const FString& Scope
 {
 	if (!Scenario)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InitLocalVariable failed: Scenario is null for ScopeKey: %s"), *ScopeKey);
+		SHIDEN_WARNING("InitLocalVariable failed: Scenario is null for ScopeKey: {key}", *ScopeKey);
 		return;
 	}
 
@@ -239,6 +240,7 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 	for (const TPair<FString, FShidenVariable>& Pair : Variables)
 	{
 		const FShidenVariable& Variable = Pair.Value;
+		const FString& ScopeKey = Pair.Key;
 		TArray<FString> Names;
 		Variable.GetNames(Names);
 		for (const FString& Name : Names)
@@ -246,56 +248,11 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 			if (FShidenVariableDefinition Definition; Variable.TryGetDefinition(Name, Definition))
 			{
 				FString Value;
-				switch (Definition.Type)
+				if (Variable.ConvertVariableValueToString(Definition, Name, Value))
 				{
-				case EShidenVariableType::Boolean:
-					{
-						bool bBooleanValue = false;
-						Variable.TryGet(Name, bBooleanValue);
-						Value = bBooleanValue ? TEXT("true") : TEXT("false");
-						break;
-					}
-				case EShidenVariableType::String:
-				case EShidenVariableType::AssetPath:
-					{
-						Variable.TryGet(Name, Value);
-						break;
-					}
-				case EShidenVariableType::Integer:
-					{
-						int32 IntegerValue = 0;
-						Variable.TryGet(Name, IntegerValue);
-						Value = FString::FromInt(IntegerValue);
-						break;
-					}
-				case EShidenVariableType::Float:
-					{
-						float FloatValue = 0.0f;
-						Variable.TryGet(Name, FloatValue);
-						Value = FString::SanitizeFloat(FloatValue);
-						break;
-					}
-				case EShidenVariableType::Vector2:
-					{
-						FVector2D Vector2Value = FVector2D::ZeroVector;
-						Variable.TryGet(Name, Vector2Value);
-						Value = Vector2Value.ToString();
-						break;
-					}
-				case EShidenVariableType::Vector3:
-					{
-						FVector Vector3Value = FVector::ZeroVector;
-						Variable.TryGet(Name, Vector3Value);
-						Value = Vector3Value.ToString();
-						break;
-					}
-				default:
-					UE_LOG(LogTemp, Warning, TEXT("Unknown variable type for variable: %s"), *Name);
-					break;
+					VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Definition.AssetPathType, Value,
+					                                                  Definition.DefaultValue, Definition.bIsReadOnly));
 				}
-				const FString& ScopeKey = Pair.Key;
-				VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Definition.AssetPathType, Value,
-				                                                  Definition.DefaultValue, Definition.bIsReadOnly));
 			}
 		}
 	}
@@ -307,6 +264,6 @@ SHIDENCORE_API bool FShidenLocalVariable::IsValidScope(const FString& ScopeKey) 
 	{
 		return true;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Scope key is invalid. Please initialize LocalVariable with ScopeKey: %s"), *ScopeKey);
+	SHIDEN_WARNING("Scope key is invalid. Please initialize LocalVariable with ScopeKey: {key}", *ScopeKey);
 	return false;
 }

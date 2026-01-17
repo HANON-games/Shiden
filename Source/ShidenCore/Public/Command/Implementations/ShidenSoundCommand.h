@@ -26,6 +26,7 @@ class SHIDENCORE_API UShidenSoundCommand : public UShidenCommandObject
 		bool bDisableAutoStopPreviousVoices;
 		bool bWaitForFadeCompletion;
 		bool bWaitForSoundCompletion;
+		bool bUseGlobalBGM;
 		EShidenSoundType SoundType;
 	};
 

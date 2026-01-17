@@ -74,13 +74,14 @@ public:
 	 * @param Type The type of sound to stop (BGM or Voice)
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void StopSound(const int32& TrackId, const EShidenSoundType Type);
+	void StopSound(const int32 TrackId, const EShidenSoundType Type);
 
 	/**
-	 * Stops all currently playing voice sounds.
+	 * Stops all currently playing sounds of the specified type.
+	 * @param Type The type of sound to stop (BGM, SE, or Voice)
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
-	void StopVoices();
+	void StopSounds(const EShidenSoundType Type);
 
 	/**
 	 * Adjusts the volume of a background music track with fade effects.
@@ -90,7 +91,16 @@ public:
 	 * @param FaderCurve The curve type to use for the volume fade transition
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound", DisplayName = "Adjust BGM Volume")
-	void AdjustBGMVolume(const int32& TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve);
+	void AdjustBGMVolume(const int32 TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FaderCurve);
+	
+	/**
+	 * Pauses or resumes a specific sound by track ID and sound type.
+	 * @param TrackId The unique identifier of the sound track to pause/resume
+	 * @param Type The type of sound to pause/resume (BGM or Voice)
+	 * @param bPause True to pause the sound, false to resume
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
+	void PauseSound(const int32 TrackId, const EShidenSoundType Type, const bool bPause);
 
 	/**
 	 * Pauses or resumes all currently playing sounds.

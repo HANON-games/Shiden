@@ -29,7 +29,7 @@ namespace ShidenConditionalCommandHelpers
 		FString Operator;
 		FString RightHandValue;
 	};
-	
+
 	bool TryParseVariableCondition(const FShidenCommand& Command, FVariableConditionArgs& Args, FString& ErrorMessage);
 
 	bool TryEvaluateVariableCondition(const FString& ProcessName, const FVariableConditionArgs& Args, bool& bResult, FString& ErrorMessage);
@@ -47,7 +47,7 @@ namespace ShidenConditionalCommandHelpers
 	bool TrySkipToNextIfBranch(const FString& ProcessName, int32 StartIndex, FString& CommandName, int32& ResultIndex, FString& ErrorMessage);
 
 	bool TryFindEndIfIndex(const FString& ProcessName, int32 StartIndex, int32& ResultIndex, FString& ErrorMessage);
-	
+
 	// For LoopWhile/LoopWhileExpression
 	bool TryFindEndLoopWhileIndex(const FString& ProcessName, int32 StartIndex, int32& ResultIndex, FString& ErrorMessage);
 }

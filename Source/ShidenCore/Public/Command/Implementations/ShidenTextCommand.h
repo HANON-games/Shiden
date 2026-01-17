@@ -352,6 +352,8 @@ private:
 
 	UInputAction* GetNextInputAction() const;
 
+	static constexpr int32 MaxLanguageCount = 10;
+
 	static bool TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage);
 
 	static FString GetTextByLanguageIndex(const TArray<FString>& Texts, const int32 LanguageIndex);

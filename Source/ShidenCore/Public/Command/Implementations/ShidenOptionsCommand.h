@@ -12,6 +12,8 @@ class SHIDENCORE_API UShidenOptionsCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 
+	static constexpr int32 MaxLanguageCount = 10;
+
 	struct FOptions
 	{
 		TArray<FString> Options;

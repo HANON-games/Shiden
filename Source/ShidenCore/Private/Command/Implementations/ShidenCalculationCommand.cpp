@@ -57,7 +57,6 @@ bool UShidenCalculationCommand::TryCalculateAndUpdateVariable(const FCalculation
                                                               const FString& ProcessName, FString& ErrorMessage)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	check(ShidenSubsystem);
 
 	bool bBooleanValue;
 	FString StringValue;
@@ -240,12 +239,16 @@ bool UShidenCalculationCommand::CalculateFloat(const FString& Operator, const fl
 
 	if (Operator == TEXT("/="))
 	{
+		// Align with UKismetMathLibrary behavior:
+		// If divisor is zero, return zero (but still return true)
 		Result = FMath::IsNearlyZero(B) ? 0.0f : A / B;
 		return true;
 	}
 
 	if (Operator == TEXT("%="))
 	{
+		// Align with UKismetMathLibrary behavior:
+		// If divisor is zero, return zero (but still return true)
 		Result = FMath::IsNearlyZero(B) ? 0.0f : FMath::Fmod(A, B);
 		return true;
 	}
@@ -276,12 +279,16 @@ bool UShidenCalculationCommand::CalculateInteger(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
+		// Align with UKismetMathLibrary behavior:
+		// If divisor is zero, return zero (but still return true)
 		Result = B == 0 ? 0 : A / B;
 		return true;
 	}
 
 	if (Operator == TEXT("%="))
 	{
+		// Align with UKismetMathLibrary behavior:
+		// If divisor is zero, return zero (but still return true)
 		Result = B == 0 ? 0 : A % B;
 		return true;
 	}
@@ -313,8 +320,15 @@ bool UShidenCalculationCommand::CalculateVector2(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result.X = FMath::IsNearlyZero(B.X) ? 0.0f : A.X / B.X;
-		Result.Y = FMath::IsNearlyZero(B.Y) ? 0.0f : A.Y / B.Y;
+		// Align with UKismetMathLibrary::Divide_Vector2DVector2D behavior:
+		// If any element is zero, return zero vector (but still return true)
+		if (FMath::IsNearlyZero(B.X) || FMath::IsNearlyZero(B.Y))
+		{
+			Result = FVector2D::ZeroVector;
+			return true;
+		}
+		Result.X = A.X / B.X;
+		Result.Y = A.Y / B.Y;
 		return true;
 	}
 
@@ -344,9 +358,16 @@ bool UShidenCalculationCommand::CalculateVector3(const FString& Operator, const 
 
 	if (Operator == TEXT("/="))
 	{
-		Result.X = FMath::IsNearlyZero(B.X) ? 0.0f : A.X / B.X;
-		Result.Y = FMath::IsNearlyZero(B.Y) ? 0.0f : A.Y / B.Y;
-		Result.Z = FMath::IsNearlyZero(B.Z) ? 0.0f : A.Z / B.Z;
+		// Align with UKismetMathLibrary::Divide_VectorVector behavior:
+		// If any element is zero, return zero vector (but still return true)
+		if (FMath::IsNearlyZero(B.X) || FMath::IsNearlyZero(B.Y) || FMath::IsNearlyZero(B.Z))
+		{
+			Result = FVector::ZeroVector;
+			return true;
+		}
+		Result.X = A.X / B.X;
+		Result.Y = A.Y / B.Y;
+		Result.Z = A.Z / B.Z;
 		return true;
 	}
 

@@ -1,6 +1,7 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
 #include "Save/ShidenUserSaveGame.h"
+#include "System/ShidenStructuredLog.h"
 #include "Config/ShidenProjectConfig.h"
 #include "Engine/Engine.h"
 #include "System/ShidenSubsystem.h"
@@ -9,25 +10,25 @@ bool UShidenUserSaveGame::IsValidSlotName(const FString& SlotName)
 {
 	if (SlotName.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot use empty string as user save slot name"));
+		SHIDEN_ERROR("Cannot use empty string as user save slot name");
 		return false;
 	}
-	
+
 	if (SlotName == TEXT("ShidenSystemData"))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSystemData\" as user save slot name"));
+		SHIDEN_ERROR("Cannot use 'ShidenSystemData' as user save slot name");
 		return false;
 	}
 
 	if (SlotName == TEXT("ShidenSaveSlots"))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenSaveSlots\" as user save slot name"));
+		SHIDEN_ERROR("Cannot use 'ShidenSaveSlots' as user save slot name");
 		return false;
 	}
 
 	if (SlotName == TEXT("ShidenPredefinedSystemData"))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot use \"ShidenPredefinedSystemData\" as user save slot name"));
+		SHIDEN_ERROR("Cannot use 'ShidenPredefinedSystemData' as user save slot name");
 		return false;
 	}
 
@@ -45,11 +46,11 @@ TObjectPtr<UShidenUserSaveGame> UShidenUserSaveGame::GetOrCreate(const FString& 
 		// If it differs from save game class, issue a warning
 		if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Loaded ShidenUserSaveGame is not of the expected class. Expected %s but got %s."),
-			       *SaveGameClass->GetName(),
-			       *SaveGame->GetClass()->GetName());
+			SHIDEN_WARNING("Loaded ShidenUserSaveGame is not of the expected class. Expected {expected} but got {actual}.",
+			               *SaveGameClass->GetName(),
+			               *SaveGame->GetClass()->GetName());
 		}
-		const TObjectPtr<UShidenUserSaveGame> UserSaveGame =  Cast<UShidenUserSaveGame>(SaveGame);
+		const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(SaveGame);
 		UserSaveGame->SlotName = InSlotName;
 		return UserSaveGame;
 	}
@@ -58,7 +59,7 @@ TObjectPtr<UShidenUserSaveGame> UShidenUserSaveGame::GetOrCreate(const FString& 
 	{
 		SaveGameClass = StaticClass();
 	}
-	
+
 	const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
 	UserSaveGame->SlotName = InSlotName;
 	return UserSaveGame;
@@ -80,7 +81,7 @@ void UShidenUserSaveGame::Apply() const
 void UShidenUserSaveGame::Prepare()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	ScenarioProperties = ShidenSubsystem->ScenarioProperties;
 	UserVariable = ShidenSubsystem->UserVariable;
 	LocalVariable = ShidenSubsystem->LocalVariable;

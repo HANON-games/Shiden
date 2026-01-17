@@ -1,6 +1,6 @@
 <img src="https://img.shields.io/github/license/HANON-games/Shiden"> <img src="https://img.shields.io/github/v/release/HANON-games/Shiden"> <img src="https://img.shields.io/github/release-date/HANON-games/Shiden"> <img src="https://img.shields.io/github/created-at/HANON-games/Shiden"> <img src="https://img.shields.io/github/downloads/HANON-games/Shiden/total"> <img src="https://img.shields.io/github/stars/HANON-games/Shiden?style=flat"> <img src="https://img.shields.io/github/forks/HANON-games/Shiden?style=flat"> <img src="https://img.shields.io/github/repo-size/HANON-games/Shiden">
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/HANON-games/Shiden)
+![UE Version](https://img.shields.io/badge/Unreal%20Engine-5.3--5.7-0e1128?logo=unrealengine&logoColor=white) [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/HanonHeartKnows?style=social)](https://twitter.com/HanonHeartKnows) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/HANON-games/Shiden)
 
 # Shiden Visual Novel Editor
 

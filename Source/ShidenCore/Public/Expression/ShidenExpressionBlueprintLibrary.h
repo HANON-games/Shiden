@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Variable/ShidenLocalVariable.h"
 #include "ShidenExpressionBlueprintLibrary.generated.h"
 
 UCLASS()
@@ -177,4 +178,9 @@ private:
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
 
 	static FString EscapeStringForExpression(const FString& StringValue);
+
+	template<typename TVariable>
+	static FString TryGetVariableValueAsExpressionString(TVariable& Variable, const FShidenVariableDefinition& Definition);
+
+	static FString TryGetLocalVariableValueAsExpressionString(FShidenLocalVariable& LocalVariable, const FString& ScopeKey, const FShidenVariableDefinition& Definition);
 };

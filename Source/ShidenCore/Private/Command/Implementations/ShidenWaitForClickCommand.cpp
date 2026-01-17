@@ -1,29 +1,29 @@
 // Copyright (c) 2025 HANON. All Rights Reserved.
 
-#include "Command/Implementations/ShidenWaitClickCommand.h"
+#include "Command/Implementations/ShidenWaitForClickCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "EnhancedInputComponent.h"
 
-void UShidenWaitClickCommand::ParseFromCommand(const FShidenCommand& Command, FWaitClickCommandArgs& Args)
+void UShidenWaitForClickCommand::ParseFromCommand(const FShidenCommand& Command, FWaitForClickCommandArgs& Args)
 {
 	Args.bCanSkip = Command.GetArgAsBool("CanSkip");
 }
 
-void UShidenWaitClickCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                               UShidenWidget* ShidenWidget,
-                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                               UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
+void UShidenWaitForClickCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                                  UShidenWidget* ShidenWidget,
+                                                                  const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                                  UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
 	ParseFromCommand(Command, Args);
 	bPressNext = true;
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenWaitClickCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                            UShidenWidget* ShidenWidget,
-                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
-                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
-                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
+void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
+                                                               UShidenWidget* ShidenWidget,
+                                                               const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+                                                               const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
+                                                               FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	const bool bCanSkipCommand = UShidenScenarioBlueprintLibrary::CanSkipCommand();
 
@@ -59,7 +59,7 @@ void UShidenWaitClickCommand::ProcessCommand_Implementation(const FString& Proce
 	}
 }
 
-UInputAction* UShidenWaitClickCommand::LoadInputActionFromPath(const FString& Path)
+UInputAction* UShidenWaitForClickCommand::LoadInputActionFromPath(const FString& Path)
 {
 	return Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, *Path));
 }
