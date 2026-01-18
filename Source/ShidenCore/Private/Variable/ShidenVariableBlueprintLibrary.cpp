@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 // ReSharper disable CppRedundantParentheses
 #include "Variable/ShidenVariableBlueprintLibrary.h"

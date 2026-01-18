@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "ShidenCommandHelpers.h"
 #include "Expression/ShidenExpressionBlueprintLibrary.h"
@@ -239,15 +239,8 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				if (Depth > 0)
-				{
-					Depth--;
-				}
-				else
-				{
-					ErrorMessage = TEXT("Mismatched If/EndIf structure detected - EndIf without matching If.");
-					return false;
-				}
+				// Since we already returned when Depth == 0, Depth > 0 is guaranteed here, so it won't go below 0
+				Depth--;
 			}
 		}
 
@@ -294,15 +287,8 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				if (Depth > 0)
-				{
-					Depth--;
-				}
-				else
-				{
-					ErrorMessage = TEXT("Mismatched If/EndIf structure detected - EndIf without matching If.");
-					return false;
-				}
+				// Since we already returned when Depth == 0, Depth > 0 is guaranteed here, so it won't go below 0
+				Depth--;
 			}
 		}
 
@@ -349,15 +335,8 @@ namespace ShidenConditionalCommandHelpers
 					ResultIndex = Index;
 					return true;
 				}
-				if (Depth > 0)
-				{
-					Depth--;
-				}
-				else
-				{
-					ErrorMessage = TEXT("Mismatched LoopWhile/EndLoopWhile structure detected - EndLoopWhile without matching LoopWhile.");
-					return false;
-				}
+				// Since we already returned when Depth == 0, Depth > 0 is guaranteed here, so it won't go below 0
+				Depth--;
 			}
 		}
 

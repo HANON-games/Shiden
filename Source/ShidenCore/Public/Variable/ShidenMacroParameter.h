@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -15,4 +15,7 @@ struct SHIDENCORE_API FShidenMacroParameter : public FShidenVariableDefinition
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	TArray<FString> EnumValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	FText ToolTip;
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Expression/ShidenExpressionEvaluator.h"
 #include "Misc/DefaultValueHelper.h"
@@ -1791,7 +1791,7 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 	};
 
 	// Editor function macros for variable definition queries
-#define EDITOR_VARDEF_FUNC(NAME, EXPR) \
+#define EDITOR_VARDEF_FUNC(NAME, EXPR, DEFAULT_VALUE) \
 		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
 		{ \
 			if (!CheckArgCount(1)) { return false; } \
@@ -1803,7 +1803,7 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 			const FString VariableRef = ExtractVariableRef(Args[0].StringValue); \
 			if (VariableRef.IsEmpty()) \
 			{ \
-				OutResult = FShidenExpressionValue(false); \
+				OutResult = FShidenExpressionValue(DEFAULT_VALUE); \
 				return true; \
 			} \
 			FString Kind, Name; \
@@ -1832,20 +1832,32 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 			return true; \
 		}
 
+#define EDITOR_CONTEXT_FUNC(NAME, EXPR) \
+		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
+		{ \
+			if (!CheckArgCount(0)) { return false; } \
+			OutResult = FShidenExpressionValue(EXPR); \
+			return true; \
+		}
+	
 	// Editor variable definition functions
-	EDITOR_VARDEF_FUNC("IsReadOnlyVariable", VarDef->bIsReadOnly)
-	EDITOR_VARDEF_FUNC("IsWritableVariable", !VarDef->bIsReadOnly)
-	EDITOR_VARDEF_FUNC("GetVariableDefaultValue", VarDef->DefaultValue)
-	EDITOR_VARDEF_FUNC("GetVariableType", GetVariableType(VarDef->Type))
+	EDITOR_VARDEF_FUNC("IsReadOnlyVariable", VarDef->bIsReadOnly, false)
+	EDITOR_VARDEF_FUNC("IsWritableVariable", !VarDef->bIsReadOnly, false)
+	EDITOR_VARDEF_FUNC("GetVariableDefaultValue", VarDef->DefaultValue, FString())
+	EDITOR_VARDEF_FUNC("GetVariableType", GetVariableType(VarDef->Type), FString())
 
 	// Editor string functions
 	EDITOR_STRING_FUNC("IsSingleVariable", IsSingleVariable(Str))
 	EDITOR_STRING_FUNC("HasVariable", HasVariable(Str))
 
+	// Editor context functions
+	EDITOR_CONTEXT_FUNC("IsCalledFromMacro", Context && Context->bIsMacro)
+	
 	// Clean up macros
 #undef EDITOR_VARDEF_FUNC
 #undef EDITOR_STRING_FUNC
-
+#undef EDITOR_CONTEXT_FUNC
+	
 	// Not an editor function
 	return false;
 }

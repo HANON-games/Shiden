@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenTextInputCommand.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
