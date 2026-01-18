@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -223,7 +223,7 @@ public:
 	 * Editor-only: Starts a screen fade animation for preview (unified function for both fade in and fade out).
 	 * Uses ShidenWidget's BaseLayer to display the fade.
 	 */
-	static bool TryStartScreenFadePreview(const TObjectPtr<const class UShidenWidget> ShidenWidget, const FString& LayerName, float FadeDuration,
+	static bool TryStartScreenFadePreview(const TObjectPtr<const UShidenWidget> ShidenWidget, const FString& LayerName, float FadeDuration,
 	                                      EEasingFunc::Type FadeFunction, FLinearColor TargetColor, bool bIsFadeOut,
 	                                      int32 Steps = 2, float BlendExp = 2.0f, int32 ZOrder = 250);
 #endif

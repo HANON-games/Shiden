@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Command/ShidenStandardCommandDefinitions.h"
 
@@ -157,6 +157,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TextWidgetNameKey", "TextWidgetName"),
+							.ToolTip = LOCTEXT("TextWidgetNameTooltip", "Specifies the text widget name where text will be displayed."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -166,6 +167,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TextTypeKey", "TextType"),
+							.ToolTip = LOCTEXT("TextTypeTooltip", "Specifies the text type.\r\nThe display frame changes based on this type."),
 							.TemplateWidget = TextTypeInputTemplate
 						}
 					},
@@ -175,6 +177,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TextKey", "Text"),
+							.ToolTip = LOCTEXT("TextTooltip", "Specifies the text to display."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -185,6 +188,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForInputKey", "WaitForInput"),
+							.ToolTip = LOCTEXT("WaitForInputTooltip", "Specifies whether to wait for user interaction after text display."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -194,6 +198,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("InstantTextDisplayKey", "InstantTextDisplay"),
+							.ToolTip = LOCTEXT("InstantTextDisplayTooltip", "Specifies whether to display text immediately."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -203,6 +208,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VoiceKey", "Voice"),
+							.ToolTip = LOCTEXT("VoiceTooltip", "Specifies the voice to play alongside the text."),
 							.TemplateWidget = SoundInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("Voice")}},
 							.WarningMessages = {
@@ -219,6 +225,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VoiceTrackIdKey", "VoiceTrackId"),
+							.ToolTip = LOCTEXT("VoiceTrackIdTooltip", "Specifies the voice track ID."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -229,6 +236,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DialogueBlipKey", "TextBlip"),
+							.ToolTip = LOCTEXT("TextBlipTooltip", "Specifies the text blip sound."),
 							.TemplateWidget = SoundInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("Voice")}},
 							.WarningMessages = {
@@ -245,6 +253,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+							.ToolTip = LOCTEXT("DisableAutoStopPreviousVoicesTooltip", "Specifies whether to prevent stopping the previous voice playback,\r\neven when the setting to stop previous voices\r\nduring dialogue advancement or voice playback is enabled.\r\nUse this when you want voices to overlap."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -254,6 +263,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ContinueFromThePreviousTextKey", "ContinueFrom\r\nThePreviousText"),
+							.ToolTip = LOCTEXT("ContinueFromThePreviousTextTooltip", "Specifies whether to append to the previous text."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -263,6 +273,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Key", "Language 2"),
+							.ToolTip = LOCTEXT("Language2Tooltip", "Specifies the display text for the second language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -273,6 +284,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Key", "Language 3"),
+							.ToolTip = LOCTEXT("Language3Tooltip", "Specifies the display text for the third language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -283,6 +295,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Key", "Language 4"),
+							.ToolTip = LOCTEXT("Language4Tooltip", "Specifies the display text for the fourth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -293,6 +306,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Key", "Language 5"),
+							.ToolTip = LOCTEXT("Language5Tooltip", "Specifies the display text for the fifth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -303,6 +317,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Key", "Language 6"),
+							.ToolTip = LOCTEXT("Language6Tooltip", "Specifies the display text for the sixth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -313,6 +328,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Key", "Language 7"),
+							.ToolTip = LOCTEXT("Language7Tooltip", "Specifies the display text for the seventh language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -323,6 +339,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Key", "Language 8"),
+							.ToolTip = LOCTEXT("Language8Tooltip", "Specifies the display text for the eighth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -333,6 +350,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Key", "Language 9"),
+							.ToolTip = LOCTEXT("Language9Tooltip", "Specifies the display text for the ninth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -343,6 +361,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Key", "Language 10"),
+							.ToolTip = LOCTEXT("Language10Tooltip", "Specifies the display text for the tenth language."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -367,6 +386,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.ToolTip = LOCTEXT("ImageSlotNameTooltip", "Specifies the slot where the image will be displayed."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -376,6 +396,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ImageKey", "Image"),
+							.ToolTip = LOCTEXT("ImageTooltip", "Specifies the image to display.\r\nIf not specified, the image will fade out."),
 							.TemplateWidget = AssetInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("SlateBrush")}},
 							.WarningMessages = {
@@ -392,6 +413,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
+							.ToolTip = LOCTEXT("ImageOverwritePositionTooltip", "Specifies the position to override when displaying the image."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -402,6 +424,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
+							.ToolTip = LOCTEXT("ImageOverwriteSizeTooltip", "Specifies the size to override when displaying the image."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -412,6 +435,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
+							.ToolTip = LOCTEXT("ImageOverwriteSizeToContentTooltip", "Specifies the SizeToContent setting to override when displaying the image."),
 							.TemplateWidget = BooleanInputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -422,6 +446,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.ToolTip = LOCTEXT("FadeFunctionTooltip", "Specifies how the fade works."),
 							.TemplateWidget = EasingFuncInputTemplate
 						}
 					},
@@ -431,6 +456,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.ToolTip = LOCTEXT("FadeDurationTooltip", "Specifies the fade duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -441,6 +467,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.ToolTip = LOCTEXT("StepsTooltip", "Specifies the number of steps, used by the Step fade function."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
 							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Step\"")
@@ -452,6 +479,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.ToolTip = LOCTEXT("BlendExpTooltip", "Specifies the exponent used by certain blend functions\r\nto control the shape of the curve."),
 							.TemplateWidget = FloatInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Ease In\" || { FadeFunction } == \"Ease Out\" || { FadeFunction } == \"Ease In Out\"")
 						}
@@ -462,6 +490,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("WaitForAnimationCompletionTooltip", "Specifies whether to wait for animation completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -485,6 +514,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("SoundTypeKey", "SoundType"),
+							.ToolTip = LOCTEXT("SoundTypeTooltip", "Specifies the sound type."),
 							.TemplateWidget = SoundTypeInputTemplate
 						}
 					},
@@ -494,6 +524,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
+							.ToolTip = LOCTEXT("TrackIdTooltip", "Specifies the track ID for playback.\r\nIf a sound is already playing on that track ID, it will be stopped."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}},
 							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } != \"SE\"")
@@ -505,6 +536,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("SoundSourceKey", "SoundSource"),
+							.ToolTip = LOCTEXT("SoundSourceTooltip", "Specifies the sound source to play.\r\nIf empty, stops the currently playing sound on that track ID."),
 							.TemplateWidget = SoundInputTemplate,
 							.TemplateParameters = {{TEXT("SoundTypeSourceArgName"), TEXT("SoundType")}},
 							.WarningMessages = {
@@ -512,7 +544,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 									.Condition = TEXT("IsWritableVariable({ SoundSource })"),
 									.Message = LOCTEXT("LazyLoadAssetWarning", "This asset will be loaded when this line is reached.\nSince it may cause loading delays, it is not suitable for large assets.\nAdditionally, assets specified via this variable will not appear\nin the Shiden Asset List.")
 								}
-							}
+							},
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("{ SoundType } == \"SE\" && ({ SoundSource } == \"{EMPTY}\" || { SoundSource } == \"None\")"),
+									.Message = LOCTEXT("SESoundSourceEmptyError", "Sound source cannot be empty when SoundType is SE.")
+								}
+							},
 						}
 					},
 					{
@@ -521,6 +559,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
+							.ToolTip = LOCTEXT("VolumeTooltip", "Specifies the playback volume."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -531,6 +570,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("PitchKey", "Pitch"),
+							.ToolTip = LOCTEXT("PitchTooltip", "Specifies the sound pitch."),
 							.TemplateWidget = FloatInputTemplate
 						}
 					},
@@ -540,6 +580,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StartTimeKey", "StartTime"),
+							.ToolTip = LOCTEXT("StartTimeTooltip", "Specifies the starting position of the sound."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -550,6 +591,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeTypeKey", "FadeType"),
+							.ToolTip = LOCTEXT("FadeTypeTooltip", "Specifies whether to fade in or fade out the sound."),
 							.TemplateWidget = FadeTypeInputTemplate
 						}
 					},
@@ -559,6 +601,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.ToolTip = LOCTEXT("FadeFunctionTooltip", "Specifies how the fade works."),
 							.TemplateWidget = BGMFadeFuncInputTemplate
 						}
 					},
@@ -568,6 +611,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.ToolTip = LOCTEXT("FadeDurationTooltip", "Specifies the fade duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -578,6 +622,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DisableAutoStopPreviousVoicesKey", "DisableAutoStop\r\nPreviousVoices"),
+							.ToolTip = LOCTEXT("DisableAutoStopPreviousVoicesTooltip", "Specifies whether to prevent stopping the previous voice playback,\r\neven when the setting to stop previous voices\r\nduring dialogue advancement or voice playback is enabled.\r\nUse this when you want voices to overlap."),
 							.TemplateWidget = BooleanInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } == \"Voice\"")
 						}
@@ -588,6 +633,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForFadeCompletionKey", "WaitForFadeCompletion"),
+							.ToolTip = LOCTEXT("WaitForFadeCompletionTooltip", "Specifies whether to wait for fade completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -597,6 +643,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForSoundCompletionKey", "WaitForSoundCompletion"),
+							.ToolTip = LOCTEXT("WaitForSoundCompletionTooltip", "Specifies whether to wait for sound completion.\r\nNote: This will cause an error if the specified SoundCue is set to loop."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -606,6 +653,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("UseGlobalBGMKey", "UseGlobalBGM"),
+							.ToolTip = LOCTEXT("UseGlobalBGMTooltip", "Specifies whether to use global BGM.\r\nGlobal BGM can be played across scenarios."),
 							.TemplateWidget = BooleanInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ SoundType }) || { SoundType } == \"BGM\"")
 						}
@@ -628,6 +676,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
+							.ToolTip = LOCTEXT("AdjustBGMVolumeTrackIdTooltip", "Specifies the target BGM track ID."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -638,6 +687,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
+							.ToolTip = LOCTEXT("VolumeTooltip", "Specifies the playback volume."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -648,6 +698,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.ToolTip = LOCTEXT("FadeFunctionTooltip", "Specifies how the fade works."),
 							.TemplateWidget = BGMFadeFuncInputTemplate
 						}
 					},
@@ -657,6 +708,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.ToolTip = LOCTEXT("FadeDurationTooltip", "Specifies the fade duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -667,6 +719,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("AdjustBGMVolumeWaitForCompletionTooltip", "Specifies whether to wait for volume adjustment completion."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -689,6 +742,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
+							.ToolTip = LOCTEXT("OptionsDestinationVariableKindTooltip", "Specifies the variable kind to store the selection result."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -698,6 +752,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.ToolTip = LOCTEXT("OptionsAssignVariableNameTooltip", "Specifies the variable name to store the selection result.\r\nAfter a choice is made, this variable will be assigned\r\na value from 0-4 based on the selected choice."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("DestinationVariableKind")},
@@ -712,6 +767,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("HideTextLayerKey", "HideTextLayer"),
+							.ToolTip = LOCTEXT("OptionsHideTextLayerTooltip", "Specifies whether to hide the text layer while displaying options."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -721,6 +777,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Option1Key", "Option 1"),
+							.ToolTip = LOCTEXT("Option1Tooltip", "Specifies the display content for option 1."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -731,6 +788,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Option2Key", "Option 2"),
+							.ToolTip = LOCTEXT("Option2Tooltip", "Specifies the display content for option 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -741,6 +799,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Option3Key", "Option 3"),
+							.ToolTip = LOCTEXT("Option3Tooltip", "Specifies the display content for option 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -751,6 +810,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Option4Key", "Option 4"),
+							.ToolTip = LOCTEXT("Option4Tooltip", "Specifies the display content for option 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -761,6 +821,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Option5Key", "Option 5"),
+							.ToolTip = LOCTEXT("Option5Tooltip", "Specifies the display content for option 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -771,6 +832,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Option1Key", "Language 2 Option 1"),
+							.ToolTip = LOCTEXT("Language2Option1Tooltip", "Specifies the option 1 content for language 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -781,6 +843,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Option2Key", "Language 2 Option 2"),
+							.ToolTip = LOCTEXT("Language2Option2Tooltip", "Specifies the option 2 content for language 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -791,6 +854,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Option3Key", "Language 2 Option 3"),
+							.ToolTip = LOCTEXT("Language2Option3Tooltip", "Specifies the option 3 content for language 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -801,6 +865,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Option4Key", "Language 2 Option 4"),
+							.ToolTip = LOCTEXT("Language2Option4Tooltip", "Specifies the option 4 content for language 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -811,6 +876,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language2Option5Key", "Language 2 Option 5"),
+							.ToolTip = LOCTEXT("Language2Option5Tooltip", "Specifies the option 5 content for language 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -821,6 +887,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Option1Key", "Language 3 Option 1"),
+							.ToolTip = LOCTEXT("Language3Option1Tooltip", "Specifies the option 1 content for language 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -831,6 +898,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Option2Key", "Language 3 Option 2"),
+							.ToolTip = LOCTEXT("Language3Option2Tooltip", "Specifies the option 2 content for language 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -841,6 +909,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Option3Key", "Language 3 Option 3"),
+							.ToolTip = LOCTEXT("Language3Option3Tooltip", "Specifies the option 3 content for language 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -851,6 +920,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Option4Key", "Language 3 Option 4"),
+							.ToolTip = LOCTEXT("Language3Option4Tooltip", "Specifies the option 4 content for language 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -861,6 +931,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language3Option5Key", "Language 3 Option 5"),
+							.ToolTip = LOCTEXT("Language3Option5Tooltip", "Specifies the option 5 content for language 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -871,6 +942,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Option1Key", "Language 4 Option 1"),
+							.ToolTip = LOCTEXT("Language4Option1Tooltip", "Specifies the option 1 content for language 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -881,6 +953,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Option2Key", "Language 4 Option 2"),
+							.ToolTip = LOCTEXT("Language4Option2Tooltip", "Specifies the option 2 content for language 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -891,6 +964,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Option3Key", "Language 4 Option 3"),
+							.ToolTip = LOCTEXT("Language4Option3Tooltip", "Specifies the option 3 content for language 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -901,6 +975,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Option4Key", "Language 4 Option 4"),
+							.ToolTip = LOCTEXT("Language4Option4Tooltip", "Specifies the option 4 content for language 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -911,6 +986,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language4Option5Key", "Language 4 Option 5"),
+							.ToolTip = LOCTEXT("Language4Option5Tooltip", "Specifies the option 5 content for language 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -921,6 +997,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Option1Key", "Language 5 Option 1"),
+							.ToolTip = LOCTEXT("Language5Option1Tooltip", "Specifies the option 1 content for language 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -931,6 +1008,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Option2Key", "Language 5 Option 2"),
+							.ToolTip = LOCTEXT("Language5Option2Tooltip", "Specifies the option 2 content for language 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -941,6 +1019,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Option3Key", "Language 5 Option 3"),
+							.ToolTip = LOCTEXT("Language5Option3Tooltip", "Specifies the option 3 content for language 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -951,6 +1030,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Option4Key", "Language 5 Option 4"),
+							.ToolTip = LOCTEXT("Language5Option4Tooltip", "Specifies the option 4 content for language 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -961,6 +1041,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language5Option5Key", "Language 5 Option 5"),
+							.ToolTip = LOCTEXT("Language5Option5Tooltip", "Specifies the option 5 content for language 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -971,6 +1052,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Option1Key", "Language 6 Option 1"),
+							.ToolTip = LOCTEXT("Language6Option1Tooltip", "Specifies the option 1 content for language 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -981,6 +1063,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Option2Key", "Language 6 Option 2"),
+							.ToolTip = LOCTEXT("Language6Option2Tooltip", "Specifies the option 2 content for language 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -991,6 +1074,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Option3Key", "Language 6 Option 3"),
+							.ToolTip = LOCTEXT("Language6Option3Tooltip", "Specifies the option 3 content for language 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1001,6 +1085,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Option4Key", "Language 6 Option 4"),
+							.ToolTip = LOCTEXT("Language6Option4Tooltip", "Specifies the option 4 content for language 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1011,6 +1096,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language6Option5Key", "Language 6 Option 5"),
+							.ToolTip = LOCTEXT("Language6Option5Tooltip", "Specifies the option 5 content for language 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1021,6 +1107,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Option1Key", "Language 7 Option 1"),
+							.ToolTip = LOCTEXT("Language7Option1Tooltip", "Specifies the option 1 content for language 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1031,6 +1118,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Option2Key", "Language 7 Option 2"),
+							.ToolTip = LOCTEXT("Language7Option2Tooltip", "Specifies the option 2 content for language 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1041,6 +1129,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Option3Key", "Language 7 Option 3"),
+							.ToolTip = LOCTEXT("Language7Option3Tooltip", "Specifies the option 3 content for language 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1051,6 +1140,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Option4Key", "Language 7 Option 4"),
+							.ToolTip = LOCTEXT("Language7Option4Tooltip", "Specifies the option 4 content for language 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1061,6 +1151,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language7Option5Key", "Language 7 Option 5"),
+							.ToolTip = LOCTEXT("Language7Option5Tooltip", "Specifies the option 5 content for language 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1071,6 +1162,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Option1Key", "Language 8 Option 1"),
+							.ToolTip = LOCTEXT("Language8Option1Tooltip", "Specifies the option 1 content for language 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1081,6 +1173,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Option2Key", "Language 8 Option 2"),
+							.ToolTip = LOCTEXT("Language8Option2Tooltip", "Specifies the option 2 content for language 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1091,6 +1184,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Option3Key", "Language 8 Option 3"),
+							.ToolTip = LOCTEXT("Language8Option3Tooltip", "Specifies the option 3 content for language 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1101,6 +1195,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Option4Key", "Language 8 Option 4"),
+							.ToolTip = LOCTEXT("Language8Option4Tooltip", "Specifies the option 4 content for language 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1111,6 +1206,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language8Option5Key", "Language 8 Option 5"),
+							.ToolTip = LOCTEXT("Language8Option5Tooltip", "Specifies the option 5 content for language 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1121,6 +1217,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Option1Key", "Language 9 Option 1"),
+							.ToolTip = LOCTEXT("Language9Option1Tooltip", "Specifies the option 1 content for language 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1131,6 +1228,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Option2Key", "Language 9 Option 2"),
+							.ToolTip = LOCTEXT("Language9Option2Tooltip", "Specifies the option 2 content for language 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1141,6 +1239,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Option3Key", "Language 9 Option 3"),
+							.ToolTip = LOCTEXT("Language9Option3Tooltip", "Specifies the option 3 content for language 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1151,6 +1250,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Option4Key", "Language 9 Option 4"),
+							.ToolTip = LOCTEXT("Language9Option4Tooltip", "Specifies the option 4 content for language 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1161,6 +1261,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language9Option5Key", "Language 9 Option 5"),
+							.ToolTip = LOCTEXT("Language9Option5Tooltip", "Specifies the option 5 content for language 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1171,6 +1272,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Option1Key", "Language 10 Option 1"),
+							.ToolTip = LOCTEXT("Language10Option1Tooltip", "Specifies the option 1 content for language 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1181,6 +1283,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Option2Key", "Language 10 Option 2"),
+							.ToolTip = LOCTEXT("Language10Option2Tooltip", "Specifies the option 2 content for language 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1191,6 +1294,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Option3Key", "Language 10 Option 3"),
+							.ToolTip = LOCTEXT("Language10Option3Tooltip", "Specifies the option 3 content for language 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1201,6 +1305,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Option4Key", "Language 10 Option 4"),
+							.ToolTip = LOCTEXT("Language10Option4Tooltip", "Specifies the option 4 content for language 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1211,6 +1316,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Language10Option5Key", "Language 10 Option 5"),
+							.ToolTip = LOCTEXT("Language10Option5Tooltip", "Specifies the option 5 content for language 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1235,6 +1341,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxLengthKey", "MaxLength"),
+							.ToolTip = LOCTEXT("MaxLengthTooltip", "Specifies the maximum number of characters that can be entered.\r\nUnlimited if not specified."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {
 								{TEXT("HasToggle"), TEXT("true")},
@@ -1248,6 +1355,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxLineCountKey", "MaxLineCount"),
+							.ToolTip = LOCTEXT("MaxLineCountTooltip", "Specifies the maximum number of lines that can be entered.\r\nUnlimited if not specified."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {
 								{TEXT("HasToggle"), TEXT("true")},
@@ -1261,6 +1369,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("AllowedCharacterRegexKey", "AllowedCharacterRegex"),
+							.ToolTip = LOCTEXT("AllowedCharacterRegexTooltip", "Specifies allowed characters using regular expression."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -1271,6 +1380,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DefaultTextKey", "DefaultText"),
+							.ToolTip = LOCTEXT("DefaultTextTooltip", "Specifies the content that is pre-filled in the input field."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1281,6 +1391,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("HintTextKey", "HintText"),
+							.ToolTip = LOCTEXT("HintTextTooltip", "Specifies the content shown when the input field is empty."),
 							.TemplateWidget = MultilineTextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1291,6 +1402,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationVariableKindKey", "DestinationVariableKind"),
+							.ToolTip = LOCTEXT("TextInputDestinationVariableKindTooltip", "Specifies the variable type to store the input result."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1300,6 +1412,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.ToolTip = LOCTEXT("TextInputAssignVariableNameTooltip", "Specifies the variable name to store the input result."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("DestinationVariableKind")},
@@ -1313,6 +1426,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("HideTextLayerKey", "HideTextLayer"),
+							.ToolTip = LOCTEXT("TextInputHideTextLayerTooltip", "Specifies whether to hide the text layer while displaying the input field."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -1334,6 +1448,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("AssignVariableKindTooltip", "Specifies the variable type to assign the value to."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1343,6 +1458,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("AssignVariableNameTooltip", "Specifies the variable name to assign the value to."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1356,6 +1472,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ValueKey", "Value"),
+							.ToolTip = LOCTEXT("AssignVariableValueTooltip", "Specifies the value to assign."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1383,6 +1500,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("AssignVariableKindTooltip", "Specifies the variable type to assign the value to."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1392,6 +1510,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("AssignVariableNameTooltip", "Specifies the variable name to assign the value to."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1405,6 +1524,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.ToolTip = LOCTEXT("ExpressionToEvaluateTooltip", "Specifies the expression to evaluate."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1427,6 +1547,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("CalculationVariableKindTooltip", "Specifies the variable type to modify."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1436,6 +1557,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("CalculationVariableNameTooltip", "Specifies the variable name to modify.\r\nThe calculation result will be stored in this variable."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1450,6 +1572,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.ToolTip = LOCTEXT("CalculationOperatorTooltip", "Specifies the calculation operator."),
 							.TemplateWidget = FlexCalculationOperatorInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1463,6 +1586,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ValueKey", "Value"),
+							.ToolTip = LOCTEXT("CalculationValueTooltip", "Specifies the value to use in the calculation."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1489,6 +1613,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("ConditionVariableKindTooltip", "Specifies the variable type to use for the condition."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1498,6 +1623,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("ConditionVariableNameTooltip", "Specifies the variable name to use for the condition."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
 						}
@@ -1508,6 +1634,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.ToolTip = LOCTEXT("ConditionOperatorTooltip", "Specifies the condition operator."),
 							.TemplateWidget = FlexOperatorInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1521,6 +1648,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.ToolTip = LOCTEXT("ConditionRightHandValueTooltip", "Specifies the right-hand value for the condition."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1547,6 +1675,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("ConditionVariableKindTooltip", "Specifies the variable type to use for the condition."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1556,6 +1685,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("ConditionVariableNameTooltip", "Specifies the variable name to use for the condition."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
 						}
@@ -1566,6 +1696,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.ToolTip = LOCTEXT("ConditionOperatorTooltip", "Specifies the condition operator."),
 							.TemplateWidget = FlexOperatorInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1579,6 +1710,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.ToolTip = LOCTEXT("ConditionRightHandValueTooltip", "Specifies the right-hand value for the condition."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1606,6 +1738,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.ToolTip = LOCTEXT("ExpressionToEvaluateTooltip", "Specifies the expression to evaluate."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1630,6 +1763,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.ToolTip = LOCTEXT("ExpressionToEvaluateTooltip", "Specifies the expression to evaluate."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1671,6 +1805,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("ConditionVariableKindTooltip", "Specifies the variable type to use for the condition."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -1680,6 +1815,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("ConditionVariableNameTooltip", "Specifies the variable name to use for the condition."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
 						}
@@ -1690,6 +1826,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.ToolTip = LOCTEXT("ConditionOperatorTooltip", "Specifies the condition operator."),
 							.TemplateWidget = FlexOperatorInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1703,6 +1840,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.ToolTip = LOCTEXT("ConditionRightHandValueTooltip", "Specifies the right-hand value for the condition."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -1730,6 +1868,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ExpressionKey", "Expression"),
+							.ToolTip = LOCTEXT("ExpressionToEvaluateTooltip", "Specifies the expression to evaluate."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -1762,6 +1901,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NameKey", "Name"),
+							.ToolTip = LOCTEXT("TagNameTooltip", "Specifies the tag name.\r\nPlease avoid using the same tag name twice in the same scenario."),
 							.TemplateWidget = TextInputTemplate
 						}
 					}
@@ -1784,6 +1924,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationTagNameKey", "DestinationTagName"),
+							.ToolTip = LOCTEXT("JumpDestinationTagNameTooltip", "Specifies the tag name to jump to."),
 							.TemplateWidget = TextInputTemplate
 						}
 					}
@@ -1807,11 +1948,13 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NextScenarioKey", "NextScenario"),
+							.ToolTip = LOCTEXT("NextScenarioTooltip", "Specifies the next scenario to play."),
 							.TemplateWidget = ScenarioInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Target"), TEXT("Scenario")},
 								{TEXT("HasToggle"), TEXT("true")}
-							}
+							},
+							.VisibilityCondition = TEXT("!IsCalledFromMacro()")
 						}
 					}
 				}
@@ -1833,6 +1976,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ReasonForInterruptionKey", "ReasonForInterruption"),
+							.ToolTip = LOCTEXT("BreakReasonTooltip", "Specifies the reason for interruption."),
 							.TemplateWidget = TextInputTemplate
 						}
 					}
@@ -1854,6 +1998,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("CommentKey", "Comment"),
+							.ToolTip = LOCTEXT("CommentTooltip", "Specifies the comment text."),
 							.TemplateWidget = TextInputTemplate
 						}
 					}
@@ -1877,6 +2022,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("AnimationNameKey", "AnimationName"),
+							.ToolTip = LOCTEXT("AnimationNameTooltip", "Specifies the animation name."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -1886,6 +2032,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StartTimeKey", "StartTime"),
+							.ToolTip = LOCTEXT("WidgetAnimationStartTimeTooltip", "Specifies the start position of the animation."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -1896,6 +2043,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NumLoopToPlayKey", "NumLoopToPlay"),
+							.ToolTip = LOCTEXT("NumLoopToPlayTooltip", "Specifies the number of times to loop the animation."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -1906,6 +2054,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("PlayModeKey", "PlayMode"),
+							.ToolTip = LOCTEXT("PlayModeTooltip", "Specifies the playback mode."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("Forward")},
@@ -1920,6 +2069,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("PlaybackSpeedKey", "PlaybackSpeed"),
+							.ToolTip = LOCTEXT("PlaybackSpeedTooltip", "Specifies the playback speed."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -1930,6 +2080,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("RestoreStateKey", "RestoreState"),
+							.ToolTip = LOCTEXT("RestoreStateTooltip", "Specifies whether to restore the state."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -1939,6 +2090,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("WaitForAnimationCompletionTooltip", "Specifies whether to wait for animation completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -1961,6 +2113,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.ToolTip = LOCTEXT("DelayDurationTooltip", "Specifies the wait time in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -1984,6 +2137,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FunctionNameKey", "FunctionName"),
+							.ToolTip = LOCTEXT("FunctionNameTooltip", "Specifies the function name to call."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -1993,6 +2147,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg1Key", "Arg 1"),
+							.ToolTip = LOCTEXT("Arg1Tooltip", "Specifies argument 1."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2003,6 +2158,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg2Key", "Arg 2"),
+							.ToolTip = LOCTEXT("Arg2Tooltip", "Specifies argument 2."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2013,6 +2169,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg3Key", "Arg 3"),
+							.ToolTip = LOCTEXT("Arg3Tooltip", "Specifies argument 3."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2023,6 +2180,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg4Key", "Arg 4"),
+							.ToolTip = LOCTEXT("Arg4Tooltip", "Specifies argument 4."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2033,6 +2191,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg5Key", "Arg 5"),
+							.ToolTip = LOCTEXT("Arg5Tooltip", "Specifies argument 5."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2043,6 +2202,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg6Key", "Arg 6"),
+							.ToolTip = LOCTEXT("Arg6Tooltip", "Specifies argument 6."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2053,6 +2213,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg7Key", "Arg 7"),
+							.ToolTip = LOCTEXT("Arg7Tooltip", "Specifies argument 7."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2063,6 +2224,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg8Key", "Arg 8"),
+							.ToolTip = LOCTEXT("Arg8Tooltip", "Specifies argument 8."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2073,6 +2235,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg9Key", "Arg 9"),
+							.ToolTip = LOCTEXT("Arg9Tooltip", "Specifies argument 9."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2083,6 +2246,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("Arg10Key", "Arg 10"),
+							.ToolTip = LOCTEXT("Arg10Tooltip", "Specifies argument 10."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2107,6 +2271,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("LayerNameKey", "LayerName"),
+							.ToolTip = LOCTEXT("FadeLayerNameTooltip", "Specifies the layer name for the fade."),
 							.TemplateWidget = TextInputTemplate,
 							.ErrorMessages = {
 								{
@@ -2122,6 +2287,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeTypeKey", "FadeType"),
+							.ToolTip = LOCTEXT("FadeFadeTypeTooltip", "Specifies fade in or fade out."),
 							.TemplateWidget = FadeTypeInputTemplate
 						}
 					},
@@ -2131,6 +2297,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
+							.ToolTip = LOCTEXT("FadeDurationTooltip", "Specifies the fade duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -2141,6 +2308,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeFunctionKey", "FadeFunction"),
+							.ToolTip = LOCTEXT("FadeFunctionTooltip", "Specifies how the fade works."),
 							.TemplateWidget = EasingFuncInputTemplate
 						}
 					},
@@ -2150,6 +2318,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TargetColorKey", "TargetColor"),
+							.ToolTip = LOCTEXT("FadeTargetColorTooltip", "Specifies the target color for the fade."),
 							.TemplateWidget = ColorInputTemplate
 						}
 					},
@@ -2159,6 +2328,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.ToolTip = LOCTEXT("StepsTooltip", "Specifies the number of steps, used by the Step fade function."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
 							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Step\"")
@@ -2170,6 +2340,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.ToolTip = LOCTEXT("BlendExpTooltip", "Specifies the exponent used by certain blend functions\r\nto control the shape of the curve."),
 							.TemplateWidget = FloatInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ FadeFunction }) || { FadeFunction } == \"Ease In\" || { FadeFunction } == \"Ease Out\" || { FadeFunction } == \"Ease In Out\"")
 						}
@@ -2180,6 +2351,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("WaitForFadeCompletionTooltip", "Specifies whether to wait for fade completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -2189,6 +2361,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ZOrderKey", "ZOrder"),
+							.ToolTip = LOCTEXT("FadeZOrderTooltip", "Specifies the ZOrder for the fade."),
 							.TemplateWidget = IntegerInputTemplate
 						}
 					},
@@ -2198,6 +2371,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("UseGlobalFadeKey", "UseGlobalFade"),
+							.ToolTip = LOCTEXT("UseGlobalFadeTooltip", "Specifies whether to use global fade.\r\nGlobal fade can be applied across scenarios."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -2220,6 +2394,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NameKey", "Name"),
+							.ToolTip = LOCTEXT("ChangeVisibilityNameTooltip", "Specifies the widget name to modify."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2229,6 +2404,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VisibilityKey", "Visibility"),
+							.ToolTip = LOCTEXT("ChangeVisibilityVisibilityTooltip", "Specifies the post-change Visibility."),
 							.TemplateWidget = SlateVisibilityInputTemplate
 						}
 					}
@@ -2252,6 +2428,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.ToolTip = LOCTEXT("MoveCanvasPanelSlotSlotNameTooltip", "Specifies the slot name."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2261,6 +2438,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("EasingFunctionKey", "EasingFunction"),
+							.ToolTip = LOCTEXT("EasingFunctionTooltip", "Specifies the easing function."),
 							.TemplateWidget = EasingFuncInputTemplate
 						}
 					},
@@ -2270,6 +2448,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.ToolTip = LOCTEXT("MoveDurationTooltip", "Specifies the movement duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -2280,6 +2459,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ChangeTypeKey", "ChangeType"),
+							.ToolTip = LOCTEXT("ChangeTypeTooltip", "Specifies whether to use absolute coordinates or relative coordinates from current position."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("AbsoluteValue")},
@@ -2293,6 +2473,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
+							.ToolTip = LOCTEXT("MoveCanvasPanelSlotOverwritePositionTooltip", "Specifies the position to override."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -2303,6 +2484,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
+							.ToolTip = LOCTEXT("MoveCanvasPanelSlotOverwriteSizeTooltip", "Specifies the size to override."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -2313,6 +2495,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteZOrderKey", "OverwriteZOrder"),
+							.ToolTip = LOCTEXT("MoveCanvasPanelSlotOverwriteZOrderTooltip", "Specifies the ZOrder to override."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -2323,6 +2506,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.ToolTip = LOCTEXT("StepsTooltip", "Specifies the number of steps, used by the Step fade function."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
 							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Step\"")
@@ -2334,6 +2518,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.ToolTip = LOCTEXT("BlendExpTooltip", "Specifies the exponent used by certain blend functions\r\nto control the shape of the curve."),
 							.TemplateWidget = FloatInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Ease In\" || { EasingFunction } == \"Ease Out\" || { EasingFunction } == \"Ease In Out\"")
 						}
@@ -2344,6 +2529,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("WaitForAnimationCompletionTooltip", "Specifies whether to wait for animation completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -2366,6 +2552,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("SlotNameKey", "SlotName"),
+							.ToolTip = LOCTEXT("AutoSaveSlotNameTooltip", "Specifies the save slot."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2375,6 +2562,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteThumbnailKey", "OverwriteThumbnail"),
+							.ToolTip = LOCTEXT("AutoSaveOverwriteThumbnailTooltip", "Specifies image as thumbnail.\r\nIf not specified, uses a screenshot as thumbnail."),
 							.TemplateWidget = AssetInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Target"), TEXT("Texture")},
@@ -2406,6 +2594,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("AssignVariableKindTooltip", "Specifies the variable type to assign the value to."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -2415,6 +2604,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DestinationVariableNameKey", "DestinationVariableName"),
+							.ToolTip = LOCTEXT("AssignVariableNameTooltip", "Specifies the variable name to assign the value to."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -2429,6 +2619,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MinKey", "Min"),
+							.ToolTip = LOCTEXT("RandomMinTooltip", "Specifies the minimum value for the random number."),
 							.TemplateWidget = FlexNumberInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -2442,6 +2633,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxKey", "Max"),
+							.ToolTip = LOCTEXT("RandomMaxTooltip", "Specifies the maximum value for the random number."),
 							.TemplateWidget = FlexNumberInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -2473,6 +2665,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("CanSkipKey", "CanSkip"),
+							.ToolTip = LOCTEXT("WaitForClickCanSkipTooltip", "Specifies whether this command can be skipped with the skip button."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -2495,6 +2688,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableKindKey", "VariableKind"),
+							.ToolTip = LOCTEXT("ConditionVariableKindTooltip", "Specifies the variable type to use for the condition."),
 							.TemplateWidget = VariableKindInputTemplate
 						}
 					},
@@ -2504,6 +2698,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VariableNameKey", "VariableName"),
+							.ToolTip = LOCTEXT("ConditionVariableNameTooltip", "Specifies the variable name to use for the condition."),
 							.TemplateWidget = VariableNameInputTemplate,
 							.TemplateParameters = {{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")}}
 						}
@@ -2514,6 +2709,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OperatorKey", "Operator"),
+							.ToolTip = LOCTEXT("ConditionOperatorTooltip", "Specifies the condition operator."),
 							.TemplateWidget = FlexOperatorInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -2527,6 +2723,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("RightHandValueKey", "RightHandValue"),
+							.ToolTip = LOCTEXT("ConditionRightHandValueTooltip", "Specifies the right-hand value for the condition."),
 							.TemplateWidget = FlexInputTemplate,
 							.TemplateParameters = {
 								{TEXT("VariableKindSourceArgName"), TEXT("VariableKind")},
@@ -2553,6 +2750,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FeedbackEffectKey", "FeedbackEffect"),
+							.ToolTip = LOCTEXT("ForceFeedbackFeedbackEffectTooltip", "Specifies the feedback effect to play."),
 							.TemplateWidget = AssetInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("ForceFeedback")}},
 							.WarningMessages = {
@@ -2583,6 +2781,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MediaSourceKey", "MediaSource"),
+							.ToolTip = LOCTEXT("PlayMediaMediaSourceTooltip", "Specifies the media source to play."),
 							.TemplateWidget = AssetInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("MediaSource")}},
 							.WarningMessages = {
@@ -2599,6 +2798,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("CanOpenPauseMenuKey", "CanOpenPauseMenu"),
+							.ToolTip = LOCTEXT("PlayMediaCanOpenPauseMenuTooltip", "Specifies whether the pause menu can be opened during playback."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					},
@@ -2608,6 +2808,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MediaZOrderKey", "MediaZOrder"),
+							.ToolTip = LOCTEXT("PlayMediaMediaZOrderTooltip", "Specifies the media's ZOrder."),
 							.TemplateWidget = IntegerInputTemplate
 						}
 					}
@@ -2631,6 +2832,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TargetKey", "Target"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterTargetTooltip", "Specifies Image or Retainer Box."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("Image")},
@@ -2644,6 +2846,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TargetNameKey", "TargetName"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterTargetNameTooltip", "Specifies the name of the Image or Retainer Box."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2653,6 +2856,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ParameterNameKey", "ParameterName"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterParameterNameTooltip", "Specifies the parameter name contained in the material."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2662,6 +2866,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("EasingFunctionKey", "EasingFunction"),
+							.ToolTip = LOCTEXT("EasingFunctionTooltip", "Specifies the easing function."),
 							.TemplateWidget = EasingFuncInputTemplate
 						}
 					},
@@ -2671,6 +2876,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("DurationKey", "Duration"),
+							.ToolTip = LOCTEXT("MoveDurationTooltip", "Specifies the movement duration in seconds."),
 							.TemplateWidget = FloatInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
 						}
@@ -2681,6 +2887,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ChangeTypeKey", "ChangeType"),
+							.ToolTip = LOCTEXT("ChangeTypeTooltip", "Specifies whether to use absolute coordinates or relative coordinates from current position."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("AbsoluteValue")},
@@ -2694,6 +2901,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("EndValueKey", "EndValue"),
+							.ToolTip = LOCTEXT("ChangeMaterialScalarParameterEndValueTooltip", "Specifies the target value after change."),
 							.TemplateWidget = FloatInputTemplate
 						}
 					},
@@ -2703,6 +2911,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
+							.ToolTip = LOCTEXT("StepsTooltip", "Specifies the number of steps, used by the Step fade function."),
 							.TemplateWidget = IntegerInputTemplate,
 							.TemplateParameters = {{TEXT("Min"), TEXT("1")}},
 							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Step\"")
@@ -2714,6 +2923,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("BlendExpKey", "BlendExp"),
+							.ToolTip = LOCTEXT("BlendExpTooltip", "Specifies the exponent used by certain blend functions\r\nto control the shape of the curve."),
 							.TemplateWidget = FloatInputTemplate,
 							.VisibilityCondition = TEXT("HasVariable({ EasingFunction }) || { EasingFunction } == \"Ease In\" || { EasingFunction } == \"Ease Out\" || { EasingFunction } == \"Ease In Out\"")
 						}
@@ -2724,6 +2934,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("WaitForAnimationCompletionTooltip", "Specifies whether to wait for animation completion before proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -2745,6 +2956,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TargetKey", "Target"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterTargetTooltip", "Specifies Image or Retainer Box."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("Image")},
@@ -2758,6 +2970,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TargetNameKey", "TargetName"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterTargetNameTooltip", "Specifies the name of the Image or Retainer Box."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2767,6 +2980,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ParameterNameKey", "ParameterName"),
+							.ToolTip = LOCTEXT("ChangeMaterialParameterParameterNameTooltip", "Specifies the parameter name contained in the material."),
 							.TemplateWidget = TextInputTemplate
 						}
 					},
@@ -2776,6 +2990,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TextureKey", "Texture"),
+							.ToolTip = LOCTEXT("ChangeMaterialTextureParameterTextureTooltip", "Specifies the texture after change."),
 							.TemplateWidget = AssetInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("Texture")}},
 							.WarningMessages = {
@@ -2806,6 +3021,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MacroNameKey", "MacroName"),
+							.ToolTip = LOCTEXT("MacroNameToExecuteTooltip", "Specifies the macro name to execute."),
 							.TemplateWidget = ScenarioInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Target"), TEXT("macro")},
@@ -2833,6 +3049,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NewProcessNameKey", "NewProcessName"),
+							.ToolTip = LOCTEXT("RunMacroInParallelNewProcessNameTooltip", "Specifies the new process name."),
 							.TemplateWidget = TextInputTemplate,
 							.ErrorMessages = {
 								{
@@ -2852,6 +3069,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MacroNameKey", "MacroName"),
+							.ToolTip = LOCTEXT("MacroNameToExecuteTooltip", "Specifies the macro name to execute."),
 							.TemplateWidget = ScenarioInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Target"), TEXT("macro")},
@@ -2879,6 +3097,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ProcessNameKey", "ProcessName"),
+							.ToolTip = LOCTEXT("StopParallelProcessProcessNameTooltip", "Specifies the process name to stop."),
 							.TemplateWidget = TextInputTemplate,
 							.ErrorMessages = {
 								{
@@ -2898,6 +3117,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ReasonKey", "Reason"),
+							.ToolTip = LOCTEXT("StopParallelProcessReasonTooltip", "Specifies the reason for stopping."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}
@@ -2908,6 +3128,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StopTimingKey", "StopTiming"),
+							.ToolTip = LOCTEXT("StopParallelProcessStopTimingTooltip", "Specifies when to stop."),
 							.TemplateWidget = ComboBoxInputTemplate,
 							.TemplateParameters = {
 								{TEXT("Option1"), TEXT("Immediately")},
@@ -2921,6 +3142,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
+							.ToolTip = LOCTEXT("StopParallelProcessWaitForCompletionTooltip", "Specifies whether to wait for target process completion\r\nbefore proceeding to the next command."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -2942,6 +3164,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ContentKey", "Content"),
+							.ToolTip = LOCTEXT("PrintContentTooltip", "Specifies the content to output."),
 							.TemplateWidget = TextInputTemplate,
 							.TemplateParameters = {{TEXT("ShowVariableInsertButton"), TEXT("true")}}
 						}

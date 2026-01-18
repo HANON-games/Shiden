@@ -1,18 +1,19 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "ShidenEditor.h"
 #include "ISettingsModule.h"
-#include "ShidenEditorConfig.h"
+#include "Config/ShidenEditorConfig.h"
 #include "EditorSubsystem.h"
-#include "ShidenCommandDefinitionCustomization.h"
-#include "ShidenScenarioCustomization.h"
+#include "Command/ShidenCommandDefinitionCustomization.h"
+#include "Command/ShidenCommandArgumentEditorSettingsCustomization.h"
+#include "Scenario/ShidenScenarioCustomization.h"
 #include "Scenario/ShidenScenario.h"
 #include "Editor/EditorEngine.h"
-#include "ShidenAddNewContextMenu.h"
-#include "ShidenMainMenu.h"
+#include "Menu/ShidenAddNewContextMenu.h"
+#include "Menu/ShidenMainMenu.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Config/ShidenProjectConfig.h"
-#include "ShidenScenarioSyncManager.h"
+#include "System/ShidenScenarioSyncManager.h"
 
 #define LOCTEXT_NAMESPACE "FShidenEditorModule"
 
@@ -35,6 +36,10 @@ void FShidenEditorModule::StartupModule()
 	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 		"ShidenCommandDefinition",
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenCommandDefinitionCustomization::MakeInstance)
+	);
+	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
+		"ShidenCommandArgumentEditorSettings",
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenCommandArgumentEditorSettingsCustomization::MakeInstance)
 	);
 	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 		UShidenScenario::StaticClass()->GetFName(),
@@ -78,6 +83,7 @@ void FShidenEditorModule::ShutdownModule()
 
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandDefinition");
+	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandArgumentEditorSettings");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout(UShidenScenario::StaticClass()->GetFName());
 
 	UToolMenus::UnRegisterStartupCallback(this);

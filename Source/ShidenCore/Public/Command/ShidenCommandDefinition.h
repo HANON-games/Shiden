@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -25,6 +25,9 @@ struct SHIDENCORE_API FShidenCommandArgumentEditorSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FText DisplayName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	FText ToolTip;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command",
 		Meta = (AllowedClasses = "/Script/Blutility.EditorUtilityWidgetBlueprint", ExactClass = false))
 	FSoftObjectPath TemplateWidget;
@@ -34,6 +37,9 @@ struct SHIDENCORE_API FShidenCommandArgumentEditorSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	FString VisibilityCondition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	TArray<FShidenConditionalMessage> InformationMessages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	TArray<FShidenConditionalMessage> WarningMessages;

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenPrintCommand.h"
 #include "Kismet/KismetSystemLibrary.h"

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #pragma once
 
@@ -115,7 +115,8 @@ struct SHIDENCORE_API FShidenExpressionVariableDefinitionContext
 	TMap<FString, FShidenVariableDefinition> SystemVariables;
 	TMap<FString, FShidenVariableDefinition> LocalVariables;
 	TMap<FString, FShidenVariableDefinition> MacroParameters;
-
+	bool bIsMacro = false;
+	
 	const FShidenVariableDefinition* FindVariable(const FString& Kind, const FString& Name) const;
 };
 #endif

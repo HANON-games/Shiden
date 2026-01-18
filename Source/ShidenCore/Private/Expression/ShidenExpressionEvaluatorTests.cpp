@@ -1,4 +1,4 @@
-// Copyright (c) 2025 HANON. All Rights Reserved.
+// Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Misc/AutomationTest.h"
 #include "Expression/ShidenExpressionEvaluator.h"
@@ -3470,6 +3470,7 @@ struct FEditorFunctionTestParameters
 	TMap<FString, FShidenVariableDefinition> UserVariables;
 	TMap<FString, FShidenVariableDefinition> SystemVariables;
 	TMap<FString, FShidenVariableDefinition> LocalVariables;
+	TMap<FString, FShidenVariableDefinition> MacroParameters;
 
 	FString ToString() const
 	{
@@ -3478,8 +3479,9 @@ struct FEditorFunctionTestParameters
 		const FString EncodedUserVars = FBase64::Encode(SerializeVariables(UserVariables));
 		const FString EncodedSystemVars = FBase64::Encode(SerializeVariables(SystemVariables));
 		const FString EncodedLocalVars = FBase64::Encode(SerializeVariables(LocalVariables));
-		return FString::Printf(TEXT("%s\t%s\t%d\t%s\t%s\t%s"), *EncodedExpression, *EncodedExpectedResult, bShouldSucceed ? 1 : 0,
-		                       *EncodedUserVars, *EncodedSystemVars, *EncodedLocalVars);
+		const FString EncodedMacroParams = FBase64::Encode(SerializeVariables(MacroParameters));
+		return FString::Printf(TEXT("%s\t%s\t%d\t%s\t%s\t%s\t%s"), *EncodedExpression, *EncodedExpectedResult, bShouldSucceed ? 1 : 0,
+							   *EncodedUserVars, *EncodedSystemVars, *EncodedLocalVars, *EncodedMacroParams);
 	}
 
 	FEditorFunctionTestParameters(const FString& InExpression, const FString& InExpectedResult, const bool bInShouldSucceed = true)
@@ -3504,6 +3506,12 @@ struct FEditorFunctionTestParameters
 			UserVariables = DeserializeVariables(UserVarsStr);
 			SystemVariables = DeserializeVariables(SystemVarsStr);
 			LocalVariables = DeserializeVariables(LocalVarsStr);
+			if (Parts.Num() >= 7)
+			{
+				FString MacroParamsStr;
+				FBase64::Decode(Parts[6], MacroParamsStr);
+				MacroParameters = DeserializeVariables(MacroParamsStr);
+			}
 		}
 	}
 
@@ -3540,6 +3548,18 @@ struct FEditorFunctionTestParameters
 		Def.DefaultValue = DefaultValue;
 		Def.bIsReadOnly = bIsReadOnly;
 		LocalVariables.Add(Name, Def);
+		return *this;
+	}
+
+	FEditorFunctionTestParameters& AddMacroParameter(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue,
+													  const bool bIsReadOnly = false)
+	{
+		FShidenVariableDefinition Def;
+		Def.Name = Name;
+		Def.Type = Type;
+		Def.DefaultValue = DefaultValue;
+		Def.bIsReadOnly = bIsReadOnly;
+		MacroParameters.Add(Name, Def);
 		return *this;
 	}
 
@@ -3674,6 +3694,9 @@ void ShidenExpressionEvaluatorEditorFunctionTest::GetTests(TArray<FString>& OutB
 	                    .AddUserVariable(TEXT("Vec3Var"), EShidenVariableType::Vector3, TEXT("X=1 Y=2 Z=3"))
 	                    .ToString());
 
+	OutBeautifiedNames.Add("GetVariableType.NotAVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"plain text\")"), TEXT("")).ToString());
+
 	OutBeautifiedNames.Add("GetVariableType.VariableNotFound_Error");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableType(\"{NonExistent}\")"), TEXT(""), false).ToString());
 
@@ -3699,7 +3722,7 @@ void ShidenExpressionEvaluatorEditorFunctionTest::GetTests(TArray<FString>& OutB
 	                    .ToString());
 
 	OutBeautifiedNames.Add("GetVariableDefaultValue.NotAVariable");
-	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"plain text\")"), TEXT("false")).ToString());
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"plain text\")"), TEXT("")).ToString());
 
 	OutBeautifiedNames.Add("GetVariableDefaultValue.VariableNotFound_Error");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("GetVariableDefaultValue(\"{NonExistent}\")"), TEXT(""), false).ToString());
@@ -3756,6 +3779,29 @@ void ShidenExpressionEvaluatorEditorFunctionTest::GetTests(TArray<FString>& OutB
 
 	OutBeautifiedNames.Add("IsSingleVariable.MultipleVariables");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsSingleVariable(\"{TestVar}{System::test}\")"), TEXT("false")).ToString());
+
+	// IsCalledFromMacro tests
+	OutBeautifiedNames.Add("IsCalledFromMacro.WithMacroParameters");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("true"))
+						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
+						.ToString());
+
+	OutBeautifiedNames.Add("IsCalledFromMacro.WithMultipleMacroParameters");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("true"))
+						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
+						.AddMacroParameter(TEXT("param2"), EShidenVariableType::Integer, TEXT("42"))
+						.ToString());
+
+	OutBeautifiedNames.Add("IsCalledFromMacro.WithoutMacroParameters");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsCalledFromMacro.UsedInExpression");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro() && true"), TEXT("true"))
+						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("test"))
+						.ToString());
+
+	OutBeautifiedNames.Add("IsCalledFromMacro.UsedInNegation");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("!IsCalledFromMacro()"), TEXT("true")).ToString());
 }
 
 bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Parameters)
@@ -3766,7 +3812,9 @@ bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Paramet
 	Context.UserVariables = Params.UserVariables;
 	Context.SystemVariables = Params.SystemVariables;
 	Context.LocalVariables = Params.LocalVariables;
-
+	Context.MacroParameters = Params.MacroParameters;
+	Context.bIsMacro = Params.MacroParameters.Num() > 0;
+	
 	const FShidenExpressionEvaluator Evaluator(Context);
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
