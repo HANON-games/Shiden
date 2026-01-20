@@ -32,6 +32,10 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	bool bPreviewSound;
 
 	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
+		Meta = (ToolTip = "The size of the preview window in pixels (Width, Height)."))
+	FVector2D PreviewSize;
+
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
 		Meta = (ToolTip = "The refresh interval in seconds for the Shiden Debugger window. Lower values provide more responsive updates but may impact editor performance."))
 	float ShidenDebuggerRefreshInterval;
 
@@ -96,15 +100,23 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 
 	/**
 	 * Enables or disables sound preview functionality in the editor.
-	 * 
+	 *
 	 * @param bEnabled True to enable sound preview, false to disable
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
 	static void SetPreviewSound(const bool bEnabled);
 
 	/**
+	 * Sets the size of the preview window.
+	 *
+	 * @param Size The preview window size in pixels (Width, Height)
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
+	static void SetPreviewSize(const FVector2D& Size);
+
+	/**
 	 * Sets the refresh interval for the Shiden debugger.
-	 * 
+	 *
 	 * @param Interval The refresh interval in seconds
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")

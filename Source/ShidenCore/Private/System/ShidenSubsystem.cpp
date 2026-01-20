@@ -67,11 +67,6 @@ bool UShidenSubsystem::TickScreenFade(const float DeltaTime)
 	return true; // Continue ticking
 }
 
-void UShidenSubsystem::SetDefaultPredefinedSystemVariables()
-{
-	PredefinedSystemVariable = FShidenPredefinedSystemVariable(GetDefault<UShidenProjectConfig>()->PredefinedSystemVariable);
-}
-
 void UShidenSubsystem::InitializeSubsystemState()
 {
 	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
@@ -82,7 +77,7 @@ void UShidenSubsystem::InitializeSubsystemState()
 	ScenarioProgressStack = TMap<FString, FShidenScenarioProgressStack>();
 	BacklogItems = TArray<FShidenBacklogItem>();
 	ScenarioReadLines = TMap<FGuid, FShidenReadLines>();
-	SetDefaultPredefinedSystemVariables();
+	PredefinedSystemVariable = FShidenPredefinedSystemVariable(GetDefault<UShidenProjectConfig>()->PredefinedSystemVariable);
 	UShidenBlueprintLibrary::ResetScreenFadeLayersCore(this);
 }
 
