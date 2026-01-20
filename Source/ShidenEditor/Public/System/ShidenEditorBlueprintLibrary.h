@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility", meta = (AutoCreateRefTerm = "PropertyName"))
 	static void SetDefaultClassProperty(const UClass* TargetClass, const FName& PropertyName, UClass* Value);
 
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility")
+	static FShidenCommand ExpandCommand(const FShidenCommand& SourceCommand, bool bShouldExpandPreset = true, bool bShouldExpandDefaultValue = false);
+
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization")
 	static UShidenScenario* ConvertToScenarioFromCsv(const FString& CsvString);
 
@@ -118,21 +121,23 @@ public:
 	static void OpenSettings(const FName& ContainerName, const FName& CategoryName, const FName& SectionName);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Evaluate Input Visibility"))
-	static UPARAM(DisplayName = "Success") bool TryEvaluateInputVisibility(const UShidenScenario* Scenario, const FShidenCommand& Command, const FString& EditorVisibilityCondition,
+	static UPARAM(DisplayName = "Success") bool TryEvaluateInputVisibility(const UShidenScenario* Scenario, const TMap<FString, FString>& ExpandedCommandArgs, const FString& EditorVisibilityCondition,
 	                                                                       bool& OutShouldShow, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Evaluate Conditional Messages"))
 	static UPARAM(DisplayName = "Success") bool TryEvaluateConditionalMessages(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition, const TMap<FString, FString>& CommandArgs,
-	                                                                           const FName& ArgName, TArray<FText>&OutInformationMessages, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages,FString& ErrorMessage);
+	                                                                           const FName& ArgName, TArray<FText>& OutInformationMessages, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages,FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Validate Command"))
 	static UPARAM(DisplayName = "Success") bool TryValidateCommand(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition,
 	                                                               const TMap<FString, FString>& CommandArgs, bool&HasInformation, bool& HasWarning, bool& HasError,FString& ErrorMessage);
 
 private:
-	static bool TryEvaluateConditionalMessages(const FShidenExpressionVariableDefinitionContext& Context, const TMap<FString, FString>& CommandArgs, const TArray<FShidenConditionalMessage>& ConditionalMessages,
-	                                           TArray<FText>& OutMessages, FString& ErrorMessage);
-
+	static bool TryEvaluateConditionalMessagesCore(const FShidenExpressionVariableDefinitionContext& Context, const TMap<FString, FString>& CommandArgs,
+												   const TArray<FShidenConditionalMessage>& InformationConditionalMessages, const TArray<FShidenConditionalMessage>& WarningConditionalMessages,
+												   const TArray<FShidenConditionalMessage>& ErrorConditionalMessages, TArray<FText>& OutInformationMessages, TArray<FText>& OutWarningMessages,
+												   TArray<FText>& OutErrorMessages,FString& ErrorMessage);
+	
 	static TArray<FShidenCommandRedirector> GetRedirectDefinitions(const FShidenPluginVersion& SourcePluginVersion);
 
 	static void ParseCsvContent(const FString& CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);

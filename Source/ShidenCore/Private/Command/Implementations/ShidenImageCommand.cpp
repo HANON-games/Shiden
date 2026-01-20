@@ -129,8 +129,7 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 	Status = EShidenInitFromSaveDataStatus::Complete;
 }
 
-void UShidenImageCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                           UShidenWidget* ShidenWidget,
+void UShidenImageCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -201,8 +200,7 @@ void UShidenImageCommand::PreviewCommand_Implementation(const FShidenCommand& Co
 }
 
 bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWidget* ShidenWidget, const bool Animate,
-                                       const FString& OwnerProcessName,
-                                       FString& ErrorMessage)
+                                       const FString& OwnerProcessName, FString& ErrorMessage)
 {
 	UImage* Image;
 	if (!ShidenWidget->TryFindImage(Args.SlotName, Image))

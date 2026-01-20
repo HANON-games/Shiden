@@ -9,6 +9,7 @@ SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializ
 	  , ScenarioFilterPath("")
 	  , EditScenarioPath("")
 	  , bPreviewSound(false)
+	  , PreviewSize(960.0f, 540.0f)
 	  , ShidenDebuggerRefreshInterval(0.1f)
 	  , bAutoSaveScenario(false)
 	  , DefaultCommand("Text")
@@ -46,6 +47,11 @@ SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& Pa
 SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSound(const bool bEnabled)
 {
 	UpdateConfig(&UShidenEditorConfig::bPreviewSound, bEnabled);
+}
+
+SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSize(const FVector2D& Size)
+{
+	UpdateConfig(&UShidenEditorConfig::PreviewSize, Size);
 }
 
 SHIDENEDITOR_API void UShidenEditorConfig::SetShidenDebuggerRefreshInterval(const float Interval)

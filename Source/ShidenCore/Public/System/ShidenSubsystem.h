@@ -105,8 +105,6 @@ public:
 
 	bool TickScreenFade(const float DeltaTime);
 
-	void SetDefaultPredefinedSystemVariables();
-
 #if WITH_EDITOR
 	void BeginPlay(bool);
 #endif

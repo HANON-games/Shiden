@@ -14,7 +14,7 @@
 #define LOCTEXT_NAMESPACE "ShidenCommandArgumentEditorSettings"
 
 void FShidenCommandArgumentEditorSettingsCustomization::CustomizeHeader(const TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow,
-																	    IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+                                                                        IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	DisplayNameHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FShidenCommandArgumentEditorSettings, DisplayName));
 	TemplateWidgetHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FShidenCommandArgumentEditorSettings, TemplateWidget));
@@ -34,8 +34,8 @@ void FShidenCommandArgumentEditorSettingsCustomization::CustomizeHeader(const TS
 }
 
 void FShidenCommandArgumentEditorSettingsCustomization::CustomizeChildren(const TSharedRef<IPropertyHandle> StructPropertyHandle,
-			                                                              IDetailChildrenBuilder& StructBuilder,
-			                                                              IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+                                                                          IDetailChildrenBuilder& StructBuilder,
+                                                                          IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	// Add DisplayName property
 	if (DisplayNameHandle.IsValid())
