@@ -51,7 +51,8 @@ public class ShidenCore : ModuleRules
 				"Projects",
 				"JsonUtilities",
 				"Json",
-				"SignalProcessing"
+				"SignalProcessing",
+				"DeveloperSettings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

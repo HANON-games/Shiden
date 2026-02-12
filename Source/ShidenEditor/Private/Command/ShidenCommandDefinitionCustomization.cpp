@@ -108,6 +108,7 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 
 					if (TObjectPtr<const UClass> ParentClass = FindObject<UClass>(nullptr, *ParentClassName))
 					{
+						// Since it has already been confirmed above that first ParentClass is not ShidenCommandObjectClass, start checking from its parent
 						ParentClass = ParentClass->GetSuperClass();
 						while (ParentClass)
 						{
@@ -130,15 +131,15 @@ void FShidenCommandDefinitionCustomization::CustomizeChildren(const TSharedRef<I
 	}
 }
 
-TSet<FTopLevelAssetPath> FShidenCommandDefinitionCustomization::GetCachedDerivedClassNames()
+const TSet<FTopLevelAssetPath>& FShidenCommandDefinitionCustomization::GetCachedDerivedClassNames()
 {
 	static TSet<FTopLevelAssetPath> DerivedClassNames;
 	if (DerivedClassNames.Num() > 0)
 	{
 		return DerivedClassNames;
 	}
-	const IAssetRegistry* Registry = &FModuleManager::LoadModuleChecked<FAssetRegistryModule>(ShidenEditorConstants::AssetRegistryModuleName).Get();
-	Registry->GetDerivedClassNames(TArray{UShidenCommandObject::StaticClass()->GetClassPathName()}, TSet<FTopLevelAssetPath>(), DerivedClassNames);
+	const IAssetRegistry& Registry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(ShidenEditorConstants::AssetRegistryModuleName).Get();
+	Registry.GetDerivedClassNames(TArray{UShidenCommandObject::StaticClass()->GetClassPathName()}, TSet<FTopLevelAssetPath>(), DerivedClassNames);
 	return DerivedClassNames;
 }
 

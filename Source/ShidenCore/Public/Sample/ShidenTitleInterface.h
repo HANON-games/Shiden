@@ -9,6 +9,8 @@ DECLARE_DYNAMIC_DELEGATE(FOnNewGameDelegate);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLoadGameDelegate, const FString&, SlotName);
 
+DECLARE_DYNAMIC_DELEGATE(FOnGallerySelectedDelegate);
+
 /*
  * This is an interface used in the sample implementation.
  * It is not referenced from the core implementation of Shiden, so it is not necessarily required to use it.
@@ -26,9 +28,10 @@ class SHIDENCORE_API IShidenTitleInterface
 public:
 	/**
 	 * Initializes the title screen widget with callback delegates for new game and load game actions.
-	 * @param OnNewGame Delegate called when starting a new game
-	 * @param OnLoadGame Delegate called when loading an existing game with the specified slot name
+	 * @param OnNewGameStarted Delegate called when starting a new game
+	 * @param OnGameLoaded Delegate called when loading an existing game with the specified slot name
+	 * @param OnGallerySelected Delegate called when selecting the gallery option
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "OnNewGame,OnLoadGame"))
-	void InitTitle(const FOnNewGameDelegate& OnNewGame, const FOnLoadGameDelegate& OnLoadGame);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Widget", meta = (AutoCreateRefTerm = "OnNewGameStarted,OnGameLoaded,OnGallerySceneSelected"))
+	void InitTitle(const FOnNewGameDelegate& OnNewGameStarted, const FOnLoadGameDelegate& OnGameLoaded, const FOnGallerySelectedDelegate& OnGallerySelected);
 };

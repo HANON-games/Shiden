@@ -9,16 +9,21 @@
 
 void UShidenAutoSaveCommand::ParseFromCommand(const FShidenCommand& Command, FAutoSaveCommandArgs& Args)
 {
-	Args.SlotName = Command.GetArg(TEXT("SlotName"));
+	Args.SlotName = Command.GetArg(TEXT("SlotName")).GetValue();
 	Args.OverwriteThumbnail = Command.GetArg(TEXT("OverwriteThumbnail"));
 }
 
-void UShidenAutoSaveCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                           UShidenWidget* ShidenWidget,
+void UShidenAutoSaveCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                            const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
+	if (GEngine->GetEngineSubsystem<UShidenSubsystem>()->PredefinedSystemVariable.bIsGalleryMode)
+	{
+		Status = EShidenProcessStatus::Next;
+		return;
+	}
+
 	if (!IsWidgetInitialized(ShidenWidget))
 	{
 		Status = EShidenProcessStatus::DelayUntilNextTick;
@@ -55,27 +60,29 @@ bool UShidenAutoSaveCommand::TryExecuteAutoSave(const FAutoSaveCommandArgs& Args
 	// Temporarily advance the scenario index so that the game does not resume from the AutoSave command
 	ProgressStack->UpdateCurrentScenarioIndex(CurrentIndex + 1);
 
-	if (Args.OverwriteThumbnail.IsEmpty())
+	if (!Args.OverwriteThumbnail.IsSet())
 	{
 		ShidenWidget->SaveGameWithScreenCapture(Args.SlotName);
 	}
-	else if (Args.OverwriteThumbnail == TEXT("None"))
+	else if (Args.OverwriteThumbnail.GetValue() == TEXT("None"))
 	{
 		ShidenWidget->SaveGame(Args.SlotName, Cast<UTexture2D>(FSlateNoResource().GetResourceObject()));
 	}
 	else
 	{
 		UObject* Thumbnail = nullptr;
-		if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.OverwriteThumbnail, Thumbnail))
+		if (!UShidenBlueprintLibrary::TryGetOrLoadAsset(Args.OverwriteThumbnail.GetValue(), Thumbnail))
 		{
-			ErrorMessage = FString::Printf(TEXT("Failed to load thumbnail asset %s."), *Args.OverwriteThumbnail);
+			ProgressStack->UpdateCurrentScenarioIndex(CurrentIndex);
+			ErrorMessage = FString::Printf(TEXT("Failed to load thumbnail asset %s."), *Args.OverwriteThumbnail.GetValue());
 			return false;
 		}
 
 		const TObjectPtr<const UTexture2D> ThumbnailTexture = Cast<UTexture2D>(Thumbnail);
 		if (!ThumbnailTexture)
 		{
-			ErrorMessage = FString::Printf(TEXT("Thumbnail asset %s is not a valid Texture2D."), *Args.OverwriteThumbnail);
+			ProgressStack->UpdateCurrentScenarioIndex(CurrentIndex);
+			ErrorMessage = FString::Printf(TEXT("Thumbnail asset %s is not a valid Texture2D."), *Args.OverwriteThumbnail.GetValue());
 			return false;
 		}
 

@@ -6,7 +6,7 @@
 
 void UShidenDelayCommand::ParseFromCommand(const FShidenCommand& Command, FDelayCommandArgs& Args)
 {
-	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
 }
 
 void UShidenDelayCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
@@ -43,7 +43,7 @@ void UShidenDelayCommand::ProcessCommand_Implementation(const FString& ProcessNa
 	Status = ElapsedTime < Args.Duration ? EShidenProcessStatus::DelayUntilNextTick : EShidenProcessStatus::Next;
 }
 
-UInputAction* UShidenDelayCommand::LoadInputActionFromPath(const FString& Path)
+TObjectPtr<UInputAction> UShidenDelayCommand::LoadInputActionFromPath(const FString& Path)
 {
 	return Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, *Path));
 }

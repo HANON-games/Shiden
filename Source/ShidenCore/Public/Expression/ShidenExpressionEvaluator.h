@@ -111,13 +111,19 @@ struct SHIDENCORE_API FShidenExpressionToken
  */
 struct SHIDENCORE_API FShidenExpressionVariableDefinitionContext
 {
-	TMap<FString, FShidenVariableDefinition> UserVariables;
-	TMap<FString, FShidenVariableDefinition> SystemVariables;
 	TMap<FString, FShidenVariableDefinition> LocalVariables;
 	TMap<FString, FShidenVariableDefinition> MacroParameters;
 	bool bIsMacro = false;
-	
-	const FShidenVariableDefinition* FindVariable(const FString& Kind, const FString& Name) const;
+
+	const FShidenVariableDefinition EmptyVariableDefinition = FShidenVariableDefinition
+	{
+		.Name = TEXT("EMPTY"),
+		.Type = EShidenVariableType::String,
+		.DefaultValue = TEXT(""),
+		.bIsReadOnly = true
+	};
+
+	bool TryFindVariable(const FString& Kind, const FString& Name, FShidenVariableDefinition& Definition) const;
 };
 #endif
 

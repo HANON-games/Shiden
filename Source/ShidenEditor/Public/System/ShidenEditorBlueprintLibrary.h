@@ -27,7 +27,7 @@ public:
 	static bool CanCreateFolder(const FName& Path);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility", meta = (DisplayName = "Load Text File"))
-	static UPARAM(DisplayName = "Success") bool TryLoadTextFile(const FString& Extension, FString& FileData, FString& FileName);
+	static UPARAM(DisplayName = "Success") bool TryLoadScenarioTextFile(const FString& Extension, FString& FileData, FString& FileName);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility", meta = (DisplayName = "Save Text File"))
 	static UPARAM(DisplayName = "Success") bool TrySaveTextFile(const FString& DefaultFileName, const FString& SaveText, const FString& Extension);
@@ -39,7 +39,10 @@ public:
 	static void SetDefaultClassProperty(const UClass* TargetClass, const FName& PropertyName, UClass* Value);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility")
-	static FShidenCommand ExpandCommand(const FShidenCommand& SourceCommand, bool bShouldExpandPreset = true, bool bShouldExpandDefaultValue = false);
+	static FShidenCommand ExpandCommandForEditor(const FShidenCommand& SourceCommand, bool bShouldExpandPreset = true, bool bShouldExpandDefaultValue = false);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static FShidenCommand RemoveRedundantCommandArgs(const FShidenCommand& SourceCommand);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization")
 	static UShidenScenario* ConvertToScenarioFromCsv(const FString& CsvString);
@@ -48,10 +51,13 @@ public:
 	static FString ConvertToCsvFromScenario(const UShidenScenario* SourceScenario);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization", meta = (DisplayName = "Convert to Scenario from Json"))
-	static  UPARAM(DisplayName = "Success") bool TryConvertToScenarioFromJson(const FString& Json, UShidenScenario*& Scenario);
+	static UPARAM(DisplayName = "Success") bool TryConvertToScenarioFromJson(const FString& Json, UShidenScenario*& Scenario);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization", meta = (DisplayName = "Convert to Json from Scenario"))
-	static  UPARAM(DisplayName = "Success") bool TryConvertToJsonFromScenario(const UShidenScenario* SourceScenario, FString& Json);
+	static UPARAM(DisplayName = "Success") bool TryConvertToJsonFromScenario(const UShidenScenario* SourceScenario, FString& Json);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization", meta = (DisplayName = "Convert Command Definitions to Json"))
+	static UPARAM(DisplayName = "Success") bool TryConvertCommandDefinitionsToJson(FString& Json);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Variables")
 	static void ListUserVariableDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors);
@@ -105,6 +111,9 @@ public:
 	static void RedirectCommands(UShidenScenario* Scenario, const FShidenPluginVersion& SourcePluginVersion, bool& AnyCommandUpdated);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
+	static void RedirectPresets(const FShidenPluginVersion& SourcePluginVersion, bool& AnyPresetUpdated);
+
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
 	static void RedirectLocalVariables(UShidenScenario* Scenario, const FString& OldVariableName, const FString& NewVariableName, bool& AnyCommandUpdated);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command")
@@ -117,6 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Config", meta = (DisplayName = "Migrate Plugin"))
 	static UPARAM(DisplayName = "Success") bool TryMigratePlugin();
 
+	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Serialization", meta = (DisplayName = "Create or Replace Scenario Asset"))
+	static UPARAM(DisplayName = "Success") bool TryCreateOrReplaceScenarioAsset(const FString& SourceFileName, const FString& Content, const FString& Format, FString& OutPackageName, UShidenScenario*& OutScenario);
+
 	UFUNCTION(BlueprintCallable, Category="SvnInternal|EditorUtility|Config", meta=(AutoCreateRefTerm="ContainerName, CategoryName, SectionName"))
 	static void OpenSettings(const FName& ContainerName, const FName& CategoryName, const FName& SectionName);
 
@@ -125,19 +137,22 @@ public:
 	                                                                       bool& OutShouldShow, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Evaluate Conditional Messages"))
-	static UPARAM(DisplayName = "Success") bool TryEvaluateConditionalMessages(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition, const TMap<FString, FString>& CommandArgs,
-	                                                                           const FName& ArgName, TArray<FText>& OutInformationMessages, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages,FString& ErrorMessage);
+	static UPARAM(DisplayName = "Success") bool TryEvaluateConditionalMessages(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition, const TMap<FString, FString>& ExpandedCommandArgs,
+	                                                                           const FName& ArgName, TArray<FText>& OutInformationMessages, TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages, FString& ErrorMessage);
 
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|EditorUtility|Command", meta = (DisplayName = "Validate Command"))
 	static UPARAM(DisplayName = "Success") bool TryValidateCommand(const UShidenScenario* Scenario, const FShidenCommandDefinition& CommandDefinition,
-	                                                               const TMap<FString, FString>& CommandArgs, bool&HasInformation, bool& HasWarning, bool& HasError,FString& ErrorMessage);
+	                                                               const TMap<FString, FString>& ExpandedCommandArgs, bool& HasInformation, bool& HasWarning, bool& HasError, FString& ErrorMessage);
+
+	UFUNCTION(BlueprintPure, Category = "SvnInternal|EditorUtility|Widget")
+	static class UShidenSplitterBoxSlot* SlotAsShidenSplitterBoxSlot(const UWidget* Widget);
 
 private:
-	static bool TryEvaluateConditionalMessagesCore(const FShidenExpressionVariableDefinitionContext& Context, const TMap<FString, FString>& CommandArgs,
-												   const TArray<FShidenConditionalMessage>& InformationConditionalMessages, const TArray<FShidenConditionalMessage>& WarningConditionalMessages,
-												   const TArray<FShidenConditionalMessage>& ErrorConditionalMessages, TArray<FText>& OutInformationMessages, TArray<FText>& OutWarningMessages,
-												   TArray<FText>& OutErrorMessages,FString& ErrorMessage);
-	
+	static bool TryEvaluateConditionalMessagesCore(const FShidenExpressionVariableDefinitionContext& Context, const FString& ArgName,
+	                                               const TMap<FString, FString>& ExpandedCommandArgs, const TArray<FShidenConditionalMessage>& InformationConditionalMessages,
+	                                               const TArray<FShidenConditionalMessage>& WarningConditionalMessages, const TArray<FShidenConditionalMessage>& ErrorConditionalMessages, TArray<FText>& OutInformationMessages,
+	                                               TArray<FText>& OutWarningMessages, TArray<FText>& OutErrorMessages, FString& ErrorMessage);
+
 	static TArray<FShidenCommandRedirector> GetRedirectDefinitions(const FShidenPluginVersion& SourcePluginVersion);
 
 	static void ParseCsvContent(const FString& CsvText, TArray<FShidenCsvParsedRow>& CsvParsedRow);
@@ -145,4 +160,6 @@ private:
 	static FString ReplaceArgumentReferences(const TMap<FString, FString>& CommandArgs, const FString& Expression);
 
 	static FShidenExpressionVariableDefinitionContext BuildExpressionContext(const UShidenScenario* Scenario);
+
+	static void CheckUndefinedVariables(const FShidenExpressionVariableDefinitionContext& Context, const FString& CommandArg, TArray<FText>& OutErrorMessages);
 };

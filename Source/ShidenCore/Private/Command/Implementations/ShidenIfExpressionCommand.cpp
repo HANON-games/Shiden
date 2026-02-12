@@ -11,15 +11,15 @@ void UShidenIfExpressionCommand::ProcessCommand_Implementation(const FString& Pr
                                                                UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
                                                                FString& NextScenarioName, FString& ErrorMessage)
 {
-	// HACK: get expression from original command
-	FShidenCommand* OriginalCommand = nullptr;
-	if (!ShidenCommandHelpers::TryGetCurrentOriginalCommand(ProcessName, OriginalCommand, ErrorMessage))
+	// Get the pre-variable-replacement command to access the raw expression string
+	FShidenCommand PreVariableReplacementCommand;
+	if (!ShidenExpressionCommandHelpers::TryGetPreVariableReplacementCommand(ProcessName, PreVariableReplacementCommand, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
 	}
 
-	if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(*OriginalCommand, Args, ErrorMessage))
+	if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(PreVariableReplacementCommand, Args, ErrorMessage))
 	{
 		Status = EShidenProcessStatus::Error;
 		return;
@@ -34,15 +34,15 @@ void UShidenIfExpressionCommand::PreviewCommand_Implementation(const FShidenComm
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager, bool bIsCurrentCommand,
                                                                EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	// HACK: get expression from original command
-	FShidenCommand* OriginalCommand = nullptr;
-	if (!ShidenCommandHelpers::TryGetCurrentOriginalCommand(TEXT("Default"), OriginalCommand, ErrorMessage))
+	// Get the pre-variable-replacement command to access the raw expression string
+	FShidenCommand PreVariableReplacementCommand;
+	if (!ShidenExpressionCommandHelpers::TryGetPreVariableReplacementCommand(TEXT("Default"), PreVariableReplacementCommand, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;
 	}
 
-	if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(*OriginalCommand, Args, ErrorMessage))
+	if (!ShidenConditionalCommandHelpers::TryParseExpressionCondition(PreVariableReplacementCommand, Args, ErrorMessage))
 	{
 		Status = EShidenPreviewStatus::Error;
 		return;

@@ -1,13 +1,14 @@
 // Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "Command/Implementations/ShidenChangeMaterialTextureParameterCommand.h"
+#include "Command/ShidenCommandHelpers.h"
 #include "System/ShidenBlueprintLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Engine/Texture2D.h"
 #include "TextureResource.h"
 
-UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParameterCommand() : Super()
+UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParameterCommand()
 {
 	if (const TObjectPtr<UTexture2D> NewTex = UTexture2D::CreateTransient(1, 1, PF_B8G8R8A8))
 	{
@@ -40,10 +41,10 @@ UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParame
 
 void UShidenChangeMaterialTextureParameterCommand::ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args)
 {
-	Args.Target = Command.GetArg("Target");
-	Args.TargetName = Command.GetArg("TargetName");
-	Args.ParameterName = Command.GetArg("ParameterName");
-	Args.TexturePath = Command.GetArg("Texture");
+	Args.Target = Command.GetArg(TEXT("Target")).GetValue();
+	Args.TargetName = Command.GetArg(TEXT("TargetName")).GetValue();
+	Args.ParameterName = Command.GetArg(TEXT("ParameterName")).GetValue();
+	Args.TexturePath = Command.GetArg(TEXT("Texture")).GetValue();
 }
 
 void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implementation(
@@ -55,7 +56,7 @@ void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implement
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
-		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
+		const auto [TargetType, TargetName, ParameterName] = ShidenMaterialParameterHelpers::ParseScenarioPropertyKey(Pair.Key);
 
 		Args = FChangeTextureParameterCommandArgs
 		{
@@ -102,7 +103,7 @@ void UShidenChangeMaterialTextureParameterCommand::ProcessCommand_Implementation
 		return;
 	}
 
-	const FString Key = MakeScenarioPropertyKey(Args.Target, Args.TargetName, Args.ParameterName);
+	const FString Key = ShidenMaterialParameterHelpers::MakeScenarioPropertyKey(Args.Target, Args.TargetName, Args.ParameterName);
 	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, Args.TexturePath);
 	Status = EShidenProcessStatus::Next;
 }
@@ -196,27 +197,4 @@ bool UShidenChangeMaterialTextureParameterCommand::TryChangeTextureParameter(con
 
 	DynamicMaterial->SetTextureParameterValue(FName(Args.ParameterName), Texture);
 	return true;
-}
-
-FString UShidenChangeMaterialTextureParameterCommand::MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName)
-{
-	return FString::Printf(TEXT("%s::%s::%s"),
-	                       *TargetType.Replace(TEXT(":"), TEXT("\\:")),
-	                       *TargetName.Replace(TEXT(":"), TEXT("\\:")),
-	                       *ParameterName.Replace(TEXT(":"), TEXT("\\:")));
-}
-
-TTuple<FString, FString, FString> UShidenChangeMaterialTextureParameterCommand::ParseScenarioPropertyKey(const FString& Key)
-{
-	TArray<FString> TempArray;
-	Key.ParseIntoArray(TempArray, TEXT("::"), true);
-	if (TempArray.Num() != 3)
-	{
-		return TTuple<FString, FString, FString>(TEXT(""), TEXT(""), TEXT(""));
-	}
-
-	const FString TargetType = TempArray[0].Replace(TEXT("\\:"), TEXT(":"));
-	const FString TargetName = TempArray[1].Replace(TEXT("\\:"), TEXT(":"));
-	const FString ParameterName = TempArray[2].Replace(TEXT("\\:"), TEXT(":"));
-	return TTuple<FString, FString, FString>(TargetType, TargetName, ParameterName);
 }

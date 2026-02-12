@@ -7,15 +7,15 @@ void UShidenCallWidgetFunctionCommand::ParseFromCommand(const FShidenCommand& Co
 {
 	static constexpr int32 MaxArguments = 10;
 
-	Args.FunctionName = Command.GetArg(TEXT("FunctionName"));
+	Args.FunctionName = Command.GetArg(TEXT("FunctionName")).GetValue();
 	Args.Arguments.Empty(MaxArguments);
 
 	for (int32 i = 1; i <= MaxArguments; ++i)
 	{
-		const FString Value = Command.GetArg(FString::Printf(TEXT("Arg %d"), i));
-		if (!Value.IsEmpty())
+		const TOptional<FString> Value = Command.GetArg(FString::Printf(TEXT("Arg %d"), i));
+		if (Value.IsSet() && !Value.GetValue().IsEmpty())
 		{
-			Args.Arguments.Add(Value);
+			Args.Arguments.Add(Value.GetValue());
 		}
 	}
 }

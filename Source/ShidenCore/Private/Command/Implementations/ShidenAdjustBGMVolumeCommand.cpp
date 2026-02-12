@@ -3,14 +3,16 @@
 #include "Command/Implementations/ShidenAdjustBGMVolumeCommand.h"
 #include "Scenario/ShidenScenarioBlueprintLibrary.h"
 #include "Command/ShidenCommandHelpers.h"
+#include "System/ShidenBlueprintLibrary.h"
 
 bool UShidenAdjustBGMVolumeCommand::TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.TrackId = Command.GetArgAsInt("TrackId");
-	Args.Volume = Command.GetArgAsFloat("Volume");
-	const FString FadeFunctionStr = Command.GetArg("FadeFunction");
-	Args.FadeDuration = Command.GetArgAsFloat("FadeDuration");
-	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
+	Args.TrackId = Command.GetArgAsInt(TEXT("TrackId")).GetValue();
+	Args.Volume = Command.GetArgAsFloat(TEXT("Volume")).GetValue();
+	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction")).GetValue();
+	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration")).GetValue();
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.bIsGlobalBGM = Command.GetArgAsBool(TEXT("IsGlobalBGM")).GetValue();
 
 	if (Args.TrackId < 0)
 	{
@@ -45,7 +47,14 @@ void UShidenAdjustBGMVolumeCommand::PreProcessCommand_Implementation(const FStri
 	}
 
 	ElapsedTime = 0.0f;
-	ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	if (Args.bIsGlobalBGM)
+	{
+		UShidenBlueprintLibrary::AdjustGlobalBGMVolume(Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	}
+	else
+	{
+		ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	}
 	Status = EShidenPreProcessStatus::Complete;
 }
 
@@ -66,7 +75,9 @@ void UShidenAdjustBGMVolumeCommand::ProcessCommand_Implementation(const FString&
 	}
 
 	// Update the volume property in the scenario
-	const FString PropertyKey = FString::FromInt(Args.TrackId);
+	const FString PropertyKey = Args.bIsGlobalBGM
+		? TEXT("Global$") + FString::FromInt(Args.TrackId)
+		: FString::FromInt(Args.TrackId);
 	FShidenScenarioProperty ScenarioProperty;
 	if (UShidenScenarioBlueprintLibrary::TryFindScenarioProperty(TEXT("Sound"), PropertyKey, ScenarioProperty))
 	{
@@ -94,6 +105,13 @@ void UShidenAdjustBGMVolumeCommand::PreviewCommand_Implementation(const FShidenC
 		Args.FadeDuration = 0.0f;
 	}
 
-	ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	if (Args.bIsGlobalBGM)
+	{
+		UShidenBlueprintLibrary::AdjustGlobalBGMVolume(Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	}
+	else
+	{
+		ShidenManager->Execute_AdjustBGMVolume(ShidenManager.GetObject(), Args.TrackId, Args.FadeDuration, Args.Volume, Args.FadeFunction);
+	}
 	Status = EShidenPreviewStatus::Complete;
 }

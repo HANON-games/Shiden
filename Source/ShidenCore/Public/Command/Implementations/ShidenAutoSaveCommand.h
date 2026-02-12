@@ -15,7 +15,7 @@ class SHIDENCORE_API UShidenAutoSaveCommand : public UShidenCommandObject
 	struct FAutoSaveCommandArgs
 	{
 		FString SlotName;
-		FString OverwriteThumbnail;
+		TOptional<FString> OverwriteThumbnail;
 	};
 
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

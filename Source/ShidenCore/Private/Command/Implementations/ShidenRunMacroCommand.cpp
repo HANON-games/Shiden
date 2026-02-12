@@ -12,10 +12,10 @@ void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& Proces
                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	const FString MacroNameOrId = Command.GetArg("MacroName");
+	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName")).GetValue();
 
 	FGuid ScenarioId;
-	UShidenScenario* Scenario;
+	UShidenScenario* Scenario = nullptr;
 	if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario))
 	{
 		Status = EShidenProcessStatus::Error;
@@ -35,10 +35,10 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
                                                            const bool bIsCurrentCommand,
                                                            EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	const FString MacroNameOrId = Command.GetArg("MacroName");
+	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName")).GetValue();
 
 	FGuid ScenarioId;
-	UShidenScenario* Scenario;
+	UShidenScenario* Scenario = nullptr;
 	if (!UShidenScenarioBlueprintLibrary::TryGetScenarioByIdOrObjectPath(MacroNameOrId, ScenarioId, Scenario))
 	{
 		Status = EShidenPreviewStatus::Error;

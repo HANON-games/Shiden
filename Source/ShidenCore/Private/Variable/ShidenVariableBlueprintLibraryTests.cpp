@@ -282,6 +282,12 @@ void FReplaceVariablesTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray
 
 bool FReplaceVariablesTest::RunTest(const FString& Parameters)
 {
+	if (!GEngine)
+	{
+		AddError(TEXT("GEngine is null"));
+		return false;
+	}
+	
 	const FReplaceVariablesTestParameters Params(Parameters);
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 

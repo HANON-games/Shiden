@@ -11,8 +11,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCursorMovedDelegate, int32, Line
 /**
  * Shiden editor version of multi-line editable text box with editor styling
  */
-UCLASS(MinimalAPI)
-class UShidenEditorMultiLineEditableTextBox : public UMultiLineEditableTextBox
+UCLASS()
+class SHIDENEDITOR_API UShidenEditorMultiLineEditableTextBox : public UMultiLineEditableTextBox
 {
 	GENERATED_UCLASS_BODY()
 

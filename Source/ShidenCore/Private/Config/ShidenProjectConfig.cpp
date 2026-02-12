@@ -5,12 +5,14 @@
 #include "Save/ShidenSystemSaveGame.h"
 #include "Save/ShidenSaveSlotsSaveGame.h"
 #include "Save/ShidenPredefinedSystemSaveGame.h"
+#include "UObject/UnrealType.h"
+#include "Misc/ConfigCacheIni.h"
 
 #if WITH_EDITOR
 #include "Misc/MessageDialog.h"
 #endif
 
-SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializer& ObjectInitializer)
+UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	  , PredefinedSystemVariable(FShidenPredefinedSystemVariable())
 	  , ScenarioDirectoryPath("/Game/Shiden/Scenarios/")
@@ -35,14 +37,46 @@ SHIDENCORE_API UShidenProjectConfig::UShidenProjectConfig(const FObjectInitializ
 	SystemVariableDefinitions = TArray<FShidenVariableDefinition>();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::AddScenarioPath(const FGuid& ScenarioId, const FString& ScenarioPath)
+FName UShidenProjectConfig::GetContainerName() const
+{
+	return TEXT("Project");
+}
+
+FName UShidenProjectConfig::GetCategoryName() const
+{
+	return TEXT("Plugins");
+}
+
+FName UShidenProjectConfig::GetSectionName() const
+{
+	return TEXT("ShidenVisualNovelEditor");
+}
+
+#if WITH_EDITOR
+#define LOCTEXT_NAMESPACE "ShidenNamespace"
+
+FText UShidenProjectConfig::GetSectionText() const
+{
+	return LOCTEXT("ShidenVisualNovelEditorName", "Shiden Visual Novel Editor");
+}
+
+FText UShidenProjectConfig::GetSectionDescription() const
+{
+	return LOCTEXT("ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor");
+}
+
+#undef LOCTEXT_NAMESPACE
+#endif
+
+void UShidenProjectConfig::AddScenarioPath(const FGuid& ScenarioId, const FString& ScenarioPath)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->ScenarioPaths.Add(ScenarioId, ScenarioPath);
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FString>& Paths)
+void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FString>& Paths)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->ScenarioPaths = Paths;
@@ -50,31 +84,35 @@ SHIDENCORE_API void UShidenProjectConfig::SetScenarioPaths(const TMap<FGuid, FSt
 	{
 		return A < B;
 	});
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetScenarioDirectoryPath(const FString& Path)
+void UShidenProjectConfig::SetScenarioDirectoryPath(const FString& Path)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->ScenarioDirectoryPath = Path;
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetMacroDirectoryPath(const FString& Path)
+void UShidenProjectConfig::SetMacroDirectoryPath(const FString& Path)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->MacroDirectoryPath = Path;
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::AddPreset(const FString& Name, const FShidenPreset& Preset)
+void UShidenProjectConfig::AddPreset(const FString& Name, const FShidenPreset& Preset)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->Presets.Add(Name, Preset);
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API bool UShidenProjectConfig::TryGetPreset(const FString& Name, FShidenPreset& Preset)
+bool UShidenProjectConfig::TryGetPreset(const FString& Name, FShidenPreset& Preset)
 {
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	if (const FShidenPreset* FoundPreset = ProjectConfig->Presets.Find(Name))
@@ -85,25 +123,28 @@ SHIDENCORE_API bool UShidenProjectConfig::TryGetPreset(const FString& Name, FShi
 	return false;
 }
 
-SHIDENCORE_API void UShidenProjectConfig::RemovePreset(const FString& Name)
+void UShidenProjectConfig::RemovePreset(const FString& Name)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->Presets.Remove(Name);
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetUserVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
+void UShidenProjectConfig::SetUserVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->UserVariableDefinitions = Definitions;
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
-SHIDENCORE_API void UShidenProjectConfig::SetSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
+void UShidenProjectConfig::SetSystemVariableDefinitions(const TArray<FShidenVariableDefinition>& Definitions)
 {
 	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
 	ProjectConfig->SystemVariableDefinitions = Definitions;
-	SaveProjectConfigChanges(ProjectConfig);
+	ProjectConfig->SaveConfig();
+	ProjectConfig->TryUpdateDefaultConfigFile();
 }
 
 template <typename T>
@@ -139,15 +180,6 @@ USoundClass* UShidenProjectConfig::GetVoiceSoundClass()
 USoundMix* UShidenProjectConfig::GetSoundClassMix()
 {
 	return LoadSoftObjectIfNeeded(GetDefault<UShidenProjectConfig>()->SoundClassMix);
-}
-
-void UShidenProjectConfig::SaveProjectConfigChanges(const TObjectPtr<UShidenProjectConfig> Config)
-{
-	if (Config)
-	{
-		Config->SaveConfig(CPF_Config, *Config->GetDefaultConfigFilename());
-		Config->TryUpdateDefaultConfigFile();
-	}
 }
 
 #if WITH_EDITOR

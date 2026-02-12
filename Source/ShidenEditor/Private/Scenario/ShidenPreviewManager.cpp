@@ -127,8 +127,9 @@ void UShidenPreviewManager::StopSounds_Implementation(const EShidenSoundType Typ
 		{
 			// In Stop Sound, Cached BGM Info is deleted, so get an array of keys before looping
 			TArray<int32> Keys;
+			Keys.Reserve(CachedBGMInfo.Num());
 			CachedBGMInfo.GetKeys(Keys);
-			for (const int32& Key : Keys)
+			for (const int32 Key : Keys)
 			{
 				StopSound_Implementation(Key, Type);
 			}
@@ -141,8 +142,9 @@ void UShidenPreviewManager::StopSounds_Implementation(const EShidenSoundType Typ
 		{
 			// In Stop Sound, Cached Voice Info is deleted, so get an array of keys before looping
 			TArray<int32> Keys;
+			Keys.Reserve(CachedVoiceInfo.Num());
 			CachedVoiceInfo.GetKeys(Keys);
-			for (const int32& Key : Keys)
+			for (const int32 Key : Keys)
 			{
 				StopSound_Implementation(Key, Type);
 			}
@@ -180,7 +182,7 @@ void UShidenPreviewManager::PlayForceFeedback_Implementation(const FString& Forc
 	bSuccess = false;
 }
 
-void UShidenPreviewManager::CallMacroAsParallel_Implementation(const FString& NewProcessName, UObject* CallerObject)
+void UShidenPreviewManager::CallMacroInParallel_Implementation(const FString& NewProcessName, UObject* CallerObject)
 {
 	SHIDEN_ERROR("CallMacroAsParallel is not implemented.");
 }

@@ -120,14 +120,14 @@ const TSet<FString>& FShidenCommandArgumentEditorSettingsCustomization::GetCache
 		return DerivedClassNames;
 	}
 
-	const IAssetRegistry* Registry = &FModuleManager::LoadModuleChecked<FAssetRegistryModule>(ShidenEditorConstants::AssetRegistryModuleName).Get();
+	const IAssetRegistry& Registry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(ShidenEditorConstants::AssetRegistryModuleName).Get();
 
 	FARFilter Filter;
 	Filter.ClassPaths.Add(UEditorUtilityWidgetBlueprint::StaticClass()->GetClassPathName());
 	Filter.bRecursiveClasses = true;
 
 	TArray<FAssetData> WidgetAssets;
-	Registry->GetAssets(Filter, WidgetAssets);
+	Registry.GetAssets(Filter, WidgetAssets);
 
 	// Find ShidenInputBase and get its GeneratedClass
 	FString InputBaseGeneratedClass;

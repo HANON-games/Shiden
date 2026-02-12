@@ -94,7 +94,7 @@ bool CreateTexture2DFromBitmap(TArray<FColor>& Bitmap, const int32 Width, const 
 	return true;
 }
 
-SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
+void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
 {
 	const TSharedRef<SWidget> WidgetRef = TakeWidget();
 	FWidgetRenderer* WidgetRenderer = new FWidgetRenderer(true, false);
@@ -154,7 +154,7 @@ SHIDENCORE_API void UShidenWidget::CaptureWidget(const bool bShowTextBaseLayer, 
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
+void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer, UTexture2D*& ResultTexture)
 {
 	if (!FSlateApplication::IsInitialized())
 	{
@@ -202,7 +202,7 @@ SHIDENCORE_API void UShidenWidget::TakeScreenshot(const bool bShowTextBaseLayer,
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::CaptureScreenToTexture2D(UTexture2D*& ResultTexture)
+void UShidenWidget::CaptureScreenToTexture2D(UTexture2D*& ResultTexture)
 {
 	switch (CaptureScreenMode)
 	{
@@ -224,7 +224,7 @@ SHIDENCORE_API void UShidenWidget::CaptureScreenToTexture2D(UTexture2D*& ResultT
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const float DeltaTime)
+void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const float DeltaTime)
 {
 	Super::NativeTick(MyGeometry, DeltaTime);
 
@@ -243,7 +243,7 @@ SHIDENCORE_API void UShidenWidget::NativeTick(const FGeometry& MyGeometry, const
 	ChangeRetainerBoxMaterial(DeltaTimeToUse);
 }
 
-SHIDENCORE_API void UShidenWidget::FadeInOut(const float DeltaTime)
+void UShidenWidget::FadeInOut(const float DeltaTime)
 {
 	TArray<FString> KeysToRemove;
 	for (TPair<FString, FShidenFadeParams>& Pair : FadeParams)
@@ -282,7 +282,7 @@ SHIDENCORE_API void UShidenWidget::FadeInOut(const float DeltaTime)
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
+void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 {
 	TArray<FString> KeysToRemove;
 	for (TPair<FString, FShidenImageFadeParams>& Pair : ImageFadeParams)
@@ -313,7 +313,7 @@ SHIDENCORE_API void UShidenWidget::ImageFadeInOut(const float DeltaTime)
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
+void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
 {
 	TArray<FString> KeysToRemove;
 	for (TPair<FString, FShidenCanvasPanelSlotMoveParams>& Pair : CanvasPanelMoveParams)
@@ -353,7 +353,7 @@ SHIDENCORE_API void UShidenWidget::MoveCanvasPanelSlot(const float DeltaTime)
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::ChangeImageMaterial(const float DeltaTime)
+void UShidenWidget::ChangeImageMaterial(const float DeltaTime)
 {
 	TArray<FString> KeysToRemove;
 	for (TPair<FString, FShidenImageMaterialScalarParams>& Pair : ImageMaterialParams)
@@ -386,7 +386,7 @@ SHIDENCORE_API void UShidenWidget::ChangeImageMaterial(const float DeltaTime)
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::ChangeRetainerBoxMaterial(const float DeltaTime)
+void UShidenWidget::ChangeRetainerBoxMaterial(const float DeltaTime)
 {
 	TArray<FString> KeysToRemove;
 	for (TPair<FString, FShidenRetainerBoxMaterialScalarParams>& Pair : RetainerBoxMaterialParams)
@@ -419,7 +419,7 @@ SHIDENCORE_API void UShidenWidget::ChangeRetainerBoxMaterial(const float DeltaTi
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::NativePreConstruct()
+void UShidenWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
@@ -432,7 +432,7 @@ SHIDENCORE_API void UShidenWidget::NativePreConstruct()
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::NativeConstruct()
+void UShidenWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -440,34 +440,34 @@ SHIDENCORE_API void UShidenWidget::NativeConstruct()
 	UpdateWidgetCache();
 }
 
-SHIDENCORE_API void UShidenWidget::OnMediaClicked_Implementation()
+void UShidenWidget::OnMediaClicked_Implementation()
 {
 }
 
-SHIDENCORE_API void UShidenWidget::OnMediaSuspended_Implementation()
+void UShidenWidget::OnMediaSuspended_Implementation()
 {
 }
 
-SHIDENCORE_API void UShidenWidget::OnMediaResumed_Implementation()
+void UShidenWidget::OnMediaResumed_Implementation()
 {
 }
 
-SHIDENCORE_API void UShidenWidget::OnMediaReachedEnd_Implementation()
-{
-	bIsEndOfMedia = true;
-}
-
-SHIDENCORE_API void UShidenWidget::OnMediaClosed_Implementation()
+void UShidenWidget::OnMediaReachedEnd_Implementation()
 {
 	bIsEndOfMedia = true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsFadeCompleted(const FString& LayerName) const
+void UShidenWidget::OnMediaClosed_Implementation()
+{
+	bIsEndOfMedia = true;
+}
+
+bool UShidenWidget::IsFadeCompleted(const FString& LayerName) const
 {
 	return !FadeParams.Contains(LayerName);
 }
 
-SHIDENCORE_API void UShidenWidget::ClearAllFade()
+void UShidenWidget::ClearAllFade()
 {
 	FadeParams.Empty();
 	for (TTuple<FString, TObjectPtr<UBorder>>& Widget : FadeWidgets)
@@ -480,7 +480,7 @@ SHIDENCORE_API void UShidenWidget::ClearAllFade()
 	FadeWidgets.Empty();
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindTextWidget(const FString& TextWidgetName, UShidenTextWidget*& TextWidget) const
+bool UShidenWidget::TryFindTextWidget(const FString& TextWidgetName, UShidenTextWidget*& TextWidget) const
 {
 	if (const TObjectPtr<UShidenTextWidget> Result = TextWidgets.FindRef(TextWidgetName))
 	{
@@ -490,7 +490,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindTextWidget(const FString& TextWidgetNa
 	return false;
 }
 
-SHIDENCORE_API void UShidenWidget::ClearAllTexts()
+void UShidenWidget::ClearAllTexts()
 {
 	for (const TTuple<FString, TObjectPtr<UShidenTextWidget>>& TextWidget : TextWidgets)
 	{
@@ -498,7 +498,7 @@ SHIDENCORE_API void UShidenWidget::ClearAllTexts()
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindImage(const FString& ImageName, UImage*& Image) const
+bool UShidenWidget::TryFindImage(const FString& ImageName, UImage*& Image) const
 {
 	if (const TObjectPtr<UImage> Result = Images.FindRef(ImageName))
 	{
@@ -508,7 +508,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindImage(const FString& ImageName, UImage
 	return false;
 }
 
-SHIDENCORE_API void UShidenWidget::ClearAllImages()
+void UShidenWidget::ClearAllImages()
 {
 	for (const TTuple<FString, TObjectPtr<UImage>>& Image : Images)
 	{
@@ -521,7 +521,7 @@ SHIDENCORE_API void UShidenWidget::ClearAllImages()
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartImageFade(const FString& ImageName, UPARAM(ref)
+bool UShidenWidget::TryStartImageFade(const FString& ImageName, UPARAM(ref)
                                                      UImage* Target,
                                                      const EEasingFunc::Type Function, const float Duration,
                                                      const bool bIsWhiteFade, const bool bShouldBeTransparent,
@@ -565,7 +565,7 @@ SHIDENCORE_API bool UShidenWidget::TryStartImageFade(const FString& ImageName, U
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartFade(const FString& LayerName, const EEasingFunc::Type Function,
+bool UShidenWidget::TryStartFade(const FString& LayerName, const EEasingFunc::Type Function,
                                                 const float Duration, const FLinearColor TargetColor,
                                                 const bool bIsFadeOut, const float BlendExp, const int32 Steps,
                                                 const FString& OwnerProcessName, const int32 ZOrder, FString& ErrorMessage)
@@ -639,27 +639,27 @@ SHIDENCORE_API bool UShidenWidget::TryStartFade(const FString& LayerName, const 
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsImageFadeCompleted(const FString& ImageName) const
+bool UShidenWidget::IsImageFadeCompleted(const FString& ImageName) const
 {
 	return !ImageFadeParams.Contains(ImageName);
 }
 
-SHIDENCORE_API void UShidenWidget::SetOptions_Implementation(const TArray<FString>& Options)
+void UShidenWidget::SetOptions_Implementation(const TArray<FString>& Options)
 {
 	SelectedOption = INDEX_NONE;
 }
 
-SHIDENCORE_API int32 UShidenWidget::GetSelectedOption() const noexcept
+int32 UShidenWidget::GetSelectedOption() const noexcept
 {
 	return SelectedOption;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsOptionSelected() const noexcept
+bool UShidenWidget::IsOptionSelected() const noexcept
 {
 	return SelectedOption > -1;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryPlayMedia(const FString& MediaSourcePath, const bool bCanOpenPauseMenu, const int32 MediaZOrder)
+bool UShidenWidget::TryPlayMedia(const FString& MediaSourcePath, const bool bCanOpenPauseMenu, const int32 MediaZOrder)
 {
 	if (!MediaPlayer)
 	{
@@ -695,12 +695,12 @@ SHIDENCORE_API bool UShidenWidget::TryPlayMedia(const FString& MediaSourcePath, 
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsMediaCompleted() const noexcept
+bool UShidenWidget::IsMediaCompleted() const noexcept
 {
 	return bIsEndOfMedia;
 }
 
-SHIDENCORE_API void UShidenWidget::CollapseMedia() const
+void UShidenWidget::CollapseMedia() const
 {
 	if (MediaLayer)
 	{
@@ -708,21 +708,21 @@ SHIDENCORE_API void UShidenWidget::CollapseMedia() const
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindRetainerBox(const FString& RetainerBoxName, URetainerBox*& RetainerBox) const
+bool UShidenWidget::TryFindRetainerBox(const FString& RetainerBoxName, URetainerBox*& RetainerBox) const
 {
 	const TObjectPtr<URetainerBox> Result = RetainerBoxes.FindRef(RetainerBoxName);
 	RetainerBox = Result;
 	return Result ? true : false;
 }
 
-SHIDENCORE_API FString UShidenWidget::MakeMaterialParamsKey(const FString& TargetName, const FString& ParameterName)
+FString UShidenWidget::MakeMaterialParamsKey(const FString& TargetName, const FString& ParameterName)
 {
 	const FString EscapedTargetName = TargetName.Replace(TEXT(":"), TEXT("\\:"));
 	const FString EscapedParameterName = ParameterName.Replace(TEXT(":"), TEXT("\\:"));
 	return FString::Printf(TEXT("%s::%s"), *EscapedTargetName, *EscapedParameterName);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartImageMaterialScalarChange(const FString& ImageName, UPARAM(ref)
+bool UShidenWidget::TryStartImageMaterialScalarChange(const FString& ImageName, UPARAM(ref)
                                                                      UImage* Target,
                                                                      const FName& ParameterName, const EEasingFunc::Type Function,
                                                                      const float Duration, const float EndValue,
@@ -778,13 +778,13 @@ SHIDENCORE_API bool UShidenWidget::TryStartImageMaterialScalarChange(const FStri
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsImageMaterialParameterChangeCompleted(const FString& ImageName, const FString& ParameterName) const
+bool UShidenWidget::IsImageMaterialParameterChangeCompleted(const FString& ImageName, const FString& ParameterName) const
 {
 	const FString Key = MakeMaterialParamsKey(ImageName, ParameterName);
 	return !ImageMaterialParams.Contains(Key);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartRetainerBoxMaterialScalarChange(const FString& RetainerBoxName, UPARAM(ref)
+bool UShidenWidget::TryStartRetainerBoxMaterialScalarChange(const FString& RetainerBoxName, UPARAM(ref)
                                                                            URetainerBox* Target,
                                                                            const FName& ParameterName, const EEasingFunc::Type Function,
                                                                            const float Duration, const float EndValue, const float BlendExp,
@@ -838,13 +838,13 @@ SHIDENCORE_API bool UShidenWidget::TryStartRetainerBoxMaterialScalarChange(const
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsRetainerBoxMaterialParameterChangeCompleted(const FString& RetainerBoxName, const FString& ParameterName) const
+bool UShidenWidget::IsRetainerBoxMaterialParameterChangeCompleted(const FString& RetainerBoxName, const FString& ParameterName) const
 {
 	const FString Key = MakeMaterialParamsKey(RetainerBoxName, ParameterName);
 	return !RetainerBoxMaterialParams.Contains(Key);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryStartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref)
+bool UShidenWidget::TryStartCanvasPanelSlotMove(const FString& CanvasPanelSlotName, UPARAM(ref)
                                                                UCanvasPanelSlot* Target,
                                                                const EEasingFunc::Type Function, const float Duration,
                                                                const bool bChangePosition, const FVector2D EndPosition,
@@ -909,12 +909,12 @@ SHIDENCORE_API bool UShidenWidget::TryStartCanvasPanelSlotMove(const FString& Ca
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsCanvasPanelSlotMoveCompleted(const FString& CanvasPanelName) const
+bool UShidenWidget::IsCanvasPanelSlotMoveCompleted(const FString& CanvasPanelName) const
 {
 	return !CanvasPanelMoveParams.Contains(CanvasPanelName);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindCanvasPanelSlot(const FString& CanvasPanelSlotName, UCanvasPanelSlot*& CanvasPanelSlot) const
+bool UShidenWidget::TryFindCanvasPanelSlot(const FString& CanvasPanelSlotName, UCanvasPanelSlot*& CanvasPanelSlot) const
 {
 	if (const TObjectPtr<UCanvasPanelSlot> Result = CanvasPanelSlots.FindRef(CanvasPanelSlotName))
 	{
@@ -924,7 +924,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindCanvasPanelSlot(const FString& CanvasP
 	return false;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation) const
+bool UShidenWidget::TryFindAnimation(const FString& AnimationName, UUserWidget*& TargetWidget, UWidgetAnimation*& WidgetAnimation) const
 {
 	if (const FShidenAnimation* Result = WidgetAnimations.Find(AnimationName))
 	{
@@ -935,7 +935,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindAnimation(const FString& AnimationName
 	return false;
 }
 
-SHIDENCORE_API void UShidenWidget::ResetAllAnimations()
+void UShidenWidget::ResetAllAnimations()
 {
 	for (const TTuple<FString, FShidenAnimation>& WidgetAnimation : WidgetAnimations)
 	{
@@ -947,27 +947,27 @@ SHIDENCORE_API void UShidenWidget::ResetAllAnimations()
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::SetInputModeTextInput_Implementation()
+void UShidenWidget::SetInputModeTextInput_Implementation()
 {
 	SHIDEN_WARNING("Please override SetInputModeTextInput function of Shiden Widget!");
 }
 
-SHIDENCORE_API bool UShidenWidget::IsTextSubmitted() const noexcept
+bool UShidenWidget::IsTextSubmitted() const noexcept
 {
 	return bIsTextSubmitted;
 }
 
-SHIDENCORE_API void UShidenWidget::SetInputModeOptionSelection_Implementation()
+void UShidenWidget::SetInputModeOptionSelection_Implementation()
 {
 	SHIDEN_WARNING("Please override SetInputModeOptionSelection function of Shiden Widget!");
 }
 
-SHIDENCORE_API void UShidenWidget::InitTextInput_Implementation(const FShidenTextInputProperties& Properties)
+void UShidenWidget::InitTextInput_Implementation(const FShidenTextInputProperties& Properties)
 {
 	SHIDEN_WARNING("Please override InitTextInput function of Shiden Widget!");
 }
 
-SHIDENCORE_API void UShidenWidget::SetInputModeGameAndUI_Implementation()
+void UShidenWidget::SetInputModeGameAndUI_Implementation()
 {
 	if (const TObjectPtr<UWorld> World = this->GetWorld())
 	{
@@ -986,7 +986,7 @@ SHIDENCORE_API void UShidenWidget::SetInputModeGameAndUI_Implementation()
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result)
+void UShidenWidget::SanitizeInputText(const FString& Text, const FShidenTextInputProperties& Properties, FString& Result)
 {
 	TArray<FString> Lines;
 	Text.ParseIntoArrayLines(Lines, false);
@@ -1034,12 +1034,12 @@ SHIDENCORE_API void UShidenWidget::SanitizeInputText(const FString& Text, const 
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::IsSkipPressed() const noexcept
+bool UShidenWidget::IsSkipPressed() const noexcept
 {
 	return bPressSkipButton;
 }
 
-SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const
+void UShidenWidget::GetVisibilityByName(const FString& Name, ESlateVisibility& Result) const
 {
 	if (const TObjectPtr<UWidget> Widget = AllWidgets.FindRef(Name))
 	{
@@ -1047,7 +1047,7 @@ SHIDENCORE_API void UShidenWidget::GetVisibilityByName(const FString& Name, ESla
 	}
 }
 
-SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, const ESlateVisibility NewVisibility,
+bool UShidenWidget::TrySetVisibilityByName(const FString& Name, const ESlateVisibility NewVisibility,
                                                           const bool bShouldRegisterScenarioProperty)
 {
 	if (!IsValid(this) || !AllWidgets.Contains(Name))
@@ -1094,7 +1094,7 @@ SHIDENCORE_API bool UShidenWidget::TrySetVisibilityByName(const FString& Name, c
 	return true;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsMenuOpen() const
+bool UShidenWidget::IsMenuOpen() const
 {
 	if (!MenuBaseLayer || !MenuBaseLayer->IsVisible())
 	{
@@ -1113,7 +1113,7 @@ SHIDENCORE_API bool UShidenWidget::IsMenuOpen() const
 	return false;
 }
 
-SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, const UWidgetTree* Tree)
+void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, const UWidgetTree* Tree)
 {
 	if (!Tree)
 	{
@@ -1160,12 +1160,12 @@ SHIDENCORE_API void UShidenWidget::UpdateWidgetCacheCore(const FString& Prefix, 
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::UpdateWidgetCache()
+void UShidenWidget::UpdateWidgetCache()
 {
 	UpdateWidgetCacheCore(TEXT(""), WidgetTree);
 }
 
-SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget)
+void UShidenWidget::UpdateAllWidgetAnimations(const FString& Prefix, const UUserWidget* TargetWidget)
 {
 	if (!TargetWidget)
 	{
@@ -1199,12 +1199,12 @@ SHIDENCORE_API void UShidenWidget::UpdateAllWidgetAnimations(const FString& Pref
 	}
 }
 
-SHIDENCORE_API void UShidenWidget::GetAllWidgets(TArray<UWidget*>& Children) const
+void UShidenWidget::GetAllWidgets(TArray<UWidget*>& Children) const
 {
 	WidgetTree->GetAllWidgets(Children);
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelSlotMoveParams& Value)
+bool UShidenWidget::TryFindCanvasPanelMoveParams(const FString& CanvasPanelName, FShidenCanvasPanelSlotMoveParams& Value)
 {
 	if (const FShidenCanvasPanelSlotMoveParams* Params = CanvasPanelMoveParams.Find(CanvasPanelName))
 	{
@@ -1214,7 +1214,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindCanvasPanelMoveParams(const FString& C
 	return false;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindImageFadeParams(const FString& ImageName, FShidenImageFadeParams& Value)
+bool UShidenWidget::TryFindImageFadeParams(const FString& ImageName, FShidenImageFadeParams& Value)
 {
 	if (const FShidenImageFadeParams* Params = ImageFadeParams.Find(ImageName))
 	{
@@ -1224,7 +1224,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindImageFadeParams(const FString& ImageNa
 	return false;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindImageMaterialScalarParams(const FString& MaterialParamsKey, FShidenImageMaterialScalarParams& Value)
+bool UShidenWidget::TryFindImageMaterialScalarParams(const FString& MaterialParamsKey, FShidenImageMaterialScalarParams& Value)
 {
 	if (const FShidenImageMaterialScalarParams* Params = ImageMaterialParams.Find(MaterialParamsKey))
 	{
@@ -1234,7 +1234,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindImageMaterialScalarParams(const FStrin
 	return false;
 }
 
-SHIDENCORE_API bool UShidenWidget::TryFindRetainerBoxMaterialScalarParams(const FString& MaterialParamsKey, FShidenRetainerBoxMaterialScalarParams& Value)
+bool UShidenWidget::TryFindRetainerBoxMaterialScalarParams(const FString& MaterialParamsKey, FShidenRetainerBoxMaterialScalarParams& Value)
 {
 	if (const FShidenRetainerBoxMaterialScalarParams* Params = RetainerBoxMaterialParams.Find(MaterialParamsKey))
 	{
@@ -1244,7 +1244,7 @@ SHIDENCORE_API bool UShidenWidget::TryFindRetainerBoxMaterialScalarParams(const 
 	return false;
 }
 
-SHIDENCORE_API bool UShidenWidget::IsTextVisible() const
+bool UShidenWidget::IsTextVisible() const
 {
 	if (!TextLayer || !OptionLayer || !TextInputLayer)
 	{

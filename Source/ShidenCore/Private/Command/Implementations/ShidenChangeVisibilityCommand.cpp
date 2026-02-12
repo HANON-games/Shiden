@@ -4,8 +4,8 @@
 
 bool UShidenChangeVisibilityCommand::TryParseCommand(const FShidenCommand& Command, FChangeVisibilityCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.Name = Command.GetArg(TEXT("Name"));
-	const FString VisibilityStr = Command.GetArg(TEXT("Visibility"));
+	Args.Name = Command.GetArg(TEXT("Name")).GetValue();
+	const FString VisibilityStr = Command.GetArg(TEXT("Visibility")).GetValue();
 	return TryConvertToVisibility(VisibilityStr, Args.Visibility, ErrorMessage);
 }
 

@@ -60,6 +60,9 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
 	FString ClickWaitingGlyph;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Predefined System Variables")
+	bool bIsGalleryMode;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Predefined System Variables")
 	FString PlatformName = UGameplayStatics::GetPlatformName();
 
@@ -105,6 +108,7 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 			BlipIntervalCharacters = Other.BlipIntervalCharacters;
 			SkipCondition = Other.SkipCondition;
 			ClickWaitingGlyph = Other.ClickWaitingGlyph;
+			bIsGalleryMode = Other.bIsGalleryMode;
 		}
 		return *this;
 	}
@@ -280,6 +284,15 @@ struct SHIDENCORE_API FShidenPredefinedSystemVariable
 			false,
 			[this] { return ClickWaitingGlyph; },
 			[this](const FString& Value) { ClickWaitingGlyph = Value; }
+		),
+		FShidenPredefinedSystemVariableDefinition(
+			"IsGalleryMode",
+			EShidenVariableType::Boolean,
+			EShidenAssetPathType::None,
+			"false",
+			false,
+			[this] { return bIsGalleryMode ? TEXT("true") : TEXT("false"); },
+			[this](const FString& Value) { bIsGalleryMode = Value.Compare("true", ESearchCase::IgnoreCase) == 0; }
 		),
 		FShidenPredefinedSystemVariableDefinition(
 			"PlatformName",

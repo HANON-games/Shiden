@@ -2,71 +2,58 @@
 
 #include "Config/ShidenEditorConfig.h"
 #include "System/ShidenScenarioSyncManager.h"
+#include "UObject/UnrealType.h"
 #include "Misc/MessageDialog.h"
+#include "Misc/Paths.h"
 
-SHIDENEDITOR_API UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializer& ObjectInitializer)
+UShidenEditorConfig::UShidenEditorConfig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	  , ScenarioFilterPath("")
-	  , EditScenarioPath("")
-	  , bPreviewSound(false)
-	  , PreviewSize(960.0f, 540.0f)
-	  , ShidenDebuggerRefreshInterval(0.1f)
-	  , bAutoSaveScenario(false)
 	  , DefaultCommand("Text")
-	  , bUseAdvancedMode(true)
-	  , bShowAllVisibilityConditionItems(false)
-      , bExpandPresets(false)
-      , PluginVersion(FShidenPluginVersion())
+	  , bExpandPresets(false)
+	  , PluginVersion(FShidenPluginVersion())
 	  , bEnableScenarioSync(false)
 	  , ScenarioSyncFormat(EShidenScenarioSyncFormat::CSV)
-	  , ScenarioSyncDirectoryPath(FDirectoryPath())
-	  , bWatchFileAdditions(false)
-	  , bWatchFileDeletions(false)
+	  , ScenarioSyncDirectoryPath("")
 {
 }
 
-template <typename T, typename TMember>
-void UShidenEditorConfig::UpdateConfig(TMember UShidenEditorConfig::* MemberPtr, const T& Value)
+FName UShidenEditorConfig::GetContainerName() const
 {
-	const TObjectPtr<UShidenEditorConfig> Config = GetMutableDefault<UShidenEditorConfig>();
-	Config->*MemberPtr = Value;
-	Config->SaveConfig(CPF_Config, *Config->GetDefaultConfigFilename());
-	Config->TryUpdateDefaultConfigFile();
+	return TEXT("Editor");
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetScenarioFilterPath(const FString& Path)
+FName UShidenEditorConfig::GetCategoryName() const
 {
-	UpdateConfig(&UShidenEditorConfig::ScenarioFilterPath, Path);
+	return TEXT("Plugins");
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetEditScenarioPath(const FString& PackageName)
+FName UShidenEditorConfig::GetSectionName() const
 {
-	UpdateConfig(&UShidenEditorConfig::EditScenarioPath, PackageName);
+	return TEXT("ShidenVisualNovelEditor");
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSound(const bool bEnabled)
+#define LOCTEXT_NAMESPACE "FShidenEditorModule"
+
+FText UShidenEditorConfig::GetSectionText() const
 {
-	UpdateConfig(&UShidenEditorConfig::bPreviewSound, bEnabled);
+	return LOCTEXT("ShidenVisualNovelEditorName", "Shiden Visual Novel Editor");
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetPreviewSize(const FVector2D& Size)
+FText UShidenEditorConfig::GetSectionDescription() const
 {
-	UpdateConfig(&UShidenEditorConfig::PreviewSize, Size);
+	return LOCTEXT("ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor Project Settings");
 }
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetShidenDebuggerRefreshInterval(const float Interval)
-{
-	UpdateConfig(&UShidenEditorConfig::ShidenDebuggerRefreshInterval, Interval);
-}
+#undef LOCTEXT_NAMESPACE
 
-SHIDENEDITOR_API void UShidenEditorConfig::SetAutoSaveScenario(const bool bEnabled)
+void UShidenEditorConfig::SetDefaultCommand(const FString& CommandName)
 {
-	UpdateConfig(&UShidenEditorConfig::bAutoSaveScenario, bEnabled);
-}
-
-SHIDENEDITOR_API void UShidenEditorConfig::SetDefaultCommand(const FString& CommandName)
-{
-	UpdateConfig(&UShidenEditorConfig::DefaultCommand, CommandName);
+	if (const TObjectPtr<UShidenEditorConfig> EditorConfig = GetMutableDefault<UShidenEditorConfig>())
+	{
+		EditorConfig->DefaultCommand = CommandName;
+		EditorConfig->SaveConfig();
+		EditorConfig->TryUpdateDefaultConfigFile();
+	}
 }
 
 void UShidenEditorConfig::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -80,7 +67,7 @@ void UShidenEditorConfig::PostEditChangeProperty(FPropertyChangedEvent& Property
 	{
 		if (bEnableScenarioSync)
 		{
-			if (ScenarioSyncDirectoryPath.Path.IsEmpty())
+			if (ScenarioSyncDirectoryPath.IsEmpty())
 			{
 				const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "ScenarioSyncDirectoryEmptyTitle", "Sync Directory Not Set");
 				const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "ScenarioSyncDirectoryEmptyMessage",
@@ -105,25 +92,15 @@ void UShidenEditorConfig::PostEditChangeProperty(FPropertyChangedEvent& Property
 			UShidenScenarioSyncManager::StopWatchingDirectory();
 		}
 	}
-	else if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenEditorConfig, ScenarioSyncFormat) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(UShidenEditorConfig, ScenarioSyncDirectoryPath))
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenEditorConfig, ScenarioSyncDirectoryPath) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(UShidenEditorConfig, ScenarioSyncFormat))
 	{
 		if (bEnableScenarioSync)
 		{
-			// Re-export all scenarios when format or directory changes
+			// Re-export all scenarios when format changes
 			UShidenScenarioSyncManager::StopWatchingDirectory();
 			UShidenScenarioSyncManager::ExportAllScenarios();
 			UShidenScenarioSyncManager::StartWatchingDirectory();
-		}
-	}
-	else if (PropertyName == GET_MEMBER_NAME_CHECKED(UShidenEditorConfig, bWatchFileDeletions))
-	{
-		if (bWatchFileDeletions)
-		{
-			const FText WarningTitle = NSLOCTEXT("ShidenNamespace", "FileDeletionWatchWarningTitle", "File Deletion Monitoring Warning");
-			const FText WarningMessage = NSLOCTEXT("ShidenNamespace", "FileDeletionWatchWarningMessage",
-			                                       "You have enabled file deletion monitoring. Please ensure you are using version control (e.g., Git) or maintaining regular backups.\r\n\r\nDeleted files cannot be recovered automatically, and this could lead to permanent data loss if files are accidentally deleted.");
-			FMessageDialog::Open(EAppMsgType::Ok, WarningMessage, WarningTitle);
 		}
 	}
 }

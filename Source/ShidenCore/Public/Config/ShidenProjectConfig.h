@@ -14,79 +14,91 @@
 class UShidenUserSaveGame;
 class UShidenSystemSaveGame;
 
-UCLASS(config = Game, defaultconfig, Category = "Shiden Visual Novel|Config")
-class SHIDENCORE_API UShidenProjectConfig : public UObject
+UCLASS(config = Game, defaultconfig, Category = "Shiden Visual Novel")
+class SHIDENCORE_API UShidenProjectConfig : public UDeveloperSettings
 {
 	GENERATED_UCLASS_BODY()
+	
+	virtual FName GetContainerName() const override;
+	
+	virtual FName GetCategoryName() const override;
+	
+	virtual FName GetSectionName() const override;
 
+#if WITH_EDITOR
+	virtual FText GetSectionText() const override;
+	
+	virtual FText GetSectionDescription() const override;
+#endif
+	
 private:
-	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The master sound class that controls overall volume. This should be the parent of all other sound classes."))
 	TSoftObjectPtr<USoundClass> MasterSoundClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The sound class used for background music (BGM) volume control."))
 	TSoftObjectPtr<USoundClass> BGMSoundClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The sound class used for sound effects (SE) volume control."))
 	TSoftObjectPtr<USoundClass> SESoundClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The sound class used for voice audio volume control."))
 	TSoftObjectPtr<USoundClass> VoiceSoundClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The sound mix asset used for managing audio class volumes at runtime."))
 	TSoftObjectPtr<USoundMix> SoundClassMix;
 
 public:
-	UPROPERTY(VisibleAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(VisibleAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "Mapping of scenario GUIDs to their file paths. This is automatically managed by the system."))
 	TMap<FGuid, FString> ScenarioPaths;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ConfigRestartRequired = false, ToolTip = "Predefined system variables with their initial values."))
 	FShidenPredefinedSystemVariable PredefinedSystemVariable;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ConfigRestartRequired = true, ToolTip = "The content browser directory path where scenario data assets are stored (e.g., /Game/Shiden/Scenarios/)."))
 	FString ScenarioDirectoryPath;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ConfigRestartRequired = true, ToolTip = "The content browser directory path where macro data assets are stored (e.g., /Game/Shiden/Macros/)."))
 	FString MacroDirectoryPath;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ConfigRestartRequired = true,
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ConfigRestartRequired = true,
 		ToolTip = "Named presets for command arguments. Each preset is associated with a specific command and contains predefined argument values that can be applied when using that command."))
 	TMap<FString, FShidenPreset> Presets;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (AllowedClasses = "/Script/ShidenCore.ShidenCommandDefinitions", ConfigRestartRequired = true,
 			ToolTip = "Data assets that define available commands for scenarios. Multiple assets can be specified and their commands will be merged together."))
 	TArray<FSoftObjectPath> CommandDefinitions;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "Additional text types beyond the default (e.g., Narration, Thoughts)."))
 	TMap<FString, FShidenTextType> AdditionalTextTypes;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ToolTip = "The default widget class."))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ToolTip = "The default widget class."))
 	TSubclassOf<UShidenWidget> DefaultWidgetClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ToolTip = "Definitions for user variables that persist in save data."))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ToolTip = "Definitions for user variables that persist in save data."))
 	TArray<FShidenVariableDefinition> UserVariableDefinitions;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ToolTip = "Definitions for system variables that persist across all save data."))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ToolTip = "Definitions for system variables that persist across all save data."))
 	TArray<FShidenVariableDefinition> SystemVariableDefinitions;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config",
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "Automatically save game data when the mobile application is about to be suspended or sent to background."))
 	bool bAutoSaveOnMobileAppWillDeactivate;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ToolTip = "Custom class for user save game data."))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ToolTip = "Custom class for user save game data."))
 	TSubclassOf<UShidenUserSaveGame> UserSaveGameClass;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Config", Meta = (ToolTip = "Custom class for system save game data."))
+	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel", Meta = (ToolTip = "Custom class for system save game data."))
 	TSubclassOf<UShidenSystemSaveGame> SystemSaveGameClass;
 
 	/**
@@ -206,9 +218,7 @@ public:
 	static USoundMix* GetSoundClassMix();
 
 private:
-	static void SaveProjectConfigChanges(TObjectPtr<UShidenProjectConfig> Config);
-
-	template<typename T>
+	template <typename T>
 	static T* LoadSoftObjectIfNeeded(const TSoftObjectPtr<T>& SoftObject);
 
 #if WITH_EDITOR

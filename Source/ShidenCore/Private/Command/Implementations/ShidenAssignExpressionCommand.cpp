@@ -9,16 +9,16 @@
 bool UShidenAssignExpressionCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FAssignExpressionCommandArgs& Args,
                                                      FString& ErrorMessage)
 {
-	// HACK: get expression from original command
-	FShidenCommand* OriginalCommand = nullptr;
-	if (!ShidenCommandHelpers::TryGetCurrentOriginalCommand(ProcessName, OriginalCommand, ErrorMessage))
+	// Get the pre-variable-replacement command to access the raw expression string
+	FShidenCommand PreVariableReplacementCommand;
+	if (!ShidenExpressionCommandHelpers::TryGetPreVariableReplacementCommand(ProcessName, PreVariableReplacementCommand, ErrorMessage))
 	{
 		return false;
 	}
 
-	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
-	Args.VariableName = Command.GetArg(TEXT("VariableName"));
-	Args.Expression = OriginalCommand->GetArg(TEXT("Expression"));
+	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
+	Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
+	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression")).GetValue();
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{

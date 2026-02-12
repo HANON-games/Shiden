@@ -6,12 +6,12 @@
 #include "System/ShidenBlueprintLibrary.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 
-SHIDENCORE_API void UShidenTextWidget::GetAllFullTexts_Implementation(TMap<FString, FString>& Texts)
+void UShidenTextWidget::GetAllFullTexts_Implementation(TMap<FString, FString>& Texts)
 {
 	Texts = OriginalTexts;
 }
 
-SHIDENCORE_API void UShidenTextWidget::GetFullText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
+void UShidenTextWidget::GetFullText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
 	if (const FString* OriginalText = OriginalTexts.Find(TextType))
 	{
@@ -24,7 +24,7 @@ SHIDENCORE_API void UShidenTextWidget::GetFullText_Implementation(const FString&
 	bSuccess = false;
 }
 
-SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
+void UShidenTextWidget::GetCurrentText_Implementation(const FString& TextType, FString& Text, bool& bSuccess)
 {
 	if (const FString* OriginalText = OriginalTexts.Find(TextType))
 	{
@@ -37,21 +37,21 @@ SHIDENCORE_API void UShidenTextWidget::GetCurrentText_Implementation(const FStri
 	bSuccess = false;
 }
 
-SHIDENCORE_API void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess)
+void UShidenTextWidget::OpenWindow_Implementation(const FString& TextType, const FShidenOpenTextWindowDelegate& OnOpened, bool& bSuccess)
 {
 	// ReSharper disable once CppExpressionWithoutSideEffects
 	OnOpened.ExecuteIfBound();
 	bSuccess = true;
 }
 
-SHIDENCORE_API void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess)
+void UShidenTextWidget::CloseWindow_Implementation(const FString& TextType, const FShidenCloseTextWindowDelegate& OnClosed, bool& bSuccess)
 {
 	// ReSharper disable once CppExpressionWithoutSideEffects
 	OnClosed.ExecuteIfBound();
 	bSuccess = true;
 }
 
-SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int32 Length)
+void UShidenTextWidget::SetText_Implementation(const FString& TextType, const FString& RawText, const int32 Length)
 {
 	if (RawText.IsEmpty())
 	{
@@ -86,12 +86,12 @@ SHIDENCORE_API void UShidenTextWidget::SetText_Implementation(const FString& Tex
 	}
 }
 
-SHIDENCORE_API void UShidenTextWidget::ClearText_Implementation(const FString& TextType)
+void UShidenTextWidget::ClearText_Implementation(const FString& TextType)
 {
 	SetText(TextType, TEXT(""), 0);
 }
 
-SHIDENCORE_API void UShidenTextWidget::ClearAllTexts_Implementation()
+void UShidenTextWidget::ClearAllTexts_Implementation()
 {
 	const TMap<FString, FShidenTextType>& TextTypes = UShidenBlueprintLibrary::GetShidenTextTypes();
 	for (const TPair<FString, FShidenTextType>& Pair : TextTypes)
@@ -100,7 +100,7 @@ SHIDENCORE_API void UShidenTextWidget::ClearAllTexts_Implementation()
 	}
 }
 
-SHIDENCORE_API void UShidenTextWidget::NativeConstruct()
+void UShidenTextWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 

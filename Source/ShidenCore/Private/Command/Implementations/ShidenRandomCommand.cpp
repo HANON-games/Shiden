@@ -6,10 +6,10 @@
 bool UShidenRandomCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FRandomCommandArgs& Args,
                                            FString& ErrorMessage)
 {
-	const FString VariableKindStr = Command.GetArg("VariableKind");
-	Args.DestinationVariableName = Command.GetArg("DestinationVariableName");
-	Args.MinValue = Command.GetArg("Min");
-	Args.MaxValue = Command.GetArg("Max");
+	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
+	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName")).GetValue();
+	Args.MinValue = Command.GetArg(TEXT("Min")).GetValue();
+	Args.MaxValue = Command.GetArg(TEXT("Max")).GetValue();
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{

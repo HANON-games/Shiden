@@ -6,11 +6,10 @@
 
 void UShidenWaitForClickCommand::ParseFromCommand(const FShidenCommand& Command, FWaitForClickCommandArgs& Args)
 {
-	Args.bCanSkip = Command.GetArgAsBool("CanSkip");
+	Args.bCanSkip = Command.GetArgAsBool(TEXT("CanSkip")).GetValue();
 }
 
-void UShidenWaitForClickCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                                  UShidenWidget* ShidenWidget,
+void UShidenWaitForClickCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                   const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                   UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage)
 {
@@ -19,18 +18,17 @@ void UShidenWaitForClickCommand::PreProcessCommand_Implementation(const FString&
 	Status = EShidenPreProcessStatus::Complete;
 }
 
-void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                               UShidenWidget* ShidenWidget,
+void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	const bool bCanSkipCommand = UShidenScenarioBlueprintLibrary::CanSkipCommand();
-
+	
+	bool bValue, bSuccess;
 	if (Args.bCanSkip && bCanSkipCommand)
 	{
-		static const UInputAction* SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
-		bool bValue, bSuccess;
+		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
 		if (bValue && bSuccess)
 		{
@@ -39,8 +37,7 @@ void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& Pr
 		}
 	}
 
-	static const UInputAction* NextInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext"));
-	bool bValue, bSuccess;
+	static const TObjectPtr<UInputAction> NextInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext"));
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), NextInputAction, bValue, bSuccess);
 	if (!bSuccess)
 	{
@@ -59,7 +56,7 @@ void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& Pr
 	}
 }
 
-UInputAction* UShidenWaitForClickCommand::LoadInputActionFromPath(const FString& Path)
+TObjectPtr<UInputAction> UShidenWaitForClickCommand::LoadInputActionFromPath(const FString& Path)
 {
 	return Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, *Path));
 }

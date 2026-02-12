@@ -8,20 +8,20 @@
 bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         FMoveCanvasPanelSlotCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.SlotName = Command.GetArg(TEXT("SlotName"));
-	const FString EasingFunctionStr = Command.GetArg(TEXT("EasingFunction"));
-	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
-	Args.ChangeType = Command.GetArg(TEXT("ChangeType"));
-	const FVector2D OriginalPosition = Command.GetArgAsVector2D(TEXT("OverwritePosition"));
-	const FVector2D OriginalSize = Command.GetArgAsVector2D(TEXT("OverwriteSize"));
-	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
-	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
-	const FString OverwriteZOrderStr = Command.GetArg(TEXT("OverwriteZOrder"));
-	Args.bChangePosition = !Command.GetArg(TEXT("OverwritePosition")).IsEmpty();
-	Args.bChangeSize = !Command.GetArg(TEXT("OverwriteSize")).IsEmpty();
-	Args.bWaitForCompletion = Command.GetArg(TEXT("WaitForComplete")).ToBool();
-	Args.bOverwriteZOrder = !OverwriteZOrderStr.IsEmpty();
-	Args.OverwriteZOrder = Args.bOverwriteZOrder ? FCString::Atoi(*OverwriteZOrderStr) : 0;
+	Args.SlotName = Command.GetArg(TEXT("SlotName")).GetValue();
+	const FString EasingFunctionStr = Command.GetArg(TEXT("EasingFunction")).GetValue();
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
+	Args.ChangeType = Command.GetArg(TEXT("ChangeType")).GetValue();
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
+	const TOptional<FString> OverwriteZOrderOpt = Command.GetArg(TEXT("OverwriteZOrder"));
+	Args.bChangePosition = Command.GetArg(TEXT("OverwritePosition")).IsSet();
+	const FVector2D OriginalPosition = Command.GetArgAsVector2D(TEXT("OverwritePosition")).Get(FVector2D::ZeroVector);
+	Args.bChangeSize = Command.GetArg(TEXT("OverwriteSize")).IsSet();
+	const FVector2D OriginalSize = Command.GetArgAsVector2D(TEXT("OverwriteSize")).Get(FVector2D::ZeroVector);
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.bOverwriteZOrder = OverwriteZOrderOpt.IsSet();
+	Args.OverwriteZOrder = Args.bOverwriteZOrder ? FCString::Atoi(*OverwriteZOrderOpt.GetValue()) : 0;
 
 	if (!TryAddCurrentValue(Args, OriginalPosition, OriginalSize, ShidenWidget, Args.EndPosition, Args.EndSize, ErrorMessage))
 	{

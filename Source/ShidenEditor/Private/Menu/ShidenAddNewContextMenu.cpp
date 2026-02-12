@@ -9,6 +9,7 @@
 #include "IAssetTools.h"
 #include "UObject/ScriptInterface.h"
 #include "IContentBrowserDataModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "System/ShidenEditorBlueprintLibrary.h"
 #include "Command/ShidenCommandDefinitions.h"
 #include "Subsystems/EditorAssetSubsystem.h"
@@ -129,8 +130,7 @@ void UShidenAddNewContextMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 									const TObjectPtr<UObject> SaveSlotAsset = CreateAsset(
 										TEXT("/Shiden/Samples/WBP_ShidenSaveSlotSample"), TEXT("WBP_MySaveSlot"));
 
-									const TObjectPtr<UEditorAssetSubsystem> EditorAssetSubsystem = GEditor->GetEditorSubsystem<
-										UEditorAssetSubsystem>();
+									const TObjectPtr<UEditorAssetSubsystem> EditorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
 
 									const FString SaveMenuPackagePath = FPackageName::ObjectPathToPackageName(SaveMenuAsset->GetPathName());
 									const FString SaveSlotPackagePath = FPackageName::ObjectPathToPackageName(SaveSlotAsset->GetPathName());
@@ -138,8 +138,7 @@ void UShidenAddNewContextMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 									const TObjectPtr<UClass> SaveMenuAssetClass = EditorAssetSubsystem->LoadBlueprintClass(SaveMenuPackagePath);
 									const TObjectPtr<UClass> SaveSlotAssetClass = EditorAssetSubsystem->LoadBlueprintClass(SaveSlotPackagePath);
 
-									UShidenEditorBlueprintLibrary::SetDefaultClassProperty(
-										SaveMenuAssetClass, FName("SaveSlotClass"), SaveSlotAssetClass);
+									UShidenEditorBlueprintLibrary::SetDefaultClassProperty(SaveMenuAssetClass, FName("SaveSlotClass"), SaveSlotAssetClass);
 								})
 							)
 						);
@@ -164,6 +163,52 @@ void UShidenAddNewContextMenu::RegisterMenuExtensions(IModuleInterface* Owner)
 							FSlateIcon(FName("EditorStyle"), FName("ClassThumbnail.UserWidget"), FName("ClassIcon.UserWidget")),
 							FUIAction(
 								FExecuteAction::CreateLambda([] { CreateAsset(TEXT("/Shiden/Samples/WBP_ShidenTitleSample"), TEXT("WBP_MyTitle")); })
+							)
+						);
+						
+						ToolMenuSection.AddMenuEntry(
+							FName("CreateShidenGalleryMenu"),
+							FText::FromString("Shiden Gallery Menu"),
+							LOCTEXT("CreateShidenGalleryMenuTooltip", "Create a new Shiden Gallery Menu"),
+							FSlateIcon(FName("EditorStyle"), FName("ClassThumbnail.UserWidget"), FName("ClassIcon.UserWidget")),
+							FUIAction(
+								FExecuteAction::CreateLambda([] { CreateAsset(TEXT("/Shiden/Samples/WBP_ShidenGalleryMenuSample"), TEXT("WBP_MyGalleryMenu")); })
+							)
+						);
+						
+						ToolMenuSection.AddMenuEntry(
+							FName("CreateShidenGalleryPage"),
+							FText::FromString("Shiden Gallery Page"),
+							LOCTEXT("CreateShidenGalleryPageTooltip", "Create a new Shiden Gallery Page"),
+							FSlateIcon(FName("EditorStyle"), FName("ClassThumbnail.UserWidget"), FName("ClassIcon.UserWidget")),
+							FUIAction(
+								FExecuteAction::CreateLambda([]
+								{
+									const TObjectPtr<UObject> GalleryPageAsset = CreateAsset(
+										TEXT("/Shiden/Samples/WBP_ShidenGalleryPageSample"), TEXT("WBP_MyGalleryPage"));
+									const TObjectPtr<UObject> GallerySceneAsset = CreateAsset(
+										TEXT("/Shiden/Samples/BP_ShidenGallerySceneSample"), TEXT("BP_MyGalleryScene"));
+
+									const TObjectPtr<UEditorAssetSubsystem> EditorAssetSubsystem = GEditor->GetEditorSubsystem<UEditorAssetSubsystem>();
+
+									const FString GalleryPageAssetPackagePath = FPackageName::ObjectPathToPackageName(GalleryPageAsset->GetPathName());
+									const FString GallerySceneAssetPackagePath = FPackageName::ObjectPathToPackageName(GallerySceneAsset->GetPathName());
+
+									const TObjectPtr<UClass> GalleryPageAssetClass = EditorAssetSubsystem->LoadBlueprintClass(GalleryPageAssetPackagePath);
+									const TObjectPtr<UClass> GallerySceneAssetClass = EditorAssetSubsystem->LoadBlueprintClass(GallerySceneAssetPackagePath);
+
+									UShidenEditorBlueprintLibrary::SetDefaultClassProperty(GalleryPageAssetClass, FName("GallerySceneClass"), GallerySceneAssetClass);
+								})
+							)
+						);
+						
+						ToolMenuSection.AddMenuEntry(
+							FName("CreateShidenGalleryButton"),
+							FText::FromString("Shiden Gallery Button"),
+							LOCTEXT("CreateShidenGalleryButtonTooltip", "Create a new Shiden Gallery Button"),
+							FSlateIcon(FName("EditorStyle"), FName("ClassThumbnail.UserWidget"), FName("ClassIcon.UserWidget")),
+							FUIAction(
+								FExecuteAction::CreateLambda([] { CreateAsset(TEXT("/Shiden/Samples/WBP_ShidenGalleryButtonSample"), TEXT("WBP_MyGalleryButton")); })
 							)
 						);
 
@@ -344,10 +389,23 @@ bool UShidenAddNewContextMenu::TryDecideNewPackageName(const FString& NewAssetNa
 
 	const FString PackageNamePrefix = CurrentPath.GetInternalPathString() + TEXT("/") + NewAssetName;
 
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+	auto DoesAssetExist = [&](const FString& PackagePath) -> bool
+	{
+		if (FPackageName::DoesPackageExist(PackagePath))
+		{
+			return true;
+		}
+		const FString AssetObjectPath = PackagePath + TEXT(".") + FPackageName::GetShortName(PackagePath);
+		return AssetRegistry.GetAssetByObjectPath(FSoftObjectPath(AssetObjectPath)).IsValid();
+	};
+
 	OutAssetPath = PackageNamePrefix;
 	int32 Suffix = 1;
 
-	while (FPackageName::DoesPackageExist(OutAssetPath))
+	while (DoesAssetExist(OutAssetPath))
 	{
 		OutAssetPath = FString::Printf(TEXT("%s%d"), *PackageNamePrefix, Suffix++);
 	}

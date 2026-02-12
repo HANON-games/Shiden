@@ -12,8 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSingleLineCursorMovedDelegate, in
  * Shiden editor version of single-line editable text box with editor styling
  * Inherits from UMultiLineEditableTextBox but disables multi-line support
  */
-UCLASS(MinimalAPI)
-class UShidenEditorEditableTextBox : public UMultiLineEditableTextBox
+UCLASS()
+class SHIDENEDITOR_API UShidenEditorEditableTextBox : public UMultiLineEditableTextBox
 {
 	GENERATED_UCLASS_BODY()
 

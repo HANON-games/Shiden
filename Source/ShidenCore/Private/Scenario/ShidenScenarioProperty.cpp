@@ -2,7 +2,7 @@
 #include "Dom/JsonValue.h"
 #include "Serialization/JsonSerializer.h"
 
-SHIDENCORE_API bool FShidenScenarioProperty::TryConvertToStringArray(TArray<FString>& Values) const
+bool FShidenScenarioProperty::TryConvertToStringArray(TArray<FString>& Values) const
 {
 	TSharedPtr<FJsonValue> JsonValue;
 	Values.Empty();
@@ -25,7 +25,7 @@ SHIDENCORE_API bool FShidenScenarioProperty::TryConvertToStringArray(TArray<FStr
 	return false;
 }
 
-SHIDENCORE_API bool FShidenScenarioProperty::TryConvertToStringMap(TMap<FString, FString>& Values) const
+bool FShidenScenarioProperty::TryConvertToStringMap(TMap<FString, FString>& Values) const
 {
 	TSharedPtr<FJsonObject> JsonObject;
 	Values.Empty();

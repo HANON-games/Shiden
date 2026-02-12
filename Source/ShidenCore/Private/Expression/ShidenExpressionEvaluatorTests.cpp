@@ -1,9 +1,11 @@
 // Copyright (c) 2026 HANON. All Rights Reserved.
 
+#include "Config/ShidenProjectConfig.h"
 #include "Misc/AutomationTest.h"
 #include "Expression/ShidenExpressionEvaluator.h"
 #include "Misc/DefaultValueHelper.h"
 #include "Misc/Base64.h"
+#include "System/ShidenSubsystem.h"
 
 // Test parameter structure
 struct FShidenExpressionTestParameters
@@ -3287,6 +3289,58 @@ void ShidenExpressionEvaluatorStringUtilityTest::GetTests(TArray<FString>& OutBe
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Contains(\"hello\", \"world\", \"extra\")"), TEXT(""), false).ToString());
 
 	// ==========================================
+	// IsEmpty tests
+	// ==========================================
+
+	// Basic IsEmpty tests
+	OutBeautifiedNames.Add("IsEmpty_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"\")"), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_NonEmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"hello\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_SingleSpace");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\" \")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_MultipleSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"   \")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_SingleChar");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"a\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_Tab");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"\\t\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_Newline");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"\\n\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_SpecialChars");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"@#$\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_LongString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"hello world this is a test\")"), TEXT("false")).ToString());
+
+	// IsEmpty with non-string arguments should fail
+	OutBeautifiedNames.Add("IsEmpty_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(true)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_ZeroArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(0)"), TEXT(""), false).ToString());
+
+	// IsEmpty wrong argument count
+	OutBeautifiedNames.Add("IsEmpty_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("IsEmpty_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("IsEmpty(\"hello\", \"world\")"), TEXT(""), false).ToString());
+
+	// ==========================================
 	// StartsWith tests
 	// ==========================================
 
@@ -3407,6 +3461,58 @@ void ShidenExpressionEvaluatorStringUtilityTest::GetTests(TArray<FString>& OutBe
 
 	OutBeautifiedNames.Add("EndsWith_ThreeArgs_ShouldFail");
 	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("EndsWith(\"hello\", \"world\", \"extra\")"), TEXT(""), false).ToString());
+
+	// ==========================================
+	// Length tests
+	// ==========================================
+
+	// Basic Length tests
+	OutBeautifiedNames.Add("Length_SimpleString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"hello\")"), TEXT("5")).ToString());
+
+	OutBeautifiedNames.Add("Length_EmptyString");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"\")"), TEXT("0")).ToString());
+
+	OutBeautifiedNames.Add("Length_SingleChar");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"a\")"), TEXT("1")).ToString());
+
+	OutBeautifiedNames.Add("Length_WithSpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"hello world\")"), TEXT("11")).ToString());
+
+	OutBeautifiedNames.Add("Length_OnlySpaces");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"   \")"), TEXT("3")).ToString());
+
+	OutBeautifiedNames.Add("Length_SpecialChars");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"!@#$%\")"), TEXT("5")).ToString());
+
+	OutBeautifiedNames.Add("Length_Numbers");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"12345\")"), TEXT("5")).ToString());
+
+	OutBeautifiedNames.Add("Length_Mixed");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"abc123!@#\")"), TEXT("9")).ToString());
+
+	OutBeautifiedNames.Add("Length_WithNewline");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"hello\\nworld\")"), TEXT("11")).ToString());
+
+	OutBeautifiedNames.Add("Length_WithTab");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"hello\\tworld\")"), TEXT("11")).ToString());
+
+	// Length with non-string arguments should fail
+	OutBeautifiedNames.Add("Length_IntegerArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(42)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Length_FloatArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(3.14)"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Length_BoolArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(true)"), TEXT(""), false).ToString());
+
+	// Length wrong argument count
+	OutBeautifiedNames.Add("Length_NoArg_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length()"), TEXT(""), false).ToString());
+
+	OutBeautifiedNames.Add("Length_TwoArgs_ShouldFail");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("Length(\"hello\", \"world\")"), TEXT(""), false).ToString());
 }
 
 bool ShidenExpressionEvaluatorStringUtilityTest::RunTest(const FString& Parameters)
@@ -3447,6 +3553,27 @@ bool ShidenExpressionEvaluatorStringUtilityTest::RunTest(const FString& Paramete
 				                         *Params.Expression,
 				                         bResultBool ? TEXT("true") : TEXT("false"),
 				                         bExpected ? TEXT("true") : TEXT("false")));
+				return false;
+			}
+			return true;
+		}
+
+		// For integer comparisons
+		if (Result.Type == EShidenExpressionValueType::Integer)
+		{
+			int32 ResultInt;
+			if (!Result.TryToInteger(ResultInt, ErrorMessage))
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' could not convert to integer: %s"),
+				                         *Params.Expression, *ErrorMessage));
+				return false;
+			}
+
+			const int32 Expected = FCString::Atoi(*Params.ExpectedResult);
+			if (ResultInt != Expected)
+			{
+				AddError(FString::Printf(TEXT("Expression '%s' evaluated to %d, expected %d"),
+				                         *Params.Expression, ResultInt, Expected));
 				return false;
 			}
 			return true;
@@ -3809,8 +3936,17 @@ bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Paramet
 	const FEditorFunctionTestParameters Params(Parameters);
 
 	FShidenExpressionVariableDefinitionContext Context;
-	Context.UserVariables = Params.UserVariables;
-	Context.SystemVariables = Params.SystemVariables;
+	
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+	
+	TArray<FShidenVariableDefinition> AllUserVars;
+	Params.UserVariables.GenerateValueArray(AllUserVars);
+	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(AllUserVars);
+	
+	TArray<FShidenVariableDefinition> AllSystemVars;
+	Params.SystemVariables.GenerateValueArray(AllSystemVars);
+	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(AllSystemVars);
+	
 	Context.LocalVariables = Params.LocalVariables;
 	Context.MacroParameters = Params.MacroParameters;
 	Context.bIsMacro = Params.MacroParameters.Num() > 0;
@@ -3820,6 +3956,115 @@ bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Paramet
 	FString ErrorMessage;
 
 	const bool bSuccess = Evaluator.TryEvaluate(Params.Expression, Result, ErrorMessage);
+	
+	// Revert variable definitions to empty to avoid side effects
+	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
+	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ShidenProjectConfig->UserVariableDefinitions);
+	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(ShidenProjectConfig->SystemVariableDefinitions);
+
+	if (bSuccess != Params.bShouldSucceed)
+	{
+		AddError(FString::Printf(TEXT("Expected %s, got %s. Expression: '%s', Error: '%s'"),
+		                         Params.bShouldSucceed ? TEXT("success") : TEXT("failure"),
+		                         bSuccess ? TEXT("success") : TEXT("failure"),
+		                         *Params.Expression, *ErrorMessage));
+		return false;
+	}
+
+	if (bSuccess && Result.ToString() != Params.ExpectedResult)
+	{
+		AddError(FString::Printf(TEXT("Expected '%s', got '%s' for expression '%s'"),
+		                         *Params.ExpectedResult, *Result.ToString(), *Params.Expression));
+		return false;
+	}
+
+	return true;
+}
+
+// IsScenarioGuidOrPath tests
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorScenarioValidationTest, "ShidenExpressionEvaluator.ScenarioValidation",
+                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+namespace
+{
+	constexpr FGuid TestScenarioGuid(0x12345678, 0x9ABCDEF0, 0x11111111, 0x22222222);
+	const FString TestScenarioGuidString = TestScenarioGuid.ToString();
+	const FString TestScenarioPath = TEXT("/Game/Shiden/Scenarios/TestScenario.TestScenario");
+}
+
+void ShidenExpressionEvaluatorScenarioValidationTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+	// IsScenarioGuidOrPath GUID lookup tests
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.ExistingGuid");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		FString::Printf(TEXT("IsScenarioGuidOrPath(\"%s\")"), *TestScenarioGuidString), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.NonExistingGuid");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		FString::Printf(TEXT("IsScenarioGuidOrPath(\"%s\")"), *FGuid(0, 0, 0, 0).ToString()), TEXT("false")).ToString());
+
+	// IsScenarioGuidOrPath path lookup tests
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.ExistingPath");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		FString::Printf(TEXT("IsScenarioGuidOrPath(\"%s\")"), *TestScenarioPath), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.NonExistingPath");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		TEXT("IsScenarioGuidOrPath(\"/Game/Shiden/Scenarios/NonExistent.NonExistent\")"), TEXT("false")).ToString());
+
+	// IsScenarioGuidOrPath edge case tests
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.InvalidGuidFormat");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsScenarioGuidOrPath(\"not-a-guid\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.EmptyString");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsScenarioGuidOrPath(\"\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.RandomString");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsScenarioGuidOrPath(\"hello world\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.WithVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsScenarioGuidOrPath(\"{MyVar}\")"), TEXT("false")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.WithScopedVariable");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsScenarioGuidOrPath(\"{System::ScenarioId}\")"), TEXT("false")).ToString());
+
+	// IsScenarioGuidOrPath boolean expression tests
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.GuidInBooleanExpression");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		FString::Printf(TEXT("IsScenarioGuidOrPath(\"%s\") && true"), *TestScenarioGuidString), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.PathInBooleanExpression");
+	OutTestCommands.Add(FEditorFunctionTestParameters(
+		FString::Printf(TEXT("IsScenarioGuidOrPath(\"%s\") && true"), *TestScenarioPath), TEXT("true")).ToString());
+
+	OutBeautifiedNames.Add("IsScenarioGuidOrPath.NegationNonExisting");
+	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("!IsScenarioGuidOrPath(\"/Game/Nonexistent\")"), TEXT("true")).ToString());
+}
+
+bool ShidenExpressionEvaluatorScenarioValidationTest::RunTest(const FString& Parameters)
+{
+	const FEditorFunctionTestParameters Params(Parameters);
+
+	// Set up test scenario paths in project config
+	const TObjectPtr<UShidenProjectConfig> ProjectConfig = GetMutableDefault<UShidenProjectConfig>();
+	const TMap<FGuid, FString> OriginalPaths = ProjectConfig->ScenarioPaths;
+
+	ProjectConfig->ScenarioPaths.Add(TestScenarioGuid, TestScenarioPath);
+
+	// Set up evaluator context
+	FShidenExpressionVariableDefinitionContext Context;
+	Context.LocalVariables = Params.LocalVariables;
+	Context.MacroParameters = Params.MacroParameters;
+	Context.bIsMacro = Params.MacroParameters.Num() > 0;
+
+	const FShidenExpressionEvaluator Evaluator(Context);
+	FShidenExpressionValue Result;
+	FString ErrorMessage;
+
+	const bool bSuccess = Evaluator.TryEvaluate(Params.Expression, Result, ErrorMessage);
+
+	// Restore original paths
+	ProjectConfig->ScenarioPaths = OriginalPaths;
 
 	if (bSuccess != Params.bShouldSucceed)
 	{

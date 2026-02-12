@@ -222,4 +222,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Scenario", meta = (DisplayName = "Init from Save Data"))
 	static UPARAM(DisplayName = "Success") bool TryInitFromSaveData(UShidenWidget* ShidenWidget, const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 		                                                            UObject* CallerObject, FString& ErrorMessage);
+
+	static void ExpandCommand(const FShidenCommand& OriginalCommand, FShidenCommand& ExpandedCommand);
 };

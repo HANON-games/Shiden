@@ -7,17 +7,40 @@
 #include "System/ShidenStructuredLog.h"
 #include "Engine/Engine.h"
 
+namespace
+{
+	constexpr int32 MaxLanguageCount = 10;
+
+	bool TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage)
+	{
+		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+		LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
+		if (LanguageIndex < 0 || LanguageIndex >= MaxLanguageCount)
+		{
+			ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, MaxLanguageCount - 1);
+			return false;
+		}
+		return true;
+	}
+
+	FString GetTextByLanguageIndex(const TArray<FString>& Texts, const int32 LanguageIndex)
+	{
+		return Texts.IsValidIndex(LanguageIndex) ? Texts[LanguageIndex] : TEXT("");
+	}
+}
+
 void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs)
 {
-	OutArgs.TextWidgetName = Command.GetArg("TextWidgetName");
-	OutArgs.TextType = Command.GetArg("TextType");
-	OutArgs.bWaitForInput = Command.GetArgAsBool("WaitForInput");
-	OutArgs.bInstantTextDisplay = Command.GetArgAsBool("InstantTextDisplay");
-	OutArgs.VoicePath = Command.GetArg("Voice");
-	OutArgs.TextBlipPath = Command.GetArg("TextBlip");
-	OutArgs.VoiceTrackId = Command.GetArgAsInt("VoiceTrackId");
-	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool("DisableAutoStopPreviousVoices");
-	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool("ContinueFromThePreviousText");
+	OutArgs.TextWidgetName = Command.GetArg(TEXT("TextWidgetName")).GetValue();
+	OutArgs.TextType = Command.GetArg(TEXT("TextType")).GetValue();
+	OutArgs.bWaitForInput = Command.GetArgAsBool(TEXT("WaitForInput")).GetValue();
+	OutArgs.bInstantTextDisplay = Command.GetArgAsBool(TEXT("InstantTextDisplay")).GetValue();
+	OutArgs.VoicePath = Command.GetArg(TEXT("Voice")).GetValue();
+	OutArgs.TextBlipPath = Command.GetArg(TEXT("TextBlip")).GetValue();
+	OutArgs.VoiceTrackId = Command.GetArgAsInt(TEXT("VoiceTrackId")).GetValue();
+	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices")).GetValue();
+	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool(TEXT("ContinueFromThePreviousText")).GetValue();
 
 	OutArgs.Texts.SetNum(MaxLanguageCount);
 	static const TArray<FString> LanguageArgs = {
@@ -34,7 +57,7 @@ void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextComman
 	};
 	for (int32 i = 0; i < MaxLanguageCount; i++)
 	{
-		OutArgs.Texts[i] = Command.GetArg(LanguageArgs[i]);
+		OutArgs.Texts[i] = Command.GetArg(LanguageArgs[i]).GetValue();
 	}
 }
 
@@ -687,6 +710,11 @@ void UShidenTextCommand::UpdateTalkState(const TScriptInterface<IShidenManagerIn
 
 float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 {
+	if (CurrentIndex == 0)
+	{
+		return 0.0f;
+	}
+	
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
 	if (CurrentIndex == TextLength)
@@ -709,38 +737,12 @@ float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 	return bFound ? FMath::Max(BaseWaitTime, WaitTimeFromTag) : BaseWaitTime;
 }
 
-bool UShidenTextCommand::TryGetLanguageIndex(int32& LanguageIndex, FString& ErrorMessage)
-{
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	LanguageIndex = ShidenSubsystem->PredefinedSystemVariable.LanguageIndex;
-	if (LanguageIndex < 0 || LanguageIndex >= MaxLanguageCount)
-	{
-		ErrorMessage = FString::Printf(TEXT("Invalid LanguageIndex: %d. Must be between 0 and %d."), LanguageIndex, MaxLanguageCount - 1);
-		return false;
-	}
-	return true;
-}
-
 UInputAction* UShidenTextCommand::GetSkipInputAction() const
 {
-	if (!SkipInputAction.IsValid())
-	{
-		return SkipInputAction.LoadSynchronous();
-	}
-	return SkipInputAction.Get();
+	return SkipInputAction.IsValid() ? SkipInputAction.Get() : SkipInputAction.LoadSynchronous();
 }
 
 UInputAction* UShidenTextCommand::GetNextInputAction() const
 {
-	if (!NextInputAction.IsValid())
-	{
-		return NextInputAction.LoadSynchronous();
-	}
-	return NextInputAction.Get();
-}
-
-FString UShidenTextCommand::GetTextByLanguageIndex(const TArray<FString>& Texts, const int32 LanguageIndex)
-{
-	return Texts.IsValidIndex(LanguageIndex) ? Texts[LanguageIndex] : TEXT("");
+	return NextInputAction.IsValid() ? NextInputAction.Get() : NextInputAction.LoadSynchronous();
 }

@@ -14,10 +14,11 @@
 #include "DSP/VolumeFader.h"
 #include "Engine/TimerHandle.h"
 #include "Sound/SoundBase.h"
+#include "Sound/SoundWave.h"
 #include "TimerManager.h"
 #include "System/ShidenBlueprintLibrary.h"
 
-AShidenManager::AShidenManager(): ShidenWidget(nullptr)
+AShidenManager::AShidenManager() : ShidenWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = false;
 	FCoreDelegates::ApplicationWillDeactivateDelegate.AddUObject(this, &AShidenManager::OnApplicationWillDeactivate);
@@ -100,7 +101,13 @@ FInputActionValue AShidenManager::GetInputActionValue(const UInputAction* InputA
 		return FInputActionValue(InputAction->ValueType, FVector::ZeroVector);
 	}
 
-	return Subsystem->GetPlayerInput()->GetActionValue(InputAction);
+	const TObjectPtr<const UEnhancedPlayerInput> PlayerInput = Subsystem->GetPlayerInput();
+	if (!PlayerInput)
+	{
+		return FInputActionValue(InputAction->ValueType, FVector::ZeroVector);
+	}
+
+	return PlayerInput->GetActionValue(InputAction);
 }
 
 void AShidenManager::PlaySound_Implementation(const FShidenSoundInfo& SoundInfo, const bool bRegisterSound, float& Duration, bool& bSuccess)
@@ -246,7 +253,7 @@ void AShidenManager::StopSounds_Implementation(const EShidenSoundType Type)
 
 void AShidenManager::AdjustBGMVolume_Implementation(const int32 TrackId, const float& VolumeDuration, const float& VolumeLevel, const EAudioFaderCurve FadeCurve)
 {
-	if (UAudioComponent* BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
+	if (const TObjectPtr<UAudioComponent> BGMComponent = BGMComponents.FindRef(TrackId); BGMComponent)
 	{
 		AdjustVolumeInternal(BGMComponent, VolumeDuration, VolumeLevel, FadeCurve);
 	}
@@ -279,7 +286,7 @@ void AShidenManager::PauseSound_Implementation(const int32 TrackId, const EShide
 
 void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 {
-	for (const TPair<int32, UAudioComponent*>& Pair : BGMComponents)
+	for (const TPair<int32, TObjectPtr<UAudioComponent>>& Pair : BGMComponents)
 	{
 		if (Pair.Value)
 		{
@@ -287,7 +294,7 @@ void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 		}
 	}
 
-	for (TObjectPtr<UAudioComponent> Component : SEComponents)
+	for (TObjectPtr Component : SEComponents)
 	{
 		if (Component)
 		{
@@ -295,7 +302,7 @@ void AShidenManager::PauseAllSounds_Implementation(const bool bPause)
 		}
 	}
 
-	for (const TPair<int32, UAudioComponent*>& Pair : VoiceComponents)
+	for (const TPair<int32, TObjectPtr<UAudioComponent>>& Pair : VoiceComponents)
 	{
 		if (Pair.Value)
 		{
@@ -354,17 +361,23 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		return;
 	}
 
-	UAudioComponent* CurrentComponent = SoundInfo.Type == EShidenSoundType::BGM
-		                                    ? BGMComponents.FindRef(SoundInfo.TrackId)
-		                                    : VoiceComponents.FindRef(SoundInfo.TrackId);
+	const TObjectPtr<UAudioComponent> CurrentComponent = SoundInfo.Type == EShidenSoundType::BGM
+		                                                     ? BGMComponents.FindRef(SoundInfo.TrackId)
+		                                                     : VoiceComponents.FindRef(SoundInfo.TrackId);
 
 	// Is fade out?
 	if (SoundInfo.EndVolumeMultiplier <= 0.0f)
 	{
 		const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
-		UAudioComponent* Component = bSamePath
-			                             ? CurrentComponent
-			                             : UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		TObjectPtr<UAudioComponent> Component;
+		if (bSamePath)
+		{
+			Component = CurrentComponent;
+		}
+		else
+		{
+			Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		}
 
 		if (!bSamePath)
 		{
@@ -398,10 +411,15 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 	}
 
 	const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
-	const TObjectPtr<UAudioComponent> Component = bSamePath
-		                                              ? CurrentComponent
-		                                              : UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier,
-		                                                                               SoundInfo.StartTime);
+	TObjectPtr<UAudioComponent> Component;
+	if (bSamePath)
+	{
+		Component = CurrentComponent;
+	}
+	else
+	{
+		Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+	}
 
 	if (!bSamePath)
 	{
@@ -420,7 +438,7 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 	AdjustVolumeInternal(Component, SoundInfo.FadeDuration, SoundInfo.EndVolumeMultiplier, SoundInfo.AudioFaderCurve);
 }
 
-void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComponent* AudioComponent)
+void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, const TObjectPtr<UAudioComponent> AudioComponent)
 {
 	switch (SoundInfo.Type)
 	{
@@ -456,7 +474,7 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 	case EShidenSoundType::BGM:
 		{
 			TArray<int32> KeysToRemove;
-			for (const TPair<int32, UAudioComponent*>& Pair : BGMComponents)
+			for (const TPair<int32, TObjectPtr<UAudioComponent>>& Pair : BGMComponents)
 			{
 				if (!Pair.Value || Pair.Value->GetPlayState() == EAudioComponentPlayState::Stopped)
 				{
@@ -483,7 +501,7 @@ void AShidenManager::RemoveSound(const EShidenSoundType SoundType)
 	case EShidenSoundType::Voice:
 		{
 			TArray<int32> KeysToRemove;
-			for (const TPair<int32, UAudioComponent*>& Pair : VoiceComponents)
+			for (const TPair<int32, TObjectPtr<UAudioComponent>>& Pair : VoiceComponents)
 			{
 				if (!Pair.Value || Pair.Value->GetPlayState() == EAudioComponentPlayState::Stopped)
 				{
@@ -531,7 +549,7 @@ void AShidenManager::PlayForceFeedback_Implementation(const FString& ForceFeedba
 	bSuccess = false;
 }
 
-void AShidenManager::CallMacroAsParallel_Implementation(const FString& NewProcessName, UObject* CallerObject)
+void AShidenManager::CallMacroInParallel_Implementation(const FString& NewProcessName, UObject* CallerObject)
 {
 	if (!CallerObject)
 	{
@@ -569,6 +587,34 @@ void AShidenManager::CallMacroAsParallel_Implementation(const FString& NewProces
 	}
 }
 
+void AShidenManager::GetVoicePlaybackState_Implementation(const int32 TrackId, EAudioComponentPlayState& PlayState, float& AudioLevel)
+{
+	PlayState = EAudioComponentPlayState::Stopped;
+	AudioLevel = 0.0f;
+
+	const TObjectPtr<UAudioComponent> VoiceComponent = VoiceComponents.FindRef(TrackId);
+	if (!VoiceComponent)
+	{
+		return;
+	}
+
+	PlayState = VoiceComponent->GetPlayState();
+	if (PlayState == EAudioComponentPlayState::Stopped)
+	{
+		return;
+	}
+
+	TArray<FSoundWaveEnvelopeDataPerSound> EnvelopeData;
+	if (VoiceComponent->GetCookedEnvelopeDataForAllPlayingSounds(EnvelopeData) && EnvelopeData.Num() > 0)
+	{
+		AudioLevel = EnvelopeData[0].Envelope * VoiceComponent->VolumeMultiplier;
+	}
+	else
+	{
+		SHIDEN_VERBOSE("Failed to get envelope data for Voice track {trackId}", TrackId);
+	}
+}
+
 void AShidenManager::Initialize_Implementation(const UShidenWidget* Widget)
 {
 	this->ShidenWidget = const_cast<UShidenWidget*>(Widget);
@@ -592,7 +638,7 @@ void AShidenManager::Destroy_Implementation()
 		StopSound_Implementation(Key, EShidenSoundType::BGM);
 	}
 
-	for (TObjectPtr<UAudioComponent> Component : SEComponents)
+	for (TObjectPtr Component : SEComponents)
 	{
 		if (Component)
 		{
@@ -663,13 +709,13 @@ TSubclassOf<AActor> AShidenManager::GetParallelProcessManagerClass()
 	return CachedClass;
 }
 
-void AShidenManager::AdjustVolumeInternal(UAudioComponent* Component, const float AdjustVolumeDuration, const float AdjustVolumeLevel, const EAudioFaderCurve FadeCurve)
+void AShidenManager::AdjustVolumeInternal(TObjectPtr<UAudioComponent> Component, const float AdjustVolumeDuration, const float AdjustVolumeLevel, const EAudioFaderCurve FadeCurve)
 {
 	if (!Component)
 	{
 		return;
 	}
-	
+
 	if (!FMath::IsNearlyZero(AdjustVolumeLevel))
 	{
 		if (Component->Sound && Component->Sound->IsLooping() && !Component->IsActive()

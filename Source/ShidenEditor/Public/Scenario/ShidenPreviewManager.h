@@ -42,7 +42,7 @@ public:
 
 	virtual void PlayForceFeedback_Implementation(const FString& ForceFeedbackEffectPath, bool& bSuccess) override;
 
-	virtual void CallMacroAsParallel_Implementation(const FString& NewProcessName, UObject* CallerObject) override;
+	virtual void CallMacroInParallel_Implementation(const FString& NewProcessName, UObject* CallerObject) override;
 
 	virtual void Initialize_Implementation(const UShidenWidget* ShidenWidget) override;
 

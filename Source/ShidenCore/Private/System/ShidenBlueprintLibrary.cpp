@@ -2,6 +2,28 @@
 
 // ReSharper disable CppExpressionWithoutSideEffects
 #include "System/ShidenBlueprintLibrary.h"
+
+namespace
+{
+	FRegexPattern& GetSelfClosingTagPattern()
+	{
+		static FRegexPattern SelfClosingTagPattern(TEXT("<((?:[\\w\\d\\.-]+))(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?/>"));
+		return SelfClosingTagPattern;
+	}
+
+	FRegexPattern& GetNonSelfClosingTagPattern()
+	{
+		static FRegexPattern NonSelfClosingTagPattern(TEXT("<((?:[\\w\\d\\.-]+))(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?>(.*?)</>"));
+		return NonSelfClosingTagPattern;
+	}
+
+	FRegexPattern& GetWaitTimePattern()
+	{
+		static FRegexPattern WaitTimePattern(TEXT("<wait\\stime=\"([\\d.]+)\"/>$"));
+		return WaitTimePattern;
+	}
+}
+
 #include "System/ShidenStructuredLog.h"
 #include "Async/Async.h"
 #include "Command/ShidenCommandDefinitions.h"
@@ -33,17 +55,17 @@
 #include "TimerManager.h"
 #include "Audio/ShidenSoundFadeType.h"
 
-SHIDENCORE_API void UShidenBlueprintLibrary::CopyToClipboard(const FString& Text)
+void UShidenBlueprintLibrary::CopyToClipboard(const FString& Text)
 {
 	FPlatformApplicationMisc::ClipboardCopy(*Text);
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::GetClipboardContent(FString& ClipboardText)
+void UShidenBlueprintLibrary::GetClipboardContent(FString& ClipboardText)
 {
 	FPlatformApplicationMisc::ClipboardPaste(ClipboardText);
 }
 
-SHIDENCORE_API int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Text)
+int32 UShidenBlueprintLibrary::GetParsedLength(const FString& Text)
 {
 	FString ResultText;
 	ResultText.Reserve(Text.Len());
@@ -124,7 +146,7 @@ struct FTextPosition
 	int32 ContentEnd;
 };
 
-SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(const FString& Text, const int32 Length)
+FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(const FString& Text, const int32 Length)
 {
 	static TArray<FTextPosition> Pos;
 	static TArray<FTextPosition> WaitTagPos;
@@ -172,7 +194,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 	do
 	{
 		bFound = false;
-		if (Text.IsValidIndex(ResultLen) && (Text[ResultLen] == '\n' || Text[ResultLen] == '\r'))
+		if (ResultLen < Text.Len() && (Text[ResultLen] == '\n' || Text[ResultLen] == '\r'))
 		{
 			ResultLen++;
 			bFound = true;
@@ -198,7 +220,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 	FString LastTagName = TEXT("");
 	for (int32 Index = 0; Index < Length; Index++)
 	{
-		if (ResultText.IsValidIndex(ResultLen + 1) && ResultText[ResultLen] == '&')
+		if (ResultLen < ResultText.Len() && ResultText[ResultLen] == '&')
 		{
 			const FString Temp = ResultText.Mid(ResultLen + 1);
 			if (Temp.StartsWith(TEXT("lt;")) || Temp.StartsWith(TEXT("gt;")))
@@ -255,7 +277,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 		do
 		{
 			bFound = false;
-			if (ResultText.IsValidIndex(ResultLen) && (ResultText[ResultLen] == '\n' || ResultText[ResultLen] == '\r'))
+			if (ResultLen < ResultText.Len() && (ResultText[ResultLen] == '\n' || ResultText[ResultLen] == '\r'))
 			{
 				ResultLen++;
 				bFound = true;
@@ -295,7 +317,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetCharactersWithParsedLength(co
 	return ResultText;
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(const FString& RawText, const int32 Length, float& WaitTime)
+bool UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(const FString& RawText, const int32 Length, float& WaitTime)
 {
 	const FString ParsedText = GetCharactersWithParsedLength(RawText, Length);
 
@@ -314,7 +336,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(const F
 	return false;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::MultiThreadDelay(UObject* WorldContextObject, const float Duration, const FLatentActionInfo LatentInfo)
+void UShidenBlueprintLibrary::MultiThreadDelay(UObject* WorldContextObject, const float Duration, const FLatentActionInfo LatentInfo)
 {
 	if (const TObjectPtr<UWorld> World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
@@ -323,7 +345,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::MultiThreadDelay(UObject* WorldCont
 	}
 }
 
-SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
+UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath(const FSoftObjectPath& SoftObjectPath)
 {
 	if (SoftObjectPath.IsNull() || !SoftObjectPath.IsValid())
 	{
@@ -345,7 +367,7 @@ SHIDENCORE_API UClass* UShidenBlueprintLibrary::ConstructClassFromSoftObjectPath
 	return StaticLoadClass(UObject::StaticClass(), nullptr, *Path, nullptr, LOAD_None, nullptr);
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetOrLoadAsset(const FString& ObjectPath, UObject*& Asset)
+bool UShidenBlueprintLibrary::TryGetOrLoadAsset(const FString& ObjectPath, UObject*& Asset)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -366,7 +388,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetOrLoadAsset(const FString& Ob
 	return true;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::UnloadAssets(const bool bForceGC)
+void UShidenBlueprintLibrary::UnloadAssets(const bool bForceGC)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -378,8 +400,8 @@ SHIDENCORE_API void UShidenBlueprintLibrary::UnloadAssets(const bool bForceGC)
 	}
 }
 
-SHIDENCORE_API FString UShidenBlueprintLibrary::MakeErrorMessage(const FGuid& ScenarioId, const int32 ScenarioIndex,
-                                                                 const FString& CommandName, const FString& ErrorMessage)
+FString UShidenBlueprintLibrary::MakeErrorMessage(const FGuid& ScenarioId, const int32 ScenarioIndex,
+                                                  const FString& CommandName, const FString& ErrorMessage)
 {
 	const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
 	if (!ProjectConfig)
@@ -400,13 +422,13 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::MakeErrorMessage(const FGuid& Sc
 	return FString::Printf(TEXT("[%s%s] %s%s"), *LeftS, *LineNumber, *Command, *ErrorMessage);
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::AddBacklogItem(const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties)
+void UShidenBlueprintLibrary::AddBacklogItem(const FShidenCommand& Command, const TMap<FString, FString>& AdditionalProperties)
 {
 	GEngine->GetEngineSubsystem<UShidenSubsystem>()->BacklogItems.Add(FShidenBacklogItem{Command, AdditionalProperties});
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::UpdateBacklogItem(const int32 ScenarioIndex, const FShidenCommand& Command,
-                                                               const TMap<FString, FString>& AdditionalProperties)
+void UShidenBlueprintLibrary::UpdateBacklogItem(const int32 ScenarioIndex, const FShidenCommand& Command,
+                                                const TMap<FString, FString>& AdditionalProperties)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -421,17 +443,17 @@ SHIDENCORE_API void UShidenBlueprintLibrary::UpdateBacklogItem(const int32 Scena
 	BacklogItem.AdditionalProperties = AdditionalProperties;
 }
 
-SHIDENCORE_API TArray<FShidenBacklogItem>& UShidenBlueprintLibrary::GetBacklogItems()
+TArray<FShidenBacklogItem>& UShidenBlueprintLibrary::GetBacklogItems()
 {
 	return GEngine->GetEngineSubsystem<UShidenSubsystem>()->BacklogItems;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::ClearBacklogItems()
+void UShidenBlueprintLibrary::ClearBacklogItems()
 {
 	GEngine->GetEngineSubsystem<UShidenSubsystem>()->BacklogItems.Empty();
 }
 
-SHIDENCORE_API TMap<FString, FShidenTextType> UShidenBlueprintLibrary::GetShidenTextTypes()
+TMap<FString, FShidenTextType> UShidenBlueprintLibrary::GetShidenTextTypes()
 {
 	TMap<FString, FShidenTextType> TextTypes
 	{
@@ -444,7 +466,7 @@ SHIDENCORE_API TMap<FString, FShidenTextType> UShidenBlueprintLibrary::GetShiden
 	return TextTypes;
 }
 
-SHIDENCORE_API FString UShidenBlueprintLibrary::GetObjectPathFromClass(const UClass* Class)
+FString UShidenBlueprintLibrary::GetObjectPathFromClass(const UClass* Class)
 {
 	if (!Class)
 	{
@@ -455,7 +477,7 @@ SHIDENCORE_API FString UShidenBlueprintLibrary::GetObjectPathFromClass(const UCl
 	return Path.ToString().LeftChop(2);
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType)
+bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType)
 {
 	if (!SoundBase)
 	{
@@ -469,19 +491,19 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const 
 	const TObjectPtr<USoundClass> SESoundClass = ProjectConfig->GetSESoundClass();
 	const TObjectPtr<USoundClass> VoiceSoundClass = ProjectConfig->GetVoiceSoundClass();
 
-	if (SoundClass == BGMSoundClass || BGMSoundClass->ChildClasses.Contains(SoundClass))
+	if (BGMSoundClass && (SoundClass == BGMSoundClass || BGMSoundClass->ChildClasses.Contains(SoundClass)))
 	{
 		SoundType = EShidenSoundType::BGM;
 		return true;
 	}
 
-	if (SoundClass == SESoundClass || SESoundClass->ChildClasses.Contains(SoundClass))
+	if (SESoundClass && (SoundClass == SESoundClass || SESoundClass->ChildClasses.Contains(SoundClass)))
 	{
 		SoundType = EShidenSoundType::SE;
 		return true;
 	}
 
-	if (SoundClass == VoiceSoundClass || VoiceSoundClass->ChildClasses.Contains(SoundClass))
+	if (VoiceSoundClass && (SoundClass == VoiceSoundClass || VoiceSoundClass->ChildClasses.Contains(SoundClass)))
 	{
 		SoundType = EShidenSoundType::Voice;
 		return true;
@@ -490,7 +512,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryGetSoundTypeFromSoundBase(const 
 	return false;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::InitCommandDefinitions()
+void UShidenBlueprintLibrary::InitCommandDefinitions()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -524,7 +546,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::InitCommandDefinitions()
 	}
 }
 
-SHIDENCORE_API const TMap<FString, FShidenCommandDefinition>& UShidenBlueprintLibrary::GetCommandDefinitionsCache()
+const TMap<FString, FShidenCommandDefinition>& UShidenBlueprintLibrary::GetCommandDefinitionsCache()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -536,7 +558,7 @@ SHIDENCORE_API const TMap<FString, FShidenCommandDefinition>& UShidenBlueprintLi
 	return ShidenSubsystem->CommandDefinitionCache;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::ClearAllCache()
+void UShidenBlueprintLibrary::ClearAllCache()
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 
@@ -546,31 +568,47 @@ SHIDENCORE_API void UShidenBlueprintLibrary::ClearAllCache()
 	ShidenSubsystem->ScenarioCache.Empty();
 }
 
-SHIDENCORE_API FString UShidenBlueprintLibrary::GetCommandArgument(const FShidenCommand& Command, const FString& ArgName)
+FShidenOptionalString UShidenBlueprintLibrary::GetCommandArgument(const FShidenCommand& Command, const FString& ArgName)
 {
-	return Command.GetArg(ArgName);
+	const TOptional<FString> Result = Command.GetArg(ArgName);
+	return Result.IsSet() ? FShidenOptionalString(Result.GetValue()) : FShidenOptionalString();
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::IsValidSoftObjectPath(const FString& ObjectPath)
+FString UShidenBlueprintLibrary::Conv_ShidenOptionalStringToString(const FShidenOptionalString& OptionalString)
+{
+	return OptionalString.GetValueOrDefault();
+}
+
+bool UShidenBlueprintLibrary::IsValidSoftObjectPath(const FString& ObjectPath)
 {
 	const FSoftObjectPath SoftObjectPath(ObjectPath);
 	return ObjectPath.IsEmpty() || SoftObjectPath.IsValid();
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::IsAutoTextMode()
+bool UShidenBlueprintLibrary::IsAutoTextMode()
 {
 	return GEngine->GetEngineSubsystem<UShidenSubsystem>()->bAutoTextMode;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::SetAutoTextMode(const bool bEnabled)
+void UShidenBlueprintLibrary::SetAutoTextMode(const bool bEnabled)
 {
 	GEngine->GetEngineSubsystem<UShidenSubsystem>()->bAutoTextMode = bEnabled;
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryStartScreenFade(const TObjectPtr<const UObject> WorldContextObject, const FString& LayerName, const float FadeDuration,
-                                                                const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
-                                                                const int32 Steps, const float BlendExp, const int32 ZOrder,
-                                                                const bool bSaveScenarioProperty)
+bool UShidenBlueprintLibrary::IsGalleryMode()
+{
+	return GEngine->GetEngineSubsystem<UShidenSubsystem>()->PredefinedSystemVariable.bIsGalleryMode;
+}
+
+void UShidenBlueprintLibrary::SetGalleryMode(const bool bEnabled)
+{
+	GEngine->GetEngineSubsystem<UShidenSubsystem>()->PredefinedSystemVariable.bIsGalleryMode = bEnabled;
+}
+
+bool UShidenBlueprintLibrary::TryStartScreenFade(const TObjectPtr<const UObject> WorldContextObject, const FString& LayerName, const float FadeDuration,
+                                                 const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
+                                                 const int32 Steps, const float BlendExp, const int32 ZOrder,
+                                                 const bool bSaveScenarioProperty)
 {
 	if (!WorldContextObject)
 	{
@@ -674,16 +712,16 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryStartScreenFade(const TObjectPtr
 	{
 		const FString GlobalLayerKey = TEXT("Global$") + LayerName;
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("Fade"), GlobalLayerKey, {
-			{TEXT("Color"), ActualTargetColor.ToString()},
-			{TEXT("ZOrder"), FString::FromInt(ZOrder)},
-			{TEXT("UseGlobalFade"), TEXT("true")}
-		});
+			                                                                 {TEXT("Color"), ActualTargetColor.ToString()},
+			                                                                 {TEXT("ZOrder"), FString::FromInt(ZOrder)},
+			                                                                 {TEXT("UseGlobalFade"), TEXT("true")}
+		                                                                 });
 	}
 
 	return true;
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::IsScreenFadeCompleted(const FString& LayerName)
+bool UShidenBlueprintLibrary::IsScreenFadeCompleted(const FString& LayerName)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	if (const FShidenScreenFadeLayer* Layer = ShidenSubsystem->ScreenFadeLayers.Find(LayerName))
@@ -693,7 +731,7 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::IsScreenFadeCompleted(const FString
 	return true;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::ResetScreenFadeLayersCore(UShidenSubsystem* ShidenSubsystem)
+void UShidenBlueprintLibrary::ResetScreenFadeLayersCore(UShidenSubsystem* ShidenSubsystem)
 {
 	// Stop the ticker if it's running
 	if (ShidenSubsystem->TickerHandle.IsValid())
@@ -725,7 +763,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::ResetScreenFadeLayersCore(UShidenSu
 	ShidenSubsystem->ScreenFadeLayers.Empty();
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::ResetScreenFadeLayers()
+void UShidenBlueprintLibrary::ResetScreenFadeLayers()
 {
 	ResetScreenFadeLayersCore(GEngine->GetEngineSubsystem<UShidenSubsystem>());
 }
@@ -752,7 +790,7 @@ static void AdjustVolumeInternal(UAudioComponent* Component, const float AdjustV
 	// The UAudioComponent::AdjustVolume function treats a volume of 0 as a fade-out, after which volume adjustment is no longer possible.
 	// To match the behavior of the volume adjustment function in the Config menu, if it is not EVirtualizationMode::Disabled,
 	// a very small value close to 0 is specified so that it is not treated as a fade-out.
-	
+
 	constexpr float TargetVolumeLevel = UE_SMALL_NUMBER * 10;
 	Component->AdjustVolume(AdjustVolumeDuration, TargetVolumeLevel, FadeCurve);
 
@@ -790,9 +828,9 @@ static void AdjustVolumeInternal(UAudioComponent* Component, const float AdjustV
 	     );
 }
 
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* WorldContextObject, const int32 TrackId, USoundBase* Sound, const EShidenSoundFadeType FadeType,
-                                                              const float Volume, const float Pitch, const float StartTime, const float FadeDuration,
-                                                              const EAudioFaderCurve FadeCurve, const bool bSaveScenarioProperty, float& Duration)
+bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* WorldContextObject, const int32 TrackId, USoundBase* Sound, const EShidenSoundFadeType FadeType,
+                                               const float Volume, const float Pitch, const float StartTime, const float FadeDuration,
+                                               const EAudioFaderCurve FadeCurve, const bool bSaveScenarioProperty, float& Duration)
 {
 	Duration = 0.0f;
 
@@ -882,12 +920,12 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* Wor
 		if (bSaveScenarioProperty)
 		{
 			UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("Sound"), GlobalTrackKey, {
-				{TEXT("Path"), SoundPath},
-				{TEXT("Volume"), FString::SanitizeFloat(Volume)},
-				{TEXT("Pitch"), FString::SanitizeFloat(Pitch)},
-				{TEXT("StartTime"), FString::SanitizeFloat(StartTime)},
-				{TEXT("UseGlobalBGM"), TEXT("true")}
-			});
+				                                                                 {TEXT("Path"), SoundPath},
+				                                                                 {TEXT("Volume"), FString::SanitizeFloat(Volume)},
+				                                                                 {TEXT("Pitch"), FString::SanitizeFloat(Pitch)},
+				                                                                 {TEXT("StartTime"), FString::SanitizeFloat(StartTime)},
+				                                                                 {TEXT("UseGlobalBGM"), TEXT("true")}
+			                                                                 });
 		}
 		Duration = Sound->GetDuration();
 		return true;
@@ -899,18 +937,18 @@ SHIDENCORE_API bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* Wor
 	if (bSaveScenarioProperty)
 	{
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("Sound"), GlobalTrackKey, {
-			{TEXT("Path"), SoundPath},
-			{TEXT("Volume"), FString::SanitizeFloat(Volume)},
-			{TEXT("Pitch"), FString::SanitizeFloat(Pitch)},
-			{TEXT("StartTime"), FString::SanitizeFloat(StartTime)},
-			{TEXT("UseGlobalBGM"), TEXT("true")}
-		});
+			                                                                 {TEXT("Path"), SoundPath},
+			                                                                 {TEXT("Volume"), FString::SanitizeFloat(Volume)},
+			                                                                 {TEXT("Pitch"), FString::SanitizeFloat(Pitch)},
+			                                                                 {TEXT("StartTime"), FString::SanitizeFloat(StartTime)},
+			                                                                 {TEXT("UseGlobalBGM"), TEXT("true")}
+		                                                                 });
 	}
 	Duration = Sound->GetDuration();
 	return true;
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::StopGlobalBGM(const int32 TrackId, const bool bSaveScenarioProperty)
+void UShidenBlueprintLibrary::StopGlobalBGM(const int32 TrackId, const bool bSaveScenarioProperty)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	if (const FShidenGlobalBGMInfo* BGMInfo = ShidenSubsystem->GlobalBGMComponents.Find(TrackId); BGMInfo && BGMInfo->AudioComponent)
@@ -924,7 +962,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::StopGlobalBGM(const int32 TrackId, 
 	}
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::StopGlobalBGMs(const bool bSaveScenarioProperty)
+void UShidenBlueprintLibrary::StopGlobalBGMs(const bool bSaveScenarioProperty)
 {
 	TArray<int32> TrackIds;
 	GEngine->GetEngineSubsystem<UShidenSubsystem>()->GlobalBGMComponents.GetKeys(TrackIds);
@@ -934,7 +972,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::StopGlobalBGMs(const bool bSaveScen
 	}
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::AdjustGlobalBGMVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve)
+void UShidenBlueprintLibrary::AdjustGlobalBGMVolume(const int32 TrackId, const float VolumeDuration, const float VolumeLevel, const EAudioFaderCurve FadeCurve)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	if (const FShidenGlobalBGMInfo* BGMInfo = ShidenSubsystem->GlobalBGMComponents.Find(TrackId); BGMInfo && BGMInfo->AudioComponent)
@@ -943,7 +981,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::AdjustGlobalBGMVolume(const int32 T
 	}
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::PauseGlobalBGM(const int32 TrackId, const bool bPause)
+void UShidenBlueprintLibrary::PauseGlobalBGM(const int32 TrackId, const bool bPause)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	if (const FShidenGlobalBGMInfo* BGMInfo = ShidenSubsystem->GlobalBGMComponents.Find(TrackId); BGMInfo && BGMInfo->AudioComponent)
@@ -952,7 +990,7 @@ SHIDENCORE_API void UShidenBlueprintLibrary::PauseGlobalBGM(const int32 TrackId,
 	}
 }
 
-SHIDENCORE_API void UShidenBlueprintLibrary::PauseAllGlobalBGMs(const bool bPause)
+void UShidenBlueprintLibrary::PauseAllGlobalBGMs(const bool bPause)
 {
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	for (const TPair<int32, FShidenGlobalBGMInfo>& Pair : ShidenSubsystem->GlobalBGMComponents)
@@ -961,28 +999,15 @@ SHIDENCORE_API void UShidenBlueprintLibrary::PauseAllGlobalBGMs(const bool bPaus
 	}
 }
 
-FRegexPattern& UShidenBlueprintLibrary::GetSelfClosingTagPattern()
+FString UShidenBlueprintLibrary::GetValueOrDefault(const FShidenOptionalString& OptionalString)
 {
-	static FRegexPattern SelfClosingTagPattern(TEXT("<((?:[\\w\\d\\.-]+))(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?/>"));
-	return SelfClosingTagPattern;
-}
-
-FRegexPattern& UShidenBlueprintLibrary::GetNonSelfClosingTagPattern()
-{
-	static FRegexPattern NonSelfClosingTagPattern(TEXT("<((?:[\\w\\d\\.-]+))(?:(?: (?:[\\w\\d\\.-]+=(?>\".*?\")))+)?>(.*?)</>"));
-	return NonSelfClosingTagPattern;
-}
-
-FRegexPattern& UShidenBlueprintLibrary::GetWaitTimePattern()
-{
-	static FRegexPattern WaitTimePattern(TEXT("<wait\\stime=\"([\\d.]+)\"/>$"));
-	return WaitTimePattern;
+	return OptionalString.GetValueOrDefault();
 }
 
 #if WITH_EDITOR
-SHIDENCORE_API bool UShidenBlueprintLibrary::TryStartScreenFadePreview(const TObjectPtr<const UShidenWidget> ShidenWidget, const FString& LayerName, const float FadeDuration,
-                                                                       const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
-                                                                       const int32 Steps, const float BlendExp, const int32 ZOrder)
+bool UShidenBlueprintLibrary::TryStartScreenFadePreview(const TObjectPtr<const UShidenWidget> ShidenWidget, const FString& LayerName, const float FadeDuration,
+                                                        const EEasingFunc::Type FadeFunction, const FLinearColor TargetColor, const bool bIsFadeOut,
+                                                        const int32 Steps, const float BlendExp, const int32 ZOrder)
 {
 	if (!ShidenWidget || !ShidenWidget->BaseLayer)
 	{
