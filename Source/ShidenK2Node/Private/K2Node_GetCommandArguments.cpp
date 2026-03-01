@@ -26,6 +26,7 @@
 #include "UObject/WeakObjectPtrTemplates.h"
 #include "Command/ShidenCommandDefinitions.h"
 #include "Command/ShidenCommand.h"
+#include "Command/ShidenOptionalString.h"
 #include "System/ShidenBlueprintLibrary.h"
 
 class UBlueprint;
@@ -244,9 +245,10 @@ void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitio
 
 	if (InDefinitions->CommandDefinitions.Contains(InCommandName))
 	{
+		UScriptStruct* OptionalStringStruct = TBaseStructure<FShidenOptionalString>::Get();
 		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
-			UEdGraphPin* OutputPin = CreatePin(EGPD_Output, K2Schema->PC_String, Arg.ArgName);
+			UEdGraphPin* OutputPin = CreatePin(EGPD_Output, K2Schema->PC_Struct, OptionalStringStruct, Arg.ArgName);
 			SetPinToolTip(*OutputPin, FText::FromString(Arg.ArgName.ToString()));
 		}
 	}

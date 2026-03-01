@@ -6,7 +6,7 @@
 #include "IPropertyTypeCustomization.h"
 #include "PropertyHandle.h"
 
-class FShidenScenarioCustomization final : public IPropertyTypeCustomization
+class SHIDENEDITOR_API FShidenScenarioCustomization final : public IPropertyTypeCustomization
 {
 public:
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance()

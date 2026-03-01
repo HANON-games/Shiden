@@ -145,7 +145,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("TextNoteKey",
-				                "You can insert variable values using { variable_name }.\r\nIf \":\" is included in the variable name, escape it as \"\\:\".\r\nThe prefixes for variables are as follows:\r\n* \"System::\": System variables\r\n* \"Local::\": Local variables\r\n* \"Predefined::\": Predefined system variables\r\nThe track ID for Voice will be 0.\r\nIf both Voice and DialogueBlip are specified, Voice takes precedence."),
+				                "The track ID for Voice will be 0.\r\nIf both Voice and DialogueBlip are specified, Voice takes precedence."),
 				.Style = TextStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenTextCommand")),
@@ -208,7 +208,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VoiceKey", "Voice"),
-							.ToolTip = LOCTEXT("VoiceTooltip", "Specifies the voice to play alongside the text."),
+							.ToolTip = LOCTEXT("VoiceTooltip", "Specifies the voice to play alongside the text.\r\nThe track ID for Voice will be 0."),
 							.TemplateWidget = SoundInputTemplate,
 							.TemplateParameters = {{TEXT("Target"), TEXT("Voice")}},
 							.WarningMessages = {
@@ -221,13 +221,14 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("VoiceTrackId"),
-						.DefaultValue = TEXT("0"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VoiceTrackIdKey", "VoiceTrackId"),
 							.ToolTip = LOCTEXT("VoiceTrackIdTooltip", "Specifies the voice track ID."),
 							.TemplateWidget = IntegerInputTemplate,
-							.TemplateParameters = {{TEXT("Min"), TEXT("0")}}
+							.TemplateParameters = {{TEXT("Min"), TEXT("0")}},
+							.VisibilityCondition = TEXT("{ Voice } != \"None\"")
 						}
 					},
 					{
@@ -409,7 +410,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwritePosition"),
-						.DefaultValue = TEXT(""),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
@@ -420,7 +420,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwriteSize"),
-						.DefaultValue = TEXT(""),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
@@ -431,7 +430,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwriteSizeToContent"),
-						.DefaultValue = TEXT(""),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
@@ -463,7 +461,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Steps"),
-						.DefaultValue = TEXT("2"),
+						.DefaultValue = TEXT("2.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
@@ -520,7 +518,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("TrackId"),
-						.DefaultValue = TEXT("0"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
@@ -547,7 +545,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 							},
 							.ErrorMessages = {
 								{
-									.Condition = TEXT("{ SoundType } == \"SE\" && ({ SoundSource } == \"{EMPTY}\" || { SoundSource } == \"None\")"),
+									.Condition = TEXT("{ SoundType } == \"SE\" && (IsEmpty({ SoundSource }) || { SoundSource } == \"None\")"),
 									.Message = LOCTEXT("SESoundSourceEmptyError", "Sound source cannot be empty when SoundType is SE.")
 								}
 							},
@@ -555,7 +553,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Volume"),
-						.DefaultValue = TEXT("1.00"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
@@ -566,7 +564,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Pitch"),
-						.DefaultValue = TEXT("1.00"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("PitchKey", "Pitch"),
@@ -576,7 +574,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("StartTime"),
-						.DefaultValue = TEXT("0.00"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StartTimeKey", "StartTime"),
@@ -607,7 +605,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("FadeDuration"),
-						.DefaultValue = TEXT("0.00"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
@@ -672,7 +670,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						.ArgName = TEXT("TrackId"),
-						.DefaultValue = TEXT("0"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("TrackIdKey", "TrackId"),
@@ -683,7 +681,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Volume"),
-						.DefaultValue = TEXT("1.00"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("VolumeKey", "Volume"),
@@ -704,7 +702,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("FadeDuration"),
-						.DefaultValue = TEXT("0.00"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("FadeDurationKey", "FadeDuration"),
@@ -720,6 +718,16 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("WaitForCompletionKey", "WaitForCompletion"),
 							.ToolTip = LOCTEXT("AdjustBGMVolumeWaitForCompletionTooltip", "Specifies whether to wait for volume adjustment completion."),
+							.TemplateWidget = BooleanInputTemplate
+						}
+					},
+					{
+						.ArgName = TEXT("IsGlobalBGM"),
+						.DefaultValue = TEXT("false"),
+						.bIsAssetToBeLoaded = false,
+						.EditorSettings = {
+							.DisplayName = LOCTEXT("IsGlobalBGMKey", "IsGlobalBGM"),
+							.ToolTip = LOCTEXT("AdjustBGMVolumeIsGlobalBGMTooltip", "If true, adjusts the volume of the global BGM."),
 							.TemplateWidget = BooleanInputTemplate
 						}
 					}
@@ -1337,7 +1345,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						.ArgName = TEXT("MaxLength"),
-						.DefaultValue = TEXT(""),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxLengthKey", "MaxLength"),
@@ -1351,7 +1358,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("MaxLineCount"),
-						.DefaultValue = TEXT("1"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxLineCountKey", "MaxLineCount"),
@@ -1365,7 +1372,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("AllowedCharacterRegex"),
-						.DefaultValue = TEXT(""),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("AllowedCharacterRegexKey", "AllowedCharacterRegex"),
@@ -1488,7 +1494,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("AssignExpressionNoteKey",
-				                "Assigns the result of evaluating an expression to a variable.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				                "Assigns the result of evaluating an expression to a variable.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT"),
 				.Style = DataStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAssignExpressionCommand")),
@@ -1726,7 +1732,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("IfExpressionNoteKey",
-				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT"),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenIfExpressionCommand")),
@@ -1751,7 +1757,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("ElseIfExpressionNoteKey",
-				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables"),
+				                "Evaluates an expression and branches the process based on the result.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT"),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenElseIfExpressionCommand")),
@@ -1856,7 +1862,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("LoopWhileExpressionNoteKey",
-				                "Evaluates an expression and loops if the result is true.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nYou can insert variable values with { variable_name }.\r\nIf the variable name contains \":\", escape it as \"\\:\".\r\nVariable prefixes are as follows:\r\n• \"System::\": System variables\r\n• \"Local::\": Local variables\r\n• \"Predefined::\": Predefined system variables\r\n\r\nThis command is not supported in preview."),
+				                "Evaluates an expression and loops if the result is true.\r\n\r\nThe following data types are supported:\r\n• Integer: Integer numbers\r\n• Float: Floating-point numbers\r\n• String: Text strings\r\n• Boolean: Boolean values\r\n• Vector2: 2D vectors\r\n• Vector3: 3D vectors\r\n\r\nStrings must be enclosed in double quotes like \"Hello\".\r\nBoolean values are expressed as true or false.\r\nVector2 is expressed in the format [x, y], and Vector3 is expressed in the format [x, y, z].\r\n\r\nThe following arithmetic operators are supported:\r\n• +: Addition\r\n• -: Subtraction\r\n• *: Multiplication\r\n• /: Division\r\n• %: Modulo\r\n• **: Exponentiation\r\n\r\nThe following comparison operators are supported:\r\n• ==: Equal to\r\n• !=: Not equal to\r\n• >: Greater than\r\n• <: Less than\r\n• >=: Greater than or equal to\r\n• <=: Less than or equal to\r\n\r\nThe following logical operators are supported:\r\n• &&: AND\r\n• ||: OR\r\n• !: NOT\r\n\r\nThis command is not supported in preview."),
 				.Style = FlowControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenLoopWhileExpressionCommand")),
@@ -1944,7 +1950,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 				{
 					{
 						.ArgName = TEXT("NextScenario"),
-						.DefaultValue = TEXT("None"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NextScenarioKey", "NextScenario"),
@@ -1954,7 +1959,17 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 								{TEXT("Target"), TEXT("Scenario")},
 								{TEXT("HasToggle"), TEXT("true")}
 							},
-							.VisibilityCondition = TEXT("!IsCalledFromMacro()")
+							.VisibilityCondition = TEXT("!IsCalledFromMacro()"),
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("HasVariable({ NextScenario })"),
+									.Message = LOCTEXT("NextScenarioVariableNotSupportedError", "Variables are not supported for scenario specification.")
+								},
+								{
+									.Condition = TEXT("!IsEmpty({ NextScenario }) && { NextScenario } != \"None\" && !IsScenarioGuidOrPath({ NextScenario })"),
+									.Message = LOCTEXT("NextScenarioNotFoundError", "The specified scenario was not found.")
+								}
+							}
 						}
 					}
 				}
@@ -2039,7 +2054,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("NumLoopToPlay"),
-						.DefaultValue = TEXT("1"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("NumLoopToPlayKey", "NumLoopToPlay"),
@@ -2324,7 +2339,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Steps"),
-						.DefaultValue = TEXT("2"),
+						.DefaultValue = TEXT("2.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
@@ -2357,7 +2372,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("ZOrder"),
-						.DefaultValue = TEXT("250"),
+						.DefaultValue = TEXT("250.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("ZOrderKey", "ZOrder"),
@@ -2469,7 +2484,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwritePosition"),
-						.DefaultValue = TEXT("{EMPTY}"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
@@ -2480,7 +2494,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwriteSize"),
-						.DefaultValue = TEXT("{EMPTY}"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
@@ -2491,7 +2504,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwriteZOrder"),
-						.DefaultValue = TEXT("{EMPTY}"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteZOrderKey", "OverwriteZOrder"),
@@ -2502,7 +2514,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Steps"),
-						.DefaultValue = TEXT("2"),
+						.DefaultValue = TEXT("2.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
@@ -2540,7 +2552,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("AutoSave"),
 			FShidenCommandDefinition
 			{
-				.Note = LOCTEXT("AutoSaveNoteKey", "This command is not supported in preview."),
+				.Note = LOCTEXT("AutoSaveNoteKey", "This command is not supported in preview.\r\nThis command is skipped during gallery mode."),
 				.Style = DataStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenAutoSaveCommand")),
@@ -2558,7 +2570,6 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("OverwriteThumbnail"),
-						.DefaultValue = TEXT("{EMPTY}"),
 						.bIsAssetToBeLoaded = true,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteThumbnailKey", "OverwriteThumbnail"),
@@ -2615,7 +2626,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Min"),
-						.DefaultValue = TEXT("0"),
+						.DefaultValue = TEXT("0.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MinKey", "Min"),
@@ -2629,7 +2640,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Max"),
-						.DefaultValue = TEXT("1"),
+						.DefaultValue = TEXT("1.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MaxKey", "Max"),
@@ -2654,6 +2665,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			TEXT("WaitForClick"),
 			FShidenCommandDefinition
 			{
+				.Note = LOCTEXT("WaitForClickNoteKey", "This command is not supported in preview."),
 				.Style = InteractionStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenWaitForClickCommand")),
@@ -2804,7 +2816,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("MediaZOrder"),
-						.DefaultValue = TEXT("100"),
+						.DefaultValue = TEXT("100.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("MediaZOrderKey", "MediaZOrder"),
@@ -2907,7 +2919,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 					},
 					{
 						.ArgName = TEXT("Steps"),
-						.DefaultValue = TEXT("2"),
+						.DefaultValue = TEXT("2.0"),
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("StepsKey", "Steps"),
@@ -3027,6 +3039,20 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 								{TEXT("Target"), TEXT("macro")},
 								{TEXT("HasAdditionalArgs"), TEXT("true")}
 							},
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("IsEmpty({ MacroName }) || { MacroName } == \"None\""),
+									.Message = LOCTEXT("RunMacroNotSpecifiedError", "Please specify a macro.")
+								},
+								{
+									.Condition = TEXT("HasVariable({ MacroName })"),
+									.Message = LOCTEXT("RunMacroVariableNotSupportedError", "Variables are not supported for macro specification.")
+								},
+								{
+									.Condition = TEXT("!IsScenarioGuidOrPath({ MacroName })"),
+									.Message = LOCTEXT("RunMacroNotFoundError", "The specified macro was not found.")
+								}
+							}
 						}
 					}
 				}
@@ -3075,6 +3101,20 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 								{TEXT("Target"), TEXT("macro")},
 								{TEXT("HasAdditionalArgs"), TEXT("true")}
 							},
+							.ErrorMessages = {
+								{
+									.Condition = TEXT("IsEmpty({ MacroName }) || { MacroName } == \"None\""),
+									.Message = LOCTEXT("RunMacroInParallelNotSpecifiedError", "Please specify a macro.")
+								},
+								{
+									.Condition = TEXT("HasVariable({ MacroName })"),
+									.Message = LOCTEXT("RunMacroInParallelVariableNotSupportedError", "Variables are not supported for macro specification.")
+								},
+								{
+									.Condition = TEXT("!IsScenarioGuidOrPath({ MacroName })"),
+									.Message = LOCTEXT("RunMacroInParallelNotFoundError", "The specified macro was not found.")
+								}
+							}
 						}
 					}
 				}

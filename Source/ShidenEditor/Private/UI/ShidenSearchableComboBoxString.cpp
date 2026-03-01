@@ -10,7 +10,7 @@
 
 #define LOCTEXT_NAMESPACE "ShidenNamespace"
 
-SHIDENEDITOR_API UShidenSearchableComboBoxString::UShidenSearchableComboBoxString(const FObjectInitializer& ObjectInitializer)
+UShidenSearchableComboBoxString::UShidenSearchableComboBoxString(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PRAGMA_DISABLE_DEPRECATION_WARNINGS
@@ -42,18 +42,23 @@ SHIDENEDITOR_API UShidenSearchableComboBoxString::UShidenSearchableComboBoxStrin
 	PRAGMA_ENABLE_DEPRECATION_WARNINGS
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::PostInitProperties()
+void UShidenSearchableComboBoxString::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	// Initialize the set of options from the default set only once.
-	for (const FString& DefaultOption : DefaultOptions)
+	// Populate Options from DefaultOptions for newly created objects.
+	// For objects loaded from disk, PostLoad() is also called and will repopulate Options,
+	// so we only add options here if Options is currently empty to avoid duplicates.
+	if (Options.IsEmpty())
 	{
-		AddOption(DefaultOption);
+		for (const FString& DefaultOption : DefaultOptions)
+		{
+			AddOption(DefaultOption);
+		}
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::ReleaseSlateResources(const bool bReleaseChildren)
+void UShidenSearchableComboBoxString::ReleaseSlateResources(const bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
 
@@ -61,25 +66,29 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::ReleaseSlateResources(con
 	ComboBoxContent.Reset();
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::Serialize(FArchive& Ar)
+void UShidenSearchableComboBoxString::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
 
 	Ar.UsingCustomVersion(FEditorObjectVersion::GUID);
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::PostLoad()
+void UShidenSearchableComboBoxString::PostLoad()
 {
 	Super::PostLoad();
 
-	// Initialize the set of options from the default set only once.
+	// Clear any options added in PostInitProperties and repopulate from the
+	// deserialized DefaultOptions. This prevents duplicate entries that would
+	// occur because PostInitProperties runs before deserialization and PostLoad
+	// runs after, both attempting to add the same DefaultOptions.
+	Options.Empty();
 	for (const FString& DefaultOption : DefaultOptions)
 	{
 		AddOption(DefaultOption);
 	}
 }
 
-SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWidget()
+TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWidget()
 {
 	const int32 InitialIndex = FindOptionIndex(SelectedOption);
 	if (InitialIndex != INDEX_NONE)
@@ -113,14 +122,14 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::RebuildWid
 	return MyComboBox.ToSharedRef();
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::AddOption(const FString& Option)
+void UShidenSearchableComboBoxString::AddOption(const FString& Option)
 {
 	Options.Add(MakeShareable(new FString(Option)));
 
 	RefreshOptions();
 }
 
-SHIDENEDITOR_API bool UShidenSearchableComboBoxString::TryRemoveOption(const FString& Option)
+bool UShidenSearchableComboBoxString::TryRemoveOption(const FString& Option)
 {
 	const int32 OptionIndex = FindOptionIndex(Option);
 
@@ -141,7 +150,7 @@ SHIDENEDITOR_API bool UShidenSearchableComboBoxString::TryRemoveOption(const FSt
 	return false;
 }
 
-SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::FindOptionIndex(const FString& Option) const
+int32 UShidenSearchableComboBoxString::FindOptionIndex(const FString& Option) const
 {
 	for (int32 OptionIndex = 0; OptionIndex < Options.Num(); OptionIndex++)
 	{
@@ -156,7 +165,7 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::FindOptionIndex(const FS
 	return INDEX_NONE;
 }
 
-SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetOptionAtIndex(const int32 Index) const
+FString UShidenSearchableComboBoxString::GetOptionAtIndex(const int32 Index) const
 {
 	if (Index >= 0 && Index < Options.Num() && Options[Index].IsValid())
 	{
@@ -165,7 +174,7 @@ SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetOptionAtIndex(const
 	return FString();
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::ClearOptions()
+void UShidenSearchableComboBoxString::ClearOptions()
 {
 	ClearSelection();
 
@@ -177,7 +186,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::ClearOptions()
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::ClearSelection()
+void UShidenSearchableComboBoxString::ClearSelection()
 {
 	CurrentOptionPtr.Reset();
 	SelectedOption.Reset();
@@ -193,7 +202,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::ClearSelection()
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::RefreshOptions() const
+void UShidenSearchableComboBoxString::RefreshOptions() const
 {
 	if (MyComboBox.IsValid())
 	{
@@ -201,13 +210,13 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::RefreshOptions() const
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetSelectedOption(const FString Option)
+void UShidenSearchableComboBoxString::SetSelectedOption(const FString Option)
 {
 	const int32 InitialIndex = FindOptionIndex(Option);
 	SetSelectedIndex(InitialIndex);
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetSelectedIndex(const int32 Index)
+void UShidenSearchableComboBoxString::SetSelectedIndex(const int32 Index)
 {
 	if (Options.IsValidIndex(Index))
 	{
@@ -231,7 +240,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetSelectedIndex(const in
 	}
 }
 
-SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetSelectedOption() const
+FString UShidenSearchableComboBoxString::GetSelectedOption() const
 {
 	if (CurrentOptionPtr.IsValid())
 	{
@@ -240,7 +249,7 @@ SHIDENEDITOR_API FString UShidenSearchableComboBoxString::GetSelectedOption() co
 	return FString();
 }
 
-SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::GetSelectedIndex() const
+int32 UShidenSearchableComboBoxString::GetSelectedIndex() const
 {
 	if (CurrentOptionPtr.IsValid())
 	{
@@ -256,19 +265,19 @@ SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::GetSelectedIndex() const
 	return INDEX_NONE;
 }
 
-SHIDENEDITOR_API int32 UShidenSearchableComboBoxString::OptionNum() const
+int32 UShidenSearchableComboBoxString::OptionNum() const
 {
 	return Options.Num();
 }
 
-SHIDENEDITOR_API bool UShidenSearchableComboBoxString::IsOpen() const
+bool UShidenSearchableComboBoxString::IsOpen() const
 {
 	return MyComboBox.IsValid() && MyComboBox->IsOpen();
 }
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetContentPadding(const FMargin InPadding)
+void UShidenSearchableComboBoxString::SetContentPadding(const FMargin InPadding)
 {
 	// ReSharper disable once CppDeprecatedEntity
 	ContentPadding = InPadding;
@@ -278,19 +287,19 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetContentPadding(const F
 	}
 }
 
-SHIDENEDITOR_API FMargin UShidenSearchableComboBoxString::GetContentPadding() const
+FMargin UShidenSearchableComboBoxString::GetContentPadding() const
 {
 	// ReSharper disable once CppDeprecatedEntity
 	return ContentPadding;
 }
 
-SHIDENEDITOR_API bool UShidenSearchableComboBoxString::IsHasDownArrow() const
+bool UShidenSearchableComboBoxString::IsHasDownArrow() const
 {
 	// ReSharper disable once CppDeprecatedEntity
 	return bHasDownArrow;
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetHasDownArrow(const bool bInHasDownArrow)
+void UShidenSearchableComboBoxString::SetHasDownArrow(const bool bInHasDownArrow)
 {
 	// ReSharper disable once CppDeprecatedEntity
 	bHasDownArrow = bInHasDownArrow;
@@ -303,7 +312,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::SetHasDownArrow(const boo
 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::UpdateOrGenerateWidget(const TSharedPtr<FString>& Item)
+void UShidenSearchableComboBoxString::UpdateOrGenerateWidget(const TSharedPtr<FString>& Item)
 {
 	// If no custom widget was supplied and the default STextBlock already exists,
 	// just update its text instead of rebuilding the widget.
@@ -322,7 +331,7 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::UpdateOrGenerateWidget(co
 	}
 }
 
-SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGenerateWidget(const TSharedPtr<FString> Item) const
+TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGenerateWidget(const TSharedPtr<FString> Item) const
 {
 	const FString StringItem = Item.IsValid() ? *Item : FString();
 
@@ -330,7 +339,7 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGene
 	if (!IsDesignTime() && OnGenerateWidgetEvent.IsBound())
 	{
 		const TObjectPtr<UWidget> Widget = OnGenerateWidgetEvent.Execute(StringItem);
-		if (Widget != NULL)
+		if (Widget != nullptr)
 		{
 			return Widget->TakeWidget();
 		}
@@ -342,7 +351,7 @@ SHIDENEDITOR_API TSharedRef<SWidget> UShidenSearchableComboBoxString::HandleGene
 		.Font(Font);
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleSelectionChanged(const TSharedPtr<FString> Item, const ESelectInfo::Type SelectionType)
+void UShidenSearchableComboBoxString::HandleSelectionChanged(const TSharedPtr<FString> Item, const ESelectInfo::Type SelectionType)
 {
 	CurrentOptionPtr = Item;
 	BroadcastFieldValueChanged(FFieldNotificationClassDescriptor::SelectedOption);
@@ -360,14 +369,14 @@ SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleSelectionChanged(co
 	}
 }
 
-SHIDENEDITOR_API void UShidenSearchableComboBoxString::HandleOpening()
+void UShidenSearchableComboBoxString::HandleOpening()
 {
 	OnOpening.Broadcast();
 }
 
 #if WITH_EDITOR
 
-SHIDENEDITOR_API const FText UShidenSearchableComboBoxString::GetPaletteCategory()
+const FText UShidenSearchableComboBoxString::GetPaletteCategory()
 {
 	return LOCTEXT("Shiden Editor", "Shiden Editor");
 }

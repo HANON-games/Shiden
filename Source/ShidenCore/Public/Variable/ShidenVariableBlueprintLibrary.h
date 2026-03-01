@@ -8,7 +8,6 @@
 #include "Internationalization/Regex.h"
 #include "Engine/Engine.h"
 #include "System/ShidenSubsystem.h"
-#include "System/ShidenBlueprintLibrary.h"
 #include "ShidenVariableBlueprintLibrary.generated.h"
 
 UCLASS()
@@ -620,9 +619,9 @@ private:
 
 	static bool TryCreateScopeKey(const FString& ProcessName, FString& ScenarioKey);
 
-	static FString MakeUpdateErrorMessage(TObjectPtr<UShidenSubsystem> ShidenSubsystem, const FString& Name, const EShidenVariableType& Type);
-
 	static void ApplyVolumeRate(const UObject* WorldContextObject, USoundMix* TargetSoundMix, USoundClass* TargetSoundClass, float TargetVolumeRate);
 
 	static void ApplyVolumeIfNeeded(const UObject* WorldContextObject, const FString& VariableName);
+
+	static void SetUpdateErrorMessage(const FShidenVariableDefinition& Definition, const FString& Name, EShidenVariableType Type, FString& ErrorMessage);
 };

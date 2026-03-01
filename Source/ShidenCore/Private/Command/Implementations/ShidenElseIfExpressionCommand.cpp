@@ -6,32 +6,37 @@
 #include "System/ShidenSubsystem.h"
 #include "Engine/Engine.h"
 
-void UShidenElseIfExpressionCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                                   UShidenWidget* ShidenWidget,
+namespace
+{
+	bool TryFindAndSetEndIfIndexForElseIfExpression(const FString& ProcessName, FString& ErrorMessage)
+	{
+		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
+
+		FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
+		if (!ProgressStack || ProgressStack->IsEmpty())
+		{
+			ErrorMessage = TEXT("ScenarioProgressStack is empty.");
+			return false;
+		}
+
+		const FShidenScenarioProgress ScenarioProgress = ProgressStack->Stack.Last();
+		int32 EndIfIndex;
+		if (!ShidenConditionalCommandHelpers::TryFindEndIfIndex(ProcessName, ScenarioProgress.CurrentIndex, EndIfIndex, ErrorMessage))
+		{
+			return false;
+		}
+
+		UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, EndIfIndex);
+		return true;
+	}
+}
+
+void UShidenElseIfExpressionCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                    const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                    const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                    FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
-	if (!ProgressStack || ProgressStack->IsEmpty())
-	{
-		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
-		Status = EShidenProcessStatus::Error;
-		return;
-	}
-
-	const FShidenScenarioProgress ScenarioProgress = ProgressStack->Stack.Last();
-	int32 EndIfIndex;
-	if (!ShidenConditionalCommandHelpers::TryFindEndIfIndex(ProcessName, ScenarioProgress.CurrentIndex, EndIfIndex, ErrorMessage))
-	{
-		Status = EShidenProcessStatus::Error;
-		return;
-	}
-
-	UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(ProcessName, EndIfIndex);
-	Status = EShidenProcessStatus::Next;
+	Status = TryFindAndSetEndIfIndexForElseIfExpression(ProcessName, ErrorMessage) ? EShidenProcessStatus::Next : EShidenProcessStatus::Error;
 }
 
 void UShidenElseIfExpressionCommand::PreviewCommand_Implementation(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
@@ -39,24 +44,5 @@ void UShidenElseIfExpressionCommand::PreviewCommand_Implementation(const FShiden
                                                                    bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage
 )
 {
-	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-
-	FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(TEXT("Default"));
-	if (!ProgressStack || ProgressStack->IsEmpty())
-	{
-		ErrorMessage = TEXT("ScenarioProgressStack is empty.");
-		Status = EShidenPreviewStatus::Error;
-		return;
-	}
-
-	const FShidenScenarioProgress ScenarioProgress = ProgressStack->Stack.Last();
-	int32 EndIfIndex;
-	if (!ShidenConditionalCommandHelpers::TryFindEndIfIndex(TEXT("Default"), ScenarioProgress.CurrentIndex, EndIfIndex, ErrorMessage))
-	{
-		Status = EShidenPreviewStatus::Error;
-		return;
-	}
-
-	UShidenScenarioBlueprintLibrary::SetCurrentScenarioIndex(TEXT("Default"), EndIfIndex);
-	Status = EShidenPreviewStatus::Complete;
+	Status = TryFindAndSetEndIfIndexForElseIfExpression(TEXT("Default"), ErrorMessage) ? EShidenPreviewStatus::Complete : EShidenPreviewStatus::Error;
 }

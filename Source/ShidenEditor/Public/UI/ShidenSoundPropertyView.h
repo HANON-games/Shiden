@@ -10,7 +10,7 @@
 class SObjectPropertyEntryBox;
 
 UCLASS()
-class UShidenSoundPropertyView : public UContentWidget
+class SHIDENEDITOR_API UShidenSoundPropertyView : public UContentWidget
 {
 	GENERATED_UCLASS_BODY()
 	// UVisual interface

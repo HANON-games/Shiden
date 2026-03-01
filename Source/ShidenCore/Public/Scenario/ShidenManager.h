@@ -41,7 +41,9 @@ public:
 
 	virtual void PlayForceFeedback_Implementation(const FString& ForceFeedbackEffectPath, bool& bSuccess) override;
 
-	virtual void CallMacroAsParallel_Implementation(const FString& NewProcessName, UObject* CallerObject) override;
+	virtual void CallMacroInParallel_Implementation(const FString& NewProcessName, UObject* CallerObject) override;
+
+	virtual void GetVoicePlaybackState_Implementation(const int32 TrackId, EAudioComponentPlayState& PlayState, float& AudioLevel) override;
 
 	virtual void Initialize_Implementation(const UShidenWidget* Widget) override;
 
@@ -54,27 +56,27 @@ private:
 
 	void PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBase* Sound, bool bRegisterSound);
 
-	void RegisterSound(const FShidenSoundInfo& SoundInfo, UAudioComponent* AudioComponent);
+	void RegisterSound(const FShidenSoundInfo& SoundInfo, TObjectPtr<UAudioComponent> AudioComponent);
 
 	void RemoveSound(EShidenSoundType SoundType);
 
-	static void AdjustVolumeInternal(UAudioComponent* Component, float AdjustVolumeDuration, float AdjustVolumeLevel, EAudioFaderCurve FadeCurve);
+	static void AdjustVolumeInternal(TObjectPtr<UAudioComponent> Component, float AdjustVolumeDuration, float AdjustVolumeLevel, EAudioFaderCurve FadeCurve);
 
 	FInputActionValue GetInputActionValue(const UInputAction* InputAction) const;
 
 	static TSubclassOf<AActor> GetParallelProcessManagerClass();
 
 	UPROPERTY()
-	UShidenWidget* ShidenWidget;
+	TObjectPtr<UShidenWidget> ShidenWidget;
 
 	UPROPERTY()
-	TMap<int32, UAudioComponent*> BGMComponents;
+	TMap<int32, TObjectPtr<UAudioComponent>> BGMComponents;
 
 	UPROPERTY()
-	TArray<UAudioComponent*> SEComponents;
+	TArray<TObjectPtr<UAudioComponent>> SEComponents;
 
 	UPROPERTY()
-	TMap<int32, UAudioComponent*> VoiceComponents;
+	TMap<int32, TObjectPtr<UAudioComponent>> VoiceComponents;
 
 	UPROPERTY()
 	TArray<TScriptInterface<IShidenParallelProcessManagerInterface>> ParallelProcessManagers;

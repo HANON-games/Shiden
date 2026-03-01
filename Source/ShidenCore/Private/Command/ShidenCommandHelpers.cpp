@@ -59,7 +59,11 @@ namespace ShidenCommandHelpers
 		return false;
 	}
 
-	bool TryGetCurrentOriginalCommand(const FString& ProcessName, FShidenCommand*& OriginalCommand, FString& ErrorMessage)
+}
+
+namespace ShidenExpressionCommandHelpers
+{
+	bool TryGetPreVariableReplacementCommand(const FString& ProcessName, FShidenCommand& OutCommand, FString& ErrorMessage)
 	{
 		const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 		const FShidenScenarioProgressStack* ProgressStack = ShidenSubsystem->ScenarioProgressStack.Find(ProcessName);
@@ -83,7 +87,8 @@ namespace ShidenCommandHelpers
 			return false;
 		}
 
-		OriginalCommand = &Scenario->Commands[CurrentProgress.CurrentIndex];
+		UShidenScenarioBlueprintLibrary::ExpandCommand(Scenario->Commands[CurrentProgress.CurrentIndex], OutCommand);
+
 		return true;
 	}
 }
@@ -92,10 +97,10 @@ namespace ShidenConditionalCommandHelpers
 {
 	bool TryParseVariableCondition(const FShidenCommand& Command, FVariableConditionArgs& Args, FString& ErrorMessage)
 	{
-		const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
-		Args.VariableName = Command.GetArg(TEXT("VariableName"));
-		Args.Operator = Command.GetArg(TEXT("Operator"));
-		Args.RightHandValue = Command.GetArg(TEXT("RightHandValue"));
+		const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
+		Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
+		Args.Operator = Command.GetArg(TEXT("Operator")).GetValue();
+		Args.RightHandValue = Command.GetArg(TEXT("RightHandValue")).GetValue();
 
 		if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 		{
@@ -173,7 +178,7 @@ namespace ShidenConditionalCommandHelpers
 
 	bool TryParseExpressionCondition(const FShidenCommand& Command, FExpressionConditionArgs& Args, FString& ErrorMessage)
 	{
-		Args.Expression = Command.GetArg(TEXT("Expression"));
+		Args.Expression = Command.GetArg(TEXT("Expression")).GetValue();
 
 		if (Args.Expression.IsEmpty())
 		{
@@ -342,5 +347,52 @@ namespace ShidenConditionalCommandHelpers
 
 		ErrorMessage = TEXT("EndLoopWhile is not found.");
 		return false;
+	}
+}
+
+namespace ShidenMaterialParameterHelpers
+{
+	FString MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName)
+	{
+		return FString::Printf(TEXT("%s::%s::%s"),
+		                       *TargetType.Replace(TEXT(":"), TEXT("\\:")),
+		                       *TargetName.Replace(TEXT(":"), TEXT("\\:")),
+		                       *ParameterName.Replace(TEXT(":"), TEXT("\\:")));
+	}
+
+	TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key)
+	{
+		TArray<FString> Parts;
+		FString Current;
+		const int32 Len = Key.Len();
+
+		for (int32 i = 0; i < Len; ++i)
+		{
+			if (Key[i] == TEXT('\\') && i + 1 < Len && Key[i + 1] == TEXT(':'))
+			{
+				// Escaped colon: consume both characters and emit a literal ':'
+				Current += TEXT(':');
+				++i;
+			}
+			else if (Key[i] == TEXT(':') && i + 1 < Len && Key[i + 1] == TEXT(':'))
+			{
+				// Unescaped "::" separator: finalize the current part and start a new one
+				Parts.Add(Current);
+				Current.Empty();
+				++i;
+			}
+			else
+			{
+				Current += Key[i];
+			}
+		}
+		Parts.Add(Current);
+
+		if (Parts.Num() != 3)
+		{
+			return TTuple<FString, FString, FString>(TEXT(""), TEXT(""), TEXT(""));
+		}
+
+		return TTuple<FString, FString, FString>(Parts[0], Parts[1], Parts[2]);
 	}
 }

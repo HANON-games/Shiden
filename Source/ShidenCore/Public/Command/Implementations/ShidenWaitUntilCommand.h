@@ -12,6 +12,10 @@ class SHIDENCORE_API UShidenWaitUntilCommand : public UShidenCommandObject
 {
 	GENERATED_BODY()
 
+	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
+	                                              const TScriptInterface<IShidenManagerInterface>& ShidenManager,
+	                                              UObject* CallerObject, EShidenPreProcessStatus& Status, FString& ErrorMessage) override;
+
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,

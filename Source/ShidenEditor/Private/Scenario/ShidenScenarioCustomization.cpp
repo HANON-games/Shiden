@@ -5,7 +5,7 @@
 #include "Scenario/ShidenScenario.h"
 #include "Config/ShidenProjectConfig.h"
 #include "System/ShidenEditorBlueprintLibrary.h"
-#include "Config/ShidenEditorConfig.h"
+#include "Config/ShidenEditorUserConfig.h"
 #include "Widgets/Input/SButton.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Subsystems/EditorAssetSubsystem.h"
@@ -97,7 +97,7 @@ void FShidenScenarioCustomization::OnOpenInEditorClicked() const
 		return;
 	}
 
-	UShidenEditorConfig::SetEditScenarioPath(Scenario->GetPackage()->GetName());
+	UShidenEditorUserConfig::SetEditScenarioPath(Scenario->GetPackage()->GetName());
 
 	const TObjectPtr<UEditorUtilitySubsystem> EditorUtilitySubsystem = GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>();
 	check(EditorUtilitySubsystem);
@@ -109,11 +109,8 @@ void FShidenScenarioCustomization::OnOpenInEditorClicked() const
 	{
 		return;
 	}
-
-	if (const TObjectPtr<UEditorUtilityWidget> EditorWidget = EditorUtilitySubsystem->FindUtilityWidgetFromBlueprint(EditorWidgetBlueprint); !EditorWidget)
-	{
-		EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidgetBlueprint);
-	}
+	
+	EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidgetBlueprint);
 }
 
 void FShidenScenarioCustomization::OnNewScenarioClicked() const
@@ -156,7 +153,7 @@ void FShidenScenarioCustomization::OnNewScenarioClicked() const
 			{
 				if (EditorAssetSubsystem->SaveAsset(PackageName))
 				{
-					UShidenEditorConfig::SetEditScenarioPath(PackageName);
+					UShidenEditorUserConfig::SetEditScenarioPath(PackageName);
 					ScenarioPropertyHandle->SetValue(NewScenario);
 				}
 			}

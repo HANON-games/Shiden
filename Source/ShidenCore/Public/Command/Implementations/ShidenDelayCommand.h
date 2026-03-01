@@ -25,7 +25,7 @@ class SHIDENCORE_API UShidenDelayCommand : public UShidenCommandObject
 	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
 	                                           FString& NextScenarioName, FString& ErrorMessage) override;
 
-	static UInputAction* LoadInputActionFromPath(const FString& Path);
+	static TObjectPtr<UInputAction> LoadInputActionFromPath(const FString& Path);
 
 	static void ParseFromCommand(const FShidenCommand& Command, FDelayCommandArgs& Args);
 

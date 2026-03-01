@@ -15,7 +15,7 @@ using namespace UE::Tasks;
 
 FPipe UShidenSaveBlueprintLibrary::SaveGamePipe = FPipe{TEXT("SaveGamePipe")};
 
-SHIDENCORE_API UTexture2D* UShidenSaveBlueprintLibrary::ConvertSaveTextureToTexture2D(const FShidenSaveTexture& SaveTexture)
+UTexture2D* UShidenSaveBlueprintLibrary::ConvertSaveTextureToTexture2D(const FShidenSaveTexture& SaveTexture)
 {
 	if (SaveTexture.Width == 0 || SaveTexture.Height == 0)
 	{
@@ -67,7 +67,7 @@ bool UShidenSaveBlueprintLibrary::DoSaveSlotsExist()
 	return UShidenSaveSlotsSaveGame::DoesExist();
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+bool UShidenSaveBlueprintLibrary::TrySaveUserData(const FString& SlotName, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
 {
 	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
@@ -89,8 +89,8 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveUserData(const FString& 
 	return SaveSlotsInstance->TryCommit();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, const TObjectPtr<UTexture2D> Thumbnail,
-                                                                   const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, const TObjectPtr<UTexture2D> Thumbnail,
+                                                    const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
 {
 	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
@@ -103,33 +103,32 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, SaveTexture, SlotMetadata, SavedDelegate]
 	{
-		const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
-		SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
+		const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
+		SaveGameInstance->Prepare();
 
-		if (const bool bSaveSlotSuccess = SaveSlotsInstance->TryCommit())
+		if (SaveGameInstance->TryCommit())
 		{
-			const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
-			SaveGameInstance->Prepare();
-
-			const bool bSaveUserDataSuccess = SaveGameInstance->TryCommit();
-			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveUserDataSuccess]
-			{
-				// ReSharper disable once CppExpressionWithoutSideEffects
-				SavedDelegate.ExecuteIfBound(bSaveUserDataSuccess);
-			});
-		}
-		else
-		{
+			const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
+			SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
+			
+			const bool bSaveSlotSuccess = SaveSlotsInstance->TryCommit();
 			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveSlotSuccess]
 			{
 				// ReSharper disable once CppExpressionWithoutSideEffects
 				SavedDelegate.ExecuteIfBound(bSaveSlotSuccess);
 			});
+			return;
 		}
+		
+		AsyncTask(ENamedThreads::GameThread, [SavedDelegate]
+		{
+			// ReSharper disable once CppExpressionWithoutSideEffects
+			SavedDelegate.ExecuteIfBound(false);
+		});
 	});
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveSystemData()
+bool UShidenSaveBlueprintLibrary::TrySaveSystemData()
 {
 	WaitUntilEmpty();
 	const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
@@ -137,7 +136,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySaveSystemData()
 	return SaveGameInstance->TryCommit();
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySavePredefinedSystemData()
+bool UShidenSaveBlueprintLibrary::TrySavePredefinedSystemData()
 {
 	WaitUntilEmpty();
 	const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = UShidenPredefinedSystemSaveGame::GetOrCreate();
@@ -145,7 +144,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TrySavePredefinedSystemData()
 	return SaveGameInstance->TryCommit();
 }
 
-SHIDENCORE_API UShidenUserSaveGame* UShidenSaveBlueprintLibrary::PrepareUserData(const FString& SlotName)
+UShidenUserSaveGame* UShidenSaveBlueprintLibrary::PrepareUserData(const FString& SlotName)
 {
 	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
@@ -159,7 +158,7 @@ SHIDENCORE_API UShidenUserSaveGame* UShidenSaveBlueprintLibrary::PrepareUserData
 	return SaveGameInstance;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitUserData(UShidenUserSaveGame* SaveGame, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
+bool UShidenSaveBlueprintLibrary::TryCommitUserData(UShidenUserSaveGame* SaveGame, UTexture2D* Thumbnail, const TMap<FString, FString>& SlotMetadata)
 {
 	if (!SaveGame || !UShidenUserSaveGame::IsValidSlotName(SaveGame->SlotName))
 	{
@@ -179,7 +178,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitUserData(UShidenUserSa
 	return SaveSlotsInstance->TryCommit();
 }
 
-SHIDENCORE_API UShidenSystemSaveGame* UShidenSaveBlueprintLibrary::PrepareSystemData()
+UShidenSystemSaveGame* UShidenSaveBlueprintLibrary::PrepareSystemData()
 {
 	WaitUntilEmpty();
 
@@ -188,7 +187,7 @@ SHIDENCORE_API UShidenSystemSaveGame* UShidenSaveBlueprintLibrary::PrepareSystem
 	return SaveGameInstance;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitSystemData(UShidenSystemSaveGame* SaveGame)
+bool UShidenSaveBlueprintLibrary::TryCommitSystemData(UShidenSystemSaveGame* SaveGame)
 {
 	if (!SaveGame)
 	{
@@ -199,7 +198,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryCommitSystemData(UShidenSyst
 	return SaveGame->TryCommit();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FOnSaveCompletedDelegate SavedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FOnSaveCompletedDelegate SavedDelegate)
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
@@ -214,7 +213,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FOnSaveComp
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(FOnSaveCompletedDelegate SavedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(FOnSaveCompletedDelegate SavedDelegate)
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
@@ -229,8 +228,8 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(F
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitUserData(const TObjectPtr<UShidenUserSaveGame> SaveGame, const TObjectPtr<UTexture2D> Thumbnail,
-                                                                     const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncCommitUserData(const TObjectPtr<UShidenUserSaveGame> SaveGame, const TObjectPtr<UTexture2D> Thumbnail,
+                                                      const TMap<FString, FString>& SlotMetadata, FOnSaveCompletedDelegate SavedDelegate)
 {
 	if (!SaveGame || !UShidenUserSaveGame::IsValidSlotName(SaveGame->SlotName))
 	{
@@ -269,7 +268,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitUserData(const TObje
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitSystemData(const TObjectPtr<UShidenSystemSaveGame>& SaveGame, FOnSaveCompletedDelegate SavedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncCommitSystemData(const TObjectPtr<UShidenSystemSaveGame>& SaveGame, FOnSaveCompletedDelegate SavedDelegate)
 {
 	if (!SaveGame)
 	{
@@ -292,13 +291,13 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncCommitSystemData(const TOb
 	});
 }
 
-SHIDENCORE_API TMap<FString, FShidenSaveSlot>& UShidenSaveBlueprintLibrary::AcquireSaveSlots()
+TMap<FString, FShidenSaveSlot>& UShidenSaveBlueprintLibrary::AcquireSaveSlots()
 {
 	WaitUntilEmpty();
 	return UShidenSaveSlotsSaveGame::GetOrCreate()->SaveSlots;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadUserData(const FString& SlotName)
+bool UShidenSaveBlueprintLibrary::TryLoadUserData(const FString& SlotName)
 {
 	WaitUntilEmpty();
 
@@ -312,7 +311,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadUserData(const FString& 
 	return true;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveUserData(const FString& SlotName, UShidenUserSaveGame*& SaveGame)
+bool UShidenSaveBlueprintLibrary::TryRetrieveUserData(const FString& SlotName, UShidenUserSaveGame*& SaveGame)
 {
 	WaitUntilEmpty();
 
@@ -328,7 +327,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveUserData(const FStri
 	return true;
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplyUserData(UShidenUserSaveGame* SaveGame)
+void UShidenSaveBlueprintLibrary::ApplyUserData(UShidenUserSaveGame* SaveGame)
 {
 	if (!SaveGame)
 	{
@@ -339,7 +338,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplyUserData(UShidenUserSaveGa
 	SaveGame->Apply();
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveSystemData(UShidenSystemSaveGame*& SaveGame)
+bool UShidenSaveBlueprintLibrary::TryRetrieveSystemData(UShidenSystemSaveGame*& SaveGame)
 {
 	WaitUntilEmpty();
 
@@ -355,7 +354,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryRetrieveSystemData(UShidenSy
 	return true;
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplySystemData(UShidenSystemSaveGame* SaveGame)
+void UShidenSaveBlueprintLibrary::ApplySystemData(UShidenSystemSaveGame* SaveGame)
 {
 	if (!SaveGame)
 	{
@@ -366,7 +365,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::ApplySystemData(UShidenSystemSa
 	SaveGame->Apply();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadUserData(const FString& SlotName, FOnLoadCompletedDelegate LoadedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncLoadUserData(const FString& SlotName, FOnLoadCompletedDelegate LoadedDelegate)
 {
 	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
@@ -400,7 +399,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadUserData(const FString
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadSystemData(FOnLoadCompletedDelegate LoadedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncLoadSystemData(FOnLoadCompletedDelegate LoadedDelegate)
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [LoadedDelegate]
 	{
@@ -427,7 +426,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadSystemData(FOnLoadComp
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(const TObjectPtr<UObject>& WorldContextObject, FOnLoadCompletedDelegate LoadedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(const TObjectPtr<UObject>& WorldContextObject, FOnLoadCompletedDelegate LoadedDelegate)
 {
 	if (!WorldContextObject)
 	{
@@ -462,7 +461,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(c
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(const FString& SlotName, FOnRetrieveUserDataCompletedDelegate RetrievedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(const FString& SlotName, FOnRetrieveUserDataCompletedDelegate RetrievedDelegate)
 {
 	if (!UShidenUserSaveGame::IsValidSlotName(SlotName))
 	{
@@ -493,7 +492,7 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(const FSt
 	});
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveSystemData(FOnRetrieveSystemDataCompletedDelegate RetrievedDelegate)
+void UShidenSaveBlueprintLibrary::AsyncRetrieveSystemData(FOnRetrieveSystemDataCompletedDelegate RetrievedDelegate)
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [RetrievedDelegate]
 	{
@@ -517,17 +516,23 @@ SHIDENCORE_API void UShidenSaveBlueprintLibrary::AsyncRetrieveSystemData(FOnRetr
 	});
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FString& SlotName)
+bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FString& SlotName)
 {
 	WaitUntilEmpty();
 
-	if (!DoesAnyUserDataExist())
+	if (!UShidenSaveSlotsSaveGame::DoesExist())
 	{
 		SHIDEN_WARNING("User data does not exist.");
 		return false;
 	}
 
-	const TMap<FString, FShidenSaveSlot> SaveSlots = AcquireSaveSlots();
+	const TMap<FString, FShidenSaveSlot> SaveSlots = UShidenSaveSlotsSaveGame::GetOrCreate()->SaveSlots;
+	if (SaveSlots.Num() == 0)
+	{
+		SHIDEN_WARNING("User data does not exist.");
+		return false;
+	}
+	
 	const FString LatestSlotName = [&SaveSlots]
 	{
 		FString SaveSlotName;
@@ -547,7 +552,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FS
 	return true;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadSystemData()
+bool UShidenSaveBlueprintLibrary::TryLoadSystemData()
 {
 	WaitUntilEmpty();
 
@@ -561,7 +566,7 @@ SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadSystemData()
 	return true;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::TryLoadPredefinedSystemData(const UObject* WorldContextObject)
+bool UShidenSaveBlueprintLibrary::TryLoadPredefinedSystemData(const UObject* WorldContextObject)
 {
 	WaitUntilEmpty();
 
@@ -590,7 +595,7 @@ void UShidenSaveBlueprintLibrary::DeleteUserData(const FString& SlotName)
 	}
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::DeleteSystemData()
+void UShidenSaveBlueprintLibrary::DeleteSystemData()
 {
 	WaitUntilEmpty();
 	UShidenSystemSaveGame::TryDelete();
@@ -605,33 +610,33 @@ void UShidenSaveBlueprintLibrary::DeletePredefinedSystemData()
 bool UShidenSaveBlueprintLibrary::DoesAnyUserDataExist()
 {
 	WaitUntilEmpty();
-	return UShidenSaveSlotsSaveGame::DoesExist() && AcquireSaveSlots().Num() > 0;
+	return UShidenSaveSlotsSaveGame::DoesExist() && UShidenSaveSlotsSaveGame::GetOrCreate()->SaveSlots.Num() > 0;
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesUserDataExist(const FString& SlotName)
+bool UShidenSaveBlueprintLibrary::DoesUserDataExist(const FString& SlotName)
 {
 	WaitUntilEmpty();
 	return UShidenUserSaveGame::DoesExist(SlotName);
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesSystemDataExist()
+bool UShidenSaveBlueprintLibrary::DoesSystemDataExist()
 {
 	WaitUntilEmpty();
 	return UShidenSystemSaveGame::DoesExist();
 }
 
-SHIDENCORE_API bool UShidenSaveBlueprintLibrary::DoesPredefinedSystemDataExist()
+bool UShidenSaveBlueprintLibrary::DoesPredefinedSystemDataExist()
 {
 	WaitUntilEmpty();
 	return UShidenPredefinedSystemSaveGame::DoesExist();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::ClearLoadedSystemData()
+void UShidenSaveBlueprintLibrary::ClearLoadedSystemData()
 {
 	UShidenVariableBlueprintLibrary::ResetSystemVariables();
 }
 
-SHIDENCORE_API void UShidenSaveBlueprintLibrary::ClearLoadedPredefinedSystemData(const UObject* WorldContextObject)
+void UShidenSaveBlueprintLibrary::ClearLoadedPredefinedSystemData(const UObject* WorldContextObject)
 {
 	UShidenVariableBlueprintLibrary::ResetPredefinedSystemVariables(WorldContextObject);
 }

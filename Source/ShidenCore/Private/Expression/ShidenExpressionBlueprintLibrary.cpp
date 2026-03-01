@@ -235,7 +235,7 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 			{
 				ReplacementText = TEXT("Error");
 			}
-			// 文字列型の場合はダブルクオーテーションで囲む（特殊文字をエスケープ）
+			// Wrap string values in double quotes with special characters escaped
 			else if (Type == EShidenVariableType::String)
 			{
 				ReplacementText = FString::Printf(TEXT("\"%s\""), *EscapeStringForExpression(ReplacementText));
@@ -249,13 +249,33 @@ FString UShidenExpressionBlueprintLibrary::ReplaceVariablesInExpression(const FS
 		Replacements.Add({MatchStart, MatchEnd, ReplacementText});
 	}
 
-	// Apply all replacements from back to front to preserve positions
-	FString ResultText = Expression;
-	for (int32 i = Replacements.Num() - 1; i >= 0; --i)
+	// Build result string in a single pass by copying segments between replacements
+	if (Replacements.IsEmpty())
 	{
-		const FExpressionReplacementInfo& Info = Replacements[i];
-		ResultText.RemoveAt(Info.Start, Info.End - Info.Start);
-		ResultText.InsertAt(Info.Start, Info.ReplacementText);
+		return Expression;
+	}
+
+	FString ResultText;
+	int32 LastPosition = 0;
+
+	for (const FExpressionReplacementInfo& Info : Replacements)
+	{
+		// Copy text before the current replacement
+		if (Info.Start > LastPosition)
+		{
+			ResultText.Append(Expression.Mid(LastPosition, Info.Start - LastPosition));
+		}
+
+		// Add the replacement text
+		ResultText.Append(Info.ReplacementText);
+
+		LastPosition = Info.End;
+	}
+
+	// Copy any remaining text after the last replacement
+	if (LastPosition < Expression.Len())
+	{
+		ResultText.Append(Expression.Mid(LastPosition));
 	}
 
 	return ResultText;

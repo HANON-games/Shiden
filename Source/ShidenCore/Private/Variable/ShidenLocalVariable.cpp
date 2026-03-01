@@ -5,7 +5,7 @@
 #include "System/ShidenSubsystem.h"
 #include "System/ShidenStructuredLog.h"
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeKey, const FString& Name, FShidenVariableDefinition& Definition)
+bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeKey, const FString& Name, FShidenVariableDefinition& Definition)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -15,7 +15,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGetDefinition(const FString& ScopeK
 }
 
 
-SHIDENCORE_API void FShidenLocalVariable::InitLocalVariable(const FString& ScopeKey, const UShidenScenario* Scenario)
+void FShidenLocalVariable::InitLocalVariable(const FString& ScopeKey, const UShidenScenario* Scenario)
 {
 	if (!Scenario)
 	{
@@ -29,7 +29,7 @@ SHIDENCORE_API void FShidenLocalVariable::InitLocalVariable(const FString& Scope
 	ScenarioIds.Add(ScopeKey, Scenario->ScenarioId);
 }
 
-SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
+void FShidenLocalVariable::UpdateVariableDefinitions()
 {
 	for (TPair<FString, FShidenVariable>& Pair : Variables)
 	{
@@ -44,8 +44,8 @@ SHIDENCORE_API void FShidenLocalVariable::UpdateVariableDefinitions()
 	}
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const bool Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const bool Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -54,8 +54,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const int32 Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const int32 Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -64,8 +64,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const float Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const float Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -74,8 +74,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FString& Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FString& Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -84,8 +84,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector& Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector& Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -94,8 +94,8 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector2D& Value,
-                                                    const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, const FString& Name, const FVector2D& Value,
+                                     const bool bForceUpdateReadOnly /*= false*/)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -104,12 +104,12 @@ SHIDENCORE_API bool FShidenLocalVariable::TryUpdate(const FString& ScopeKey, con
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::Contains(const FString& ScopeKey, const FString& Name) const
+bool FShidenLocalVariable::Contains(const FString& ScopeKey, const FString& Name) const
 {
 	return IsValidScope(ScopeKey) && Variables[ScopeKey].Contains(Name);
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, bool& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, bool& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -119,7 +119,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, int32& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, int32& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -129,7 +129,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, float& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, float& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -139,7 +139,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FString& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FString& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -149,7 +149,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -159,7 +159,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector2D& Value)
+bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const FString& Name, FVector2D& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -169,7 +169,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGet(const FString& ScopeKey, const 
 	return false;
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryGetAsString(const FString& ScopeKey, const FString& Name, EShidenVariableType& Type, FString& Value)
+bool FShidenLocalVariable::TryGetAsString(const FString& ScopeKey, const FString& Name, EShidenVariableType& Type, FString& Value)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -179,7 +179,7 @@ SHIDENCORE_API bool FShidenLocalVariable::TryGetAsString(const FString& ScopeKey
 	return false;
 }
 
-SHIDENCORE_API int32 FShidenLocalVariable::Num() const
+int32 FShidenLocalVariable::Num() const
 {
 	int32 Count = 0;
 	for (const TPair<FString, FShidenVariable>& Pair : Variables)
@@ -189,7 +189,7 @@ SHIDENCORE_API int32 FShidenLocalVariable::Num() const
 	return Count;
 }
 
-SHIDENCORE_API int32 FShidenLocalVariable::Num(const FString& ScopeKey) const
+int32 FShidenLocalVariable::Num(const FString& ScopeKey) const
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -198,12 +198,12 @@ SHIDENCORE_API int32 FShidenLocalVariable::Num(const FString& ScopeKey) const
 	return 0;
 }
 
-SHIDENCORE_API void FShidenLocalVariable::ResetAll()
+void FShidenLocalVariable::ResetAll()
 {
 	Variables.Empty();
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::TryReset(const FString& ScopeKey, const FString& Name)
+bool FShidenLocalVariable::TryReset(const FString& ScopeKey, const FString& Name)
 {
 	if (IsValidScope(ScopeKey))
 	{
@@ -212,12 +212,12 @@ SHIDENCORE_API bool FShidenLocalVariable::TryReset(const FString& ScopeKey, cons
 	return false;
 }
 
-SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInCurrentScope(const FString& ScopeKey)
+void FShidenLocalVariable::RemoveVariablesInCurrentScope(const FString& ScopeKey)
 {
 	Variables.Remove(ScopeKey);
 }
 
-SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInProcess(const FString& ProcessName)
+void FShidenLocalVariable::RemoveVariablesInProcess(const FString& ProcessName)
 {
 	TArray<FString> KeysToRemove;
 	const FString SearchKey = ProcessName + TEXT("$");
@@ -234,7 +234,7 @@ SHIDENCORE_API void FShidenLocalVariable::RemoveVariablesInProcess(const FString
 	}
 }
 
-SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
+void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors)
 {
 	VariableDescriptors.Empty();
 	for (const TPair<FString, FShidenVariable>& Pair : Variables)
@@ -248,7 +248,7 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 			if (FShidenVariableDefinition Definition; Variable.TryGetDefinition(Name, Definition))
 			{
 				FString Value;
-				if (Variable.ConvertVariableValueToString(Definition, Name, Value))
+				if (Variable.TryConvertVariableValueToString(Definition, Name, Value))
 				{
 					VariableDescriptors.Add(FShidenVariableDescriptor(ScopeKey, Name, Definition.Type, Definition.AssetPathType, Value,
 					                                                  Definition.DefaultValue, Definition.bIsReadOnly));
@@ -258,7 +258,7 @@ SHIDENCORE_API void FShidenLocalVariable::ListDescriptors(TArray<FShidenVariable
 	}
 }
 
-SHIDENCORE_API bool FShidenLocalVariable::IsValidScope(const FString& ScopeKey) const
+bool FShidenLocalVariable::IsValidScope(const FString& ScopeKey) const
 {
 	if (Variables.Contains(ScopeKey))
 	{

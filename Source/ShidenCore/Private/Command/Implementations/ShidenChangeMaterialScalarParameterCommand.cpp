@@ -8,16 +8,16 @@
 bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                   FChangeMaterialScalarParameterCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.Target = Command.GetArg("Target");
-	Args.TargetName = Command.GetArg("TargetName");
-	Args.ParameterName = Command.GetArg("ParameterName");
-	const FString EasingFuncStr = Command.GetArg("EasingFunction");
-	Args.Duration = Command.GetArgAsFloat("Duration");
-	Args.ChangeType = Command.GetArg("ChangeType");
-	const float OriginalEndValue = Command.GetArgAsFloat("EndValue");
-	Args.Steps = Command.GetArgAsInt("Steps");
-	Args.BlendExp = Command.GetArgAsFloat("BlendExp");
-	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
+	Args.Target = Command.GetArg(TEXT("Target")).GetValue();
+	Args.TargetName = Command.GetArg(TEXT("TargetName")).GetValue();
+	Args.ParameterName = Command.GetArg(TEXT("ParameterName")).GetValue();
+	const FString EasingFuncStr = Command.GetArg(TEXT("EasingFunction")).GetValue();
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
+	Args.ChangeType = Command.GetArg(TEXT("ChangeType")).GetValue();
+	const float OriginalEndValue = Command.GetArgAsFloat(TEXT("EndValue")).GetValue();
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
 
 	if (!TryAddCurrentValue(Args, OriginalEndValue, ShidenWidget, Args.EndValue, ErrorMessage))
 	{
@@ -35,7 +35,7 @@ void UShidenChangeMaterialScalarParameterCommand::RestoreFromSaveData_Implementa
 {
 	for (const TPair<FString, FShidenScenarioProperty>& Pair : ScenarioProperties)
 	{
-		const auto [TargetType, TargetName, ParameterName] = ParseScenarioPropertyKey(Pair.Key);
+		const auto [TargetType, TargetName, ParameterName] = ShidenMaterialParameterHelpers::ParseScenarioPropertyKey(Pair.Key);
 
 		Args = FChangeMaterialScalarParameterCommandArgs
 		{
@@ -98,7 +98,7 @@ void UShidenChangeMaterialScalarParameterCommand::ProcessCommand_Implementation(
 		}
 	}
 
-	const FString Key = MakeScenarioPropertyKey(Args.Target, Args.TargetName, Args.ParameterName);
+	const FString Key = ShidenMaterialParameterHelpers::MakeScenarioPropertyKey(Args.Target, Args.TargetName, Args.ParameterName);
 	UShidenScenarioBlueprintLibrary::RegisterScenarioProperty(Command.CommandName, Key, FString::SanitizeFloat(Args.EndValue));
 	Status = EShidenProcessStatus::Next;
 }
@@ -135,15 +135,16 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 	}
 
 	const FString MaterialParamsKey = ShidenWidget->MakeMaterialParamsKey(Args.TargetName, Args.ParameterName);
-	FShidenImageMaterialScalarParams Params;
-	if (ShidenWidget->TryFindImageMaterialScalarParams(MaterialParamsKey, Params))
-	{
-		ResultValue = OriginalEndValue + Params.EndValue;
-		return true;
-	}
 
 	if (Args.Target == TEXT("Image"))
 	{
+		FShidenImageMaterialScalarParams Params;
+		if (ShidenWidget->TryFindImageMaterialScalarParams(MaterialParamsKey, Params))
+		{
+			ResultValue = OriginalEndValue + Params.EndValue;
+			return true;
+		}
+
 		UImage* Image;
 		if (!ShidenWidget->TryFindImage(Args.TargetName, Image))
 		{
@@ -166,6 +167,13 @@ bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChan
 
 	if (Args.Target == TEXT("RetainerBox"))
 	{
+		FShidenRetainerBoxMaterialScalarParams Params;
+		if (ShidenWidget->TryFindRetainerBoxMaterialScalarParams(MaterialParamsKey, Params))
+		{
+			ResultValue = OriginalEndValue + Params.EndValue;
+			return true;
+		}
+
 		URetainerBox* RetainerBox;
 		if (!ShidenWidget->TryFindRetainerBox(Args.TargetName, RetainerBox))
 		{
@@ -224,28 +232,4 @@ bool UShidenChangeMaterialScalarParameterCommand::TryStartChangeParameter(const 
 
 	ErrorMessage = FString::Printf(TEXT("Invalid target type %s."), *Args.Target);
 	return false;
-}
-
-FString UShidenChangeMaterialScalarParameterCommand::MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName,
-                                                                             const FString& ParameterName)
-{
-	return FString::Printf(TEXT("%s::%s::%s"),
-	                       *TargetType.Replace(TEXT(":"), TEXT("\\:")),
-	                       *TargetName.Replace(TEXT(":"), TEXT("\\:")),
-	                       *ParameterName.Replace(TEXT(":"), TEXT("\\:")));
-}
-
-TTuple<FString, FString, FString> UShidenChangeMaterialScalarParameterCommand::ParseScenarioPropertyKey(const FString& Key)
-{
-	TArray<FString> TempArray;
-	Key.ParseIntoArray(TempArray, TEXT("::"), true);
-	if (TempArray.Num() != 3)
-	{
-		return TTuple<FString, FString, FString>(TEXT(""), TEXT(""), TEXT(""));
-	}
-
-	const FString TargetType = TempArray[0].Replace(TEXT("\\:"), TEXT(":"));
-	const FString TargetName = TempArray[1].Replace(TEXT("\\:"), TEXT(":"));
-	const FString ParameterName = TempArray[2].Replace(TEXT("\\:"), TEXT(":"));
-	return TTuple<FString, FString, FString>(TargetType, TargetName, ParameterName);
 }

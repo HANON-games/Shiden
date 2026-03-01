@@ -15,9 +15,9 @@ class SHIDENCORE_API UShidenImageCommand : public UShidenCommandObject
 	{
 		FString SlotName;
 		FString ImagePath;
-		FString OverwritePosition;
-		FString OverwriteSize;
-		FString OverwriteSizeToContent;
+		TOptional<FString> OverwritePosition;
+		TOptional<FString> OverwriteSize;
+		TOptional<FString> OverwriteSizeToContent;
 		EEasingFunc::Type FadeFunction;
 		float FadeDuration;
 		int32 Steps;

@@ -41,10 +41,6 @@ class SHIDENCORE_API UShidenChangeMaterialTextureParameterCommand : public UShid
 	static bool TryChangeTextureParameter(const FChangeTextureParameterCommandArgs& Args, const UShidenWidget* ShidenWidget, UTexture* Texture,
 	                                      FString& ErrorMessage);
 
-	static FString MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName);
-
-	static TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key);
-
 	UPROPERTY()
 	TObjectPtr<UTexture> ClearTexture;
 

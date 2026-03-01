@@ -4,7 +4,7 @@
 
 void UShidenForceFeedbackCommand::ParseFromCommand(const FShidenCommand& Command, FForceFeedbackCommandArgs& Args)
 {
-	Args.FeedbackEffectPath = Command.GetArg(TEXT("FeedbackEffect"));
+	Args.FeedbackEffectPath = Command.GetArg(TEXT("FeedbackEffect")).GetValue();
 }
 
 void UShidenForceFeedbackCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

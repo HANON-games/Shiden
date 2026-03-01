@@ -14,18 +14,18 @@ bool UShidenOptionsCommand::TryParseCommand(const FShidenCommand& Command, FOpti
 		const FString Prefix = i == 0 ? TEXT("") : FString::Printf(TEXT("Language %d "), i + 1);
 		Args.LocalizedOptions.Add(FOptions{
 			{
-				Command.GetArg(Prefix + TEXT("Option 1")),
-				Command.GetArg(Prefix + TEXT("Option 2")),
-				Command.GetArg(Prefix + TEXT("Option 3")),
-				Command.GetArg(Prefix + TEXT("Option 4")),
-				Command.GetArg(Prefix + TEXT("Option 5"))
+				Command.GetArg(Prefix + TEXT("Option 1")).GetValue(),
+				Command.GetArg(Prefix + TEXT("Option 2")).GetValue(),
+				Command.GetArg(Prefix + TEXT("Option 3")).GetValue(),
+				Command.GetArg(Prefix + TEXT("Option 4")).GetValue(),
+				Command.GetArg(Prefix + TEXT("Option 5")).GetValue()
 			}
 		});
 	}
 
-	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind"));
-	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName"));
-	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer"));
+	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind")).GetValue();
+	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName")).GetValue();
+	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer")).GetValue();
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(DestinationVariableKindStr, Args.DestinationVariableKind))
 	{

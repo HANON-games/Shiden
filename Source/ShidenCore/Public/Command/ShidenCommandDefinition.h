@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Math/Color.h"
+#include "Command/ShidenOptionalString.h"
 #include "ShidenCommandDefinition.generated.h"
 
 USTRUCT(BlueprintType)
@@ -57,7 +58,7 @@ struct SHIDENCORE_API FShidenCommandArgument
 	FName ArgName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
-	FString DefaultValue;
+	FShidenOptionalString DefaultValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
 	bool bIsAssetToBeLoaded = false;

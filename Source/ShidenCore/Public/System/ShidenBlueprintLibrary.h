@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "System/ShidenBacklogItem.h"
 #include "Command/ShidenCommand.h"
+#include "Command/ShidenOptionalString.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UI/ShidenTextType.h"
@@ -33,15 +34,31 @@ public:
 
 	/**
 	 * Sets the auto text mode state.
-	 * 
+	 *
 	 * @param bEnabled True to enable auto text mode, false to disable
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|System")
 	static void SetAutoTextMode(const bool bEnabled);
 
 	/**
+	 * Checks if gallery mode is enabled.
+	 *
+	 * @return True if gallery mode is enabled
+	 */
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|System")
+	static bool IsGalleryMode();
+
+	/**
+	 * Sets the gallery mode state.
+	 *
+	 * @param bEnabled True to enable gallery mode, false to disable
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|System")
+	static void SetGalleryMode(const bool bEnabled);
+
+	/**
 	 * Gets an asset by path, loading it if necessary.
-	 * 
+	 *
 	 * @param ObjectPath The path to the asset
 	 * @param Asset [out] The loaded asset object
 	 * @return True if the asset was successfully retrieved or loaded
@@ -171,7 +188,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (WorldContext = "WorldContextObject", DisplayName = "Play Global BGM", Volume = "1.0", Pitch = "1.0", bSaveScenarioProperty = "true"))
 	static UPARAM(DisplayName = "Success") bool TryPlayGlobalBGM(const UObject* WorldContextObject, int32 TrackId, USoundBase* Sound, EShidenSoundFadeType FadeType, float Volume, float Pitch, float StartTime,
-																 float FadeDuration, EAudioFaderCurve FadeCurve, bool bSaveScenarioProperty, float& Duration);
+	                                                             float FadeDuration, EAudioFaderCurve FadeCurve, bool bSaveScenarioProperty, float& Duration);
 
 	/**
 	 * Stops a global BGM.
@@ -180,7 +197,7 @@ public:
 	 * @param bSaveScenarioProperty Whether to remove the scenario property
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (DisplayName = "Stop Global BGM"))
-	static void StopGlobalBGM(int32 TrackId,   bool bSaveScenarioProperty = false);
+	static void StopGlobalBGM(int32 TrackId, bool bSaveScenarioProperty = false);
 
 	/**
 	 * Stops all global BGMs.
@@ -189,7 +206,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (DisplayName = "Stop Global BGMs"))
 	static void StopGlobalBGMs(bool bSaveScenarioProperty = false);
-	
+
 	/**
 	 * Adjusts the volume of a global BGM.
 	 *
@@ -217,6 +234,15 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|Sound", meta = (DisplayName = "Pause All Global BGMs"))
 	static void PauseAllGlobalBGMs(bool bPause);
+
+	/**
+	 * Gets the value of an optional string, returning an empty string if it is not set.
+	 *
+	 * @param OptionalString The optional string to get the value from
+	 * @return The value of the optional string, or an empty string if not set
+	 */
+	UFUNCTION(BlueprintPure, Category = "Shiden Visual Novel|Utility")
+	static FString GetValueOrDefault(const FShidenOptionalString& OptionalString);
 
 #if WITH_EDITOR
 	/**
@@ -257,26 +283,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility", meta = (DisplayName = "Get Sound Type from Sound Base"))
 	static UPARAM(DisplayName = "Success") bool TryGetSoundTypeFromSoundBase(const USoundBase* SoundBase, EShidenSoundType& SoundType);
 
-	UFUNCTION()
-	static void InitCommandDefinitions();
-
 	UFUNCTION(BlueprintCallable, Category = "SvnInternal|Utility")
 	static const TMap<FString, FShidenCommandDefinition>& GetCommandDefinitionsCache();
-
-	UFUNCTION(BlueprintPure, meta = (BlueprintInternalUseOnly = "true"))
-	static FString GetCommandArgument(const FShidenCommand& Command, const FString& ArgName);
 
 	UFUNCTION(BlueprintPure, Category = "SvnInternal|Utility")
 	static bool IsValidSoftObjectPath(const FString& ObjectPath);
 
+	UFUNCTION(BlueprintPure, meta = (BlueprintInternalUseOnly = "true"))
+	static FShidenOptionalString GetCommandArgument(const FShidenCommand& Command, const FString& ArgName);
+
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static FString Conv_ShidenOptionalStringToString(const FShidenOptionalString& OptionalString);
+
+	UFUNCTION()
+	static void InitCommandDefinitions();
+
 	// Internal function to reset screen fade layers for InitializeSubsystemState in UShidenSubsystem
 	UFUNCTION()
 	static void ResetScreenFadeLayersCore(UShidenSubsystem* ShidenSubsystem);
-
-private:
-	static FRegexPattern& GetSelfClosingTagPattern();
-
-	static FRegexPattern& GetNonSelfClosingTagPattern();
-
-	static FRegexPattern& GetWaitTimePattern();
 };

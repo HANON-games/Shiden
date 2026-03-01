@@ -15,8 +15,12 @@ namespace ShidenCommandHelpers
 	bool TryConvertToEasingFunc(const FString& EasingFuncStr, EEasingFunc::Type& EasingFunc, FString& ErrorMessage);
 
 	bool TryConvertToAudioFaderCurve(const FString& AudioFaderCurveStr, EAudioFaderCurve& AudioFaderCurve, FString& ErrorMessage);
+}
 
-	bool TryGetCurrentOriginalCommand(const FString& ProcessName, FShidenCommand*& OriginalCommand, FString& ErrorMessage);
+// Expression command helpers (AssignExpression/IfExpression/LoopWhileExpression)
+namespace ShidenExpressionCommandHelpers
+{
+	bool TryGetPreVariableReplacementCommand(const FString& ProcessName, FShidenCommand& OutCommand, FString& ErrorMessage);
 }
 
 // Conditional statement navigation helpers (If/IfExpression/ElseIf/ElseIfExpression/LoopWhile/LoopWhileExpression)
@@ -50,4 +54,12 @@ namespace ShidenConditionalCommandHelpers
 
 	// For LoopWhile/LoopWhileExpression
 	bool TryFindEndLoopWhileIndex(const FString& ProcessName, int32 StartIndex, int32& ResultIndex, FString& ErrorMessage);
+}
+
+// Material parameter helpers (ChangeMaterialScalarParameter/ChangeMaterialTextureParameter)
+namespace ShidenMaterialParameterHelpers
+{
+	FString MakeScenarioPropertyKey(const FString& TargetType, const FString& TargetName, const FString& ParameterName);
+
+	TTuple<FString, FString, FString> ParseScenarioPropertyKey(const FString& Key);
 }

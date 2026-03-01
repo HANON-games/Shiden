@@ -2,36 +2,60 @@
 
 #include "Command/ShidenCommand.h"
 
-FString FShidenCommand::GetArg(const FString& Key) const
+TOptional<FString> FShidenCommand::GetArg(const FString& Key) const
 {
-	return Args.FindRef(Key);
+	if (const FString* Value = Args.Find(Key))
+	{
+		return *Value;
+	}
+	return TOptional<FString>();
 }
 
-int32 FShidenCommand::GetArgAsInt(const FString& Key) const
+TOptional<int32> FShidenCommand::GetArgAsInt(const FString& Key) const
 {
-	return FCString::Atoi(*Args.FindRef(Key));
+	if (const FString* Value = Args.Find(Key))
+	{
+		return FCString::Atoi(**Value);
+	}
+	return TOptional<int32>();
 }
 
-float FShidenCommand::GetArgAsFloat(const FString& Key) const
+TOptional<float> FShidenCommand::GetArgAsFloat(const FString& Key) const
 {
-	return FCString::Atof(*Args.FindRef(Key));
+	if (const FString* Value = Args.Find(Key))
+	{
+		return FCString::Atof(**Value);
+	}
+	return TOptional<float>();
 }
 
-bool FShidenCommand::GetArgAsBool(const FString& Key) const
+TOptional<bool> FShidenCommand::GetArgAsBool(const FString& Key) const
 {
-	return Args.FindRef(Key).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
+	if (const FString* Value = Args.Find(Key))
+	{
+		return Value->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
+	}
+	return TOptional<bool>();
 }
 
-FVector2D FShidenCommand::GetArgAsVector2D(const FString& Key) const
+TOptional<FVector2D> FShidenCommand::GetArgAsVector2D(const FString& Key) const
 {
-	FVector2D Result;
-	Result.InitFromString(Args.FindRef(Key));
-	return Result;
+	if (const FString* Value = Args.Find(Key))
+	{
+		FVector2D Result;
+		Result.InitFromString(*Value);
+		return Result;
+	}
+	return TOptional<FVector2D>();
 }
 
-FVector FShidenCommand::GetArgAsVector(const FString& Key) const
+TOptional<FVector> FShidenCommand::GetArgAsVector(const FString& Key) const
 {
-	FVector Result;
-	Result.InitFromString(Args.FindRef(Key));
-	return Result;
+	if (const FString* Value = Args.Find(Key))
+	{
+		FVector Result;
+		Result.InitFromString(*Value);
+		return Result;
+	}
+	return TOptional<FVector>();
 }

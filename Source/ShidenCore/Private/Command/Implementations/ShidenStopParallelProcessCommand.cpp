@@ -7,13 +7,13 @@
 
 bool UShidenStopParallelProcessCommand::TryParseCommand(const FShidenCommand& Command, FStopParallelProcessArgs& Args, FString& ErrorMessage)
 {
-	Args.ProcessName = Command.GetArg("ProcessName");
-	Args.Reason = Command.GetArg("Reason");
-	Args.StopTiming = Command.GetArg("StopTiming");
-	Args.bWaitForCompletion = Command.GetArgAsBool("WaitForCompletion");
+	Args.ProcessName = Command.GetArg(TEXT("ProcessName")).GetValue();
+	Args.Reason = Command.GetArg(TEXT("Reason")).GetValue();
+	Args.StopTiming = Command.GetArg(TEXT("StopTiming")).GetValue();
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
 
-	if (Args.StopTiming.Compare("Immediately", ESearchCase::IgnoreCase) != 0
-		&& Args.StopTiming.Compare("OnCurrentCommandEnd", ESearchCase::IgnoreCase) != 0)
+	if (Args.StopTiming.Compare(TEXT("Immediately"), ESearchCase::IgnoreCase) != 0
+		&& Args.StopTiming.Compare(TEXT("OnCurrentCommandEnd"), ESearchCase::IgnoreCase) != 0)
 	{
 		ErrorMessage = FString::Printf(TEXT("Invalid StopTiming: %s"), *Args.StopTiming);
 		return false;
@@ -34,7 +34,7 @@ void UShidenStopParallelProcessCommand::PreProcessCommand_Implementation(const F
 		return;
 	}
 
-	const EShidenCancelType CancelType = Args.StopTiming.Compare("Immediately", ESearchCase::IgnoreCase) == 0
+	const EShidenCancelType CancelType = Args.StopTiming.Compare(TEXT("Immediately"), ESearchCase::IgnoreCase) == 0
 		                                     ? EShidenCancelType::Immediately
 		                                     : EShidenCancelType::OnCurrentCommandEnd;
 

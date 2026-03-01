@@ -7,8 +7,8 @@
 
 bool UShidenRunMacroInParallelCommand::TryParseCommand(const FShidenCommand& Command, FRunMacroInParallelCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.NewProcessName = Command.GetArg("NewProcessName");
-	const FString MacroIdOrPath = Command.GetArg("MacroName");
+	Args.NewProcessName = Command.GetArg(TEXT("NewProcessName")).GetValue();
+	const FString MacroIdOrPath = Command.GetArg(TEXT("MacroName")).GetValue();
 
 	if (Args.NewProcessName == TEXT("Default"))
 	{
@@ -48,7 +48,7 @@ void UShidenRunMacroInParallelCommand::ProcessCommand_Implementation(const FStri
 	UShidenScenarioBlueprintLibrary::PushScenario(Args.NewProcessName, Args.Scenario);
 	UShidenVariableBlueprintLibrary::InitLocalVariable(Args.NewProcessName, Args.Scenario, Command.Args);
 
-	ShidenManager->Execute_CallMacroAsParallel(ShidenManager.GetObject(), Args.NewProcessName, CallerObject);
+	ShidenManager->Execute_CallMacroInParallel(ShidenManager.GetObject(), Args.NewProcessName, CallerObject);
 
 	Status = EShidenProcessStatus::Next;
 }

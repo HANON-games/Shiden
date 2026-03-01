@@ -42,17 +42,26 @@ TObjectPtr<UShidenUserSaveGame> UShidenUserSaveGame::GetOrCreate(const FString& 
 
 	if (DoesExist(InSlotName))
 	{
-		const TObjectPtr<USaveGame> SaveGame = UGameplayStatics::LoadGameFromSlot(InSlotName, 0);
-		// If it differs from save game class, issue a warning
-		if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
+		if (const TObjectPtr<USaveGame> SaveGame = UGameplayStatics::LoadGameFromSlot(InSlotName, 0))
 		{
-			SHIDEN_WARNING("Loaded ShidenUserSaveGame is not of the expected class. Expected {expected} but got {actual}.",
-			               *SaveGameClass->GetName(),
-			               *SaveGame->GetClass()->GetName());
+			// If it differs from save game class, issue a warning
+			if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
+			{
+				SHIDEN_WARNING("Loaded ShidenUserSaveGame is not of the expected class. Expected {expected} but got {actual}.",
+							   *SaveGameClass->GetName(),
+							   *SaveGame->GetClass()->GetName());
+			}
+			if (const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(SaveGame))
+			{
+				UserSaveGame->SlotName = InSlotName;
+				return UserSaveGame;
+			}
+			SHIDEN_ERROR("Failed to cast loaded save game to UShidenUserSaveGame for slot: {slot}", *InSlotName);
 		}
-		const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(SaveGame);
-		UserSaveGame->SlotName = InSlotName;
-		return UserSaveGame;
+		else
+		{
+			SHIDEN_ERROR("Failed to load save game from slot: {slot}", *InSlotName);
+		}
 	}
 
 	if (!SaveGameClass)

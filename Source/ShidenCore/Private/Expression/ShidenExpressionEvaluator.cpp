@@ -5,6 +5,7 @@
 
 #if WITH_EDITOR
 #include "Variable/ShidenVariableBlueprintLibrary.h"
+#include "Config/ShidenProjectConfig.h"
 #include "Internationalization/Regex.h"
 #endif
 
@@ -1652,6 +1653,7 @@ bool FShidenExpressionEvaluator::TryEvaluateFunction(const FString& FunctionName
 	STRING_FUNC_2_ARG("Contains", Str1.Contains(Str2, ESearchCase::CaseSensitive))
 	STRING_FUNC_2_ARG("StartsWith", Str1.StartsWith(Str2, ESearchCase::CaseSensitive))
 	STRING_FUNC_2_ARG("EndsWith", Str1.EndsWith(Str2, ESearchCase::CaseSensitive))
+	STRING_FUNC_1_ARG("Length", Str.Len())
 
 	// Type conversion functions
 	ANY_TYPE_FUNC_1_ARG("ToString", Arg1.ToString())
@@ -1683,27 +1685,49 @@ FShidenExpressionEvaluator::FShidenExpressionEvaluator(const FShidenExpressionVa
 {
 }
 
-const FShidenVariableDefinition* FShidenExpressionVariableDefinitionContext::FindVariable(const FString& Kind, const FString& Name) const
+bool FShidenExpressionVariableDefinitionContext::TryFindVariable(const FString& Kind, const FString& Name, FShidenVariableDefinition& Definition) const
 {
+	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
 	if (Kind == TEXT("User") || Kind.IsEmpty())
 	{
-		return UserVariables.Find(Name);
+		if (Name == TEXT("EMPTY"))
+		{
+			Definition = EmptyVariableDefinition;
+			return true;
+		}
+		return ShidenSubsystem->UserVariable.TryGetDefinition(Name, Definition);
 	}
 	if (Kind == TEXT("System"))
 	{
-		return SystemVariables.Find(Name);
+		return ShidenSubsystem->SystemVariable.TryGetDefinition(Name, Definition);
 	}
 	if (Kind == TEXT("Local"))
 	{
 		// Search in LocalVariables first
 		if (const FShidenVariableDefinition* Found = LocalVariables.Find(Name))
 		{
-			return Found;
+			Definition = *Found;
+			return true;
 		}
 		// If not found, search in MacroParameters
-		return MacroParameters.Find(Name);
+		if (const FShidenVariableDefinition* Found = MacroParameters.Find(Name))
+		{
+			Definition = *Found;
+			return true;
+		}
+		return false;
 	}
-	return nullptr;
+	if (Kind == TEXT("Predefined"))
+	{
+		FShidenPredefinedSystemVariableDefinition PredefinedSystemVariableDefinition;
+		if (ShidenSubsystem->PredefinedSystemVariable.TryGetDefinition(Name, PredefinedSystemVariableDefinition))
+		{
+			Definition = static_cast<FShidenVariableDefinition>(PredefinedSystemVariableDefinition);
+			return true;
+		}
+		return false;
+	}
+	return false;
 }
 
 bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& FunctionName, const TArray<FShidenExpressionValue>& Args,
@@ -1790,6 +1814,27 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 		return !Matcher.FindNext();
 	};
 
+	// Helper to check if a GUID or path exists in ScenarioPaths
+	auto IsScenarioGuidOrPath = [](const FString& Input) -> bool
+	{
+		const TObjectPtr<const UShidenProjectConfig> ProjectConfig = GetDefault<UShidenProjectConfig>();
+		// Try parsing as GUID first
+		FGuid ParsedGuid;
+		if (FGuid::Parse(Input, ParsedGuid))
+		{
+			return ProjectConfig->ScenarioPaths.Contains(ParsedGuid);
+		}
+		// Fall back to path lookup
+		for (const auto& [Id, Path] : ProjectConfig->ScenarioPaths)
+		{
+			if (Path == Input)
+			{
+				return true;
+			}
+		}
+		return false;
+	};
+
 	// Editor function macros for variable definition queries
 #define EDITOR_VARDEF_FUNC(NAME, EXPR, DEFAULT_VALUE) \
 		if (FunctionName.Equals(TEXT(NAME), ESearchCase::IgnoreCase)) \
@@ -1808,8 +1853,8 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 			} \
 			FString Kind, Name; \
 			ParseVariableRef(VariableRef, Kind, Name); \
-			const FShidenVariableDefinition* VarDef = Context->FindVariable(Kind, Name); \
-			if (VarDef == nullptr) \
+			FShidenVariableDefinition VarDef; \
+			if (!Context->TryFindVariable(Kind, Name, VarDef)) \
 			{ \
 				ErrorMessage = FString::Printf(TEXT(NAME ": variable '%s' not found"), *VariableRef); \
 				return false; \
@@ -1841,14 +1886,15 @@ bool FShidenExpressionEvaluator::TryEvaluateEditorFunction(const FString& Functi
 		}
 	
 	// Editor variable definition functions
-	EDITOR_VARDEF_FUNC("IsReadOnlyVariable", VarDef->bIsReadOnly, false)
-	EDITOR_VARDEF_FUNC("IsWritableVariable", !VarDef->bIsReadOnly, false)
-	EDITOR_VARDEF_FUNC("GetVariableDefaultValue", VarDef->DefaultValue, FString())
-	EDITOR_VARDEF_FUNC("GetVariableType", GetVariableType(VarDef->Type), FString())
+	EDITOR_VARDEF_FUNC("IsReadOnlyVariable", VarDef.bIsReadOnly, false)
+	EDITOR_VARDEF_FUNC("IsWritableVariable", !VarDef.bIsReadOnly, false)
+	EDITOR_VARDEF_FUNC("GetVariableDefaultValue", VarDef.DefaultValue, FString())
+	EDITOR_VARDEF_FUNC("GetVariableType", GetVariableType(VarDef.Type), FString())
 
 	// Editor string functions
 	EDITOR_STRING_FUNC("IsSingleVariable", IsSingleVariable(Str))
 	EDITOR_STRING_FUNC("HasVariable", HasVariable(Str))
+	EDITOR_STRING_FUNC("IsScenarioGuidOrPath", IsScenarioGuidOrPath(Str))
 
 	// Editor context functions
 	EDITOR_CONTEXT_FUNC("IsCalledFromMacro", Context && Context->bIsMacro)

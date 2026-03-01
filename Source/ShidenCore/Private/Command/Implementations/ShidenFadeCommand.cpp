@@ -9,16 +9,16 @@
 
 bool UShidenFadeCommand::TryParseCommand(const FShidenCommand& Command, FFadeCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.LayerName = Command.GetArg(TEXT("LayerName"));
-	Args.FadeType = Command.GetArg(TEXT("FadeType"));
-	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration"));
-	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction"));
-	Args.TargetColor = Command.GetArgAsVector(TEXT("TargetColor"));
-	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
-	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
-	Args.ZOrder = Command.GetArgAsInt(TEXT("ZOrder"));
-	Args.bUseGlobalFade = Command.GetArgAsBool(TEXT("UseGlobalFade"));
+	Args.LayerName = Command.GetArg(TEXT("LayerName")).GetValue();
+	Args.FadeType = Command.GetArg(TEXT("FadeType")).GetValue();
+	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration")).GetValue();
+	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction")).GetValue();
+	Args.TargetColor = Command.GetArgAsVector(TEXT("TargetColor")).GetValue();
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.ZOrder = Command.GetArgAsInt(TEXT("ZOrder")).GetValue();
+	Args.bUseGlobalFade = Command.GetArgAsBool(TEXT("UseGlobalFade")).GetValue();
 
 	if (Args.LayerName.StartsWith(TEXT("Global$")))
 	{

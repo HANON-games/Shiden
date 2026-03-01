@@ -37,7 +37,7 @@ TSharedRef<SWidget> UShidenSoundPropertyView::RebuildWidget()
 				return true;
 			}
 			const FSoftObjectPath SoundClassObjectPath(SoundClassPath);
-			const USoundClass* TempSoundClass = Cast<USoundClass>(SoundClassObjectPath.TryLoad());
+			const TObjectPtr<const USoundClass> TempSoundClass = Cast<USoundClass>(SoundClassObjectPath.TryLoad());
 			if (!TempSoundClass) { return true; }
 			// Allow only if SoundClass is this->SoundClass or its subclass
 			return SoundClass != TempSoundClass && !SoundClass->ChildClasses.Contains(TempSoundClass);

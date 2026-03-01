@@ -123,7 +123,7 @@ public:
 	 * @param CallerObject The object that initiated this macro call
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
-	void CallMacroAsParallel(const FString& NewProcessName, UObject* CallerObject);
+	void CallMacroInParallel(const FString& NewProcessName, UObject* CallerObject);
 
 	/**
 	 * Initializes the Shiden manager with the widget.
@@ -131,6 +131,20 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Misc")
 	void Initialize(const UShidenWidget* ShidenWidget);
+
+	/**
+	 * Gets the current playback state of a voice on the specified track.
+	 * Useful for lip sync animation to determine when a character is speaking.
+	 * AudioLevel is computed from cooked envelope data and requires
+	 * "Enable Amplitude Envelope Analysis" = true in the SoundWave asset properties.
+	 * Without this setting, AudioLevel always returns 0.0.
+	 * @param TrackId The unique identifier of the voice track to query
+	 * @param PlayState [out] Current playback state (Stopped, Playing, Paused, FadingIn, FadingOut)
+	 * @param AudioLevel [out] Audio amplitude (0.0 when silent or envelope analysis is disabled),
+	 *                         scaled by VolumeMultiplier. Returns 0.0 if envelope analysis is not enabled.
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shiden Visual Novel|Sound")
+	void GetVoicePlaybackState(const int32 TrackId, EAudioComponentPlayState& PlayState, float& AudioLevel);
 
 	/**
 	 * Destroys the Shiden manager.

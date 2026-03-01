@@ -18,6 +18,7 @@ class SHIDENCORE_API UShidenAdjustBGMVolumeCommand : public UShidenCommandObject
 		EAudioFaderCurve FadeFunction;
 		float FadeDuration;
 		bool bWaitForCompletion;
+		bool bIsGlobalBGM;
 	};
 
 	virtual void PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

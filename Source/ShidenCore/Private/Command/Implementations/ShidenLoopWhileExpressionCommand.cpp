@@ -8,14 +8,14 @@
 
 bool UShidenLoopWhileExpressionCommand::TryParseCommand(const FString& ProcessName, FLoopWhileExpressionArgs& Args, FString& ErrorMessage)
 {
-	// HACK: Get the original command to access the arguments
-	FShidenCommand* OriginalCommand = nullptr;
-	if (!ShidenCommandHelpers::TryGetCurrentOriginalCommand(ProcessName, OriginalCommand, ErrorMessage))
+	// Get the pre-variable-replacement command to access the raw expression string
+	FShidenCommand PreVariableReplacementCommand;
+	if (!ShidenExpressionCommandHelpers::TryGetPreVariableReplacementCommand(ProcessName, PreVariableReplacementCommand, ErrorMessage))
 	{
 		return false;
 	}
 
-	Args.Expression = OriginalCommand->GetArg(TEXT("Expression"));
+	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression")).GetValue();
 
 	if (Args.Expression.IsEmpty())
 	{

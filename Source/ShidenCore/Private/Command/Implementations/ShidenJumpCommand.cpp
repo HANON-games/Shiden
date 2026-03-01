@@ -7,7 +7,7 @@
 
 void UShidenJumpCommand::ParseFromCommand(const FShidenCommand& Command, FJumpCommandArgs& Args)
 {
-	Args.DestinationTagName = Command.GetArg(TEXT("DestinationTagName"));
+	Args.DestinationTagName = Command.GetArg(TEXT("DestinationTagName")).GetValue();
 }
 
 void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
@@ -28,7 +28,7 @@ void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessNam
 	}
 
 	const FGuid ScenarioId = ProgressStack->Stack.Last().ScenarioId;
-	UShidenScenario* Scenario;
+	UShidenScenario* Scenario = nullptr;
 	if (!UShidenScenarioBlueprintLibrary::TryGetScenario(ScenarioId, Scenario))
 	{
 		Status = EShidenProcessStatus::Error;
@@ -58,7 +58,11 @@ bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, const USh
 	for (int32 Index = 0; Index < Scenario->Commands.Num(); Index++)
 	{
 		const FShidenCommand& Command = Scenario->Commands[Index];
-		if (Command.CommandName == TEXT("Tag") && Command.GetArg(TEXT("Name")) == Args.DestinationTagName)
+		if (!Command.bEnabled)
+		{
+			continue;
+		}
+		if (Command.CommandName == TEXT("Tag") && Command.GetArg(TEXT("Name")).GetValue() == Args.DestinationTagName)
 		{
 			FoundIndex = Index;
 			return true;

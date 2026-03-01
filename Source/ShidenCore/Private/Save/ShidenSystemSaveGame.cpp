@@ -13,15 +13,18 @@ TObjectPtr<UShidenSystemSaveGame> UShidenSystemSaveGame::GetOrCreate()
 
 	if (DoesExist())
 	{
-		const TObjectPtr<USaveGame> SaveGame = UGameplayStatics::LoadGameFromSlot(SystemDataSlotName, 0);
-		// If it differs from save game class, issue a warning
-		if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
+		if (const TObjectPtr<USaveGame> SaveGame = UGameplayStatics::LoadGameFromSlot(SystemDataSlotName, 0))
 		{
-			SHIDEN_WARNING("Loaded ShidenSystemSaveGame is not of the expected class. Expected {expected} but got {actual}.",
-			               *SaveGameClass->GetName(),
-			               *SaveGame->GetClass()->GetName());
+			// If it differs from save game class, issue a warning
+			if (SaveGameClass && !SaveGame->IsA(SaveGameClass))
+			{
+				SHIDEN_WARNING("Loaded ShidenSystemSaveGame is not of the expected class. Expected {expected} but got {actual}.",
+				               *SaveGameClass->GetName(),
+				               *SaveGame->GetClass()->GetName());
+			}
+			return Cast<UShidenSystemSaveGame>(SaveGame);
 		}
-		return Cast<UShidenSystemSaveGame>(SaveGame);
+		SHIDEN_ERROR("Failed to load save game from slot: {slot}", *SystemDataSlotName);
 	}
 
 	if (!SaveGameClass)

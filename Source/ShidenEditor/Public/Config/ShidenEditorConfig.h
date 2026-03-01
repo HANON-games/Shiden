@@ -13,122 +13,56 @@ enum class EShidenScenarioSyncFormat : uint8
 	JSON
 };
 
+UENUM()
+enum class EShidenPreviewPosition : uint8
+{
+	Left,
+	Right
+};
+
 UCLASS(config = Editor, defaultconfig, Category = "Shiden Visual Novel|Editor Config")
-class SHIDENEDITOR_API UShidenEditorConfig : public UObject
+class SHIDENEDITOR_API UShidenEditorConfig : public UDeveloperSettings
 {
 	GENERATED_UCLASS_BODY()
 	
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
+	virtual FName GetContainerName() const override;
+	
+	virtual FName GetCategoryName() const override;
+	
+	virtual FName GetSectionName() const override;
+
+#if WITH_EDITOR
+	virtual FText GetSectionText() const override;
+	
+	virtual FText GetSectionDescription() const override;
+#endif
+	
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (AllowedClasses = "/Script/ShidenCore.ShidenCommandRedirector", ConfigRestartRequired = true, ToolTip = "Data assets that define command redirections."))
 	TArray<FSoftObjectPath> CommandRedirectors;
 
-	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
-	FString ScenarioFilterPath;
-
-	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
-	FString EditScenarioPath;
-
-	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
-	bool bPreviewSound;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ToolTip = "The size of the preview window in pixels (Width, Height)."))
-	FVector2D PreviewSize;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ToolTip = "The refresh interval in seconds for the Shiden Debugger window. Lower values provide more responsive updates but may impact editor performance."))
-	float ShidenDebuggerRefreshInterval;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ConfigRestartRequired = true, ToolTip = "Automatically save scenario data assets when changes are made in the Scenario Editor."))
-	bool bAutoSaveScenario;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "The default command name used when creating new rows in the Scenario Editor."))
 	FString DefaultCommand;
 
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ToolTip = "Enable Advanced Mode to show additional editor inputs."))
-	bool bUseAdvancedMode;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
-		Meta = (ToolTip = "Show all command arguments regardless of their VisibilityCondition settings."))
-	bool bShowAllVisibilityConditionItems;
-
-	UPROPERTY(EditAnywhere, GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference",
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel",
 		Meta = (ToolTip = "Expand preset arguments when exporting scenarios to CSV or JSON."))
 	bool bExpandPresets;
-	
-	UPROPERTY(GlobalConfig, BlueprintReadWrite, Category = "Shiden Visual Novel|Editor Preference")
+
+	UPROPERTY(Config, BlueprintReadWrite, Category = "Shiden Visual Novel")
 	FShidenPluginVersion PluginVersion;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Advanced|Scenario Sync" /*EditAnywhere, GlobalConfig, BlueprintReadWrite,
-		Meta = (ToolTip = "Enable automatic synchronization between scenario data assets and CSV/JSON files. When enabled, all scenarios will be exported to the sync directory.")*/)
+
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel|Advanced|Scenario Sync",
+		Meta = (ToolTip = "Enable bidirectional synchronization between scenario data assets and external CSV/JSON files. When enabled: (1) External file changes are monitored and automatically imported to update scenario assets. (2) Scenario assets can be exported to external files for external editing. This allows seamless collaboration between Unreal Editor and external tools."))
 	bool bEnableScenarioSync;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Advanced|Scenario Sync" /*EditAnywhere, GlobalConfig, BlueprintReadWrite,
-		Meta = (ToolTip = "Choose the file format for scenario synchronization (CSV or JSON).")*/)
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel|Advanced|Scenario Sync",
+		Meta = (ToolTip = "File format for scenario synchronization. Determines the extension (.csv or .json) and format used when exporting scenarios and monitoring external file changes."))
 	EShidenScenarioSyncFormat ScenarioSyncFormat;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Advanced|Scenario Sync" /*EditAnywhere, GlobalConfig, BlueprintReadWrite,
-		Meta = (ToolTip = "The directory path where scenario files will be synced. Can be an absolute path (e.g., C:/MyProject/Scenarios or /home/user/scenarios) or a relative path. The directory structure of scenario assets will be preserved in this location.")*/)
-	FDirectoryPath ScenarioSyncDirectoryPath;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Advanced|Scenario Sync" /*EditAnywhere, GlobalConfig, BlueprintReadWrite,
-		Meta = (ToolTip = "Enable monitoring of new file additions in the sync directory. When a new CSV/JSON file is added, it will be automatically imported if a matching scenario GUID is found.")*/)
-	bool bWatchFileAdditions;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Shiden Visual Novel|Advanced|Scenario Sync" /*EditAnywhere, GlobalConfig, BlueprintReadWrite,
-		Meta = (ToolTip = "Enable monitoring of file deletions in the sync directory. WARNING: It is strongly recommended to use version control (e.g., Git) or maintain regular backups before enabling this feature. Deleted files cannot be recovered automatically.")*/)
-	bool bWatchFileDeletions;
-
-	/**
-	 * Sets the scenario filter path.
-	 * 
-	 * @param Path The new scenario filter path
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetScenarioFilterPath(const FString& Path);
-
-	/**
-	 * Sets the path of the scenario currently being edited.
-	 * 
-	 * @param PackageName The file path to the scenario asset
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetEditScenarioPath(const FString& PackageName);
-
-	/**
-	 * Enables or disables sound preview functionality in the editor.
-	 *
-	 * @param bEnabled True to enable sound preview, false to disable
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetPreviewSound(const bool bEnabled);
-
-	/**
-	 * Sets the size of the preview window.
-	 *
-	 * @param Size The preview window size in pixels (Width, Height)
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetPreviewSize(const FVector2D& Size);
-
-	/**
-	 * Sets the refresh interval for the Shiden debugger.
-	 *
-	 * @param Interval The refresh interval in seconds
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetShidenDebuggerRefreshInterval(const float Interval);
-
-	/**
-	 * Enables or disables automatic saving of scenarios when changes are made.
-	 * 
-	 * @param bEnabled True to enable auto-save, false to disable
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Shiden Visual Novel|EditorUtility")
-	static void SetAutoSaveScenario(const bool bEnabled);
+	UPROPERTY(EditAnywhere, Config, BlueprintReadWrite, Category = "Shiden Visual Novel|Advanced|Scenario Sync",
+		Meta = (ToolTip = "Directory path for scenario file synchronization relative to the project directory (e.g., Saved/OriginalScenarios). The directory structure of scenario assets will be mirrored in this location."))
+	FString ScenarioSyncDirectoryPath;
 
 	/**
 	 * Sets the default command to use when creating new scenario rows.
@@ -139,8 +73,5 @@ class SHIDENEDITOR_API UShidenEditorConfig : public UObject
 	static void SetDefaultCommand(const FString& CommandName);
 
 private:
-	template <class T, class TMember>
-	static void UpdateConfig(TMember UShidenEditorConfig::* MemberPtr, const T& Value);
-
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 };

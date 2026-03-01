@@ -29,5 +29,5 @@ private:
 	TSharedPtr<IPropertyHandle> CommandSoftObjectPathHandle;
 	TSharedPtr<IPropertyHandle> ArgsHandle;
 
-	static TSet<FTopLevelAssetPath> GetCachedDerivedClassNames();
+	static const TSet<FTopLevelAssetPath>& GetCachedDerivedClassNames();
 };

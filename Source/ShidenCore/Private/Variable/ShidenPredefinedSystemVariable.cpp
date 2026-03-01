@@ -4,8 +4,7 @@
 #include "Config/ShidenProjectConfig.h"
 #include "Variable/ShidenVariableDescriptor.h"
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name,
-                                                                      FShidenPredefinedSystemVariableDefinition& Definition) const
+bool FShidenPredefinedSystemVariable::TryGetDefinition(const FString& Name, FShidenPredefinedSystemVariableDefinition& Definition) const
 {
 	if (const FShidenPredefinedSystemVariableDefinition* Temp = Definitions.FindByKey(Name))
 	{
@@ -16,8 +15,7 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetDefinition(const FStr
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value,
-                                                                       const bool bForceUpdateReadOnly /*= false*/)
+bool FShidenPredefinedSystemVariable::TryUpdateByString(const FString& Name, const FString& Value, const bool bForceUpdateReadOnly /*= false*/)
 {
 	const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name);
 	if (Definition && (bForceUpdateReadOnly || !Definition->bIsReadOnly))
@@ -28,12 +26,12 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryUpdateByString(const FSt
 	return false;
 }
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::Contains(const FString& Name) const
+bool FShidenPredefinedSystemVariable::Contains(const FString& Name) const
 {
 	return Definitions.FindByKey(Name) != nullptr;
 }
 
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const
+bool FShidenPredefinedSystemVariable::TryGetAsString(const FString& Name, EShidenVariableType& Type, FString& Value) const
 {
 	if (const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name))
 	{
@@ -45,7 +43,7 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryGetAsString(const FStrin
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll()
+void FShidenPredefinedSystemVariable::ResetAll()
 {
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)
 	{
@@ -54,7 +52,7 @@ SHIDENCORE_API void FShidenPredefinedSystemVariable::ResetAll()
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryReset(const FString& Name)
+bool FShidenPredefinedSystemVariable::TryReset(const FString& Name)
 {
 	if (const FShidenPredefinedSystemVariableDefinition* Definition = Definitions.FindByKey(Name))
 	{
@@ -64,7 +62,7 @@ SHIDENCORE_API bool FShidenPredefinedSystemVariable::TryReset(const FString& Nam
 	return false;
 }
 
-SHIDENCORE_API void FShidenPredefinedSystemVariable::GetNames(TArray<FString>& OutNames) const
+void FShidenPredefinedSystemVariable::GetNames(TArray<FString>& OutNames) const
 {
 	OutNames.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)
@@ -73,12 +71,12 @@ SHIDENCORE_API void FShidenPredefinedSystemVariable::GetNames(TArray<FString>& O
 	}
 }
 
-SHIDENCORE_API int32 FShidenPredefinedSystemVariable::Num() const
+int32 FShidenPredefinedSystemVariable::Num() const
 {
 	return Definitions.Num();
 }
 
-SHIDENCORE_API void FShidenPredefinedSystemVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors) const
+void FShidenPredefinedSystemVariable::ListDescriptors(TArray<FShidenVariableDescriptor>& VariableDescriptors) const
 {
 	VariableDescriptors.Empty();
 	for (const FShidenPredefinedSystemVariableDefinition& Definition : Definitions)

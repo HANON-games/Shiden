@@ -1,11 +1,12 @@
 // Copyright (c) 2026 HANON. All Rights Reserved.
 
 #include "ShidenEditor.h"
-#include "ISettingsModule.h"
 #include "Config/ShidenEditorConfig.h"
 #include "EditorSubsystem.h"
 #include "Command/ShidenCommandDefinitionCustomization.h"
 #include "Command/ShidenCommandArgumentEditorSettingsCustomization.h"
+#include "Config/ShidenProjectConfigCustomization.h"
+#include "Config/ShidenEditorConfigCustomization.h"
 #include "Scenario/ShidenScenarioCustomization.h"
 #include "Scenario/ShidenScenario.h"
 #include "Editor/EditorEngine.h"
@@ -20,18 +21,6 @@
 void FShidenEditorModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings(
-			"Editor",
-			"Plugins",
-			"ShidenVisualNovelEditor",
-			LOCTEXT("ShidenVisualNovelEditorName", "Shiden Visual Novel Editor"),
-			LOCTEXT("ShidenVisualNovelEditorDescription", "Shiden Visual Novel Editor"),
-			GetMutableDefault<UShidenEditorConfig>()
-		);
-	}
-
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 		"ShidenCommandDefinition",
@@ -44,6 +33,14 @@ void FShidenEditorModule::StartupModule()
 	PropertyEditorModule.RegisterCustomPropertyTypeLayout(
 		UShidenScenario::StaticClass()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FShidenScenarioCustomization::MakeInstance)
+	);
+	PropertyEditorModule.RegisterCustomClassLayout(
+		UShidenProjectConfig::StaticClass()->GetFName(),
+		FOnGetDetailCustomizationInstance::CreateStatic(&FShidenProjectConfigCustomization::MakeInstance)
+	);
+	PropertyEditorModule.RegisterCustomClassLayout(
+		UShidenEditorConfig::StaticClass()->GetFName(),
+		FOnGetDetailCustomizationInstance::CreateStatic(&FShidenEditorConfigCustomization::MakeInstance)
 	);
 	PropertyEditorModule.NotifyCustomizationModuleChanged();
 
@@ -72,19 +69,12 @@ void FShidenEditorModule::ShutdownModule()
 	// Stop scenario sync watching
 	UShidenScenarioSyncManager::StopWatchingDirectory();
 
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->UnregisterSettings(
-			"Editor",
-			"Plugins",
-			"ShidenVisualNovelEditor"
-		);
-	}
-
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandDefinition");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout("ShidenCommandArgumentEditorSettings");
 	PropertyEditorModule.UnregisterCustomPropertyTypeLayout(UShidenScenario::StaticClass()->GetFName());
+	PropertyEditorModule.UnregisterCustomClassLayout(UShidenProjectConfig::StaticClass()->GetFName());
+	PropertyEditorModule.UnregisterCustomClassLayout(UShidenEditorConfig::StaticClass()->GetFName());
 
 	UToolMenus::UnRegisterStartupCallback(this);
 	UToolMenus::UnregisterOwner(this);

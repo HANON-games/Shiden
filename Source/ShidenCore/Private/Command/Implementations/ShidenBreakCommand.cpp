@@ -4,7 +4,7 @@
 
 void UShidenBreakCommand::ParseFromCommand(const FShidenCommand& Command, FBreakCommandArgs& Args)
 {
-	Args.ReasonForInterruption = Command.GetArg("ReasonForInterruption");
+	Args.ReasonForInterruption = Command.GetArg(TEXT("ReasonForInterruption")).GetValue();
 }
 
 void UShidenBreakCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

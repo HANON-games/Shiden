@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/ModuleManager.h"
 
 class SHIDENK2NODE_API FShidenK2NodeModule final : public IModuleInterface
 {

@@ -7,17 +7,18 @@
 bool UShidenTextInputCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FTextInputCommandArgs& Args,
                                               FString& ErrorMessage)
 {
-	const FString MaxLengthStr = Command.GetArg("MaxLength");
-	const FString MaxLineCountStr = Command.GetArg("MaxLineCount");
-	Args.AllowedCharacterRegex = Command.GetArg("AllowedCharacterRegex");
-	Args.DefaultText = Command.GetArg("DefaultText");
-	Args.HintText = Command.GetArg("HintText");
-	const FString DestinationVariableKindStr = Command.GetArg("DestinationVariableKind");
-	Args.DestinationVariableName = Command.GetArg("DestinationVariableName");
-	Args.bHideTextLayer = Command.GetArgAsBool("HideTextLayer");
+	const TOptional<FString> MaxLengthOpt = Command.GetArg(TEXT("MaxLength"));
+	const TOptional<FString> MaxLineCountOpt = Command.GetArg(TEXT("MaxLineCount"));
+	const TOptional<FString> AllowedCharacterRegexOpt = Command.GetArg(TEXT("AllowedCharacterRegex"));
+	Args.AllowedCharacterRegex = AllowedCharacterRegexOpt.IsSet() ? AllowedCharacterRegexOpt.GetValue() : TEXT("");
+	Args.DefaultText = Command.GetArg(TEXT("DefaultText")).GetValue();
+	Args.HintText = Command.GetArg(TEXT("HintText")).GetValue();
+	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind")).GetValue();
+	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName")).GetValue();
+	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer")).GetValue();
 
-	Args.MaxLength = MaxLengthStr.IsEmpty() ? -1 : FCString::Atoi(*MaxLengthStr);
-	Args.MaxLineCount = MaxLineCountStr.IsEmpty() ? -1 : FCString::Atoi(*MaxLineCountStr);
+	Args.MaxLength = !MaxLengthOpt.IsSet() || MaxLengthOpt.GetValue().IsEmpty() ? -1 : FCString::Atoi(*MaxLengthOpt.GetValue());
+	Args.MaxLineCount = !MaxLineCountOpt.IsSet() || MaxLineCountOpt.GetValue().IsEmpty() ? -1 : FCString::Atoi(*MaxLineCountOpt.GetValue());
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(DestinationVariableKindStr, Args.DestinationVariableKind))
 	{
@@ -69,7 +70,7 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 		return;
 	}
 
-	if (!ShidenWidget->TrySetVisibilityByName("TextInputLayer", ESlateVisibility::Collapsed, true))
+	if (!ShidenWidget->TrySetVisibilityByName(TEXT("TextInputLayer"), ESlateVisibility::Collapsed, true))
 	{
 		ErrorMessage = TEXT("Failed to set TextInputLayer visibility.");
 		Status = EShidenProcessStatus::Error;
@@ -112,7 +113,7 @@ void UShidenTextInputCommand::ProcessCommand_Implementation(const FString& Proce
 
 	ShidenWidget->SetInputModeGameAndUI();
 
-	UShidenBlueprintLibrary::AddBacklogItem(Command, {{"InputText", ResultText}});
+	UShidenBlueprintLibrary::AddBacklogItem(Command, {{TEXT("InputText"), ResultText}});
 
 	Status = EShidenProcessStatus::Next;
 }
@@ -172,7 +173,7 @@ void UShidenTextInputCommand::PreviewCommand_Implementation(const FShidenCommand
 
 bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs& Args, const bool bIsPreview, UShidenWidget* ShidenWidget, FString& ErrorMessage)
 {
-	if (!ShidenWidget->TrySetVisibilityByName("TextInputLayer", ESlateVisibility::Visible, true))
+	if (!ShidenWidget->TrySetVisibilityByName(TEXT("TextInputLayer"), ESlateVisibility::Visible, true))
 	{
 		ErrorMessage = TEXT("Failed to show TextInputLayer.");
 		return false;
@@ -180,7 +181,7 @@ bool UShidenTextInputCommand::TryInitializeTextInput(const FTextInputCommandArgs
 
 	if (Args.bHideTextLayer)
 	{
-		if (!ShidenWidget->TrySetVisibilityByName("TextLayer", ESlateVisibility::Collapsed, true))
+		if (!ShidenWidget->TrySetVisibilityByName(TEXT("TextLayer"), ESlateVisibility::Collapsed, true))
 		{
 			ErrorMessage = TEXT("Failed to hide TextLayer.");
 			return false;

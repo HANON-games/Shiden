@@ -28,7 +28,7 @@ class SHIDENCORE_API UShidenWaitForClickCommand : public UShidenCommandObject
 
 	static void ParseFromCommand(const FShidenCommand& Command, FWaitForClickCommandArgs& Args);
 
-	static UInputAction* LoadInputActionFromPath(const FString& Path);
+	static TObjectPtr<UInputAction> LoadInputActionFromPath(const FString& Path);
 
 	FWaitForClickCommandArgs Args;
 
