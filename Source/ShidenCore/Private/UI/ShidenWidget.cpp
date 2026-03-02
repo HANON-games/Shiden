@@ -1007,18 +1007,25 @@ void UShidenWidget::SanitizeInputText(const FString& Text, const FShidenTextInpu
 		Result = Text;
 	}
 
-	int32 NewLineCount = 0;
-	for (const TCHAR& Char : Result)
-	{
-		if (Char == '\n' || Char == '\r')
-		{
-			NewLineCount++;
-		}
-	}
-
 	if (Properties.MaxLength > 0)
 	{
-		Result = Result.Left(Properties.MaxLength + NewLineCount);
+		// Limit non-newline characters to MaxLength by iterating character by character.
+		// Newline characters do not count toward the limit.
+		int32 NonNewlineCount = 0;
+		int32 TruncateAt = Result.Len();
+		for (int32 i = 0; i < Result.Len(); ++i)
+		{
+			if (Result[i] != TEXT('\n') && Result[i] != TEXT('\r'))
+			{
+				NonNewlineCount++;
+				if (NonNewlineCount > Properties.MaxLength)
+				{
+					TruncateAt = i;
+					break;
+				}
+			}
+		}
+		Result = Result.Left(TruncateAt);
 	}
 
 	if (!Properties.AllowedCharacterRegex.IsEmpty())

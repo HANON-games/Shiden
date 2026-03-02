@@ -7,10 +7,10 @@
 
 bool UShidenStopParallelProcessCommand::TryParseCommand(const FShidenCommand& Command, FStopParallelProcessArgs& Args, FString& ErrorMessage)
 {
-	Args.ProcessName = Command.GetArg(TEXT("ProcessName")).GetValue();
-	Args.Reason = Command.GetArg(TEXT("Reason")).GetValue();
-	Args.StopTiming = Command.GetArg(TEXT("StopTiming")).GetValue();
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.ProcessName = Command.GetArg(TEXT("ProcessName"));
+	Args.Reason = Command.GetArg(TEXT("Reason"));
+	Args.StopTiming = Command.GetArg(TEXT("StopTiming"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
 	if (Args.StopTiming.Compare(TEXT("Immediately"), ESearchCase::IgnoreCase) != 0
 		&& Args.StopTiming.Compare(TEXT("OnCurrentCommandEnd"), ESearchCase::IgnoreCase) != 0)

@@ -7,7 +7,7 @@
 
 void UShidenJumpCommand::ParseFromCommand(const FShidenCommand& Command, FJumpCommandArgs& Args)
 {
-	Args.DestinationTagName = Command.GetArg(TEXT("DestinationTagName")).GetValue();
+	Args.DestinationTagName = Command.GetArg(TEXT("DestinationTagName"));
 }
 
 void UShidenJumpCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
@@ -62,7 +62,7 @@ bool UShidenJumpCommand::TryFindTagIndex(const FJumpCommandArgs& Args, const USh
 		{
 			continue;
 		}
-		if (Command.CommandName == TEXT("Tag") && Command.GetArg(TEXT("Name")).GetValue() == Args.DestinationTagName)
+		if (Command.CommandName == TEXT("Tag") && Command.GetArg(TEXT("Name")) == Args.DestinationTagName)
 		{
 			FoundIndex = Index;
 			return true;

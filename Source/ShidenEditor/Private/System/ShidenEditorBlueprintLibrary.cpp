@@ -304,7 +304,7 @@ FShidenCommand UShidenEditorBlueprintLibrary::ExpandCommandForEditor(const FShid
 			}
 			const FString Value = SourceCommand.Args.Contains(Key)
 				                      ? SourceCommand.Args.FindRef(Key)
-				                      : Arg.DefaultValue.GetValue();
+				                      : Arg.DefaultValue.GetValueOrDefault();
 			ExpandedCommand.Args.Add(Key, Value);
 
 			// If the HasAdditionalArgs Property of CommandArguments[Index] is true, add MacroArguments
@@ -365,7 +365,7 @@ FShidenCommand UShidenEditorBlueprintLibrary::ExpandCommandForEditor(const FShid
 		}
 		else if (bShouldExpandDefaultValue && Arg.DefaultValue.IsSet())
 		{
-			Value = Arg.DefaultValue.GetValue();
+			Value = Arg.DefaultValue.GetValueOrDefault();
 		}
 		else
 		{
@@ -435,7 +435,7 @@ FShidenCommand UShidenEditorBlueprintLibrary::RemoveRedundantCommandArgs(const F
 		{
 			if (ArgDef.DefaultValue.IsSet())
 			{
-				DefaultValues.Add(ArgDef.ArgName.ToString(), ArgDef.DefaultValue.GetValue());
+				DefaultValues.Add(ArgDef.ArgName.ToString(), ArgDef.DefaultValue.GetValueOrDefault());
 			}
 
 			// For args with HasAdditionalArgs (e.g., RunMacro), also include macro parameter defaults
@@ -451,7 +451,7 @@ FShidenCommand UShidenEditorBlueprintLibrary::RemoveRedundantCommandArgs(const F
 					}
 					else if (ArgDef.DefaultValue.IsSet())
 					{
-						MacroScenarioValue = ArgDef.DefaultValue.GetValue();
+						MacroScenarioValue = ArgDef.DefaultValue.GetValueOrDefault();
 					}
 				}
 
@@ -703,7 +703,7 @@ UShidenScenario* UShidenEditorBlueprintLibrary::ConvertToScenarioFromCsv(const F
 			// If the HasAdditionalArgs Property of Args[Index] is true, add MacroArguments
 			if (Args[Index].EditorSettings.TemplateParameters.FindRef(TEXT("HasAdditionalArgs")).Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0)
 			{
-				FString MacroScenarioValue = Command.GetArg(Args[Index].ArgName.ToString()).Get(TEXT(""));
+				FString MacroScenarioValue = Command.GetOptionalArg(Args[Index].ArgName.ToString()).Get(TEXT(""));
 				if (MacroScenarioValue.IsEmpty())
 				{
 					// Get scenario id or path from expanded command
@@ -1003,7 +1003,7 @@ bool UShidenEditorBlueprintLibrary::TryConvertCommandDefinitionsToJson(FString& 
 			ArgObject->SetStringField(TEXT("ArgName"), Arg.ArgName.ToString());
 			if (Arg.DefaultValue.IsSet())
 			{
-				ArgObject->SetStringField(TEXT("DefaultValue"), Arg.DefaultValue.GetValue());
+				ArgObject->SetStringField(TEXT("DefaultValue"), Arg.DefaultValue.GetValueOrDefault());
 			}
 			ArgObject->SetBoolField(TEXT("bIsAssetToBeLoaded"), Arg.bIsAssetToBeLoaded);
 
@@ -1555,8 +1555,8 @@ void UShidenEditorBlueprintLibrary::RedirectLocalVariables(UShidenScenario* Scen
 
 		if (TargetCommand.Contains(Command.CommandName))
 		{
-			if (Command.GetArg(TargetCommand[Command.CommandName].Get<0>()).GetValue() == TEXT("LocalVariable")
-				&& Command.GetArg(TargetCommand[Command.CommandName].Get<1>()).GetValue() == OldVariableName)
+			if (Command.GetOptionalArg(TargetCommand[Command.CommandName].Get<0>()).Get(TEXT("")) == TEXT("LocalVariable")
+				&& Command.GetOptionalArg(TargetCommand[Command.CommandName].Get<1>()).Get(TEXT("")) == OldVariableName)
 			{
 				Command.Args[TargetCommand[Command.CommandName].Get<1>()] = NewVariableName;
 			}
@@ -1745,8 +1745,8 @@ void UShidenEditorBlueprintLibrary::RedirectAllVariables(const EShidenVariableKi
 
 				if (TargetCommand.Contains(Command.CommandName))
 				{
-					const FString CommandVariableKindValue = Command.GetArg(TargetCommand[Command.CommandName].Get<0>()).GetValue();
-					const FString CommandVariableNameValue = Command.GetArg(TargetCommand[Command.CommandName].Get<1>()).GetValue();
+					const FString CommandVariableKindValue = Command.GetOptionalArg(TargetCommand[Command.CommandName].Get<0>()).Get(TEXT(""));
+					const FString CommandVariableNameValue = Command.GetOptionalArg(TargetCommand[Command.CommandName].Get<1>()).Get(TEXT(""));
 					if (CommandVariableKindValue == VariableKindStr && CommandVariableNameValue == OldVariableName)
 					{
 						Command.Args[TargetCommand[Command.CommandName].Get<1>()] = NewVariableName;
@@ -1989,7 +1989,7 @@ bool UShidenEditorBlueprintLibrary::TryMigratePlugin()
 				{
 					for (const FShidenCommandArgument& ArgDef : MigCommandDef->Args)
 					{
-						if (ArgDef.ArgName.ToString() == Key && ArgDef.DefaultValue.IsSet() && Value == ArgDef.DefaultValue.GetValue())
+						if (ArgDef.ArgName.ToString() == Key && ArgDef.DefaultValue.IsSet() && Value == ArgDef.DefaultValue.GetValueOrDefault())
 						{
 							MigPresetKeysToRemove.Add(Key);
 							break;

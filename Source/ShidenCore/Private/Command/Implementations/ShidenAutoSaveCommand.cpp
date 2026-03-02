@@ -9,8 +9,8 @@
 
 void UShidenAutoSaveCommand::ParseFromCommand(const FShidenCommand& Command, FAutoSaveCommandArgs& Args)
 {
-	Args.SlotName = Command.GetArg(TEXT("SlotName")).GetValue();
-	Args.OverwriteThumbnail = Command.GetArg(TEXT("OverwriteThumbnail"));
+	Args.SlotName = Command.GetArg(TEXT("SlotName"));
+	Args.OverwriteThumbnail = Command.GetOptionalArg(TEXT("OverwriteThumbnail"));
 }
 
 void UShidenAutoSaveCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

@@ -6,7 +6,7 @@
 
 void UShidenDelayCommand::ParseFromCommand(const FShidenCommand& Command, FDelayCommandArgs& Args)
 {
-	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
 }
 
 void UShidenDelayCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

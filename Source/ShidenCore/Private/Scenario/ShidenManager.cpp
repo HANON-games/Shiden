@@ -323,6 +323,11 @@ void AShidenManager::PlaySE(const FShidenSoundInfo& SoundInfo, USoundBase* Sound
 	if (SoundInfo.EndVolumeMultiplier <= 0.0f)
 	{
 		const TObjectPtr<UAudioComponent> Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		if (!Component)
+		{
+			SHIDEN_WARNING("SpawnSound2D returned null for SE fade out.");
+			return;
+		}
 		AdjustVolumeInternal(Component, 0.0f, SoundInfo.StartVolumeMultiplier, SoundInfo.AudioFaderCurve);
 		if (bRegisterSound)
 		{
@@ -336,6 +341,11 @@ void AShidenManager::PlaySE(const FShidenSoundInfo& SoundInfo, USoundBase* Sound
 	if (SoundInfo.StartVolumeMultiplier <= 0.0f)
 	{
 		const TObjectPtr<UAudioComponent> Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		if (!Component)
+		{
+			SHIDEN_WARNING("SpawnSound2D returned null for SE fade in.");
+			return;
+		}
 		if (bRegisterSound)
 		{
 			RegisterSound(SoundInfo, Component);
@@ -345,6 +355,11 @@ void AShidenManager::PlaySE(const FShidenSoundInfo& SoundInfo, USoundBase* Sound
 	}
 
 	const TObjectPtr<UAudioComponent> Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+	if (!Component)
+	{
+		SHIDEN_WARNING("SpawnSound2D returned null for SE play.");
+		return;
+	}
 	AdjustVolumeInternal(Component, 0.0f, SoundInfo.StartVolumeMultiplier, SoundInfo.AudioFaderCurve);
 	if (bRegisterSound)
 	{
@@ -377,6 +392,11 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		else
 		{
 			Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+			if (!Component)
+			{
+				SHIDEN_WARNING("SpawnSound2D returned null for BGM/Voice fade out.");
+				return;
+			}
 		}
 
 		if (!bSamePath)
@@ -402,6 +422,11 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 	{
 		StopSound_Implementation(SoundInfo.TrackId, SoundInfo.Type);
 		const TObjectPtr<UAudioComponent> Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		if (!Component)
+		{
+			SHIDEN_WARNING("SpawnSound2D returned null for BGM/Voice fade in.");
+			return;
+		}
 		if (bRegisterSound)
 		{
 			RegisterSound(SoundInfo, Component);
@@ -419,6 +444,11 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 	else
 	{
 		Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
+		if (!Component)
+		{
+			SHIDEN_WARNING("SpawnSound2D returned null for BGM/Voice play.");
+			return;
+		}
 	}
 
 	if (!bSamePath)

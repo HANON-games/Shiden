@@ -8,22 +8,18 @@
 bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                         FMoveCanvasPanelSlotCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.SlotName = Command.GetArg(TEXT("SlotName")).GetValue();
-	const FString EasingFunctionStr = Command.GetArg(TEXT("EasingFunction")).GetValue();
-	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
-	Args.ChangeType = Command.GetArg(TEXT("ChangeType")).GetValue();
-	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
-	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
-	const TOptional<FString> OverwriteZOrderOpt = Command.GetArg(TEXT("OverwriteZOrder"));
-	Args.bChangePosition = Command.GetArg(TEXT("OverwritePosition")).IsSet();
-	const FVector2D OriginalPosition = Command.GetArgAsVector2D(TEXT("OverwritePosition")).Get(FVector2D::ZeroVector);
-	Args.bChangeSize = Command.GetArg(TEXT("OverwriteSize")).IsSet();
-	const FVector2D OriginalSize = Command.GetArgAsVector2D(TEXT("OverwriteSize")).Get(FVector2D::ZeroVector);
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
-	Args.bOverwriteZOrder = OverwriteZOrderOpt.IsSet();
-	Args.OverwriteZOrder = Args.bOverwriteZOrder ? FCString::Atoi(*OverwriteZOrderOpt.GetValue()) : 0;
+	Args.SlotName = Command.GetArg(TEXT("SlotName"));
+	const FString EasingFunctionStr = Command.GetArg(TEXT("EasingFunction"));
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
+	Args.ChangeType = Command.GetArg(TEXT("ChangeType"));
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
+	Args.OverwritePosition = Command.GetOptionalArgAsVector2D(TEXT("OverwritePosition"));
+	Args.OverwriteSize = Command.GetOptionalArgAsVector2D(TEXT("OverwriteSize"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
+	Args.OverwriteZOrder = Command.GetOptionalArgAsInt(TEXT("OverwriteZOrder"));
 
-	if (!TryAddCurrentValue(Args, OriginalPosition, OriginalSize, ShidenWidget, Args.EndPosition, Args.EndSize, ErrorMessage))
+	if (!TryAddCurrentValue(Args, ShidenWidget, Args.EndPosition, Args.EndSize, ErrorMessage))
 	{
 		return false;
 	}
@@ -112,8 +108,7 @@ void UShidenMoveCanvasPanelSlotCommand::PreProcessCommand_Implementation(const F
 		         : EShidenPreProcessStatus::Error;
 }
 
-void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,
-                                                                      UShidenWidget* ShidenWidget,
+void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                       const TScriptInterface<IShidenManagerInterface>& ShidenManager,
                                                                       const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                                       FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
@@ -129,12 +124,12 @@ void UShidenMoveCanvasPanelSlotCommand::ProcessCommand_Implementation(const FStr
 	TMap<FString, FString> ScenarioProperties;
 	ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 
-	if (Args.bChangePosition)
+	if (Args.OverwritePosition.IsSet())
 	{
 		ScenarioProperties.Add(TEXT("Position"), Args.EndPosition.ToString());
 	}
 
-	if (Args.bChangeSize)
+	if (Args.OverwriteSize.IsSet())
 	{
 		ScenarioProperties.Add(TEXT("Size"), Args.EndSize.ToString());
 	}
@@ -171,13 +166,9 @@ void UShidenMoveCanvasPanelSlotCommand::PreviewCommand_Implementation(const FShi
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenMoveCanvasPanelSlotCommand::TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, const FVector2D OriginalPosition,
-                                                           const FVector2D OriginalSize, UShidenWidget* ShidenWidget,
+bool UShidenMoveCanvasPanelSlotCommand::TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget,
                                                            FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage)
 {
-	ResultPosition = OriginalPosition;
-	ResultSize = OriginalSize;
-
 	if (Args.ChangeType != TEXT("AddToCurrent"))
 	{
 		return true;
@@ -193,13 +184,13 @@ bool UShidenMoveCanvasPanelSlotCommand::TryAddCurrentValue(const FMoveCanvasPane
 	FShidenCanvasPanelSlotMoveParams Params;
 	const bool bSuccess = ShidenWidget->TryFindCanvasPanelMoveParams(Args.SlotName, Params);
 
-	ResultPosition += bSuccess && Params.bChangePosition
-		                  ? Params.EndPosition
-		                  : Slot->GetPosition();
+	ResultPosition = bSuccess && Params.bChangePosition
+		                 ? Params.EndPosition + Args.OverwritePosition.Get(FVector2D::ZeroVector)
+		                 : Slot->GetPosition() + Args.OverwritePosition.Get(FVector2D::ZeroVector);
 
-	ResultSize += bSuccess && Params.bChangeSize
-		              ? Params.EndSize
-		              : Slot->GetSize();
+	ResultSize = bSuccess && Params.bChangeSize
+		             ? Params.EndSize + Args.OverwriteSize.Get(FVector2D::ZeroVector)
+		             : Slot->GetSize() + Args.OverwriteSize.Get(FVector2D::ZeroVector);
 
 	return true;
 }
@@ -215,14 +206,14 @@ bool UShidenMoveCanvasPanelSlotCommand::TryStartMoveSlot(const FMoveCanvasPanelS
 	}
 
 	return ShidenWidget->TryStartCanvasPanelSlotMove(Args.SlotName, Slot, Args.EasingFunction, Args.Duration,
-	                                                 Args.bChangePosition, Args.EndPosition, Args.bChangeSize, Args.EndSize,
+	                                                 Args.OverwritePosition.IsSet(), Args.EndPosition, Args.OverwriteSize.IsSet(), Args.EndSize,
 	                                                 Args.BlendExp, Args.Steps, ProcessName, ErrorMessage);
 }
 
 bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPanelSlotCommandArgs& Args, const UShidenWidget* ShidenWidget,
                                                            const bool bRegisterCurrentProperty, FString& ErrorMessage)
 {
-	if (!Args.bOverwriteZOrder)
+	if (!Args.OverwriteZOrder.IsSet())
 	{
 		return true;
 	}
@@ -234,7 +225,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 		return false;
 	}
 
-	Slot->SetZOrder(Args.OverwriteZOrder);
+	Slot->SetZOrder(Args.OverwriteZOrder.GetValue());
 
 	if (bRegisterCurrentProperty)
 	{
@@ -243,7 +234,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryOverwriteZOrder(const FMoveCanvasPane
 		TMap<FString, FString> ScenarioProperties;
 		ScenarioProperty.TryConvertToStringMap(ScenarioProperties);
 
-		ScenarioProperties.Add(TEXT("ZOrder"), FString::FromInt(Args.OverwriteZOrder));
+		ScenarioProperties.Add(TEXT("ZOrder"), FString::FromInt(Args.OverwriteZOrder.GetValue()));
 
 		UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(TEXT("MoveCanvasPanelSlot"), Args.SlotName, ScenarioProperties);
 	}

@@ -13,19 +13,19 @@
 
 bool UShidenSoundCommand::TryParseCommand(const FShidenCommand& Command, FSoundCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.SoundTypeStr = Command.GetArg(TEXT("SoundType")).GetValue();
-	Args.TrackId = Command.GetArgAsInt(TEXT("TrackId")).GetValue();
-	Args.SoundSourcePath = Command.GetArg(TEXT("SoundSource")).GetValue();
-	Args.Volume = Command.GetArgAsFloat(TEXT("Volume")).GetValue();
-	Args.Pitch = Command.GetArgAsFloat(TEXT("Pitch")).GetValue();
-	Args.StartTime = Command.GetArgAsFloat(TEXT("StartTime")).GetValue();
-	Args.FadeType = Command.GetArg(TEXT("FadeType")).GetValue();
-	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction")).GetValue();
-	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration")).GetValue();
-	Args.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices")).GetValue();
-	Args.bWaitForFadeCompletion = Command.GetArgAsBool(TEXT("WaitForFadeCompletion")).GetValue();
-	Args.bWaitForSoundCompletion = Command.GetArgAsBool(TEXT("WaitForSoundCompletion")).GetValue();
-	Args.bUseGlobalBGM = Command.GetArgAsBool(TEXT("UseGlobalBGM")).GetValue();
+	Args.SoundTypeStr = Command.GetArg(TEXT("SoundType"));
+	Args.TrackId = Command.GetArgAsInt(TEXT("TrackId"));
+	Args.SoundSourcePath = Command.GetArg(TEXT("SoundSource"));
+	Args.Volume = Command.GetArgAsFloat(TEXT("Volume"));
+	Args.Pitch = Command.GetArgAsFloat(TEXT("Pitch"));
+	Args.StartTime = Command.GetArgAsFloat(TEXT("StartTime"));
+	Args.FadeType = Command.GetArg(TEXT("FadeType"));
+	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction"));
+	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration"));
+	Args.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices"));
+	Args.bWaitForFadeCompletion = Command.GetArgAsBool(TEXT("WaitForFadeCompletion"));
+	Args.bWaitForSoundCompletion = Command.GetArgAsBool(TEXT("WaitForSoundCompletion"));
+	Args.bUseGlobalBGM = Command.GetArgAsBool(TEXT("UseGlobalBGM"));
 
 	if (!TryConvertToShidenSoundType(Args.SoundTypeStr, Args.SoundType, ErrorMessage))
 	{

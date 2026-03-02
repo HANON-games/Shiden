@@ -6,9 +6,9 @@
 bool UShidenAssignVariableCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FAssignVariableCommandArgs& Args,
                                                    FString& ErrorMessage)
 {
-	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
-	Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
-	Args.Value = Command.GetArg(TEXT("Value")).GetValue();
+	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
+	Args.VariableName = Command.GetArg(TEXT("VariableName"));
+	Args.Value = Command.GetArg(TEXT("Value"));
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{

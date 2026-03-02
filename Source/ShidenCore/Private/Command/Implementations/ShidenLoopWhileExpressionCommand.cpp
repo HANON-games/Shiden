@@ -15,7 +15,7 @@ bool UShidenLoopWhileExpressionCommand::TryParseCommand(const FString& ProcessNa
 		return false;
 	}
 
-	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression")).GetValue();
+	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression"));
 
 	if (Args.Expression.IsEmpty())
 	{

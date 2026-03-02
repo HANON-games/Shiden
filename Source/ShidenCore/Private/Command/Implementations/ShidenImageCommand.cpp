@@ -9,16 +9,16 @@
 
 bool UShidenImageCommand::TryParseCommand(const FShidenCommand& Command, FImageCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.SlotName = Command.GetArg(TEXT("SlotName")).GetValue();
-	Args.ImagePath = Command.GetArg(TEXT("Image")).GetValue();
-	Args.OverwritePosition = Command.GetArg(TEXT("OverwritePosition"));
-	Args.OverwriteSize = Command.GetArg(TEXT("OverwriteSize"));
-	Args.OverwriteSizeToContent = Command.GetArg(TEXT("OverwriteSizeToContent"));
-	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction")).GetValue();
-	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration")).GetValue();
-	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
-	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.SlotName = Command.GetArg(TEXT("SlotName"));
+	Args.ImagePath = Command.GetArg(TEXT("Image"));
+	Args.OverwritePosition = Command.GetOptionalArgAsVector2D(TEXT("OverwritePosition"));
+	Args.OverwriteSize = Command.GetOptionalArgAsVector2D(TEXT("OverwriteSize"));
+	Args.OverwriteSizeToContent = Command.GetOptionalArgAsBool(TEXT("OverwriteSizeToContent"));
+	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction"));
+	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration"));
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
 	return ShidenCommandHelpers::TryConvertToEasingFunc(FadeFunctionStr, Args.FadeFunction, ErrorMessage);
 }
@@ -168,15 +168,15 @@ void UShidenImageCommand::ProcessCommand_Implementation(const FString& ProcessNa
 
 	if (Args.OverwritePosition.IsSet())
 	{
-		ScenarioProperties.Add(TEXT("Position"), Args.OverwritePosition.GetValue());
+		ScenarioProperties.Add(TEXT("Position"), Args.OverwritePosition.GetValue().ToString());
 	}
 	if (Args.OverwriteSize.IsSet())
 	{
-		ScenarioProperties.Add(TEXT("Size"), Args.OverwriteSize.GetValue());
+		ScenarioProperties.Add(TEXT("Size"), Args.OverwriteSize.GetValue().ToString());
 	}
 	if (Args.OverwriteSizeToContent.IsSet())
 	{
-		ScenarioProperties.Add(TEXT("SizeToContent"), Args.OverwriteSizeToContent.GetValue());
+		ScenarioProperties.Add(TEXT("SizeToContent"), Args.OverwriteSizeToContent.GetValue() ? TEXT("true") : TEXT("false"));
 	}
 
 	UShidenScenarioBlueprintLibrary::RegisterScenarioPropertyFromMap(Command.CommandName, Args.SlotName, ScenarioProperties);
@@ -235,29 +235,17 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 
 		if (Args.OverwritePosition.IsSet())
 		{
-			FVector2D Position;
-			if (!Position.InitFromString(Args.OverwritePosition.GetValue()))
-			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.OverwritePosition.GetValue());
-				return false;
-			}
-			Slot->SetPosition(Position);
+			Slot->SetPosition(Args.OverwritePosition.GetValue());
 		}
 
 		if (Args.OverwriteSize.IsSet())
 		{
-			FVector2D Size;
-			if (!Size.InitFromString(Args.OverwriteSize.GetValue()))
-			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), *Args.OverwriteSize.GetValue());
-				return false;
-			}
-			Slot->SetSize(Size);
+			Slot->SetSize(Args.OverwriteSize.GetValue());
 		}
 
 		if (Args.OverwriteSizeToContent.IsSet())
 		{
-			Slot->SetAutoSize(Args.OverwriteSizeToContent.GetValue().Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0);
+			Slot->SetAutoSize(Args.OverwriteSizeToContent.GetValue());
 		}
 
 		Image->SetBrushFromAsset(SlateBrushAsset);

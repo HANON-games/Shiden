@@ -1185,6 +1185,43 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 		return true;
 	}
 
+	// Perform integer arithmetic directly to avoid float precision loss when both operands are integers.
+	// float (32-bit) has only 24 bits of mantissa, which cannot represent all int32 values exactly.
+	// For example, 2000000001 + 1 would produce the wrong result if computed via float.
+	const bool bBothIntegers = Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer;
+
+	if (bBothIntegers)
+	{
+		if (Operator == TEXT("+"))
+		{
+			OutResult = FShidenExpressionValue(Left.IntValue + Right.IntValue);
+			return true;
+		}
+
+		if (Operator == TEXT("-"))
+		{
+			OutResult = FShidenExpressionValue(Left.IntValue - Right.IntValue);
+			return true;
+		}
+
+		if (Operator == TEXT("*"))
+		{
+			OutResult = FShidenExpressionValue(Left.IntValue * Right.IntValue);
+			return true;
+		}
+
+		if (Operator == TEXT("%"))
+		{
+			if (Right.IntValue == 0)
+			{
+				ErrorMessage = TEXT("Modulo by zero");
+				return false;
+			}
+			OutResult = FShidenExpressionValue(Left.IntValue % Right.IntValue);
+			return true;
+		}
+	}
+
 	float LeftValue, RightValue;
 	if (!Left.TryToNumeric(LeftValue, ErrorMessage) || !Right.TryToNumeric(RightValue, ErrorMessage))
 	{
@@ -1193,43 +1230,19 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 
 	if (Operator == TEXT("+"))
 	{
-		const float Result = LeftValue + RightValue;
-		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
-		{
-			OutResult = FShidenExpressionValue(static_cast<int32>(Result));
-		}
-		else
-		{
-			OutResult = FShidenExpressionValue(Result);
-		}
+		OutResult = FShidenExpressionValue(LeftValue + RightValue);
 		return true;
 	}
 
 	if (Operator == TEXT("-"))
 	{
-		const float Result = LeftValue - RightValue;
-		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
-		{
-			OutResult = FShidenExpressionValue(static_cast<int32>(Result));
-		}
-		else
-		{
-			OutResult = FShidenExpressionValue(Result);
-		}
+		OutResult = FShidenExpressionValue(LeftValue - RightValue);
 		return true;
 	}
 
 	if (Operator == TEXT("*"))
 	{
-		const float Result = LeftValue * RightValue;
-		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
-		{
-			OutResult = FShidenExpressionValue(static_cast<int32>(Result));
-		}
-		else
-		{
-			OutResult = FShidenExpressionValue(Result);
-		}
+		OutResult = FShidenExpressionValue(LeftValue * RightValue);
 		return true;
 	}
 
@@ -1240,10 +1253,9 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 			ErrorMessage = TEXT("Division by zero");
 			return false;
 		}
-		const float Result = LeftValue / RightValue;
 		// Division always returns float, even for integer operands
 		// This matches the behavior of modern languages like Python 3 and JavaScript
-		OutResult = FShidenExpressionValue(Result);
+		OutResult = FShidenExpressionValue(LeftValue / RightValue);
 		return true;
 	}
 
@@ -1254,24 +1266,15 @@ bool FShidenExpressionEvaluator::TryApplyBinaryOperation(const FShidenExpression
 			ErrorMessage = TEXT("Modulo by zero");
 			return false;
 		}
-		const float Result = FMath::Fmod(LeftValue, RightValue);
-		if (Left.Type == EShidenExpressionValueType::Integer && Right.Type == EShidenExpressionValueType::Integer)
-		{
-			OutResult = FShidenExpressionValue(static_cast<int32>(Result));
-		}
-		else
-		{
-			OutResult = FShidenExpressionValue(Result);
-		}
+		OutResult = FShidenExpressionValue(FMath::Fmod(LeftValue, RightValue));
 		return true;
 	}
 
 	if (Operator == TEXT("**"))
 	{
-		const float Result = FMath::Pow(LeftValue, RightValue);
 		// Power operation always returns float, even for integer operands
 		// This is necessary because negative exponents produce non-integer results
-		OutResult = FShidenExpressionValue(Result);
+		OutResult = FShidenExpressionValue(FMath::Pow(LeftValue, RightValue));
 		return true;
 	}
 
