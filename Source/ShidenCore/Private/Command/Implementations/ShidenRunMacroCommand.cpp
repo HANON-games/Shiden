@@ -12,7 +12,7 @@ void UShidenRunMacroCommand::ProcessCommand_Implementation(const FString& Proces
                                                            const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status,
                                                            FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
-	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName")).GetValue();
+	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName"));
 
 	FGuid ScenarioId;
 	UShidenScenario* Scenario = nullptr;
@@ -35,7 +35,7 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
                                                            const bool bIsCurrentCommand,
                                                            EShidenPreviewStatus& Status, FString& ErrorMessage)
 {
-	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName")).GetValue();
+	const FString MacroNameOrId = Command.GetArg(TEXT("MacroName"));
 
 	FGuid ScenarioId;
 	UShidenScenario* Scenario = nullptr;

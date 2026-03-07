@@ -7,12 +7,12 @@
 
 bool UShidenAdjustBGMVolumeCommand::TryParseCommand(const FShidenCommand& Command, FAdjustVolumeCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.TrackId = Command.GetArgAsInt(TEXT("TrackId")).GetValue();
-	Args.Volume = Command.GetArgAsFloat(TEXT("Volume")).GetValue();
-	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction")).GetValue();
-	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration")).GetValue();
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
-	Args.bIsGlobalBGM = Command.GetArgAsBool(TEXT("IsGlobalBGM")).GetValue();
+	Args.TrackId = Command.GetArgAsInt(TEXT("TrackId"));
+	Args.Volume = Command.GetArgAsFloat(TEXT("Volume"));
+	const FString FadeFunctionStr = Command.GetArg(TEXT("FadeFunction"));
+	Args.FadeDuration = Command.GetArgAsFloat(TEXT("FadeDuration"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
+	Args.bIsGlobalBGM = Command.GetArgAsBool(TEXT("IsGlobalBGM"));
 
 	if (Args.TrackId < 0)
 	{

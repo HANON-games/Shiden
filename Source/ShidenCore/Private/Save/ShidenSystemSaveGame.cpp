@@ -22,7 +22,14 @@ TObjectPtr<UShidenSystemSaveGame> UShidenSystemSaveGame::GetOrCreate()
 				               *SaveGameClass->GetName(),
 				               *SaveGame->GetClass()->GetName());
 			}
-			return Cast<UShidenSystemSaveGame>(SaveGame);
+			
+			if (const TObjectPtr<UShidenSystemSaveGame> SystemSaveGame = Cast<UShidenSystemSaveGame>(SaveGame))
+			{
+				return SystemSaveGame;
+			}
+			
+			SHIDEN_ERROR("Failed to cast loaded save game to UShidenSystemSaveGame for slot: {slot}", *SystemDataSlotName);
+			return nullptr;
 		}
 		SHIDEN_ERROR("Failed to load save game from slot: {slot}", *SystemDataSlotName);
 	}
@@ -31,7 +38,14 @@ TObjectPtr<UShidenSystemSaveGame> UShidenSystemSaveGame::GetOrCreate()
 	{
 		SaveGameClass = StaticClass();
 	}
-	return Cast<UShidenSystemSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
+	
+	if (const TObjectPtr<UShidenSystemSaveGame> SystemSaveGame = Cast<UShidenSystemSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass)))
+	{
+		return SystemSaveGame;
+	}
+	
+	SHIDEN_ERROR("Failed to create save game object for class: {class}", *SaveGameClass->GetName());
+	return nullptr;
 }
 
 void UShidenSystemSaveGame::Apply() const

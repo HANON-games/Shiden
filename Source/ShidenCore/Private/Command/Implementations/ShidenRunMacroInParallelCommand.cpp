@@ -7,8 +7,8 @@
 
 bool UShidenRunMacroInParallelCommand::TryParseCommand(const FShidenCommand& Command, FRunMacroInParallelCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.NewProcessName = Command.GetArg(TEXT("NewProcessName")).GetValue();
-	const FString MacroIdOrPath = Command.GetArg(TEXT("MacroName")).GetValue();
+	Args.NewProcessName = Command.GetArg(TEXT("NewProcessName"));
+	const FString MacroIdOrPath = Command.GetArg(TEXT("MacroName"));
 
 	if (Args.NewProcessName == TEXT("Default"))
 	{

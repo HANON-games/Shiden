@@ -5,7 +5,7 @@
 
 void UShidenPrintCommand::ParseFromCommand(const FShidenCommand& Command, FPrintCommandArgs& Args)
 {
-	Args.Content = Command.GetArg(TEXT("Content")).GetValue();
+	Args.Content = Command.GetArg(TEXT("Content"));
 }
 
 void UShidenPrintCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,

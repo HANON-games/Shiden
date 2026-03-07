@@ -8,16 +8,16 @@
 bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget,
                                                                   FChangeMaterialScalarParameterCommandArgs& Args, FString& ErrorMessage)
 {
-	Args.Target = Command.GetArg(TEXT("Target")).GetValue();
-	Args.TargetName = Command.GetArg(TEXT("TargetName")).GetValue();
-	Args.ParameterName = Command.GetArg(TEXT("ParameterName")).GetValue();
-	const FString EasingFuncStr = Command.GetArg(TEXT("EasingFunction")).GetValue();
-	Args.Duration = Command.GetArgAsFloat(TEXT("Duration")).GetValue();
-	Args.ChangeType = Command.GetArg(TEXT("ChangeType")).GetValue();
-	const float OriginalEndValue = Command.GetArgAsFloat(TEXT("EndValue")).GetValue();
-	Args.Steps = Command.GetArgAsInt(TEXT("Steps")).GetValue();
-	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp")).GetValue();
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.Target = Command.GetArg(TEXT("Target"));
+	Args.TargetName = Command.GetArg(TEXT("TargetName"));
+	Args.ParameterName = Command.GetArg(TEXT("ParameterName"));
+	const FString EasingFuncStr = Command.GetArg(TEXT("EasingFunction"));
+	Args.Duration = Command.GetArgAsFloat(TEXT("Duration"));
+	Args.ChangeType = Command.GetArg(TEXT("ChangeType"));
+	const float OriginalEndValue = Command.GetArgAsFloat(TEXT("EndValue"));
+	Args.Steps = Command.GetArgAsInt(TEXT("Steps"));
+	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
 	if (!TryAddCurrentValue(Args, OriginalEndValue, ShidenWidget, Args.EndValue, ErrorMessage))
 	{

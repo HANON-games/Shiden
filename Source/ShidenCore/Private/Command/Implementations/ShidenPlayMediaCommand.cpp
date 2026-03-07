@@ -4,9 +4,9 @@
 
 void UShidenPlayMediaCommand::ParseFromCommand(const FShidenCommand& Command, FPlayMediaCommandArgs& Args)
 {
-	Args.MediaSourcePath = Command.GetArg(TEXT("MediaSource")).GetValue();
-	Args.bCanOpenPauseMenu = Command.GetArgAsBool(TEXT("CanOpenPauseMenu")).GetValue();
-	Args.MediaZOrder = Command.GetArgAsInt(TEXT("MediaZOrder")).GetValue();
+	Args.MediaSourcePath = Command.GetArg(TEXT("MediaSource"));
+	Args.bCanOpenPauseMenu = Command.GetArgAsBool(TEXT("CanOpenPauseMenu"));
+	Args.MediaZOrder = Command.GetArgAsInt(TEXT("MediaZOrder"));
 }
 
 void UShidenPlayMediaCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command,

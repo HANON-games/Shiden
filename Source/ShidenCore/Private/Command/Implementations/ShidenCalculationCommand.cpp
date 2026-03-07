@@ -6,10 +6,10 @@
 
 bool UShidenCalculationCommand::TryParseCommand(const FShidenCommand& Command, FCalculationCommandArgs& Args, FString& ErrorMessage)
 {
-	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
-	Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
-	Args.Operator = Command.GetArg(TEXT("Operator")).GetValue();
-	Args.Value = Command.GetArg(TEXT("Value")).GetValue();
+	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
+	Args.VariableName = Command.GetArg(TEXT("VariableName"));
+	Args.Operator = Command.GetArg(TEXT("Operator"));
+	Args.Value = Command.GetArg(TEXT("Value"));
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{

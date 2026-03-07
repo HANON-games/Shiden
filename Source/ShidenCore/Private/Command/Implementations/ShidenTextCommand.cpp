@@ -32,15 +32,15 @@ namespace
 
 void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextCommandArgs& OutArgs)
 {
-	OutArgs.TextWidgetName = Command.GetArg(TEXT("TextWidgetName")).GetValue();
-	OutArgs.TextType = Command.GetArg(TEXT("TextType")).GetValue();
-	OutArgs.bWaitForInput = Command.GetArgAsBool(TEXT("WaitForInput")).GetValue();
-	OutArgs.bInstantTextDisplay = Command.GetArgAsBool(TEXT("InstantTextDisplay")).GetValue();
-	OutArgs.VoicePath = Command.GetArg(TEXT("Voice")).GetValue();
-	OutArgs.TextBlipPath = Command.GetArg(TEXT("TextBlip")).GetValue();
-	OutArgs.VoiceTrackId = Command.GetArgAsInt(TEXT("VoiceTrackId")).GetValue();
-	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices")).GetValue();
-	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool(TEXT("ContinueFromThePreviousText")).GetValue();
+	OutArgs.TextWidgetName = Command.GetArg(TEXT("TextWidgetName"));
+	OutArgs.TextType = Command.GetArg(TEXT("TextType"));
+	OutArgs.bWaitForInput = Command.GetArgAsBool(TEXT("WaitForInput"));
+	OutArgs.bInstantTextDisplay = Command.GetArgAsBool(TEXT("InstantTextDisplay"));
+	OutArgs.VoicePath = Command.GetArg(TEXT("Voice"));
+	OutArgs.TextBlipPath = Command.GetArg(TEXT("TextBlip"));
+	OutArgs.VoiceTrackId = Command.GetArgAsInt(TEXT("VoiceTrackId"));
+	OutArgs.bDisableAutoStopPreviousVoices = Command.GetArgAsBool(TEXT("DisableAutoStopPreviousVoices"));
+	OutArgs.bContinueFromThePreviousText = Command.GetArgAsBool(TEXT("ContinueFromThePreviousText"));
 
 	OutArgs.Texts.SetNum(MaxLanguageCount);
 	static const TArray<FString> LanguageArgs = {
@@ -57,7 +57,7 @@ void UShidenTextCommand::ParseCommand(const FShidenCommand& Command, FTextComman
 	};
 	for (int32 i = 0; i < MaxLanguageCount; i++)
 	{
-		OutArgs.Texts[i] = Command.GetArg(LanguageArgs[i]).GetValue();
+		OutArgs.Texts[i] = Command.GetArg(LanguageArgs[i]);
 	}
 }
 
@@ -316,7 +316,7 @@ void UShidenTextCommand::PreviewCommand_Implementation(const FShidenCommand& Com
 		return;
 	}
 
-	if (bIsCurrentCommand)
+	if (bIsCurrentCommand && ShouldPlayVoice(Args.VoicePath, CurrentVoiceState))
 	{
 		if (!TryProcessVoicePlayback(Args.VoiceTrackId, Args.VoicePath, ShidenManager, ErrorMessage))
 		{

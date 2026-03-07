@@ -6,7 +6,7 @@
 
 void UShidenWaitForClickCommand::ParseFromCommand(const FShidenCommand& Command, FWaitForClickCommandArgs& Args)
 {
-	Args.bCanSkip = Command.GetArgAsBool(TEXT("CanSkip")).GetValue();
+	Args.bCanSkip = Command.GetArgAsBool(TEXT("CanSkip"));
 }
 
 void UShidenWaitForClickCommand::PreProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

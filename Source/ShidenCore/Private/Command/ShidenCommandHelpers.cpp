@@ -97,10 +97,10 @@ namespace ShidenConditionalCommandHelpers
 {
 	bool TryParseVariableCondition(const FShidenCommand& Command, FVariableConditionArgs& Args, FString& ErrorMessage)
 	{
-		const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
-		Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
-		Args.Operator = Command.GetArg(TEXT("Operator")).GetValue();
-		Args.RightHandValue = Command.GetArg(TEXT("RightHandValue")).GetValue();
+		const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
+		Args.VariableName = Command.GetArg(TEXT("VariableName"));
+		Args.Operator = Command.GetArg(TEXT("Operator"));
+		Args.RightHandValue = Command.GetArg(TEXT("RightHandValue"));
 
 		if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 		{
@@ -178,7 +178,7 @@ namespace ShidenConditionalCommandHelpers
 
 	bool TryParseExpressionCondition(const FShidenCommand& Command, FExpressionConditionArgs& Args, FString& ErrorMessage)
 	{
-		Args.Expression = Command.GetArg(TEXT("Expression")).GetValue();
+		Args.Expression = Command.GetArg(TEXT("Expression"));
 
 		if (Args.Expression.IsEmpty())
 		{

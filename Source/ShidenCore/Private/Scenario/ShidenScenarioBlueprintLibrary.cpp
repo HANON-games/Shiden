@@ -377,7 +377,7 @@ void ApplyDefaultValues(FShidenCommand& Command)
 			const FString ArgName = ArgDef.ArgName.ToString();
 			if (!Command.Args.Contains(ArgName) && ArgDef.DefaultValue.IsSet())
 			{
-				Command.Args.Add(ArgName, ArgDef.DefaultValue.GetValue());
+				Command.Args.Add(ArgName, ArgDef.DefaultValue.GetValueOrDefault());
 			}
 		}
 	}
@@ -682,7 +682,7 @@ bool TryLoadScenarioAssetPathsInternal(UObject* CallerObject, const UShidenScena
 			{
 				if (Argument.bIsAssetToBeLoaded)
 				{
-					TempAssetPaths.Add(Command.GetArg(Argument.ArgName.ToString()).Get(TEXT("")));
+					TempAssetPaths.Add(Command.GetOptionalArg(Argument.ArgName.ToString()).Get(TEXT("")));
 				}
 			}
 			TempAssetPaths.Remove(TEXT(""));

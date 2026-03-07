@@ -21,18 +21,16 @@ struct SHIDENCORE_API FShidenOptionalString
 	{
 	}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Command")
 	bool bIsSet = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shiden Visual Novel|Command", Meta = (EditCondition = "bIsSet"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Shiden Visual Novel|Command", Meta = (EditCondition = "bIsSet"))
 	FString Value;
 
 	bool IsSet() const { return bIsSet; }
 
-	const FString& GetValue() const { return Value; }
-
-	FString GetValueOrDefault(const FString& Default = TEXT("")) const
+	FString GetValueOrDefault() const
 	{
-		return bIsSet ? Value : Default;
+		return bIsSet ? Value : TEXT("");
 	}
 };

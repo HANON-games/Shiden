@@ -4,7 +4,7 @@
 
 void UShidenEndScenarioCommand::ParseFromCommand(const FShidenCommand& Command, FEndScenarioCommandArgs& Args)
 {
-	Args.NextScenario = Command.GetArg(TEXT("NextScenario")).GetValue();
+	Args.NextScenario = Command.GetArg(TEXT("NextScenario"));
 }
 
 void UShidenEndScenarioCommand::ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,

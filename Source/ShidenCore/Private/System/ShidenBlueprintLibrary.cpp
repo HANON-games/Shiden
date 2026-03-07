@@ -570,7 +570,7 @@ void UShidenBlueprintLibrary::ClearAllCache()
 
 FShidenOptionalString UShidenBlueprintLibrary::GetCommandArgument(const FShidenCommand& Command, const FString& ArgName)
 {
-	const TOptional<FString> Result = Command.GetArg(ArgName);
+	const TOptional Result = Command.GetOptionalArg(ArgName);
 	return Result.IsSet() ? FShidenOptionalString(Result.GetValue()) : FShidenOptionalString();
 }
 
@@ -883,9 +883,20 @@ bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* WorldContextObject
 	{
 		const bool bSamePath = CurrentComponent && CurrentComponent->Sound &&
 			UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(SoundPath, ESearchCase::CaseSensitive) == 0;
-		UAudioComponent* Component = bSamePath
-			                             ? CurrentComponent
-			                             : UGameplayStatics::SpawnSound2D(World, Sound, 1.0f, Pitch, StartTime);
+		UAudioComponent* Component;
+		if (bSamePath)
+		{
+			Component = CurrentComponent;
+		}
+		else
+		{
+			Component = UGameplayStatics::SpawnSound2D(World, Sound, 1.0f, Pitch, StartTime);
+			if (!Component)
+			{
+				SHIDEN_WARNING("SpawnSound2D returned null for global BGM fade out.");
+				return false;
+			}
+		}
 
 		if (!bSamePath)
 		{
@@ -915,6 +926,11 @@ bool UShidenBlueprintLibrary::TryPlayGlobalBGM(const UObject* WorldContextObject
 	{
 		StopGlobalBGM(TrackId);
 		const TObjectPtr<UAudioComponent> Component = UGameplayStatics::SpawnSound2D(World, Sound, 1.0f, Pitch, StartTime);
+		if (!Component)
+		{
+			SHIDEN_WARNING("SpawnSound2D returned null for global BGM fade in.");
+			return false;
+		}
 		ShidenSubsystem->GlobalBGMComponents.Add(TrackId, FShidenGlobalBGMInfo{Component, SoundInfo});
 		Component->FadeIn(FadeDuration, Volume, StartTime, FadeCurve);
 		if (bSaveScenarioProperty)

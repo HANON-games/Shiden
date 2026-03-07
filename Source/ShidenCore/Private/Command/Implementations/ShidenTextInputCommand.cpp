@@ -7,15 +7,15 @@
 bool UShidenTextInputCommand::TryParseCommand(const FString& ProcessName, const FShidenCommand& Command, FTextInputCommandArgs& Args,
                                               FString& ErrorMessage)
 {
-	const TOptional<FString> MaxLengthOpt = Command.GetArg(TEXT("MaxLength"));
-	const TOptional<FString> MaxLineCountOpt = Command.GetArg(TEXT("MaxLineCount"));
-	const TOptional<FString> AllowedCharacterRegexOpt = Command.GetArg(TEXT("AllowedCharacterRegex"));
-	Args.AllowedCharacterRegex = AllowedCharacterRegexOpt.IsSet() ? AllowedCharacterRegexOpt.GetValue() : TEXT("");
-	Args.DefaultText = Command.GetArg(TEXT("DefaultText")).GetValue();
-	Args.HintText = Command.GetArg(TEXT("HintText")).GetValue();
-	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind")).GetValue();
-	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName")).GetValue();
-	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer")).GetValue();
+	const TOptional<FString> MaxLengthOpt = Command.GetOptionalArg(TEXT("MaxLength"));
+	const TOptional<FString> MaxLineCountOpt = Command.GetOptionalArg(TEXT("MaxLineCount"));
+	const TOptional<FString> AllowedCharacterRegexOpt = Command.GetOptionalArg(TEXT("AllowedCharacterRegex"));
+	Args.AllowedCharacterRegex = AllowedCharacterRegexOpt.Get(TEXT(""));
+	Args.DefaultText = Command.GetArg(TEXT("DefaultText"));
+	Args.HintText = Command.GetArg(TEXT("HintText"));
+	const FString DestinationVariableKindStr = Command.GetArg(TEXT("DestinationVariableKind"));
+	Args.DestinationVariableName = Command.GetArg(TEXT("DestinationVariableName"));
+	Args.bHideTextLayer = Command.GetArgAsBool(TEXT("HideTextLayer"));
 
 	Args.MaxLength = !MaxLengthOpt.IsSet() || MaxLengthOpt.GetValue().IsEmpty() ? -1 : FCString::Atoi(*MaxLengthOpt.GetValue());
 	Args.MaxLineCount = !MaxLineCountOpt.IsSet() || MaxLineCountOpt.GetValue().IsEmpty() ? -1 : FCString::Atoi(*MaxLineCountOpt.GetValue());

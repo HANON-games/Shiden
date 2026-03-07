@@ -19,13 +19,12 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 		FString ChangeType;
 		FVector2D EndPosition;
 		FVector2D EndSize;
-		int32 OverwriteZOrder;
+		TOptional<int32> OverwriteZOrder;
 		int32 Steps;
 		float BlendExp;
 		bool bWaitForCompletion;
-		bool bChangePosition;
-		bool bChangeSize;
-		bool bOverwriteZOrder;
+		TOptional<FVector2D> OverwritePosition;
+		TOptional<FVector2D> OverwriteSize;
 	};
 
 	virtual void RestoreFromSaveData_Implementation(const TMap<FString, FShidenScenarioProperty>& ScenarioProperties, UShidenWidget* ShidenWidget,
@@ -45,8 +44,7 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
-	static bool TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, FVector2D OriginalPosition, FVector2D OriginalSize,
-	                               UShidenWidget* ShidenWidget, FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage);
+	static bool TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget, FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage);
 
 	static bool TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget, FMoveCanvasPanelSlotCommandArgs& Args, FString& ErrorMessage);
 

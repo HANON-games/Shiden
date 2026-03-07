@@ -16,9 +16,9 @@ bool UShidenAssignExpressionCommand::TryParseCommand(const FString& ProcessName,
 		return false;
 	}
 
-	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind")).GetValue();
-	Args.VariableName = Command.GetArg(TEXT("VariableName")).GetValue();
-	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression")).GetValue();
+	const FString VariableKindStr = Command.GetArg(TEXT("VariableKind"));
+	Args.VariableName = Command.GetArg(TEXT("VariableName"));
+	Args.Expression = PreVariableReplacementCommand.GetArg(TEXT("Expression"));
 
 	if (!UShidenVariableBlueprintLibrary::TryConvertToVariableKind(VariableKindStr, Args.VariableKind))
 	{

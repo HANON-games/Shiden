@@ -7,13 +7,13 @@ bool UShidenWidgetAnimationCommand::TryParseCommand(const FShidenCommand& Comman
                                                     FWidgetAnimationCommandArgs& Args,
                                                     FString& ErrorMessage)
 {
-	Args.AnimationName = Command.GetArg(TEXT("AnimationName")).GetValue();
-	Args.StartTime = Command.GetArgAsFloat(TEXT("StartTime")).GetValue();
-	Args.NumLoopToPlay = Command.GetArgAsInt(TEXT("NumLoopToPlay")).GetValue();
-	Args.PlayModeStr = Command.GetArg(TEXT("PlayMode")).GetValue();
-	Args.PlaybackSpeed = Command.GetArgAsFloat(TEXT("PlaybackSpeed")).GetValue();
-	Args.bRestoreState = Command.GetArgAsBool(TEXT("RestoreState")).GetValue();
-	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion")).GetValue();
+	Args.AnimationName = Command.GetArg(TEXT("AnimationName"));
+	Args.StartTime = Command.GetArgAsFloat(TEXT("StartTime"));
+	Args.NumLoopToPlay = Command.GetArgAsInt(TEXT("NumLoopToPlay"));
+	Args.PlayModeStr = Command.GetArg(TEXT("PlayMode"));
+	Args.PlaybackSpeed = Command.GetArgAsFloat(TEXT("PlaybackSpeed"));
+	Args.bRestoreState = Command.GetArgAsBool(TEXT("RestoreState"));
+	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
 	if (!ShidenWidget->TryFindAnimation(Args.AnimationName, Args.UserWidget, Args.WidgetAnimation))
 	{

@@ -41,10 +41,10 @@ UShidenChangeMaterialTextureParameterCommand::UShidenChangeMaterialTextureParame
 
 void UShidenChangeMaterialTextureParameterCommand::ParseFromCommand(const FShidenCommand& Command, FChangeTextureParameterCommandArgs& Args)
 {
-	Args.Target = Command.GetArg(TEXT("Target")).GetValue();
-	Args.TargetName = Command.GetArg(TEXT("TargetName")).GetValue();
-	Args.ParameterName = Command.GetArg(TEXT("ParameterName")).GetValue();
-	Args.TexturePath = Command.GetArg(TEXT("Texture")).GetValue();
+	Args.Target = Command.GetArg(TEXT("Target"));
+	Args.TargetName = Command.GetArg(TEXT("TargetName"));
+	Args.ParameterName = Command.GetArg(TEXT("ParameterName"));
+	Args.TexturePath = Command.GetArg(TEXT("Texture"));
 }
 
 void UShidenChangeMaterialTextureParameterCommand::RestoreFromSaveData_Implementation(

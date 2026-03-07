@@ -69,9 +69,14 @@ TObjectPtr<UShidenUserSaveGame> UShidenUserSaveGame::GetOrCreate(const FString& 
 		SaveGameClass = StaticClass();
 	}
 
-	const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass));
-	UserSaveGame->SlotName = InSlotName;
-	return UserSaveGame;
+	if (const TObjectPtr<UShidenUserSaveGame> UserSaveGame = Cast<UShidenUserSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveGameClass)))
+	{
+		UserSaveGame->SlotName = InSlotName;
+		return UserSaveGame;
+	}
+	
+	SHIDEN_ERROR("Failed to create save game object for class: {class}", *SaveGameClass->GetName());
+	return nullptr;
 }
 
 void UShidenUserSaveGame::Apply() const

@@ -3584,6 +3584,105 @@ bool ShidenExpressionEvaluatorStringUtilityTest::RunTest(const FString& Paramete
 }
 
 // =============================================================================
+// Large Integer Precision Tests
+// =============================================================================
+// These tests verify that integer arithmetic is performed directly in int32,
+// not via float intermediates. float has only 24 bits of mantissa (~16.7M max
+// exact integer), so values like 2000000001 cannot be represented exactly in
+// float and would produce wrong results if computed through float.
+
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(ShidenExpressionEvaluatorLargeIntegerTest,
+                                  "ShidenExpressionEvaluator.LargeIntegerPrecision",
+                                  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+void ShidenExpressionEvaluatorLargeIntegerTest::GetTests(TArray<FString>& OutBeautifiedNames,
+                                                         TArray<FString>& OutTestCommands) const
+{
+	// The smallest integer that cannot be represented exactly in float (2^24 + 1 = 16777217)
+	OutBeautifiedNames.Add("BeyondFloatPrecision_Addition");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("16777217 + 1"), TEXT("16777218")).ToString());
+
+	OutBeautifiedNames.Add("BeyondFloatPrecision_Subtraction");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("16777218 - 1"), TEXT("16777217")).ToString());
+
+	OutBeautifiedNames.Add("BeyondFloatPrecision_Multiplication");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("16777217 * 2"), TEXT("33554434")).ToString());
+
+	OutBeautifiedNames.Add("BeyondFloatPrecision_Modulo");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("16777219 % 16777217"), TEXT("2")).ToString());
+
+	// The representative case from the bug report: values near 2 billion
+	OutBeautifiedNames.Add("LargeInt_Addition");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2000000001 + 1"), TEXT("2000000002")).ToString());
+
+	OutBeautifiedNames.Add("LargeInt_Subtraction");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2000000002 - 1"), TEXT("2000000001")).ToString());
+
+	OutBeautifiedNames.Add("LargeInt_Multiplication");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("100000001 * 3"), TEXT("300000003")).ToString());
+
+	OutBeautifiedNames.Add("LargeInt_Modulo");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2000000007 % 1000000003"), TEXT("1")).ToString());
+
+	// Chained operations
+	OutBeautifiedNames.Add("LargeInt_ChainedAddSub");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("1000000001 + 1000000001 - 1"), TEXT("2000000001")).ToString());
+
+	// Negative large integers
+	OutBeautifiedNames.Add("LargeInt_NegativeAddition");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("-2000000001 + 1"), TEXT("-2000000000")).ToString());
+
+	OutBeautifiedNames.Add("LargeInt_NegativeSubtraction");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("-2000000000 - 1"), TEXT("-2000000001")).ToString());
+
+	// INT_MAX boundary (2147483647)
+	OutBeautifiedNames.Add("LargeInt_IntMaxIdentity");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2147483647 + 0"), TEXT("2147483647")).ToString());
+
+	OutBeautifiedNames.Add("LargeInt_IntMaxSubtraction");
+	OutTestCommands.Add(FShidenExpressionTestParameters(TEXT("2147483647 - 1"), TEXT("2147483646")).ToString());
+}
+
+bool ShidenExpressionEvaluatorLargeIntegerTest::RunTest(const FString& Parameters)
+{
+	const FShidenExpressionTestParameters Params(Parameters);
+	FShidenExpressionValue Result;
+	FString ErrorMessage;
+
+	const bool bSuccess = FShidenExpressionEvaluator().TryEvaluate(Params.Expression, Result, ErrorMessage);
+	if (!bSuccess)
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' failed: %s"), *Params.Expression, *ErrorMessage));
+		return false;
+	}
+
+	if (Result.Type != EShidenExpressionValueType::Integer)
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' returned type %d, expected Integer"),
+		                         *Params.Expression, static_cast<int32>(Result.Type)));
+		return false;
+	}
+
+	int32 ResultInt;
+	if (!Result.TryToInteger(ResultInt, ErrorMessage))
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' could not convert to integer: %s"),
+		                         *Params.Expression, *ErrorMessage));
+		return false;
+	}
+
+	const int32 ExpectedInt = FCString::Atoi(*Params.ExpectedResult);
+	if (ResultInt != ExpectedInt)
+	{
+		AddError(FString::Printf(TEXT("Expression '%s' evaluated to %d, expected %d"),
+		                         *Params.Expression, ResultInt, ExpectedInt));
+		return false;
+	}
+
+	return true;
+}
+
+// =============================================================================
 // Editor-Only Function Tests
 // =============================================================================
 
@@ -3608,7 +3707,7 @@ struct FEditorFunctionTestParameters
 		const FString EncodedLocalVars = FBase64::Encode(SerializeVariables(LocalVariables));
 		const FString EncodedMacroParams = FBase64::Encode(SerializeVariables(MacroParameters));
 		return FString::Printf(TEXT("%s\t%s\t%d\t%s\t%s\t%s\t%s"), *EncodedExpression, *EncodedExpectedResult, bShouldSucceed ? 1 : 0,
-							   *EncodedUserVars, *EncodedSystemVars, *EncodedLocalVars, *EncodedMacroParams);
+		                       *EncodedUserVars, *EncodedSystemVars, *EncodedLocalVars, *EncodedMacroParams);
 	}
 
 	FEditorFunctionTestParameters(const FString& InExpression, const FString& InExpectedResult, const bool bInShouldSucceed = true)
@@ -3679,7 +3778,7 @@ struct FEditorFunctionTestParameters
 	}
 
 	FEditorFunctionTestParameters& AddMacroParameter(const FString& Name, const EShidenVariableType Type, const FString& DefaultValue,
-													  const bool bIsReadOnly = false)
+	                                                 const bool bIsReadOnly = false)
 	{
 		FShidenVariableDefinition Def;
 		Def.Name = Name;
@@ -3910,22 +4009,22 @@ void ShidenExpressionEvaluatorEditorFunctionTest::GetTests(TArray<FString>& OutB
 	// IsCalledFromMacro tests
 	OutBeautifiedNames.Add("IsCalledFromMacro.WithMacroParameters");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("true"))
-						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
-						.ToString());
+	                    .AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
+	                    .ToString());
 
 	OutBeautifiedNames.Add("IsCalledFromMacro.WithMultipleMacroParameters");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("true"))
-						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
-						.AddMacroParameter(TEXT("param2"), EShidenVariableType::Integer, TEXT("42"))
-						.ToString());
+	                    .AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("value1"))
+	                    .AddMacroParameter(TEXT("param2"), EShidenVariableType::Integer, TEXT("42"))
+	                    .ToString());
 
 	OutBeautifiedNames.Add("IsCalledFromMacro.WithoutMacroParameters");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro()"), TEXT("false")).ToString());
 
 	OutBeautifiedNames.Add("IsCalledFromMacro.UsedInExpression");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("IsCalledFromMacro() && true"), TEXT("true"))
-						.AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("test"))
-						.ToString());
+	                    .AddMacroParameter(TEXT("param1"), EShidenVariableType::String, TEXT("test"))
+	                    .ToString());
 
 	OutBeautifiedNames.Add("IsCalledFromMacro.UsedInNegation");
 	OutTestCommands.Add(FEditorFunctionTestParameters(TEXT("!IsCalledFromMacro()"), TEXT("true")).ToString());
@@ -3936,27 +4035,27 @@ bool ShidenExpressionEvaluatorEditorFunctionTest::RunTest(const FString& Paramet
 	const FEditorFunctionTestParameters Params(Parameters);
 
 	FShidenExpressionVariableDefinitionContext Context;
-	
+
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();
-	
+
 	TArray<FShidenVariableDefinition> AllUserVars;
 	Params.UserVariables.GenerateValueArray(AllUserVars);
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(AllUserVars);
-	
+
 	TArray<FShidenVariableDefinition> AllSystemVars;
 	Params.SystemVariables.GenerateValueArray(AllSystemVars);
 	ShidenSubsystem->SystemVariable.UpdateVariableDefinitions(AllSystemVars);
-	
+
 	Context.LocalVariables = Params.LocalVariables;
 	Context.MacroParameters = Params.MacroParameters;
 	Context.bIsMacro = Params.MacroParameters.Num() > 0;
-	
+
 	const FShidenExpressionEvaluator Evaluator(Context);
 	FShidenExpressionValue Result;
 	FString ErrorMessage;
 
 	const bool bSuccess = Evaluator.TryEvaluate(Params.Expression, Result, ErrorMessage);
-	
+
 	// Revert variable definitions to empty to avoid side effects
 	const TObjectPtr<const UShidenProjectConfig> ShidenProjectConfig = GetDefault<UShidenProjectConfig>();
 	ShidenSubsystem->UserVariable.UpdateVariableDefinitions(ShidenProjectConfig->UserVariableDefinitions);
