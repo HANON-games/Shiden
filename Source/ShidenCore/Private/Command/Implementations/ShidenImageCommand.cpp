@@ -87,42 +87,46 @@ void UShidenImageCommand::RestoreFromSaveData_Implementation(const TMap<FString,
 			Image->SetColorAndOpacity(Color);
 		}
 
+		const bool bHasPositionOrSize = PropertyMap.Contains(TEXT("Position")) || PropertyMap.Contains(TEXT("Size")) || PropertyMap.Contains(TEXT("SizeToContent"));
 		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
-		if (!Slot)
+		if (!Slot && bHasPositionOrSize)
 		{
-			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *SlotName);
+			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot. OverwritePosition, OverwriteSize, and OverwriteSizeToContent are only available when the image is placed in a canvas panel slot."), *SlotName);
 			Status = EShidenInitFromSaveDataStatus::Error;
 			return;
 		}
 
-		if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
+		if (Slot)
 		{
-			FVector2D Position;
-			if (!Position.InitFromString(*PositionStr))
+			if (const FString* PositionStr = PropertyMap.Find(TEXT("Position")))
 			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **PositionStr);
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
+				FVector2D Position;
+				if (!Position.InitFromString(*PositionStr))
+				{
+					ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **PositionStr);
+					Status = EShidenInitFromSaveDataStatus::Error;
+					return;
+				}
+				Slot->SetPosition(Position);
 			}
-			Slot->SetPosition(Position);
-		}
 
-		if (const FString* SizeStr = PropertyMap.Find(TEXT("Size")))
-		{
-			FVector2D Size;
-			if (!Size.InitFromString(*SizeStr))
+			if (const FString* SizeStr = PropertyMap.Find(TEXT("Size")))
 			{
-				ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **SizeStr);
-				Status = EShidenInitFromSaveDataStatus::Error;
-				return;
+				FVector2D Size;
+				if (!Size.InitFromString(*SizeStr))
+				{
+					ErrorMessage = FString::Printf(TEXT("Failed to convert %s to FVector2D."), **SizeStr);
+					Status = EShidenInitFromSaveDataStatus::Error;
+					return;
+				}
+				Slot->SetSize(Size);
 			}
-			Slot->SetSize(Size);
-		}
 
-		if (const FString* SizeToContentStr = PropertyMap.Find(TEXT("SizeToContent")))
-		{
-			const bool bOverwriteSizeToContent = SizeToContentStr->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
-			Slot->SetAutoSize(bOverwriteSizeToContent);
+			if (const FString* SizeToContentStr = PropertyMap.Find(TEXT("SizeToContent")))
+			{
+				const bool bOverwriteSizeToContent = SizeToContentStr->Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
+				Slot->SetAutoSize(bOverwriteSizeToContent);
+			}
 		}
 	}
 
@@ -226,26 +230,30 @@ bool UShidenImageCommand::TryShowImage(const FImageCommandArgs& Args, UShidenWid
 			return false;
 		}
 
+		const bool bNeedsCanvasPanelSlot = Args.OverwritePosition.IsSet() || Args.OverwriteSize.IsSet() || Args.OverwriteSizeToContent.IsSet();
 		const TObjectPtr<UCanvasPanelSlot> Slot = Cast<UCanvasPanelSlot>(Image->Slot);
-		if (!Slot)
+		if (!Slot && bNeedsCanvasPanelSlot)
 		{
-			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot."), *Args.SlotName);
+			ErrorMessage = FString::Printf(TEXT("Image %s is not in a canvas panel slot. OverwritePosition, OverwriteSize, and OverwriteSizeToContent are only available when the image is placed in a canvas panel slot."), *Args.SlotName);
 			return false;
 		}
 
-		if (Args.OverwritePosition.IsSet())
+		if (Slot)
 		{
-			Slot->SetPosition(Args.OverwritePosition.GetValue());
-		}
+			if (Args.OverwritePosition.IsSet())
+			{
+				Slot->SetPosition(Args.OverwritePosition.GetValue());
+			}
 
-		if (Args.OverwriteSize.IsSet())
-		{
-			Slot->SetSize(Args.OverwriteSize.GetValue());
-		}
+			if (Args.OverwriteSize.IsSet())
+			{
+				Slot->SetSize(Args.OverwriteSize.GetValue());
+			}
 
-		if (Args.OverwriteSizeToContent.IsSet())
-		{
-			Slot->SetAutoSize(Args.OverwriteSizeToContent.GetValue());
+			if (Args.OverwriteSizeToContent.IsSet())
+			{
+				Slot->SetAutoSize(Args.OverwriteSizeToContent.GetValue());
+			}
 		}
 
 		Image->SetBrushFromAsset(SlateBrushAsset);
