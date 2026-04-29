@@ -9,6 +9,7 @@
 #include "Async/Async.h"
 #include "Engine/Engine.h"
 #include "Save/ShidenPredefinedSystemSaveGame.h"
+#include "UObject/UObjectGlobals.h"
 #include "Variable/ShidenVariableBlueprintLibrary.h"
 
 using namespace UE::Tasks;
@@ -103,6 +104,9 @@ void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, con
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, SaveTexture, SlotMetadata, SavedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const TObjectPtr<UShidenUserSaveGame> SaveGameInstance = UShidenUserSaveGame::GetOrCreate(SlotName);
 		SaveGameInstance->Prepare();
 
@@ -110,7 +114,7 @@ void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, con
 		{
 			const TObjectPtr<UShidenSaveSlotsSaveGame> SaveSlotsInstance = UShidenSaveSlotsSaveGame::GetOrCreate();
 			SaveSlotsInstance->Prepare(SlotName, SaveTexture, SlotMetadata);
-			
+
 			const bool bSaveSlotSuccess = SaveSlotsInstance->TryCommit();
 			AsyncTask(ENamedThreads::GameThread, [SavedDelegate, bSaveSlotSuccess]
 			{
@@ -119,7 +123,7 @@ void UShidenSaveBlueprintLibrary::AsyncSaveUserData(const FString& SlotName, con
 			});
 			return;
 		}
-		
+
 		AsyncTask(ENamedThreads::GameThread, [SavedDelegate]
 		{
 			// ReSharper disable once CppExpressionWithoutSideEffects
@@ -202,6 +206,9 @@ void UShidenSaveBlueprintLibrary::AsyncSaveSystemData(FOnSaveCompletedDelegate S
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const TObjectPtr<UShidenSystemSaveGame> SaveGameInstance = UShidenSystemSaveGame::GetOrCreate();
 		SaveGameInstance->Prepare();
 		const bool bSuccess = SaveGameInstance->TryCommit();
@@ -217,6 +224,9 @@ void UShidenSaveBlueprintLibrary::AsyncSavePredefinedSystemData(FOnSaveCompleted
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SavedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const TObjectPtr<UShidenPredefinedSystemSaveGame> SaveGameInstance = UShidenPredefinedSystemSaveGame::GetOrCreate();
 		SaveGameInstance->Prepare();
 		const bool bSuccess = SaveGameInstance->TryCommit();
@@ -245,6 +255,9 @@ void UShidenSaveBlueprintLibrary::AsyncCommitUserData(const TObjectPtr<UShidenUs
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SaveGame, SlotName, SaveTexture, SlotMetadata, SavedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		if (!SaveGame->TryCommit())
 		{
 			AsyncTask(ENamedThreads::GameThread, [SaveGame, SavedDelegate]
@@ -281,6 +294,9 @@ void UShidenSaveBlueprintLibrary::AsyncCommitSystemData(const TObjectPtr<UShiden
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SaveGame, SavedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bSuccess = SaveGame->TryCommit();
 		AsyncTask(ENamedThreads::GameThread, [SaveGame, SavedDelegate, bSuccess]
 		{
@@ -376,6 +392,9 @@ void UShidenSaveBlueprintLibrary::AsyncLoadUserData(const FString& SlotName, FOn
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, LoadedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bExists = UShidenUserSaveGame::DoesExist(SlotName);
 		if (!bExists)
 		{
@@ -403,6 +422,9 @@ void UShidenSaveBlueprintLibrary::AsyncLoadSystemData(FOnLoadCompletedDelegate L
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [LoadedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bExists = UShidenSystemSaveGame::DoesExist();
 		if (!bExists)
 		{
@@ -438,6 +460,9 @@ void UShidenSaveBlueprintLibrary::AsyncLoadPredefinedSystemData(const TObjectPtr
 	WorldContextObject->AddToRoot();
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [WorldContextObject, LoadedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bExists = UShidenPredefinedSystemSaveGame::DoesExist();
 		if (!bExists)
 		{
@@ -472,6 +497,9 @@ void UShidenSaveBlueprintLibrary::AsyncRetrieveUserData(const FString& SlotName,
 
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [SlotName, RetrievedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bExists = UShidenUserSaveGame::DoesExist(SlotName);
 		if (!bExists)
 		{
@@ -496,6 +524,9 @@ void UShidenSaveBlueprintLibrary::AsyncRetrieveSystemData(FOnRetrieveSystemDataC
 {
 	SaveGamePipe.Launch(UE_SOURCE_LOCATION, [RetrievedDelegate]
 	{
+		// Block garbage collection while touching UObjects on this worker thread
+		FGCScopeGuard GCScopeGuard;
+
 		const bool bExists = UShidenSystemSaveGame::DoesExist();
 		if (!bExists)
 		{
@@ -532,7 +563,7 @@ bool UShidenSaveBlueprintLibrary::TryGetLatestUserSaveSlotName(FString& SlotName
 		SHIDEN_WARNING("User data does not exist.");
 		return false;
 	}
-	
+
 	const FString LatestSlotName = [&SaveSlots]
 	{
 		FString SaveSlotName;

@@ -375,7 +375,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 			FShidenCommandDefinition
 			{
 				.Note = LOCTEXT("ImageNoteKey",
-				                "If no image is specified, the values of Position, Size,\r\nand SizeToContent are ignored, and the current image fades out.\r\nSteps is used only when the FadeFunction is Step.\r\nBlend Exp is used only when the FadeFunction is Ease.\r\nFor SlateBrush created from Material, fading does not work,\r\nso please change the opacity separately."),
+				                "If no image is specified, the values of Position, Size,\r\nand SizeToContent are ignored, and the current image fades out.\r\nSteps is used only when the FadeFunction is Step.\r\nBlend Exp is used only when the FadeFunction is Ease.\r\nFor SlateBrush created from Material, fading does not work,\r\nso please change the opacity separately.\r\nThis command supports images that are not placed in a canvas panel slot.\r\nHowever, OverwritePosition, OverwriteSize, and OverwriteSizeToContent\r\nare only available when the image is placed in a canvas panel slot."),
 				.Style = UIControlStyle,
 				.bCanCallInMacro = true,
 				.CommandSoftObjectPath = FSoftObjectPath(TEXT("/Script/ShidenCore.ShidenImageCommand")),
@@ -413,7 +413,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwritePositionKey", "OverwritePosition"),
-							.ToolTip = LOCTEXT("ImageOverwritePositionTooltip", "Specifies the position to override when displaying the image."),
+							.ToolTip = LOCTEXT("ImageOverwritePositionTooltip", "Specifies the position to override when displaying the image.\r\nOnly available when the image is placed in a canvas panel slot."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -423,7 +423,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeKey", "OverwriteSize"),
-							.ToolTip = LOCTEXT("ImageOverwriteSizeTooltip", "Specifies the size to override when displaying the image."),
+							.ToolTip = LOCTEXT("ImageOverwriteSizeTooltip", "Specifies the size to override when displaying the image.\r\nOnly available when the image is placed in a canvas panel slot."),
 							.TemplateWidget = Vector2InputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
@@ -433,7 +433,7 @@ UShidenStandardCommandDefinitions::UShidenStandardCommandDefinitions()
 						.bIsAssetToBeLoaded = false,
 						.EditorSettings = {
 							.DisplayName = LOCTEXT("OverwriteSizeToContentKey", "OverwriteSizeToContent"),
-							.ToolTip = LOCTEXT("ImageOverwriteSizeToContentTooltip", "Specifies the SizeToContent setting to override when displaying the image."),
+							.ToolTip = LOCTEXT("ImageOverwriteSizeToContentTooltip", "Specifies the SizeToContent setting to override when displaying the image.\r\nOnly available when the image is placed in a canvas panel slot."),
 							.TemplateWidget = BooleanInputTemplate,
 							.TemplateParameters = {{TEXT("HasToggle"), TEXT("true")}}
 						}
