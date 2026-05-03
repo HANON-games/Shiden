@@ -31,7 +31,8 @@ void UShidenDelayCommand::ProcessCommand_Implementation(const FString& ProcessNa
 		return;
 	}
 
-	bool bValue, bSuccess;
+	bool bValue = false;
+	bool bSuccess = false;
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), InputAction, bValue, bSuccess);
 
 	const TObjectPtr<UShidenSubsystem> ShidenSubsystem = GEngine->GetEngineSubsystem<UShidenSubsystem>();

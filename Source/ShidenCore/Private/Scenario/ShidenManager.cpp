@@ -380,43 +380,6 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		                                                     ? BGMComponents.FindRef(SoundInfo.TrackId)
 		                                                     : VoiceComponents.FindRef(SoundInfo.TrackId);
 
-	// Is fade out?
-	if (SoundInfo.EndVolumeMultiplier <= 0.0f)
-	{
-		const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
-		TObjectPtr<UAudioComponent> Component;
-		if (bSamePath)
-		{
-			Component = CurrentComponent;
-		}
-		else
-		{
-			Component = UGameplayStatics::SpawnSound2D(this, Sound, 1.0f, SoundInfo.PitchMultiplier, SoundInfo.StartTime);
-			if (!Component)
-			{
-				SHIDEN_WARNING("SpawnSound2D returned null for BGM/Voice fade out.");
-				return;
-			}
-		}
-
-		if (!bSamePath)
-		{
-			AdjustVolumeInternal(Component, 0.0f, SoundInfo.StartVolumeMultiplier, SoundInfo.AudioFaderCurve);
-			if (CurrentComponent)
-			{
-				StopSound_Implementation(SoundInfo.TrackId, SoundInfo.Type);
-			}
-		}
-
-		if (bRegisterSound)
-		{
-			RegisterSound(SoundInfo, Component);
-		}
-
-		AdjustVolumeInternal(Component, SoundInfo.FadeDuration, 0.0f, SoundInfo.AudioFaderCurve);
-		return;
-	}
-
 	// Is fade in?
 	if (SoundInfo.StartVolumeMultiplier <= 0.0f)
 	{
@@ -435,7 +398,9 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		return;
 	}
 
-	const bool bSamePath = CurrentComponent && CurrentComponent->Sound && UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
+	const bool bSamePath = CurrentComponent && CurrentComponent->Sound
+		&& UKismetSystemLibrary::GetPathName(CurrentComponent->Sound).Compare(UKismetSystemLibrary::GetPathName(Sound), ESearchCase::CaseSensitive) == 0;
+
 	TObjectPtr<UAudioComponent> Component;
 	if (bSamePath)
 	{
@@ -465,7 +430,15 @@ void AShidenManager::PlayBGMOrVoice(const FShidenSoundInfo& SoundInfo, USoundBas
 		RegisterSound(SoundInfo, Component);
 	}
 
-	AdjustVolumeInternal(Component, SoundInfo.FadeDuration, SoundInfo.EndVolumeMultiplier, SoundInfo.AudioFaderCurve);
+	// Is fade out?
+	if (SoundInfo.EndVolumeMultiplier <= 0.0f)
+	{
+		AdjustVolumeInternal(Component, SoundInfo.FadeDuration, 0.0f, SoundInfo.AudioFaderCurve);
+	}
+	else
+	{
+		AdjustVolumeInternal(Component, SoundInfo.FadeDuration, SoundInfo.EndVolumeMultiplier, SoundInfo.AudioFaderCurve);
+	}
 }
 
 void AShidenManager::RegisterSound(const FShidenSoundInfo& SoundInfo, const TObjectPtr<UAudioComponent> AudioComponent)

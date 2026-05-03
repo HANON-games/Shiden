@@ -24,13 +24,20 @@ void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& Pr
                                                                FString& BreakReason, FString& NextScenarioName, FString& ErrorMessage)
 {
 	const bool bCanSkipCommand = UShidenScenarioBlueprintLibrary::CanSkipCommand();
-	
-	bool bValue, bSuccess;
+
+	bool bValue = false;
+	bool bSuccess = false;
 	if (Args.bCanSkip && bCanSkipCommand)
 	{
 		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
+		if (!SkipInputAction)
+		{
+			Status = EShidenProcessStatus::Error;
+			ErrorMessage = TEXT("Failed to load skip input action.");
+			return;
+		}
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
-		if (bValue && bSuccess)
+		if (bSuccess && bValue)
 		{
 			Status = EShidenProcessStatus::Next;
 			return;
@@ -38,6 +45,12 @@ void UShidenWaitForClickCommand::ProcessCommand_Implementation(const FString& Pr
 	}
 
 	static const TObjectPtr<UInputAction> NextInputAction = LoadInputActionFromPath(TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenNext.IA_ShidenNext"));
+	if (!NextInputAction)
+	{
+		Status = EShidenProcessStatus::Error;
+		ErrorMessage = TEXT("Failed to load next input action.");
+		return;
+	}
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), NextInputAction, bValue, bSuccess);
 	if (!bSuccess)
 	{

@@ -111,6 +111,7 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 	TotalElapsedTime = 0.f;
 	VoiceDuration = 0.f;
 	bIsWaitingForAnimation = true;
+	bHasWaitTagInCurrentText = false;
 
 	int32 LanguageIndex;
 	if (!TryGetLanguageIndex(LanguageIndex, ErrorMessage))
@@ -146,6 +147,8 @@ void UShidenTextCommand::PreProcessCommand_Implementation(const FString& Process
 	}
 
 	TextLength = UShidenBlueprintLibrary::GetParsedLength(CurrentText);
+	
+	bHasWaitTagInCurrentText = CurrentText.Contains(TEXT("<wait "));
 
 	if (!TrySetTextWindowVisible(ShidenWidget, ErrorMessage))
 	{
@@ -676,7 +679,8 @@ void UShidenTextCommand::OnTextWindowOpenedOrClosed_Implementation()
 
 void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerInterface>& ShidenManager, const UShidenWidget* ShidenWidget)
 {
-	bool bValue, bSuccess;
+	bool bValue = false;
+	bool bSuccess = false;
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), GetSkipInputAction(), bValue, bSuccess);
 
 	if (ShidenWidget->IsSkipPressed() || (bSuccess && bValue))
@@ -693,7 +697,8 @@ void UShidenTextCommand::UpdateSkipState(const TScriptInterface<IShidenManagerIn
 
 void UShidenTextCommand::UpdateTalkState(const TScriptInterface<IShidenManagerInterface>& ShidenManager)
 {
-	bool bValue, bSuccess;
+	bool bValue = false;
+	bool bSuccess = false;
 	ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), GetNextInputAction(), bValue, bSuccess);
 
 	if (bSuccess && bValue)
@@ -726,15 +731,21 @@ float UShidenTextCommand::CalculateWaitTime(const int32 CurrentIndex)
 		                           ? ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime / ShidenSubsystem->PredefinedSystemVariable.SkipSpeedRate
 		                           : ShidenSubsystem->PredefinedSystemVariable.CharacterWaitTime;
 
-	float WaitTimeFromTag;
-	const bool bFound = UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(CurrentText, CurrentIndex, WaitTimeFromTag);
-	if (bFound)
+	if (!bHasWaitTagInCurrentText)
 	{
-		TextBlipCharacterCount = 0;
-		TextBlipWaitTime = 0.f;
+		return BaseWaitTime;
 	}
 
-	return bFound ? FMath::Max(BaseWaitTime, WaitTimeFromTag) : BaseWaitTime;
+	float WaitTimeFromTag = 0.f;
+	const bool bFound = UShidenBlueprintLibrary::TryParseWaitTimeFromLastTag(CurrentText, CurrentIndex, WaitTimeFromTag);
+	if (!bFound)
+	{
+		return BaseWaitTime;
+	}
+
+	TextBlipCharacterCount = 0;
+	TextBlipWaitTime = 0.f;
+	return FMath::Max(BaseWaitTime, WaitTimeFromTag);
 }
 
 UInputAction* UShidenTextCommand::GetSkipInputAction() const

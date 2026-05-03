@@ -69,6 +69,17 @@ void UShidenRunMacroCommand::PreviewCommand_Implementation(const FShidenCommand&
 			ErrorMessage = TEXT("ScenarioProgressStack 'Default' not found.");
 			return;
 		}
+
+		// Verify that the scenario ID in the stack matches the expected scenario
+		const FShidenScenarioProgress& CurrentProgress = ProgressStack->Stack.Last();
+		if (CurrentProgress.ScenarioId != ScenarioId)
+		{
+			Status = EShidenPreviewStatus::Error;
+			ErrorMessage = FString::Printf(TEXT("Scenario ID mismatch: expected %s, but got %s in the stack."),
+			                               *ScenarioId.ToString(), *CurrentProgress.ScenarioId.ToString());
+			return;
+		}
+
 		const int32 CurrentIndex = ProgressStack->GetCurrentScenarioIndex();
 		FShidenCommand ShidenCommand;
 		if (!Scenario->Commands.IsValidIndex(CurrentIndex))

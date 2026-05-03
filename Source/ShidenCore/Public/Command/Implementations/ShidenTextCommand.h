@@ -118,6 +118,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	bool bIsWaitingForAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	bool bHasWaitTagInCurrentText;
+
 	/**
 	 * Updates internal timing calculations for text display.
 	 * @param DeltaTime Time elapsed since the last frame in seconds

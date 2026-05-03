@@ -186,7 +186,8 @@ void UShidenSoundCommand::PreProcessCommand_Implementation(const FString& Proces
 	{
 		static const TObjectPtr<UInputAction> SkipInputAction = LoadInputActionFromPath(
 			TEXT("/Shiden/Misc/EnhancedInput/IA_ShidenSkip.IA_ShidenSkip"));
-		bool bValue, bSuccess;
+		bool bValue = false;
+		bool bSuccess = false;
 		ShidenManager->Execute_FindShidenDigitalInput(ShidenManager.GetObject(), SkipInputAction, bValue, bSuccess);
 		if (ShidenWidget->IsSkipPressed() || (bSuccess && bValue))
 		{
