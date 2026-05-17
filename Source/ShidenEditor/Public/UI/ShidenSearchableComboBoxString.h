@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Misc/EngineVersionComparison.h"
 #include "UObject/ObjectMacros.h"
 #include "Fonts/SlateFontInfo.h"
 #include "Layout/Margin.h"
@@ -12,7 +13,11 @@
 #include "Widgets/SWidget.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Components/Widget.h"
+#if !UE_VERSION_OLDER_THAN(5, 8, 0)
+#include "Widgets/Input/SSearchableComboBox.h"
+#else
 #include "SSearchableComboBox.h"
+#endif
 #include "ShidenSearchableComboBoxString.generated.h"
 
 UCLASS()
