@@ -8,14 +8,18 @@
 #include "EdGraph/EdGraphSchema.h"
 #include "EdGraphSchema_K2.h"
 #include "Engine/MemberReference.h"
+#include "Framework/Commands/UIAction.h"
 #include "Internationalization/Internationalization.h"
 #include "K2Node_CallFunction.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/CompilerResultsLog.h"
 #include "KismetCompiler.h"
 #include "Misc/AssertionMacros.h"
+#include "ScopedTransaction.h"
 #include "Styling/AppStyle.h"
 #include "Templates/Casts.h"
+#include "ToolMenu.h"
+#include "ToolMenuSection.h"
 #include "UObject/Class.h"
 #include "UObject/NameTypes.h"
 #include "UObject/Object.h"
@@ -40,6 +44,7 @@ static const FName CommandNamePinName(TEXT("CommandName"));
 static constexpr int32 MaxVisibleOutputPins = 7;
 static constexpr int32 AdvancedPinStartIndex = 8;
 static constexpr int32 MinInputPinCount = 4;
+static const FName ShowPinPropertyName = GET_MEMBER_NAME_CHECKED(FOptionalPinFromProperty, bShowPin);
 
 UEdGraphPin* FindPinByName(const TArray<UEdGraphPin*>& PinsToSearch, const FName& PinName)
 {
@@ -97,7 +102,7 @@ void UK2Node_GetCommandArguments::SetPinToolTip(UEdGraphPin& MutatablePin, const
 }
 
 bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, const UShidenCommandDefinitions* InDefinitions,
-                                                     const FString& InCommandName)
+                                                     const FString& InCommandName) const
 {
 	TArray<FString> OldPinNames = TArray<FString>();
 	for (const UEdGraphPin* OldPin : OldPins)
@@ -118,7 +123,16 @@ bool UK2Node_GetCommandArguments::IsOutputPinChanged(const TArray<UEdGraphPin*>&
 		TArray<FString> Keys;
 		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
-			Keys.Add(Arg.ArgName.ToString());
+			const FName ArgName = Arg.ArgName;
+			const FOptionalPinFromProperty* PinVisibility = ShowPinForProperties.FindByPredicate(
+				[ArgName](const FOptionalPinFromProperty& OptionalPin)
+				{
+					return OptionalPin.PropertyName == ArgName;
+				});
+			if (!PinVisibility || PinVisibility->bShowPin)
+			{
+				Keys.Add(Arg.ArgName.ToString());
+			}
 		}
 
 		for (FString Key : Keys)
@@ -155,6 +169,10 @@ void UK2Node_GetCommandArguments::RefreshOutputPins()
 	if (Definitions)
 	{
 		PreloadObject(Definitions);
+	}
+	else
+	{
+		RebuildOutputPinVisibility(nullptr, CommandName);
 	}
 
 	if (!IsOutputPinChanged(OldPins, Definitions, CommandName))
@@ -242,12 +260,18 @@ void UK2Node_GetCommandArguments::CreateOutputPins(const UShidenCommandDefinitio
 	check(InDefinitions != NULL);
 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	RebuildOutputPinVisibility(InDefinitions, InCommandName);
 
 	if (InDefinitions->CommandDefinitions.Contains(InCommandName))
 	{
 		UScriptStruct* OptionalStringStruct = TBaseStructure<FShidenOptionalString>::Get();
 		for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
 		{
+			if (!IsOutputPinVisible(Arg.ArgName))
+			{
+				continue;
+			}
+
 			UEdGraphPin* OutputPin = CreatePin(EGPD_Output, K2Schema->PC_Struct, OptionalStringStruct, Arg.ArgName);
 			SetPinToolTip(*OutputPin, FText::FromString(Arg.ArgName.ToString()));
 		}
@@ -361,6 +385,29 @@ void UK2Node_GetCommandArguments::PinDefaultValueChanged(UEdGraphPin* Pin)
 	}
 }
 
+void UK2Node_GetCommandArguments::PreEditChange(FProperty* PropertyThatWillChange)
+{
+	Super::PreEditChange(PropertyThatWillChange);
+
+	if (PropertyThatWillChange && PropertyThatWillChange->GetFName() == ShowPinPropertyName)
+	{
+		FOptionalPinManager::CacheShownPins(ShowPinForProperties, OldShownPins);
+	}
+}
+
+void UK2Node_GetCommandArguments::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	const FName PropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	if (PropertyName == ShowPinPropertyName)
+	{
+		FOptionalPinManager::EvaluateOldShownPins(ShowPinForProperties, OldShownPins, this);
+		GetSchema()->ReconstructNode(*this);
+		FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
+	}
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
 void UK2Node_GetCommandArguments::OnCommandDefinitionsChanged()
 {
 	RefreshOutputPins();
@@ -399,6 +446,105 @@ UEdGraphPin* UK2Node_GetCommandArguments::FindCommandNamePin(const TArray<UEdGra
 FText UK2Node_GetCommandArguments::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return LOCTEXT("Get Command Arguments", "Get Command Arguments");
+}
+
+void UK2Node_GetCommandArguments::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+{
+	Super::GetNodeContextMenuActions(Menu, Context);
+
+	if (!Context->bIsDebugging && Context->Pin == nullptr)
+	{
+		FToolMenuSection& Section = Menu->AddSection("ShidenGetCommandArguments", LOCTEXT("GetCommandArgumentsMenuHeader", "Get Command Arguments"));
+		Section.AddMenuEntry(
+			"HideUnconnectedOutputPins",
+			LOCTEXT("HideUnconnectedOutputPins", "Hide Unconnected Pins"),
+			LOCTEXT("HideUnconnectedOutputPinsTooltip", "Hide output pins with no connections."),
+			FSlateIcon(),
+			FUIAction(
+				FExecuteAction::CreateUObject(const_cast<UK2Node_GetCommandArguments*>(this), &UK2Node_GetCommandArguments::HideUnconnectedOutputPins),
+				FCanExecuteAction::CreateUObject(this, &UK2Node_GetCommandArguments::CanHideUnconnectedOutputPins)
+			)
+		);
+	}
+}
+
+void UK2Node_GetCommandArguments::RebuildOutputPinVisibility(const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName)
+{
+	TMap<FName, bool> OldVisibility;
+	for (const FOptionalPinFromProperty& OptionalPin : ShowPinForProperties)
+	{
+		OldVisibility.Add(OptionalPin.PropertyName, OptionalPin.bShowPin);
+	}
+
+	ShowPinForProperties.Reset();
+	if (!InDefinitions || !InDefinitions->CommandDefinitions.Contains(InCommandName))
+	{
+		return;
+	}
+
+	for (const FShidenCommandArgument& Arg : InDefinitions->CommandDefinitions[InCommandName].Args)
+	{
+		FOptionalPinFromProperty& OptionalPin = ShowPinForProperties.AddDefaulted_GetRef();
+		OptionalPin.PropertyName = Arg.ArgName;
+		OptionalPin.PropertyFriendlyName = Arg.ArgName.ToString();
+		OptionalPin.PropertyTooltip = FText::FromName(Arg.ArgName);
+		OptionalPin.CategoryName = NAME_None;
+		OptionalPin.bCanToggleVisibility = true;
+		const bool* bOldVisibility = OldVisibility.Find(Arg.ArgName);
+		OptionalPin.bShowPin = bOldVisibility ? *bOldVisibility : true;
+	}
+}
+
+bool UK2Node_GetCommandArguments::IsOutputPinVisible(const FName& PinName) const
+{
+	const FOptionalPinFromProperty* OptionalPin = ShowPinForProperties.FindByPredicate(
+		[PinName](const FOptionalPinFromProperty& TestPin)
+		{
+			return TestPin.PropertyName == PinName;
+		});
+	return !OptionalPin || OptionalPin->bShowPin;
+}
+
+void UK2Node_GetCommandArguments::HideUnconnectedOutputPins()
+{
+	FScopedTransaction Transaction(LOCTEXT("HideUnconnectedOutputPinsTransaction", "Hide Unconnected Pins"));
+	Modify();
+
+	bool bChanged = false;
+	for (FOptionalPinFromProperty& OptionalPin : ShowPinForProperties)
+	{
+		if (OptionalPin.bShowPin)
+		{
+			const UEdGraphPin* Pin = FindPin(OptionalPin.PropertyName, EGPD_Output);
+			if (Pin && Pin->LinkedTo.Num() == 0)
+			{
+				OptionalPin.bShowPin = false;
+				bChanged = true;
+			}
+		}
+	}
+
+	if (bChanged)
+	{
+		GetSchema()->ReconstructNode(*this);
+		FBlueprintEditorUtils::MarkBlueprintAsModified(GetBlueprint());
+	}
+}
+
+bool UK2Node_GetCommandArguments::CanHideUnconnectedOutputPins() const
+{
+	for (const FOptionalPinFromProperty& OptionalPin : ShowPinForProperties)
+	{
+		if (OptionalPin.bShowPin)
+		{
+			const UEdGraphPin* Pin = FindPin(OptionalPin.PropertyName, EGPD_Output);
+			if (Pin && Pin->LinkedTo.Num() == 0)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void UK2Node_GetCommandArguments::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)

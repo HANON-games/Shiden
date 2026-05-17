@@ -333,3 +333,26 @@ bool GetCharactersWithParsedLengthTest::RunTest(const FString& Parameters)
 	}
 	return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(ShidenOptionalStringConversionTest, "ShidenBlueprintLibrary.OptionalStringConversion",
+                                 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool ShidenOptionalStringConversionTest::RunTest(const FString& Parameters)
+{
+	TestEqual(TEXT("String conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToString(FShidenOptionalString(TEXT("Text"))), FString(TEXT("Text")));
+	TestEqual(TEXT("Int conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToInt(FShidenOptionalString(TEXT("42"))), 42);
+	TestEqual(TEXT("Float conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToFloat(FShidenOptionalString(TEXT("3.5"))), 3.5f);
+	TestTrue(TEXT("Bool conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToBool(FShidenOptionalString(TEXT("TRUE"))));
+	TestFalse(TEXT("Bool conversion false"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToBool(FShidenOptionalString(TEXT("false"))));
+	TestTrue(TEXT("Vector2D conversion"),
+	         UShidenBlueprintLibrary::Conv_ShidenOptionalStringToVector2D(FShidenOptionalString(TEXT("X=1.0 Y=2.0"))).Equals(FVector2D(1.0, 2.0)));
+	TestTrue(TEXT("Vector3D conversion"),
+	         UShidenBlueprintLibrary::Conv_ShidenOptionalStringToVector3D(FShidenOptionalString(TEXT("X=1.0 Y=2.0 Z=3.0"))).Equals(FVector(1.0, 2.0, 3.0)));
+
+	const FShidenOptionalString EmptyOptionalString;
+	TestEqual(TEXT("Unset int conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToInt(EmptyOptionalString), 0);
+	TestEqual(TEXT("Unset float conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToFloat(EmptyOptionalString), 0.0f);
+	TestFalse(TEXT("Unset bool conversion"), UShidenBlueprintLibrary::Conv_ShidenOptionalStringToBool(EmptyOptionalString));
+
+	return true;
+}

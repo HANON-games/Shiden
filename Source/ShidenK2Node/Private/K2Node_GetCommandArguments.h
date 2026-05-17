@@ -16,6 +16,7 @@
 #include "K2Node_GetCommandArguments.generated.h"
 
 class FBlueprintActionDatabaseRegistrar;
+class FProperty;
 class FString;
 class UDataTable;
 class UEdGraph;
@@ -36,6 +37,9 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual FText GetTooltipText() const override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
+	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
 	//~ End UEdGraphNode Interface.
 
 	//~ Begin UK2Node Interface
@@ -46,7 +50,11 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	virtual void EarlyValidation(FCompilerResultsLog& MessageLog) const override;
 	virtual void PreloadRequiredAssets() override;
 	virtual bool IsNodePure() const override { return true; }
+	virtual bool ShouldShowNodeProperties() const override { return true; }
 	//~ End UK2Node Interface
+
+	UPROPERTY(EditAnywhere, Category = PinOptions, EditFixedSize)
+	TArray<FOptionalPinFromProperty> ShowPinForProperties;
 
 	UEdGraphPin* FindCommandPin(const TArray<UEdGraphPin*>* InPinsToSearch = nullptr) const;
 
@@ -57,6 +65,10 @@ class SHIDENK2NODE_API UK2Node_GetCommandArguments : public UK2Node
 	void CreateOutputPins(const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName);
 
 	void OnCommandDefinitionsRowListChanged(const UShidenCommandDefinitions* CommandDefinitions) const;
+
+	void HideUnconnectedOutputPins();
+
+	bool CanHideUnconnectedOutputPins() const;
 
 private:
 	/**
@@ -74,9 +86,15 @@ private:
 
 	void ChangeAdvancedView();
 
-	static bool IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName);
+	void RebuildOutputPinVisibility(const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName);
+
+	bool IsOutputPinVisible(const FName& PinName) const;
+
+	bool IsOutputPinChanged(const TArray<UEdGraphPin*>& OldPins, const UShidenCommandDefinitions* InDefinitions, const FString& InCommandName) const;
 
 	FText NodeTooltip;
+
+	TArray<FName> OldShownPins;
 
 	FDelegateHandle OnCommandDefinitionsChangedHandle;
 

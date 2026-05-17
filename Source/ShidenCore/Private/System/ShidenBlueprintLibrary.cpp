@@ -579,6 +579,37 @@ FString UShidenBlueprintLibrary::Conv_ShidenOptionalStringToString(const FShiden
 	return OptionalString.GetValueOrDefault();
 }
 
+int32 UShidenBlueprintLibrary::Conv_ShidenOptionalStringToInt(const FShidenOptionalString& OptionalString)
+{
+	const FString Value = OptionalString.GetValueOrDefault();
+	return FCString::Atoi(*Value);
+}
+
+float UShidenBlueprintLibrary::Conv_ShidenOptionalStringToFloat(const FShidenOptionalString& OptionalString)
+{
+	const FString Value = OptionalString.GetValueOrDefault();
+	return FCString::Atof(*Value);
+}
+
+FVector2D UShidenBlueprintLibrary::Conv_ShidenOptionalStringToVector2D(const FShidenOptionalString& OptionalString)
+{
+	FVector2D Result;
+	Result.InitFromString(OptionalString.GetValueOrDefault());
+	return Result;
+}
+
+FVector UShidenBlueprintLibrary::Conv_ShidenOptionalStringToVector3D(const FShidenOptionalString& OptionalString)
+{
+	FVector Result;
+	Result.InitFromString(OptionalString.GetValueOrDefault());
+	return Result;
+}
+
+bool UShidenBlueprintLibrary::Conv_ShidenOptionalStringToBool(const FShidenOptionalString& OptionalString)
+{
+	return OptionalString.GetValueOrDefault().Compare(TEXT("true"), ESearchCase::IgnoreCase) == 0;
+}
+
 bool UShidenBlueprintLibrary::IsValidSoftObjectPath(const FString& ObjectPath)
 {
 	const FSoftObjectPath SoftObjectPath(ObjectPath);

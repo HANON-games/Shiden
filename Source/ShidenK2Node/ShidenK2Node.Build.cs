@@ -47,7 +47,9 @@ public class ShidenK2Node : ModuleRules
 				"ShidenCore",
 				"BlueprintGraph",
 				"GraphEditor",
-				"KismetCompiler"
+				"KismetCompiler",
+				"PropertyEditor",
+				"ToolMenus"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

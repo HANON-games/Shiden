@@ -295,6 +295,21 @@ public:
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
 	static FString Conv_ShidenOptionalStringToString(const FShidenOptionalString& OptionalString);
 
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static int32 Conv_ShidenOptionalStringToInt(const FShidenOptionalString& OptionalString);
+
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static float Conv_ShidenOptionalStringToFloat(const FShidenOptionalString& OptionalString);
+
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static FVector2D Conv_ShidenOptionalStringToVector2D(const FShidenOptionalString& OptionalString);
+
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static FVector Conv_ShidenOptionalStringToVector3D(const FShidenOptionalString& OptionalString);
+
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast, BlueprintInternalUseOnly = "true"))
+	static bool Conv_ShidenOptionalStringToBool(const FShidenOptionalString& OptionalString);
+
 	UFUNCTION()
 	static void InitCommandDefinitions();
 
