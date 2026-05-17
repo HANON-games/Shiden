@@ -19,7 +19,7 @@ bool UShidenMoveCanvasPanelSlotCommand::TryParseCommand(const FShidenCommand& Co
 	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 	Args.OverwriteZOrder = Command.GetOptionalArgAsInt(TEXT("OverwriteZOrder"));
 
-	if (!TryAddCurrentValue(Args, ShidenWidget, Args.EndPosition, Args.EndSize, ErrorMessage))
+	if (!TryResolveEndValue(Args, ShidenWidget, Args.EndPosition, Args.EndSize, ErrorMessage))
 	{
 		return false;
 	}
@@ -166,11 +166,13 @@ void UShidenMoveCanvasPanelSlotCommand::PreviewCommand_Implementation(const FShi
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenMoveCanvasPanelSlotCommand::TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget,
+bool UShidenMoveCanvasPanelSlotCommand::TryResolveEndValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget,
                                                            FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage)
 {
-	if (Args.ChangeType != TEXT("AddToCurrent"))
+	if (Args.ChangeType == TEXT("AbsoluteValue"))
 	{
+		ResultPosition = Args.OverwritePosition.Get(FVector2D::ZeroVector);
+		ResultSize = Args.OverwriteSize.Get(FVector2D::ZeroVector);
 		return true;
 	}
 

@@ -44,7 +44,7 @@ class SHIDENCORE_API UShidenMoveCanvasPanelSlotCommand : public UShidenCommandOb
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           bool bIsCurrentCommand, EShidenPreviewStatus& Status, FString& ErrorMessage) override;
 
-	static bool TryAddCurrentValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget, FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage);
+	static bool TryResolveEndValue(const FMoveCanvasPanelSlotCommandArgs& Args, UShidenWidget* ShidenWidget, FVector2D& ResultPosition, FVector2D& ResultSize, FString& ErrorMessage);
 
 	static bool TryParseCommand(const FShidenCommand& Command, UShidenWidget* ShidenWidget, FMoveCanvasPanelSlotCommandArgs& Args, FString& ErrorMessage);
 

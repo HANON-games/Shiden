@@ -19,7 +19,7 @@ bool UShidenChangeMaterialScalarParameterCommand::TryParseCommand(const FShidenC
 	Args.BlendExp = Command.GetArgAsFloat(TEXT("BlendExp"));
 	Args.bWaitForCompletion = Command.GetArgAsBool(TEXT("WaitForCompletion"));
 
-	if (!TryAddCurrentValue(Args, OriginalEndValue, ShidenWidget, Args.EndValue, ErrorMessage))
+	if (!TryResolveEndValue(Args, OriginalEndValue, ShidenWidget, Args.EndValue, ErrorMessage))
 	{
 		return false;
 	}
@@ -124,11 +124,11 @@ void UShidenChangeMaterialScalarParameterCommand::PreviewCommand_Implementation(
 		         : EShidenPreviewStatus::Error;
 }
 
-bool UShidenChangeMaterialScalarParameterCommand::TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args,
+bool UShidenChangeMaterialScalarParameterCommand::TryResolveEndValue(const FChangeMaterialScalarParameterCommandArgs& Args,
                                                                      const float OriginalEndValue, UShidenWidget* ShidenWidget,
                                                                      float& ResultValue, FString& ErrorMessage)
 {
-	if (Args.ChangeType != TEXT("AddToCurrent"))
+	if (Args.ChangeType == TEXT("AbsoluteValue"))
 	{
 		ResultValue = OriginalEndValue;
 		return true;

@@ -48,7 +48,7 @@ class SHIDENCORE_API UShidenChangeMaterialScalarParameterCommand : public UShide
 	static bool TryStartChangeParameter(const FChangeMaterialScalarParameterCommandArgs& Args, UShidenWidget* ShidenWidget,
 	                                    const FString& ProcessName, FString& ErrorMessage);
 
-	static bool TryAddCurrentValue(const FChangeMaterialScalarParameterCommandArgs& Args, float OriginalEndValue, UShidenWidget* ShidenWidget,
+	static bool TryResolveEndValue(const FChangeMaterialScalarParameterCommandArgs& Args, float OriginalEndValue, UShidenWidget* ShidenWidget,
 	                               float& ResultValue, FString& ErrorMessage);
 
 	FChangeMaterialScalarParameterCommandArgs Args;
