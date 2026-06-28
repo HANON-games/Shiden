@@ -25,6 +25,10 @@ class SHIDENCORE_API UShidenChangeMaterialTextureParameterCommand : public UShid
 	                                                const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                                UObject* CallerObject, EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage) override;
 
+	// Restore after brush-setting commands (e.g. Image), since this operates on a dynamic material
+	// created from the target's brush. See GetRestoreFromSaveDataPriority in the base class.
+	virtual int32 GetRestoreFromSaveDataPriority() const override { return 100; }
+
 	virtual void ProcessCommand_Implementation(const FString& ProcessName, const FShidenCommand& Command, UShidenWidget* ShidenWidget,
 	                                           const TScriptInterface<IShidenManagerInterface>& ShidenManager,
 	                                           const float DeltaTime, UObject* CallerObject, EShidenProcessStatus& Status, FString& BreakReason,
