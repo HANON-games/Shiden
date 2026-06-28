@@ -64,6 +64,18 @@ public:
 	                                                EShidenInitFromSaveDataStatus& Status, FString& ErrorMessage);
 
 	/**
+	 * Returns the priority used to order RestoreFromSaveData calls when loading a save game.
+	 * Commands are restored in ascending priority order (lower values restore first).
+	 * Commands whose restore depends on the result of another command's restore should return a
+	 * higher value so they run later. For example, the material parameter commands operate on a
+	 * dynamic material created from the brush set by the Image command, so they must restore after
+	 * Image; otherwise SetBrushFromAsset would discard the dynamic material and lose the parameter.
+	 * Commands with equal priority keep their original (insertion) order.
+	 * @return Restore order priority (default 0)
+	 */
+	virtual int32 GetRestoreFromSaveDataPriority() const { return 0; }
+
+	/**
 	 * Previews a command in editor.
 	 * @param Command The command to preview
 	 * @param ShidenWidget The Shiden widget instance

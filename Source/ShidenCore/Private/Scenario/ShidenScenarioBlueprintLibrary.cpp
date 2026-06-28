@@ -796,6 +796,21 @@ bool UShidenScenarioBlueprintLibrary::TryInitFromSaveData(UShidenWidget* ShidenW
 		UShidenBlueprintLibrary::InitCommandDefinitions();
 	}
 
+	// Resolve every command object first so we can order the restore calls by priority.
+	// Some commands depend on the result of another command's restore (for example, the material
+	// parameter commands operate on a dynamic material created from the brush set by the Image
+	// command). The raw iteration order of ScenarioProperties depends on which command type was
+	// registered first during play, so without explicit ordering the restore result is non-deterministic.
+	struct FRestoreEntry
+	{
+		const FShidenScenarioProperties* Properties;
+		UShidenCommandObject* CommandObject;
+		int32 Priority;
+	};
+
+	TArray<FRestoreEntry> RestoreEntries;
+	RestoreEntries.Reserve(ShidenSubsystem->ScenarioProperties.Num());
+
 	for (const auto& [CommandName, ScenarioProperties] : ShidenSubsystem->ScenarioProperties)
 	{
 		const FShidenCommandDefinition* CommandDef = ShidenSubsystem->CommandDefinitionCache.Find(CommandName);
@@ -813,8 +828,20 @@ bool UShidenScenarioBlueprintLibrary::TryInitFromSaveData(UShidenWidget* ShidenW
 				TEXT("Failed to get command '%s'. Please check project config and command definitions."), *CommandName);
 			return false;
 		}
+
+		RestoreEntries.Add(FRestoreEntry{&ScenarioProperties, CommandObject, CommandObject->GetRestoreFromSaveDataPriority()});
+	}
+
+	// Stable sort keeps the original insertion order for commands of equal priority.
+	RestoreEntries.StableSort([](const FRestoreEntry& A, const FRestoreEntry& B)
+	{
+		return A.Priority < B.Priority;
+	});
+
+	for (const FRestoreEntry& Entry : RestoreEntries)
+	{
 		EShidenInitFromSaveDataStatus Status = EShidenInitFromSaveDataStatus::Complete;
-		CommandObject->RestoreFromSaveData(ScenarioProperties.ScenarioProperties, ShidenWidget, ShidenManager, CallerObject, Status, ErrorMessage);
+		Entry.CommandObject->RestoreFromSaveData(Entry.Properties->ScenarioProperties, ShidenWidget, ShidenManager, CallerObject, Status, ErrorMessage);
 		if (Status == EShidenInitFromSaveDataStatus::Error)
 		{
 			return false;
